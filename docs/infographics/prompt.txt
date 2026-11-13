@@ -1,0 +1,32 @@
+Use case: infographic-diagram
+Create one polished standalone Thai executive infographic, portrait 2:3 high resolution, for the Water System of Lampang. This is one complete executive summary poster, not a Word page and not a screenshot. Large highly readable Thai lettering, generous white space, short phrases, clear hierarchy for senior executives. Use a professional Thai typeface visually similar to TH SarabunPSK, bold headings. White/off-white background, restrained navy and teal palette with blue, amber and purple category accents. Beautiful restrained flat vector-style illustrations of river/rain, reservoir, air monitor, and complaint document; no photography. No official seal or invented logo. All text exactly as below, no extra invented facts, numbers, statistics, claims of real-time monitoring, AI forecasting accuracy, or automated decisions.
+
+Layout: Top 18% title plus short purpose. Middle upper area four spacious illustrated category cards in a 2 by 2 grid. Then one simple horizontal four-step arrow flow. Lower area three clear executive benefits with simple icons. Bottom small but legible information-quality note. Keep typography large, subordinate text still readable, avoid paragraphs. Use graceful professional visual rhythm, enough margins and contrast. Fit all content without crowding.
+
+Exact Thai text:
+Title: "ระบบบูรณาการข้อมูลจังหวัดลำปาง"
+Subtitle: "Water System • ภาพรวมสำหรับผู้บริหาร"
+Purpose: "รวมข้อมูลสำคัญ เพื่อเห็นสถานการณ์และติดตามงาน"
+
+Section heading: "ข้อมูลหลัก 4 ด้าน"
+Card 1 heading: "น้ำและฝน"
+Card 1 body: "ระดับน้ำและปริมาณฝน"
+Card 2 heading: "อ่างเก็บน้ำ"
+Card 2 body: "ปริมาณน้ำและสัดส่วนความจุ"
+Card 3 heading: "คุณภาพอากาศ"
+Card 3 body: "ข้อมูล PM2.5 รายสถานี"
+Card 4 heading: "เรื่องร้องเรียน"
+Card 4 body: "ประเด็นปัญหาและสถานะล่าสุด"
+
+Flow heading: "จากข้อมูลสู่การใช้งาน"
+Flow labels exactly: "รวบรวม" → "จัดเก็บ" → "แสดงผล" → "ติดตาม"
+Under flow single line: "แดชบอร์ด • แผนที่ • รายงาน • แจ้งเตือน"
+
+Benefits heading: "ผู้บริหารใช้ประโยชน์อย่างไร"
+Benefit 1: "เห็นภาพรวมในที่เดียว"
+Benefit 2: "ใช้ข้อมูลประกอบการจัดลำดับงาน"
+Benefit 3: "ติดตามเหตุและผู้รับผิดชอบ"
+
+Footer note heading: "ก่อนใช้ข้อมูลตัดสินใจ"
+Footer note body: "ตรวจเวลาข้อมูลล่าสุดและความครบถ้วนทุกครั้ง"
+No other text. Thai spelling and diacritics must be accurate. Make it elegant, informative, instantly scannable, and suitable to share directly with executives.

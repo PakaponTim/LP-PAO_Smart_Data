@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>เอกสารประกอบการประเมินผลงาน – นายภัคพล บุตติ นักวิเคราะห์ข้อมูล</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Sarabun','TH Sarabun New',serif; font-size: 16pt; line-height: 1.9; color: #1a1a1a; background: #f5f5f0; }
+    @media print {
+      body { background: white; }
+      .page { box-shadow: none !important; margin: 0 !important; border-radius: 0 !important; page-break-after: always; min-height: unset; }
+      .no-print { display: none !important; }
+    }
+    /* TOOLBAR */
+    .toolbar { position: fixed; top: 0; left: 0; right: 0; background: #07111e; color: white; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 999; box-shadow: 0 2px 12px rgba(0,0,0,.4); font-family: 'Sarabun',sans-serif; font-size: 14px; }
+    .toolbar-title { font-weight: 600; font-size: 15px; }
+    .toolbar-actions { display: flex; gap: 10px; }
+    .btn-print { background: #10b981; color: white; border: none; padding: 7px 20px; border-radius: 6px; cursor: pointer; font-family: 'Sarabun',sans-serif; font-size: 14px; font-weight: 600; transition: background .2s; }
+    .btn-print:hover { background: #059669; }
+    .btn-secondary { background: rgba(255,255,255,.1); color: white; border: 1px solid rgba(255,255,255,.2); padding: 7px 20px; border-radius: 6px; cursor: pointer; font-family: 'Sarabun',sans-serif; font-size: 14px; transition: background .2s; }
+    .btn-secondary:hover { background: rgba(255,255,255,.2); }
+    /* WRAPPER */
+    .doc-wrapper { margin-top: 56px; padding: 30px 20px 60px; max-width: 900px; margin-left: auto; margin-right: auto; }
+    /* PAGE */
+    .page { background: white; width: 100%; max-width: 794px; margin: 0 auto 30px; padding: 48px 60px 80px; box-shadow: 0 2px 20px rgba(0,0,0,.12); border-radius: 4px; position: relative; min-height: 900px; }
+    /* COVER */
+    .cover-page { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .cover-logo { width: 100px; height: 100px; margin-bottom: 24px; object-fit: contain; }
+    .cover-org-name { font-size: 20pt; font-weight: 700; color: #07111e; margin-bottom: 6px; }
+    .cover-org-sub { font-size: 16pt; color: #475569; margin-bottom: 40px; }
+    .cover-line-top { width: 80px; height: 4px; background: linear-gradient(90deg,#10b981,#06b6d4); margin: 0 auto 40px; border-radius: 2px; }
+    .cover-doc-type { font-size: 16pt; color: #64748b; margin-bottom: 12px; }
+    .cover-title { font-size: 22pt; font-weight: 700; color: #07111e; line-height: 1.5; margin-bottom: 8px; }
+    .cover-subtitle { font-size: 17pt; color: #10b981; font-weight: 600; margin-bottom: 40px; }
+    .cover-line-bot { width: 60%; height: 1px; background: #e2e8f0; margin: 0 auto 40px; }
+    .cover-author-block { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 24px 40px; margin-bottom: 30px; width: 100%; max-width: 420px; }
+    .cover-author-label { font-size: 14pt; color: #64748b; margin-bottom: 6px; }
+    .cover-author-name { font-size: 18pt; font-weight: 700; color: #07111e; }
+    .cover-author-position { font-size: 15pt; color: #475569; }
+    .cover-date { font-size: 15pt; color: #64748b; margin-top: 16px; }
+    /* SECTION HEADER */
+    .section-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 2px solid #e2e8f0; }
+    .section-number { background: linear-gradient(135deg,#10b981,#06b6d4); color: white; width: 40px; height: 40px; min-width: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16pt; font-weight: 700; margin-top: 2px; }
+    .section-title-block { flex: 1; }
+    .section-title { font-size: 20pt; font-weight: 700; color: #07111e; line-height: 1.4; }
+    .section-subtitle { font-size: 14pt; color: #64748b; margin-top: 2px; }
+    /* BODY TEXT */
+    .body-text { font-size: 16pt; line-height: 2; color: #1e293b; margin-bottom: 16px; text-align: justify; text-indent: 2em; }
+    .body-text.no-indent { text-indent: 0; }
+    /* HIGHLIGHT BOX */
+    .highlight-box { background: #f0fdf4; border-left: 5px solid #10b981; border-radius: 0 8px 8px 0; padding: 14px 20px; margin: 16px 0; }
+    .highlight-box p { font-size: 16pt; color: #065f46; line-height: 1.8; margin: 0; }
+    .highlight-box.amber { background: #fffbeb; border-left-color: #f59e0b; }
+    .highlight-box.amber p { color: #78350f; }
+    .highlight-box.blue { background: #eff6ff; border-left-color: #3b82f6; }
+    .highlight-box.blue p { color: #1e3a5f; }
+    .highlight-box.rose { background: #fff1f2; border-left-color: #f43f5e; }
+    .highlight-box.rose p { color: #7f1d1d; }
+    /* BULLET LIST */
+    .bullet-list { list-style: none; padding: 0; margin: 12px 0 16px 0; }
+    .bullet-list li { font-size: 16pt; line-height: 1.9; padding: 5px 0 5px 28px; position: relative; color: #1e293b; }
+    .bullet-list li::before { content:''; position: absolute; left: 8px; top: 16px; width: 8px; height: 8px; background: #10b981; border-radius: 50%; }
+    .bullet-list.disc li::before { background: #06b6d4; }
+    .bullet-list.warn li::before { background: #f43f5e; }
+    .bullet-list.amber li::before { background: #f59e0b; }
+    /* 2-COLUMN GRID */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+    .col-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 20px; }
+    .col-card-title { font-size: 15pt; font-weight: 700; color: #07111e; margin-bottom: 8px; }
+    .col-card p { font-size: 15pt; line-height: 1.8; color: #374151; }
+    /* TABLE */
+    .compare-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 15pt; }
+    .compare-table thead tr { background: #07111e; color: white; }
+    .compare-table thead th { padding: 12px 16px; text-align: left; font-weight: 700; font-size: 16pt; }
+    .compare-table tbody tr:nth-child(even) { background: #f8fafc; }
+    .compare-table td { padding: 10px 16px; border-bottom: 1px solid #e2e8f0; vertical-align: top; line-height: 1.7; }
+    .before-col { color: #dc2626; }
+    .after-col { color: #059669; font-weight: 600; }
+    .topic-col { font-weight: 600; color: #1e293b; }
+    /* STEP BLOCK */
+    .step-block { display: flex; gap: 14px; margin: 10px 0; align-items: flex-start; }
+    .step-num { background: linear-gradient(135deg,#07111e,#10b981); color: white; width: 34px; height: 34px; min-width: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15pt; font-weight: 700; margin-top: 4px; }
+    .step-content { flex: 1; }
+    .step-title { font-size: 16pt; font-weight: 700; color: #07111e; }
+    .step-desc { font-size: 15pt; color: #374151; line-height: 1.8; }
+    /* MISC */
+    hr.section-rule { border: none; border-top: 2px dashed #e2e8f0; margin: 24px 0; }
+    /* FOOTER */
+    .page-footer { position: absolute; bottom: 24px; left: 60px; right: 60px; display: flex; justify-content: space-between; align-items: center; font-size: 12pt; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 8px; }
+    .page-footer .footer-org { font-weight: 600; }
+    /* CONCLUSION */
+    .conclusion-box { background: linear-gradient(135deg,#07111e 0%,#0f2744 100%); color: white; border-radius: 12px; padding: 28px 32px; margin: 20px 0; }
+    .conclusion-box h3 { font-size: 18pt; font-weight: 700; margin-bottom: 14px; color: #10b981; }
+    .conclusion-box p { font-size: 16pt; line-height: 2; color: #e2e8f0; }
+    .conclusion-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .conclusion-chip { background: rgba(16,185,129,.2); border: 1px solid #10b981; color: #10b981; padding: 5px 18px; border-radius: 20px; font-size: 14pt; font-weight: 600; }
+    /* BADGES */
+    .badge-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+    .badge { background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; padding: 5px 16px; border-radius: 20px; font-size: 14pt; font-weight: 600; }
+    .badge.blue { background: #eff6ff; color: #1e3a5f; border-color: #93c5fd; }
+    .badge.amber { background: #fffbeb; color: #78350f; border-color: #fcd34d; }
+    /* SIGNATURE */
+    .signature-block { margin-top: 40px; display: flex; justify-content: flex-end; }
+    .signature-inner { text-align: center; width: 260px; }
+    .signature-line { width: 100%; border-top: 1px solid #1a1a1a; margin-bottom: 8px; }
+    .signature-name { font-size: 16pt; font-weight: 700; }
+    .signature-pos { font-size: 14pt; color: #475569; }
+  </style>
+</head>
+<body>
+<!-- TOOLBAR -->
+<div class="toolbar no-print">
+  <div class="toolbar-title">📄 เอกสารประกอบการประเมินผลงาน — นายภัคพล บุตติ นักวิเคราะห์ข้อมูล</div>
+  <div class="toolbar-actions">
+    <button class="btn-secondary" onclick="window.location.href='slides_performance_evaluation.html'">🖥️ ดูสไลด์ประกอบ</button>
+    <button class="btn-print" onclick="window.print()">🖨️ พิมพ์เอกสาร</button>
+  </div>
+</div>
+
+<div class="doc-wrapper">
+
+  <!-- PAGE 1: COVER -->
+  <div class="page cover-page">
+    <img class="cover-logo" id="logo-img" src="public/logo_pao.png" alt="ตราสัญลักษณ์ อบจ.ลำปาง" />
+    <div class="cover-org-name">องค์การบริหารส่วนจังหวัดลำปาง</div>
+    <div class="cover-org-sub">กองยุทธศาสตร์และงบประมาณ</div>
+    <div class="cover-line-top"></div>
+    <div class="cover-doc-type">เอกสารประกอบการประเมินผลงาน ตำแหน่ง นักวิเคราะห์ข้อมูลปฏิบัติงาน</div>
+    <div class="cover-title">ระบบบูรณาการข้อมูล<br/>สิ่งแวดล้อมและภัยพิบัติ</div>
+    <div class="cover-subtitle">กองยุทธศาสตร์และงบประมาณ อบจ.ลำปาง</div>
+    <div class="cover-line-bot"></div>
+    <div class="cover-author-block">
+      <div class="cover-author-label">จัดทำโดย</div>
+      <div class="cover-author-name">นายภัคพล บุตติ</div>
+      <div class="cover-author-position">ตำแหน่ง นักวิเคราะห์ข้อมูล (ปฏิบัติงาน)</div>
+      <div class="cover-author-position">กองยุทธศาสตร์และงบประมาณ</div>
+    </div>
+    <div class="cover-date">องค์การบริหารส่วนจังหวัดลำปาง &nbsp;|&nbsp; ปีงบประมาณ ๒๕๖๘</div>
+    <div class="page-footer">
+      <span class="footer-org">อบจ.ลำปาง | กองยุทธศาสตร์และงบประมาณ</span>
+      <span>เอกสารประกอบการประเมินผลงาน</span>
+    </div>
+  </div>
+
+  <!-- PAGE 2: บทนำ / ปัญหาก่อนมีระบบ -->
+  <div class="page">
+    <div class="section-header">
+      <div class="section-number">๑</div>
+      <div class="section-title-block">
+        <div class="section-title">บทนำ — ปัญหาและข้อจำกัดก่อนมีระบบ</div>
+        <div class="section-subtitle">ที่มาและเหตุผลในการพัฒนาระบบ</div>
+      </div>
+    </div>
+    <p class="body-text">กองยุทธศาสตร์และงบประมาณ องค์การบริหารส่วนจังหวัดลำปาง มีหน้าที่ติดตามสถานการณ์สิ่งแวดล้อมและภัยพิบัติในพื้นที่จังหวัดลำปาง เพื่อสนับสนุนการวางแผนยุทธศาสตร์และการตัดสินใจเชิงนโยบายของผู้บริหาร ก่อนที่จะมีการพัฒนาระบบนี้ขึ้น การทำงานในส่วนดังกล่าวยังคงพึ่งพากระบวนการทำงานด้วยมือ ซึ่งมีข้อจำกัดหลายประการ</p>
+    <ul class="bullet-list warn">
+      <li><strong>ข้อมูลกระจัดกระจาย</strong> — ข้อมูลปริมาณน้ำฝน ระดับน้ำ คุณภาพอากาศ PM 2.5 และเรื่องร้องเรียนต่าง ๆ ถูกจัดเก็บแยกกันในหลายแหล่ง ทำให้ยากต่อการนำมาวิเคราะห์ร่วมกัน</li>
+      <li><strong>เสียเวลาในการรวบรวมข้อมูล</strong> — เจ้าหน้าที่ต้องเปิดเว็บไซต์หลายแห่งด้วยตนเอง จดบันทึก และพิมพ์ข้อมูลลงตารางซ้ำ ๆ ทุกวัน ซึ่งใช้เวลามากและอาจเกิดข้อผิดพลาดได้</li>
+      <li><strong>ข้อมูลตกหล่นได้ง่าย</strong> — หากเจ้าหน้าที่ลาหยุดหรือติดภารกิจอื่น ข้อมูลของวันนั้นจะขาดหายโดยไม่มีระบบสำรอง</li>
+      <li><strong>ไม่มีระบบแจ้งเตือนอัตโนมัติ</strong> — เมื่อค่า PM 2.5 หรือระดับน้ำเกินค่าวิกฤต ไม่มีระบบแจ้งเตือนผู้เกี่ยวข้องได้ทันที ต้องรอให้เจ้าหน้าที่ตรวจสอบเองก่อน</li>
+      <li><strong>การจัดทำรายงานล่าช้า</strong> — รายงานสรุปสถานการณ์ต้องรวบรวมและพิมพ์ข้อมูลด้วยมือ ใช้เวลาหลายชั่วโมงต่อฉบับ ไม่ทันต่อความต้องการ</li>
+    </ul>
+    <div class="highlight-box rose">
+      <p><strong>ผลกระทบ:</strong> ข้อมูลที่ได้ไม่ทันต่อสถานการณ์จริง ทำให้การตัดสินใจเชิงนโยบายล่าช้า และเสี่ยงต่อการมองข้ามสัญญาณเตือนภัยล่วงหน้า ซึ่งส่งผลโดยตรงต่อประสิทธิภาพการบริหารงานของกอง</p>
+    </div>
+    <div class="page-footer">
+      <span class="footer-org">อบจ.ลำปาง | กองยุทธศาสตร์และงบประมาณ</span>
+      <span>หน้า ๒</span>
+    </div>
+  </div>
+
+  <!-- PAGE 3: นวัตกรรมแก้ปัญหา -->
+  <div class="page">
+    <div class="section-header">
+      <div class="section-number">๒</div>
+      <div class="section-title-block">
+        <div class="section-title">นวัตกรรมแก้ปัญหา — ระบบที่พัฒนาขึ้น</div>
+        <div class="section-subtitle">แนวทางและจุดเด่นของระบบบูรณาการข้อมูล</div>
+      </div>
+    </div>
+    <p class="body-text">เพื่อแก้ไขปัญหาข้างต้น ได้ออกแบบและพัฒนา <strong>"ระบบบูรณาการข้อมูลสิ่งแวดล้อมและภัยพิบัติ"</strong> ขึ้นด้วยตนเอง ระบบนี้ทำหน้าที่เสมือนเจ้าหน้าที่ดิจิทัลที่ทำงานตลอด ๒๔ ชั่วโมงโดยไม่ต้องมีคนควบคุมตลอดเวลา มีจุดเด่นสำคัญ ดังนี้</p>
+    <div class="step-block">
+      <div class="step-num">๑</div>
+      <div class="step-content">
+        <div class="step-title">ทำงานอัตโนมัติ ๑๐๐%</div>
+        <div class="step-desc">ระบบดึงข้อมูลจากแหล่งภายนอกอัตโนมัติทุก ๓๐ นาที ตลอด ๒๔ ชั่วโมง โดยไม่ต้องให้เจ้าหน้าที่มาดำเนินการด้วยตัวเอง ทำให้ข้อมูลพร้อมใช้งานได้ทุกเมื่อ แม้จะเป็นวันหยุดหรือนอกเวลาราชการ</div>
+      </div>
+    </div>
+    <div class="step-block">
+      <div class="step-num">๒</div>
+      <div class="step-content">
+        <div class="step-title">สำรองข้อมูล ๒ ทางพร้อมกัน</div>
+        <div class="step-desc">ทุกข้อมูลที่เก็บได้จะถูกบันทึกพร้อมกันทั้งในฐานข้อมูล MySQL และไฟล์ Excel อัตโนมัติ เพื่อป้องกันข้อมูลสูญหาย แม้ระบบใดระบบหนึ่งมีปัญหาก็ยังมีอีกระบบรองรับอยู่เสมอ</div>
+      </div>
+    </div>
+    <div class="step-block">
+      <div class="step-num">๓</div>
+      <div class="step-content">
+        <div class="step-title">แจ้งเตือนภัยวิกฤตอัตโนมัติ</div>
+        <div class="step-desc">เมื่อพบสถานการณ์วิกฤต เช่น ค่า PM 2.5 เกินมาตรฐาน หรือระดับน้ำสูงผิดปกติ ระบบส่งอีเมลแจ้งเตือนผู้เกี่ยวข้องทันที พร้อมมีระบบ Smart Cooldown ป้องกันการแจ้งเตือนซ้ำซ้อนภายใน ๒ ชั่วโมง</div>
+      </div>
+    </div>
+    <div class="step-block">
+      <div class="step-num">๔</div>
+      <div class="step-content">
+        <div class="step-title">แดชบอร์ดดูสถานการณ์แบบ Real-time</div>
+        <div class="step-desc">มีหน้าเว็บแดชบอร์ดแสดงข้อมูลล่าสุดพร้อมแถบสีระดับความรุนแรง ๔ ระดับ ทำให้เจ้าหน้าที่ทราบสถานการณ์ได้ทันทีโดยไม่ต้องเปิดเว็บไซต์หลายแห่ง</div>
+      </div>
+    </div>
+    <div class="highlight-box">
+      <p><strong>ผลลัพธ์โดยรวม:</strong> เจ้าหน้าที่ไม่ต้องเสียเวลากับงานรวบรวมข้อมูลซ้ำซ้อนอีกต่อไป สามารถมุ่งความสนใจไปยังการวิเคราะห์เชิงลึกและการสนับสนุนการตัดสินใจเชิงนโยบายได้มากขึ้น</p>
+    </div>
+    <div class="page-footer">
+      <span class="footer-org">อบจ.ลำปาง | กองยุทธศาสตร์และงบประมาณ</span>
+      <span>หน้า ๓</span>
+    </div>
+  </div>
+
+  <!-- PAGE 4: 4 มิติข้อมูล -->
+  <div class="page">
+    <div class="section-header">
+      <div class="section-number">๓</div>
+      <div class="section-title-block">
+        <div class="section-title">ขอบเขตข้อมูล — ๔ มิติที่บูรณาการไว้ในระบบ</div>
+        <div class="section-subtitle">ข้อมูลที่ระบบติดตามและจัดเก็บอย่างต่อเนื่องทุกวัน</div>
+      </div>
+    </div>
+    <p class="body-text">ระบบได้รวบรวมข้อมูลจากหลายแหล่งเข้ามาจัดเก็บในที่เดียว ครอบคลุม ๔ มิติข้อมูลสำคัญที่เกี่ยวข้องกับสิ่งแวดล้อมและภัยพิบัติในพื้นที่จังหวัดลำปาง</p>
+    <div class="two-col">
+      <div class="col-card" style="border-left:4px solid #10b981;">
+        <div class="col-card-title">💧 น้ำและปริมาณน้ำฝน</div>
+        <p>ติดตามปริมาณน้ำฝนสะสม ระดับน้ำในแม่น้ำและลำน้ำสำคัญ รวมถึงสถานีวัดน้ำในพื้นที่เสี่ยงอุทกภัยของจังหวัดลำปาง ข้อมูลอัปเดตทุก ๓๐ นาที</p>
+      </div>
+      <div class="col-card" style="border-left:4px solid #3b82f6;">
+        <div class="col-card-title">🏞️ ภัยแล้งและอ่างเก็บน้ำ</div>
+        <p>ติดตามปริมาณน้ำในอ่างเก็บน้ำสำคัญ ความจุของแหล่งน้ำ เพื่อใช้ประเมินแนวโน้มสถานการณ์ภัยแล้งล่วงหน้า ช่วยสนับสนุนการวางแผนบริหารน้ำ</p>
+      </div>
+      <div class="col-card" style="border-left:4px solid #f43f5e;">
+        <div class="col-card-title">🌫️ คุณภาพอากาศ PM 2.5</div>
+        <p>ติดตามค่าฝุ่นละอองขนาดเล็ก PM 2.5 จากสถานีตรวจวัดในจังหวัดลำปาง พร้อมระบบแจ้งเตือนอัตโนมัติเมื่อค่าเกินมาตรฐานที่กำหนด</p>
+      </div>
+      <div class="col-card" style="border-left:4px solid #f59e0b;">
+        <div class="col-card-title">📋 เรื่องร้องเรียน Traffy Fondue</div>
+        <p>ดึงข้อมูลเรื่องร้องเรียนด้านสิ่งแวดล้อมจากระบบ Traffy Fondue กรองเฉพาะเรื่องที่เกี่ยวข้องกับ อบจ.ลำปาง เพื่อติดตามสถานการณ์และการแก้ไข</p>
+      </div>
+    </div>
+    <div class="highlight-box blue">
+      <p><strong>คุณค่าของการบูรณาการข้อมูล:</strong> การที่ข้อมูลทั้ง ๔ มิติอยู่ในที่เดียวและเชื่อมถึงกันได้ ทำให้สามารถวิเคราะห์ความสัมพันธ์ระหว่างสภาพอากาศ ระดับน้ำ คุณภาพอากาศ และปัญหาที่ประชาชนร้องเรียนได้อย่างรอบด้าน อันนำไปสู่การตัดสินใจเชิงนโยบายที่มีประสิทธิภาพยิ่งขึ้น</p>
+    </div>
+    <div class="page-footer">
+      <span class="footer-org">อบจ.ลำปาง | กองยุทธศาสตร์และงบประมาณ</span>
+      <span>หน้า ๔</span>
+    </div>
+  </div>
+
+  <!-- PAGE 5: กลไกเบื้องหลัง + ความมั่นคงข้อมูล -->
+  <div class="page">
+    <div class="section-header">
+      <div class="section-number">๔</div>
+      <div class="section-title-block">
+        <div class="section-title">กลไกการทำงานเบื้องหลังระบบ</div>
+        <div class="section-subtitle">เทคโนโลยีและวิธีการดึงข้อมูลจากแหล่งภายนอก</div>
+      </div>
+    </div>
+    <p class="body-text">ระบบใช้เทคโนโลยีดึงข้อมูลจากเว็บไซต์ภายนอกแบบอัตโนมัติ โดยมีกลไกทำงาน ๒ ชั้น เพื่อให้มั่นใจว่าข้อมูลจะถูกเก็บได้ แม้เว็บไซต์ต้นทางมีปัญหาชั่วคราว</p>
+    <div class="step-block">
+      <div class="step-num">①</div>
+      <div class="step-content">
+        <div class="step-title">วิธีหลัก — Chrome Extension Controller</div>
+        <div class="step-desc">ใช้ระบบควบคุมเบราว์เซอร์ Chrome เพื่อเปิดหน้าเว็บและอ่านข้อมูลอัตโนมัติ เหมาะสำหรับเว็บไซต์ที่ใช้ JavaScript หรือต้องการการโต้ตอบเพื่อแสดงข้อมูล</div>
+      </div>
+    </div>
+    <div class="step-block">
+      <div class="step-num">②</div>
+      <div class="step-content">
+        <div class="step-title">วิธีสำรอง — Puppeteer Fallback</div>
+        <div class="step-desc">หากวิธีหลักดำเนินการไม่ได้ ระบบจะสลับไปใช้ Puppeteer ซึ่งเป็นเครื่องมือเบราว์เซอร์อัตโนมัติอีกประเภทหนึ่ง ทำให้ข้อมูลยังถูกเก็บได้อย่างต่อเนื่อง</div>
+      </div>
+    </div>
+    <hr class="section-rule"/>
+    <div class="section-header" style="border-bottom:none; margin-bottom:12px; margin-top:8px;">
+      <div class="section-number" style="background:linear-gradient(135deg,#f59e0b,#f97316);">๕</div>
+      <div class="section-title-block">
+        <div class="section-title">ความมั่นคงของข้อมูล — ระบบสำรองคู่ขนาน</div>
+        <div class="section-subtitle">ป้องกันข้อมูลสูญหายด้วยการบันทึก ๒ ทางพร้อมกัน</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="col-card" style="border-left:4px solid #10b981;">
+        <div class="col-card-title">🗄️ ฐานข้อมูล MySQL</div>
+        <p>เหมาะสำหรับการสืบค้นย้อนหลัง การวิเคราะห์เชิงสถิติ และการนำไปแสดงบนแดชบอร์ด ข้อมูลไม่สูญหายแม้ระบบเกิดปัญหาชั่วคราว</p>
+      </div>
+      <div class="col-card" style="border-left:4px solid #3b82f6;">
+        <div class="col-card-title">📊 ไฟล์ Excel อัตโนมัติ</div>
+        <p>ระบบสร้างและอัปเดตไฟล์ Excel ให้อัตโนมัติ ทำให้เจ้าหน้าที่นำข้อมูลไปใช้ต่อได้ทันที โดยไม่ต้องมีความรู้ด้านฐานข้อมูล</p>
+      </div>
+    </div>
+    <div class="highlight-box amber">
+      <p><strong>กลไกซ่อมแซมตัวเอง (Auto-Retry):</strong> หากการบันทึกข้อมูลไม่สำเร็จในครั้งแรก ระบบจะพยายามบันทึกซ้ำอัตโนมัติ ส่งผลให้ข้อมูลถูกบันทึกได้ครบถ้วนในอัตราสูงมาก แม้ในสภาวะที่ไฟล์ถูกเปิดค้างหรือเครือข่ายมีปัญหา</p>
+    </div>
+    <div class="page-footer">
+      <span class="footer-org">อบจ.ลำปาง | กองยุทธศาสตร์และงบประมาณ</span>
+      <span>หน้า ๕</span>
+    </div>
+  </div>
+
+  <!-- PAGE 6: แจ้งเตือน + แดชบอร์ด -->
+  <div class="page">
+    <div class="section-header">
+      <div class="section-number">๖</div>
+      <div class="section-title-block">
+        <div class="section-title">ระบบแจ้งเตือนสถานการณ์วิกฤต</div>
+        <div class="section-subtitle">การแจ้งเตือนอัตโนมัติเมื่อพบสัญญาณอันตราย</div>
+      </div>
+    </div>
+    <p class="body-text">ระบบมีการกำหนดค่าเกณฑ์วิกฤตสำหรับข้อมูลแต่ละประเภท เมื่อค่าใดค่าหนึ่งเกินเกณฑ์ที่กำหนด ระบบจะดำเนินการแจ้งเตือนผู้เกี่ยวข้องโดยอัตโนมัติทันที</p>
+    <ul class="bullet-list">
+      <li><strong>ส่งอีเมลแจ้งเตือนทันที</strong> — ระบุรายละเอียดค่าที่วัดได้ สถานีวัด วันเวลา และระดับความรุนแรง ให้ผู้รับสามารถดำเนินการได้ทันที</li>
+      <li><strong>ระบบ Smart Cooldown ๒ ชั่วโมง</strong> — หลังจากส่งการแจ้งเตือนครั้งหนึ่งแล้ว ระบบจะรอ ๒ ชั่วโมงก่อนส่งซ้ำในกรณีสถานการณ์ยังคงอยู่ เพื่อป้องกันการแจ้งเตือนมากเกินไปจนก่อให้เกิดความสับสน</li>
+      <li><strong>รองรับหลายประเภทสถานการณ์</strong> — ค่า PM 2.5 เกินมาตรฐาน ระดับน้ำสูงวิกฤต ปริมาณน้ำในอ่างเก็บน้ำต่ำกว่าเกณฑ์ รวมถึงแจ้งเตือนเมื่อระบบเกิดข้อขัดข้อง</li>
+    </ul>
+    <hr class="section-rule"/>
+    <div class="section-header" style="border-bottom:none; margin-bottom:12px; margin-top:8px;">
+      <div class="section-number">๗</div>
+      <div class="section-title-block">
+        <div class="section-title">แดชบอร์ดติดตามสถานการณ์ Real-time</div>
+        <div class="section-subtitle">เปิดดูสถานการณ์ปัจจุบันได้ทุกเมื่อผ่านเว็บเบราว์เซอร์</div>
+      </div>
+    </div>
+    <p class="body-text">นอกจากระบบแจ้งเตือน ยังมีหน้าแดชบอร์ดเว็บที่แสดงข้อมูลสดแบบ Real-time ซึ่งเจ้าหน้าที่สามารถเข้าถึงได้จากคอมพิวเตอร์หรือโทรศัพท์มือถือตลอดเวลา</p>
+    <div class="two-col">
+      <div class="col-card">
+        <div class="col-card-title">🟢 แถบสีแสดงระดับความรุนแรง</div>
+        <p>สีเขียว (ปกติ) → สีเหลือง (เฝ้าระวัง) → สีส้ม (น่าเป็นห่วง) → สีแดง (วิกฤต) ทำให้ผู้ดูสามารถประเมินสถานการณ์ได้ทันทีโดยไม่ต้องอ่านตัวเลข</p>
+      </div>
+      <div class="col-card">
+        <div class="col-card-title">🖱️ ปุ่มควบคุมสั่งการ</div>
+        <p>มีปุ่มสำหรับสั่งดึงข้อมูลใหม่ทันที ดูกราฟแนวโน้มย้อนหลัง และดาวน์โหลดรายงานโดยไม่ต้องรอรอบการดึงข้อมูลถัดไป</p>
+      </div>
+    </div>
+    <div class="page-footer">
+      <span class="footer-org">อบจ.ลำปาง | กองยุทธศาสตร์และงบประมาณ</span>
+      <span>หน้า ๖</span>
+    </div>
+  </div>
+
+  <!-- PAGE 7: รายงานอัตโนมัติ -->
+  <div class="page">
+    <div class="section-header">
+      <div class="section-number">๘</div>
+      <div class="section-title-block">
+        <div class="section-title">ระบบจัดทำรายงานอัตโนมัติ</div>
+        <div class="section-subtitle">รายงานพร้อมใช้ทุกเช้าโดยไม่ต้องพิมพ์หรือรวบรวมข้อมูลเอง</div>
+      </div>
+    </div>
+    <p class="body-text">หนึ่งในคุณสมบัติที่ช่วยประหยัดเวลาในการทำงานได้มากที่สุดคือ การออกรายงานสรุปสถานการณ์โดยอัตโนมัติ ระบบจะสร้างไฟล์รายงานพร้อมเนื้อหาสรุปและตารางเปรียบเทียบครบถ้วน โดยไม่ต้องให้เจ้าหน้าที่มาพิมพ์หรือรวบรวมข้อมูลด้วยตนเองอีกต่อไป</p>
+    <div class="two-col" style="gap:12px;">
+      <div class="col-card" style="border-top:3px solid #10b981;">
+        <div class="col-card-title">📄 ไฟล์รายงาน Word (.docx)</div>
+        <p>รายงานเป็นไฟล์เอกสารที่แก้ไขเพิ่มเติมได้ก่อนนำส่ง มีเนื้อหาสรุปสถานการณ์ ตารางข้อมูล และข้อสังเกตสำคัญครบถ้วน</p>
+      </div>
+      <div class="col-card" style="border-top:3px solid #3b82f6;">
+        <div class="col-card-title">📊 ไฟล์ตารางข้อมูล Excel (.xlsx)</div>
+        <p>รายงานเป็นตารางข้อมูลดิบ เหมาะสำหรับการวิเคราะห์ต่อหรือแนบเป็นหลักฐานประกอบรายงานทางราชการ</p>
+      </div>
+    </div>
+    <p class="body-text" style="margin-top:16px;">ระบบสร้างรายงาน ๓ ระดับความถี่ ตามลักษณะการใช้งาน</p>
+    <ul class="bullet-list disc">
+      <li><strong>รายงานรายวัน</strong> — สรุปสถานการณ์ประจำวัน พร้อมค่าสูงสุด ต่ำสุด และค่าเฉลี่ยของข้อมูลแต่ละประเภทในรอบ ๒๔ ชั่วโมงที่ผ่านมา</li>
+      <li><strong>รายงานรายสัปดาห์</strong> — เปรียบเทียบแนวโน้มสถานการณ์ในรอบ ๗ วัน พร้อมตารางสรุปและข้อสังเกต</li>
+      <li><strong>รายงานรายเดือน</strong> — สรุปภาพรวมสถานการณ์สิ่งแวดล้อมประจำเดือน เหมาะสำหรับรายงานต่อผู้บริหารและเผยแพร่ต่อสาธารณะ</li>
+    </ul>
+    <div class="highlight-box">
+      <p><strong>ประโยชน์ที่ได้รับ:</strong> เจ้าหน้าที่ประหยัดเวลาในการจัดทำรายงานได้หลายชั่วโมงต่อสัปดาห์ รายงานมีรูปแบบสม่ำเสมอและข้อมูลครบถ้วน ลดความเสี่ยงเกิดข้อผิดพลาดจากการพิมพ์ข้อมูลด้วยมือ</p>
+    </div>
+    <div class="page-footer">
+      <span class="footer-org">อบจ.ลำปาง | กองยุทธศาสตร์และงบประมาณ</span>
+      <span>หน้า ๗</span>
+    </div>
+  </div>
+
+  <!-- PAGE 8: ตารางเปรียบเทียบ ก่อน-หลัง -->
+  <div class="page">
+    <div class="section-header">
+      <div class="section-number">๙</div>
+      <div class="section-title-block">
+        <div class="section-title">ผลสัมฤทธิ์ — ก่อนและหลังมีระบบ</div>
+        <div class="section-subtitle">ตารางเปรียบเทียบการเปลี่ยนแปลงอย่างเป็นรูปธรรม</div>
+      </div>
+    </div>
+    <p class="body-text">ตารางด้านล่างแสดงให้เห็นความแตกต่างอย่างชัดเจนระหว่างวิธีการทำงานแบบเดิมกับวิธีการทำงานหลังจากมีระบบนี้ในทุกมิติที่สำคัญ</p>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th style="width:28%;">หัวข้อ</th>
+          <th style="width:36%;">ก่อนมีระบบ</th>
+          <th style="width:36%;">หลังมีระบบ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="topic-col">การเก็บข้อมูล</td>
+          <td class="before-col">ทำด้วยมือ เปิดเว็บเองทุกวัน ใช้เวลามาก</td>
+          <td class="after-col">อัตโนมัติ ๑๐๐% ทุก ๓๐ นาที ตลอด ๒๔ ชั่วโมง</td>
+        </tr>
+        <tr>
+          <td class="topic-col">ความครบถ้วนของข้อมูล</td>
+          <td class="before-col">ขาดหายเมื่อลาหยุดหรือไม่ว่าง</td>
+          <td class="after-col">ครบถ้วนต่อเนื่อง ไม่ขาดหาย</td>
+        </tr>
+        <tr>
+          <td class="topic-col">ระบบแจ้งเตือนภัย</td>
+          <td class="before-col">ไม่มีระบบแจ้งเตือน รอดูเองเท่านั้น</td>
+          <td class="after-col">แจ้งเตือนทางอีเมลอัตโนมัติทันทีที่พบความผิดปกติ</td>
+        </tr>
+        <tr>
+          <td class="topic-col">การจัดทำรายงาน</td>
+          <td class="before-col">ใช้เวลาหลายชั่วโมง ต้องรวบรวมด้วยมือ</td>
+          <td class="after-col">ระบบสร้างให้อัตโนมัติ พร้อมส่งทุกวัน</td>
+        </tr>
+        <tr>
+          <td class="topic-col">การบูรณาการข้อมูล</td>
+          <td class="before-col">ข้อมูลกระจายหลายแหล่ง ไม่เชื่อมกัน</td>
+          <td class="after-col">ข้อมูล ๔ มิติอยู่ที่เดียว เชื่อมถึงกันทั้งหมด</td>
+        </tr>
+        <tr>
+          <td class="topic-col">การสำรองข้อมูล</td>
+          <td class="before-col">ไม่มีระบบสำรอง เสี่ยงสูญหาย</td>
+          <td class="after-col">สำรองคู่ขนาน MySQL และ Excel อัตโนมัติทุกครั้ง</td>
+        </tr>
+        <tr>
+          <td class="topic-col">การดูสถานการณ์</td>
+          <td class="before-col">ต้องเปิดเว็บหลายแห่ง ใช้เวลานาน</td>
+          <td class="after-col">แดชบอร์ดเดียว ดูสถานการณ์ได้ครบทันที</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="page-footer">
+      <span class="footer-org">อบจ.ลำปาง | กองยุทธศาสตร์และงบประมาณ</span>
+      <span>หน้า ๘</span>
+    </div>
+  </div>
+
+  <!-- PAGE 9: ทักษะแก้ปัญหาหน้างาน -->
+  <div class="page">
+    <div class="section-header">
+      <div class="section-number">๑๐</div>
+      <div class="section-title-block">
+        <div class="section-title">ทักษะการแก้ปัญหาหน้างาน</div>
+        <div class="section-subtitle">ความสามารถในการรับมือกับอุปสรรคที่เกิดขึ้นจริงในการใช้งาน</div>
+      </div>
+    </div>
+    <p class="body-text">การพัฒนาและดูแลระบบในสภาพแวดล้อมจริงย่อมพบกับปัญหาที่ไม่คาดคิดได้เสมอ การแก้ปัญหาเหล่านี้ต้องอาศัยความรู้ความเข้าใจในระบบอย่างลึกซึ้ง รวมถึงความสามารถในการวิเคราะห์และหาทางออกได้อย่างรวดเร็ว ตัวอย่างปัญหาที่พบและวิธีแก้ไข มีดังนี้</p>
+    <div class="step-block">
+      <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#f97316);">!</div>
+      <div class="step-content">
+        <div class="step-title">ปัญหา: เว็บไซต์ต้นทางโหลดช้าหรือไม่ตอบสนอง</div>
+        <div class="step-desc"><strong>วิธีแก้:</strong> ระบบมีกลไก Fallback อัตโนมัติ สลับไปใช้วิธีดึงข้อมูลสำรอง พร้อมบันทึกรายงานข้อผิดพลาดไว้สำหรับตรวจสอบในภายหลัง ทำให้ข้อมูลไม่ขาดหายแม้เว็บต้นทางมีปัญหา</div>
+      </div>
+    </div>
+    <div class="step-block">
+      <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#f97316);">!</div>
+      <div class="step-content">
+        <div class="step-title">ปัญหา: ไฟล์ Excel ถูกเปิดค้างทิ้งไว้ไม่ยอมปิด</div>
+        <div class="step-desc"><strong>วิธีแก้:</strong> เพิ่มกลไก Auto-Retry โดยระบบจะรอและลองบันทึกซ้ำอีกครั้ง หากยังไม่สำเร็จจะสำรองข้อมูลลงฐานข้อมูลแทน ทำให้ข้อมูลไม่สูญหายในทุกกรณี</div>
+      </div>
+    </div>
+    <div class="step-block">
+      <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#f97316);">!</div>
+      <div class="step-content">
+        <div class="step-title">ปัญหา: สัญญาณอินเทอร์เน็ตหลุดระหว่างดึงข้อมูล</div>
+        <div class="step-desc"><strong>วิธีแก้:</strong> ระบบตรวจสอบสถานะเครือข่ายก่อนทำงานทุกรอบ หากเครือข่ายมีปัญหาจะบันทึกข้อผิดพลาดและข้ามรอบนั้น รอให้เครือข่ายกลับมาปกติแล้วดำเนินการในรอบถัดไปตามปกติ</div>
+      </div>
+    </div>
+    <div class="step-block">
+      <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#f97316);">!</div>
+      <div class="step-content">
+        <div class="step-title">ปัญหา: ข้อมูลซ้ำซ้อนในฐานข้อมูล</div>
+        <div class="step-desc"><strong>วิธีแก้:</strong> เพิ่มกระบวนการตรวจสอบข้อมูลซ้ำก่อนบันทึกทุกครั้ง โดยเปรียบเทียบวันเวลาและสถานีวัด ป้องกันข้อมูลชุดเดิมถูกบันทึกซ้ำ ทำให้ฐานข้อมูลมีความถูกต้องและน่าเชื่อถือ</div>
+      </div>
+    </div>
+    <div class="highlight-box amber">
+      <p><strong>บทเรียนที่ได้:</strong> ระบบที่ดีต้องออกแบบให้รับมือกับสิ่งที่ไม่คาดคิดได้ การวางแผนรับมือกับกรณีที่อาจผิดพลาดและเตรียมทางออกล่วงหน้าทุกขั้นตอน ทำให้ระบบมีความน่าเชื่อถือสูงและลดภาระการดูแลรักษาของเจ้าหน้าที่</p>
+    </div>
+    <div class="page-footer">
+      <span class="footer-org">อบจ.ลำปาง | กองยุทธศาสตร์และงบประมาณ</span>
+      <span>หน้า ๙</span>
+    </div>
+  </div>
+
+  <!-- PAGE 10: แผนอนาคต -->
+  <div class="page">
+    <div class="section-header">
+      <div class="section-number">๑๑</div>
+      <div class="section-title-block">
+        <div class="section-title">แผนพัฒนาต่อยอดในอนาคต</div>
+        <div class="section-subtitle">ทิศทางการยกระดับระบบในระยะต่อไป</div>
+      </div>
+    </div>
+    <p class="body-text">เมื่อระบบหลักมีเสถียรภาพและผ่านการใช้งานจริงแล้ว มีแผนพัฒนาต่อยอดเพื่อเพิ่มขีดความสามารถด้านการวิเคราะห์และการตัดสินใจใน ๒ ทิศทางหลัก ดังนี้</p>
+    <div class="step-block" style="margin-bottom:20px;">
+      <div class="step-num" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);width:44px;height:44px;min-width:44px;font-size:20pt;">🤖</div>
+      <div class="step-content">
+        <div class="step-title" style="font-size:17pt;">แผนที่ ๑ — AI พยากรณ์สถานการณ์ล่วงหน้า</div>
+        <div class="step-desc" style="font-size:16pt;margin-top:6px;">นำเทคโนโลยีปัญญาประดิษฐ์มาวิเคราะห์ข้อมูลย้อนหลังของระบบ เพื่อพยากรณ์แนวโน้มสถานการณ์สิ่งแวดล้อมล่วงหน้า เช่น คาดการณ์ค่า PM 2.5 หรือระดับน้ำในอีก ๒๔–๔๘ ชั่วโมงข้างหน้า เพื่อให้ผู้บริหารสามารถเตรียมรับมือได้ก่อนเกิดสถานการณ์จริง ซึ่งจะช่วยลดความเสียหายและเพิ่มประสิทธิภาพการบริหารวิกฤต</div>
+      </div>
+    </div>
+    <div class="step-block">
+      <div class="step-num" style="background:linear-gradient(135deg,#0891b2,#0e7490);width:44px;height:44px;min-width:44px;font-size:20pt;">🗃️</div>
+      <div class="step-content">
+        <div class="step-title" style="font-size:17pt;">แผนที่ ๒ — Big Data Platform สำหรับ อบจ.ลำปาง</div>
+        <div class="step-desc" style="font-size:16pt;margin-top:6px;">ขยายระบบให้ครอบคลุมข้อมูลทุกด้านขององค์การบริหารส่วนจังหวัด ไม่ใช่เพียงข้อมูลสิ่งแวดล้อม แต่รวมถึงข้อมูลงบประมาณ โครงการ และผลการดำเนินงาน เพื่อสนับสนุนการวางแผนยุทธศาสตร์และการรายงานผลการดำเนินงานระดับองค์กรอย่างครบวงจร</div>
+      </div>
+    </div>
+    <div class="highlight-box blue">
+      <p><strong>ความสำคัญเชิงยุทธศาสตร์:</strong> แผนพัฒนาทั้งสองข้อนี้สอดคล้องกับนโยบายรัฐบาลดิจิทัลและแผนพัฒนาท้องถิ่น จะช่วยยกระดับขีดความสามารถของ อบจ.ลำปาง ในการบริหารงานด้วยข้อมูล (Data-Driven Management) ให้ก้าวล้ำและมีประสิทธิภาพยิ่งขึ้น</p>
+    </div>
+    <div class="page-footer">
+      <span class="footer-org">อบจ.ลำปาง | กองยุทธศาสตร์และงบประมาณ</span>
+      <span>หน้า ๑๐</span>
+    </div>
+  </div>
+
+  <!-- PAGE 11: บทสรุปผลงาน -->
+  <div class="page">
+    <div class="section-header">
+      <div class="section-number">๑๒</div>
+      <div class="section-title-block">
+        <div class="section-title">บทสรุปผลงาน</div>
+        <div class="section-subtitle">ผลลัพธ์และคุณค่าที่ระบบนี้สร้างให้แก่องค์กร</div>
+      </div>
+    </div>
+    <p class="body-text">การพัฒนา "ระบบบูรณาการข้อมูลสิ่งแวดล้อมและภัยพิบัติ" เป็นผลงานที่เกิดจากการมองเห็นปัญหาจริงในการทำงาน และลงมือแก้ไขด้วยตนเองโดยประยุกต์ใช้เทคโนโลยีสมัยใหม่ให้เกิดประโยชน์สูงสุดต่อองค์กร โดยไม่ต้องรอซื้อซอฟต์แวร์สำเร็จรูปหรือจ้างผู้เชี่ยวชาญจากภายนอก</p>
+    <div class="conclusion-box">
+      <h3>สิ่งที่ระบบนี้ทำให้ อบจ.ลำปาง ได้รับ</h3>
+      <p>ระบบช่วยให้กองยุทธศาสตร์และงบประมาณมีข้อมูลสิ่งแวดล้อมที่ถูกต้อง ครบถ้วน และทันต่อสถานการณ์อยู่เสมอ โดยไม่ต้องพึ่งพาการทำงานด้วยมืออีกต่อไป ทำให้เจ้าหน้าที่มีเวลาสำหรับงานวิเคราะห์และวางแผนยุทธศาสตร์ที่มีคุณค่าสูงกว่า</p>
+      <div class="conclusion-chips">
+        <span class="conclusion-chip">✅ ประหยัดเวลา ๑๐๐%</span>
+        <span class="conclusion-chip">✅ ข้อมูลแม่นยำ เชื่อถือได้</span>
+        <span class="conclusion-chip">✅ เตือนภัยทันท่วงที</span>
+      </div>
+    </div>
+    <div class="badge-row" style="margin-top:20px;">
+      <span class="badge">📡 ดึงข้อมูลอัตโนมัติ ๒๔ ชม.</span>
+      <span class="badge blue">🔔 แจ้งเตือนวิกฤตทันที</span>
+      <span class="badge amber">📊 รายงานอัตโนมัติทุกวัน</span>
+      <span class="badge">🛡️ สำรองข้อมูล ๒ ทาง</span>
+      <span class="badge blue">📈 แดชบอร์ด Real-time</span>
+    </div>
+    <p class="body-text" style="margin-top:20px;">ผลงานชิ้นนี้แสดงให้เห็นถึงความสามารถในการออกแบบระบบ วิเคราะห์ปัญหา และพัฒนาเครื่องมือดิจิทัลที่ตอบโจทย์การทำงานของหน่วยงานได้จริง สะท้อนทักษะของนักวิเคราะห์ข้อมูลที่พร้อมขับเคลื่อนองค์กรสู่การทำงานบนฐานข้อมูลอย่างเป็นระบบ</p>
+    <div class="signature-block">
+      <div class="signature-inner">
+        <div style="height:60px;"></div>
+        <div class="signature-line"></div>
+        <div class="signature-name">(นายภัคพล บุตติ)</div>
+        <div class="signature-pos">นักวิเคราะห์ข้อมูล (ปฏิบัติงาน)</div>
+        <div class="signature-pos">กองยุทธศาสตร์และงบประมาณ</div>
+        <div class="signature-pos">องค์การบริหารส่วนจังหวัดลำปาง</div>
+      </div>
+    </div>
+    <div class="page-footer">
+      <span class="footer-org">อบจ.ลำปาง | กองยุทธศาสตร์และงบประมาณ</span>
+      <span>หน้า ๑๑</span>
+    </div>
+  </div>
+
+</div><!-- end doc-wrapper -->
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const logo = document.getElementById('logo-img');
+  if (!logo) return;
+  const paths = ['public/logo_pao.png', 'logo_pao.png', './public/logo_pao.png'];
+  let idx = 0;
+  logo.onerror = () => {
+    idx++;
+    if (idx < paths.length) logo.src = paths[idx];
+    else logo.style.display = 'none';
+  };
+});
+</script>
+</body>
+</html>

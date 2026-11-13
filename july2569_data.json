@@ -1,0 +1,2014 @@
+{
+  "wStations": [
+    {
+      "station_name": "น้ำแม่งาว",
+      "river": "ลุ่มน้ำยม",
+      "amphoe": "อำเภองาว",
+      "avg_wl": "228.04",
+      "avg_bank": "230.49",
+      "avg_rain": "1.39",
+      "status": "น้ำปกติ",
+      "risk_level": "เฝ้าระวัง"
+    },
+    {
+      "station_name": "บ้านหลวงเหนือ",
+      "river": "ลุ่มน้ำยม",
+      "amphoe": "อำเภองาว",
+      "avg_wl": "269.40",
+      "avg_bank": "271.10",
+      "avg_rain": "5.43",
+      "status": "น้ำปกติ",
+      "risk_level": "เฝ้าระวัง"
+    },
+    {
+      "station_name": "บ้านโป่ง",
+      "river": "ลุ่มน้ำยม",
+      "amphoe": "อำเภองาว",
+      "avg_wl": "265.78",
+      "avg_bank": "269.93",
+      "avg_rain": "5.47",
+      "status": "น้ำน้อย",
+      "risk_level": "เฝ้าระวัง"
+    },
+    {
+      "station_name": "สะพานน้ำงาว",
+      "river": "ลุ่มน้ำยม",
+      "amphoe": "อำเภองาว",
+      "avg_wl": "332.18",
+      "avg_bank": "333.48",
+      "avg_rain": "5.54",
+      "status": "น้ำน้อยวิกฤต",
+      "risk_level": "เฝ้าระวัง"
+    },
+    {
+      "station_name": "น้ำแม่งาว",
+      "river": "ลุ่มน้ำยม",
+      "amphoe": "อำเภองาว ลำปาง",
+      "avg_wl": "228.30",
+      "avg_bank": "230.49",
+      "avg_rain": "0.00",
+      "status": "น้ำมาก",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "บ้านหลวงเหนือ",
+      "river": "ลุ่มน้ำยม",
+      "amphoe": "อำเภองาว ลำปาง",
+      "avg_wl": "269.49",
+      "avg_bank": "271.10",
+      "avg_rain": "0.00",
+      "status": "น้ำมาก",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "บ้านโป่ง",
+      "river": "ลุ่มน้ำยม",
+      "amphoe": "อำเภองาว ลำปาง",
+      "avg_wl": "265.85",
+      "avg_bank": "269.93",
+      "avg_rain": "0.00",
+      "status": "น้ำน้อย",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "สะพานน้ำงาว",
+      "river": "ลุ่มน้ำยม",
+      "amphoe": "อำเภองาว ลำปาง",
+      "avg_wl": "332.22",
+      "avg_bank": "333.48",
+      "avg_rain": "0.00",
+      "status": "น้ำปกติ",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "บ้านร่องเคาะ",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอวังเหนือ",
+      "avg_wl": "381.81",
+      "avg_bank": "385.90",
+      "avg_rain": "5.00",
+      "status": "น้ำปกติ",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "สะพานน้ำวัง",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอวังเหนือ",
+      "avg_wl": "442.69",
+      "avg_bank": "445.23",
+      "avg_rain": "5.49",
+      "status": "น้ำน้อยวิกฤต",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "บ้านร่องเคาะ",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอวังเหนือ ลำปาง",
+      "avg_wl": "381.94",
+      "avg_bank": "385.90",
+      "avg_rain": "0.00",
+      "status": "น้ำปกติ",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "สะพานน้ำวัง",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอวังเหนือ ลำปาง",
+      "avg_wl": "442.68",
+      "avg_bank": "445.23",
+      "avg_rain": "0.00",
+      "status": "น้ำปกติ",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "บ้านวังพร้าว",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเกาะคา",
+      "avg_wl": "215.52",
+      "avg_bank": "218.66",
+      "avg_rain": "4.63",
+      "status": "น้ำปกติ",
+      "risk_level": "วิกฤตสีแดง"
+    },
+    {
+      "station_name": "บ้านเกาะคา",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเกาะคา",
+      "avg_wl": "216.66",
+      "avg_bank": "220.46",
+      "avg_rain": "6.81",
+      "status": "น้ำปกติ",
+      "risk_level": "เฝ้าระวัง"
+    },
+    {
+      "station_name": "เกาะคา",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเกาะคา",
+      "avg_wl": "210.18",
+      "avg_bank": "214.45",
+      "avg_rain": "4.53",
+      "status": "น้ำน้อย",
+      "risk_level": "วิกฤตสีแดง"
+    },
+    {
+      "station_name": "บ้านวังพร้าว",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเกาะคา ลำปาง",
+      "avg_wl": "215.61",
+      "avg_bank": "218.66",
+      "avg_rain": "0.00",
+      "status": "น้ำปกติ",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "บ้านเกาะคา",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเกาะคา ลำปาง",
+      "avg_wl": "216.76",
+      "avg_bank": "220.46",
+      "avg_rain": "0.00",
+      "status": "น้ำปกติ",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "เกาะคา",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเกาะคา ลำปาง",
+      "avg_wl": "210.39",
+      "avg_bank": "214.45",
+      "avg_rain": "0.00",
+      "status": "น้ำปกติ",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "บ้านดอนชัย",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเถิน",
+      "avg_wl": "160.19",
+      "avg_bank": "165.80",
+      "avg_rain": "3.47",
+      "status": "น้ำน้อย",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "ห้วยแม่มอก",
+      "river": "ลุ่มน้ำยม",
+      "amphoe": "อำเภอเถิน",
+      "avg_wl": "101.51",
+      "avg_bank": "106.26",
+      "avg_rain": "2.48",
+      "status": "น้ำน้อยวิกฤต",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "เถิน",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเถิน",
+      "avg_wl": "170.53",
+      "avg_bank": "178.49",
+      "avg_rain": "5.70",
+      "status": "น้ำน้อย",
+      "risk_level": "เฝ้าระวัง"
+    },
+    {
+      "station_name": "แม่น้ำวังที่ อ.เถิน (W.3A)",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเถิน",
+      "avg_wl": "160.19",
+      "avg_bank": "169.08",
+      "avg_rain": "3.47",
+      "status": "น้ำน้อยวิกฤต",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "บ้านดอนชัย",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเถิน ลำปาง",
+      "avg_wl": "160.44",
+      "avg_bank": "165.80",
+      "avg_rain": "0.00",
+      "status": "น้ำน้อย",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "ห้วยแม่มอก",
+      "river": "ลุ่มน้ำยม",
+      "amphoe": "อำเภอเถิน ลำปาง",
+      "avg_wl": "101.58",
+      "avg_bank": "106.26",
+      "avg_rain": "0.00",
+      "status": "น้ำน้อยวิกฤต",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "เถิน",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเถิน ลำปาง",
+      "avg_wl": "170.68",
+      "avg_bank": "178.49",
+      "avg_rain": "0.00",
+      "status": "น้ำน้อย",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "แม่น้ำวังที่ อ.เถิน (W.3A)",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเถิน ลำปาง",
+      "avg_wl": "160.41",
+      "avg_bank": "169.08",
+      "avg_rain": "0.00",
+      "status": "น้ำน้อย",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "สะพานคลองแม่มอญ",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเมืองปาน",
+      "avg_wl": "353.30",
+      "avg_bank": "355.98",
+      "avg_rain": "3.54",
+      "status": "น้ำน้อยวิกฤต",
+      "risk_level": "เฝ้าระวัง"
+    },
+    {
+      "station_name": "สะพานคลองแม่มอญ",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเมืองปาน ลำปาง",
+      "avg_wl": "353.33",
+      "avg_bank": "355.98",
+      "avg_rain": "0.00",
+      "status": "น้ำน้อยวิกฤต",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "บ้านท่าล้อ",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเมืองลำปาง",
+      "avg_wl": "229.80",
+      "avg_bank": "236.02",
+      "avg_rain": "3.91",
+      "status": "น้ำปกติ",
+      "risk_level": "เฝ้าระวัง"
+    },
+    {
+      "station_name": "บ้านท่าเดื่อ",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเมืองลำปาง",
+      "avg_wl": "231.87",
+      "avg_bank": "238.00",
+      "avg_rain": "3.91",
+      "status": "น้ำน้อย",
+      "risk_level": "เฝ้าระวัง"
+    },
+    {
+      "station_name": "บ้านแลง",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเมืองลำปาง",
+      "avg_wl": "259.41",
+      "avg_bank": "263.90",
+      "avg_rain": "3.91",
+      "status": "น้ำปกติ",
+      "risk_level": "เฝ้าระวัง"
+    },
+    {
+      "station_name": "สะพานพัฒนามิตรภาพแม่น้ำตุ๋ย",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเมืองลำปาง",
+      "avg_wl": "266.22",
+      "avg_bank": "272.96",
+      "avg_rain": "4.48",
+      "status": "น้ำน้อย",
+      "risk_level": "เฝ้าระวัง"
+    },
+    {
+      "station_name": "สะพานเสตุวารี",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเมืองลำปาง",
+      "avg_wl": "229.52",
+      "avg_bank": "234.50",
+      "avg_rain": "3.91",
+      "status": "น้ำปกติ",
+      "risk_level": "เฝ้าระวัง"
+    },
+    {
+      "station_name": "บ้านท่าล้อ",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเมืองลำปาง ลำปาง",
+      "avg_wl": "230.12",
+      "avg_bank": "236.02",
+      "avg_rain": "0.00",
+      "status": "น้ำปกติ",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "บ้านท่าเดื่อ",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเมืองลำปาง ลำปาง",
+      "avg_wl": "232.01",
+      "avg_bank": "238.00",
+      "avg_rain": "0.00",
+      "status": "น้ำน้อย",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "บ้านแลง",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเมืองลำปาง ลำปาง",
+      "avg_wl": "259.36",
+      "avg_bank": "263.90",
+      "avg_rain": "0.00",
+      "status": "น้ำปกติ",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "สะพานพัฒนามิตรภาพแม่น้ำตุ๋ย",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเมืองลำปาง ลำปาง",
+      "avg_wl": "266.35",
+      "avg_bank": "272.96",
+      "avg_rain": "0.00",
+      "status": "น้ำน้อย",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "สะพานเสตุวารี",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเมืองลำปาง ลำปาง",
+      "avg_wl": "229.69",
+      "avg_bank": "234.50",
+      "avg_rain": "0.00",
+      "status": "น้ำปกติ",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "สะพานน้ำแม่ต๋ำ",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเสริมงาม",
+      "avg_wl": "232.99",
+      "avg_bank": "236.84",
+      "avg_rain": "6.11",
+      "status": "น้ำปกติ",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "สะพานน้ำแม่ต๋ำ",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอเสริมงาม ลำปาง",
+      "avg_wl": "232.77",
+      "avg_bank": "236.84",
+      "avg_rain": "0.00",
+      "status": "น้ำปกติ",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "บ้านหนองนาว",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอแจ้ห่ม",
+      "avg_wl": "291.31",
+      "avg_bank": "294.50",
+      "avg_rain": "4.85",
+      "status": "น้ำปกติ",
+      "risk_level": "เฝ้าระวัง"
+    },
+    {
+      "station_name": "บ้านเมืองมาย",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอแจ้ห่ม",
+      "avg_wl": "286.46",
+      "avg_bank": "289.37",
+      "avg_rain": "4.61",
+      "status": "น้ำน้อย",
+      "risk_level": "เฝ้าระวัง"
+    },
+    {
+      "station_name": "บ้านไฮ",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอแจ้ห่ม",
+      "avg_wl": "305.11",
+      "avg_bank": "308.50",
+      "avg_rain": "4.25",
+      "status": "น้ำปกติ",
+      "risk_level": "เฝ้าระวัง"
+    },
+    {
+      "station_name": "สะพานน้ำคลองแม่สอย",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอแจ้ห่ม",
+      "avg_wl": "308.83",
+      "avg_bank": "311.09",
+      "avg_rain": "3.42",
+      "status": "น้ำปกติ",
+      "risk_level": "เฝ้าระวัง"
+    },
+    {
+      "station_name": "บ้านหนองนาว",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอแจ้ห่ม ลำปาง",
+      "avg_wl": "291.42",
+      "avg_bank": "294.50",
+      "avg_rain": "0.00",
+      "status": "น้ำปกติ",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "บ้านเมืองมาย",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอแจ้ห่ม ลำปาง",
+      "avg_wl": "286.60",
+      "avg_bank": "289.37",
+      "avg_rain": "0.00",
+      "status": "น้ำปกติ",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "บ้านไฮ",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอแจ้ห่ม ลำปาง",
+      "avg_wl": "305.15",
+      "avg_bank": "308.50",
+      "avg_rain": "0.00",
+      "status": "น้ำปกติ",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "สะพานน้ำคลองแม่สอย",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอแจ้ห่ม ลำปาง",
+      "avg_wl": "308.83",
+      "avg_bank": "311.09",
+      "avg_rain": "0.00",
+      "status": "น้ำน้อยวิกฤต",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "บ้านแม่เชียงราย",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอแม่พริก",
+      "avg_wl": "142.08",
+      "avg_bank": "147.59",
+      "avg_rain": "2.10",
+      "status": "น้ำปกติ",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "แม่พริก",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอแม่พริก",
+      "avg_wl": "145.45",
+      "avg_bank": "154.89",
+      "avg_rain": "2.10",
+      "status": "น้ำน้อยวิกฤต",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "บ้านแม่เชียงราย",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอแม่พริก ลำปาง",
+      "avg_wl": "142.39",
+      "avg_bank": "147.59",
+      "avg_rain": "0.00",
+      "status": "น้ำปกติ",
+      "risk_level": "ปกติ"
+    },
+    {
+      "station_name": "แม่พริก",
+      "river": "ลุ่มน้ำวัง",
+      "amphoe": "อำเภอแม่พริก ลำปาง",
+      "avg_wl": "145.73",
+      "avg_bank": "154.89",
+      "avg_rain": "0.00",
+      "status": "น้ำน้อยวิกฤต",
+      "risk_level": "ปกติ"
+    }
+  ],
+  "wTotal": "10471",
+  "wDaily": [
+    {
+      "day": "2026-06-30",
+      "avg_wl": "247.43",
+      "max_wl": "442.33",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-01",
+      "avg_wl": "248.74",
+      "max_wl": "442.90",
+      "active_stations": "25"
+    },
+    {
+      "day": "2026-07-02",
+      "avg_wl": "247.54",
+      "max_wl": "442.77",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-03",
+      "avg_wl": "247.51",
+      "max_wl": "442.83",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-04",
+      "avg_wl": "247.53",
+      "max_wl": "442.69",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-05",
+      "avg_wl": "247.51",
+      "max_wl": "442.73",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-10",
+      "avg_wl": "247.72",
+      "max_wl": "442.88",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-11",
+      "avg_wl": "247.70",
+      "max_wl": "442.76",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-12",
+      "avg_wl": "247.70",
+      "max_wl": "442.71",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-13",
+      "avg_wl": "247.72",
+      "max_wl": "442.71",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-14",
+      "avg_wl": "247.69",
+      "max_wl": "442.66",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-15",
+      "avg_wl": "247.70",
+      "max_wl": "442.61",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-16",
+      "avg_wl": "247.70",
+      "max_wl": "442.59",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-17",
+      "avg_wl": "247.70",
+      "max_wl": "442.64",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-18",
+      "avg_wl": "247.65",
+      "max_wl": "442.69",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-19",
+      "avg_wl": "247.67",
+      "max_wl": "442.68",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-20",
+      "avg_wl": "247.64",
+      "max_wl": "442.63",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-21",
+      "avg_wl": "247.54",
+      "max_wl": "442.58",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-22",
+      "avg_wl": "247.45",
+      "max_wl": "442.56",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-23",
+      "avg_wl": "247.61",
+      "max_wl": "442.69",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-24",
+      "avg_wl": "247.62",
+      "max_wl": "442.63",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-25",
+      "avg_wl": "247.22",
+      "max_wl": "442.63",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-26",
+      "avg_wl": "247.66",
+      "max_wl": "442.71",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-27",
+      "avg_wl": "247.64",
+      "max_wl": "442.66",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-28",
+      "avg_wl": "247.61",
+      "max_wl": "442.61",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-29",
+      "avg_wl": "248.03",
+      "max_wl": "443.38",
+      "active_stations": "26"
+    },
+    {
+      "day": "2026-07-30",
+      "avg_wl": "247.95",
+      "max_wl": "443.17",
+      "active_stations": "26"
+    }
+  ],
+  "dLatest": [
+    {
+      "dam_name": "อ่างกิ่วคอหมา",
+      "dam_type": "อ่างขนาดใหญ่",
+      "water_volume_m_cum": "73.7600",
+      "water_percent": "43%",
+      "usable_water_m_cum": "67.5600",
+      "inflow_m_cum": "0.5100",
+      "discharge_m_cum": "0.3500"
+    },
+    {
+      "dam_name": "อ่างกิ่วลม",
+      "dam_type": "อ่างขนาดใหญ่",
+      "water_volume_m_cum": "67.0900",
+      "water_percent": "63%",
+      "usable_water_m_cum": "63.5400",
+      "inflow_m_cum": "2.2200",
+      "discharge_m_cum": "1.6200"
+    },
+    {
+      "dam_name": "อ่างแม่มอก",
+      "dam_type": "อ่างขนาดใหญ่",
+      "water_volume_m_cum": "33.8400",
+      "water_percent": "31%",
+      "usable_water_m_cum": "17.9400",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": "0.6000"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำ แม่อาง",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "2.3200",
+      "water_percent": "74%",
+      "usable_water_m_cum": "2.2200",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": ""
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยสมัย",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "0.8000",
+      "water_percent": "67%",
+      "usable_water_m_cum": "0.6400",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": "0.0100"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยหลวง",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "0.9000",
+      "water_percent": "71%",
+      "usable_water_m_cum": "0.7300",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": "0.0100"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยหลวงวังวัว",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "1.1400",
+      "water_percent": "71%",
+      "usable_water_m_cum": "0.9900",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": ""
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยเกี๋ยง",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "8.3400",
+      "water_percent": "72%",
+      "usable_water_m_cum": "7.7400",
+      "inflow_m_cum": "0.0100",
+      "discharge_m_cum": "0.0300"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยแม่ค่อม",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "0.9500",
+      "water_percent": "70%",
+      "usable_water_m_cum": "0.7900",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": ""
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยแม่งอน",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "0.5700",
+      "water_percent": "44%",
+      "usable_water_m_cum": "0.4500",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": ""
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยแม่ยาว",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "2.4000",
+      "water_percent": "69%",
+      "usable_water_m_cum": "2.1200",
+      "inflow_m_cum": "0.0300",
+      "discharge_m_cum": "0.0400"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยแม่สัน",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "2.7300",
+      "water_percent": "77%",
+      "usable_water_m_cum": "2.6900",
+      "inflow_m_cum": "0.0200",
+      "discharge_m_cum": "0.0300"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่กึ๊ด",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "1.0100",
+      "water_percent": "78%",
+      "usable_water_m_cum": "0.8500",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": "0.0100"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ต๋ำตอนล่าง",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "0.6000",
+      "water_percent": "24%",
+      "usable_water_m_cum": "-0.0900",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": "0.0100"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ต๋ำน้อย",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "0.7800",
+      "water_percent": "78%",
+      "usable_water_m_cum": "0.7100",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": ""
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ทก",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "0.6700",
+      "water_percent": "60%",
+      "usable_water_m_cum": "0.6100",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": "0.0200"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ทรายคำ",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "0.8900",
+      "water_percent": "72%",
+      "usable_water_m_cum": "0.7600",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": ""
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ทะ",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "1.8400",
+      "water_percent": "72%",
+      "usable_water_m_cum": "1.6000",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": "0.0200"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ทาน",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "10.1200",
+      "water_percent": "74%",
+      "usable_water_m_cum": "8.7600",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": "0.0800"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ธิ",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "1.1300",
+      "water_percent": "71%",
+      "usable_water_m_cum": "1.0300",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": "0.0100"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ปอน",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "1.4400",
+      "water_percent": "79%",
+      "usable_water_m_cum": "1.2800",
+      "inflow_m_cum": "0.0400",
+      "discharge_m_cum": "0.0800"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่พริก",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "3.2600",
+      "water_percent": "78%",
+      "usable_water_m_cum": "2.8600",
+      "inflow_m_cum": "0.0100",
+      "discharge_m_cum": "0.0100"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่พริก (ผาวิ่งชู้)",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "22.8100",
+      "water_percent": "63%",
+      "usable_water_m_cum": "16.9700",
+      "inflow_m_cum": "",
+      "discharge_m_cum": ""
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ฟ้า",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "13.7800",
+      "water_percent": "69%",
+      "usable_water_m_cum": "12.6800",
+      "inflow_m_cum": "0.1000",
+      "discharge_m_cum": "0.0400"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ล้อหัก",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "1.0500",
+      "water_percent": "79%",
+      "usable_water_m_cum": "1.0000",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": "0.0000"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่วะ",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "4.3100",
+      "water_percent": "73%",
+      "usable_water_m_cum": "3.3600",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": ""
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่อ้อน 2",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "11.3600",
+      "water_percent": "59%",
+      "usable_water_m_cum": "10.8600",
+      "inflow_m_cum": "0.0100",
+      "discharge_m_cum": "0.1200"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่อาบ",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "5.0600",
+      "water_percent": "67%",
+      "usable_water_m_cum": "4.5200",
+      "inflow_m_cum": "",
+      "discharge_m_cum": "0.0800"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่เฟือง",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "0.7900",
+      "water_percent": "70%",
+      "usable_water_m_cum": "0.6200",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": "0.0100"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่เรียง",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "0.8000",
+      "water_percent": "71%",
+      "usable_water_m_cum": "0.4600",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": "0.0100"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่เลียงพัฒนา",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "5.4900",
+      "water_percent": "80%",
+      "usable_water_m_cum": "4.6900",
+      "inflow_m_cum": "0.0000",
+      "discharge_m_cum": "0.0300"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ไพร",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "2.4900",
+      "water_percent": "78%",
+      "usable_water_m_cum": "2.3500",
+      "inflow_m_cum": "0.0100",
+      "discharge_m_cum": "0.0100"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ไฮ",
+      "dam_type": "อ่างขนาดกลาง",
+      "water_volume_m_cum": "0.9500",
+      "water_percent": "77%",
+      "usable_water_m_cum": "0.8300",
+      "inflow_m_cum": "0.0200",
+      "discharge_m_cum": "0.0200"
+    },
+    {
+      "dam_name": "อ่างฯแม่ยอนสันดอนแก้ว",
+      "dam_type": "อ่างขนาดเล็ก",
+      "water_volume_m_cum": "0.2490",
+      "water_percent": "79%",
+      "usable_water_m_cum": "",
+      "inflow_m_cum": "",
+      "discharge_m_cum": ""
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยแม่แพนน้อย",
+      "dam_type": "อ่างขนาดเล็ก",
+      "water_volume_m_cum": "0.0160",
+      "water_percent": "59%",
+      "usable_water_m_cum": "",
+      "inflow_m_cum": "",
+      "discharge_m_cum": ""
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่กอง",
+      "dam_type": "อ่างขนาดเล็ก",
+      "water_volume_m_cum": "0.9370",
+      "water_percent": "55%",
+      "usable_water_m_cum": "",
+      "inflow_m_cum": "",
+      "discharge_m_cum": ""
+    }
+  ],
+  "dDams": [
+    {
+      "dam_name": "อ่างกิ่วคอหมา",
+      "dam_type": "อ่างขนาดใหญ่",
+      "capacity": "170.00",
+      "avg_volume": "73.86",
+      "avg_usable": "67.66"
+    },
+    {
+      "dam_name": "อ่างแม่มอก",
+      "dam_type": "อ่างขนาดใหญ่",
+      "capacity": "110.00",
+      "avg_volume": "36.23",
+      "avg_usable": "20.33"
+    },
+    {
+      "dam_name": "อ่างกิ่วลม",
+      "dam_type": "อ่างขนาดใหญ่",
+      "capacity": "106.22",
+      "avg_volume": "77.30",
+      "avg_usable": "73.75"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่พริก (ผาวิ่งชู้)",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "36.48",
+      "avg_volume": "22.60",
+      "avg_usable": "16.76"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ฟ้า",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "23.50",
+      "avg_volume": "13.69",
+      "avg_usable": "12.59"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยเกี๋ยง",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "11.60",
+      "avg_volume": "8.42",
+      "avg_usable": "7.82"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ทาน",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "11.40",
+      "avg_volume": "10.65",
+      "avg_usable": "9.29"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่อาบ",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "7.56",
+      "avg_volume": "5.81",
+      "avg_usable": "5.27"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่เลียงพัฒนา",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "6.90",
+      "avg_volume": "5.86",
+      "avg_usable": "5.06"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่วะ",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "5.90",
+      "avg_volume": "4.63",
+      "avg_usable": "3.68"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่พริก",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "4.20",
+      "avg_volume": "3.32",
+      "avg_usable": "2.92"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยแม่สัน",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "3.52",
+      "avg_volume": "2.83",
+      "avg_usable": "2.79"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยแม่ยาว",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "3.48",
+      "avg_volume": "2.48",
+      "avg_usable": "2.20"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ไพร",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "3.20",
+      "avg_volume": "2.54",
+      "avg_usable": "2.41"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ต๋ำตอนล่าง",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "2.54",
+      "avg_volume": "0.56",
+      "avg_usable": "-0.14"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ทะ",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "2.54",
+      "avg_volume": "1.93",
+      "avg_usable": "1.69"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ปอน",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "1.81",
+      "avg_volume": "1.65",
+      "avg_usable": "1.50"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่กอง",
+      "dam_type": "อ่างขนาดเล็ก",
+      "capacity": "1.69",
+      "avg_volume": "1.04",
+      "avg_usable": ""
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ธิ",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "1.59",
+      "avg_volume": "1.15",
+      "avg_usable": "1.05"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยแม่ค่อม",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "1.36",
+      "avg_volume": "1.08",
+      "avg_usable": "0.92"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ล้อหัก",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "1.34",
+      "avg_volume": "1.06",
+      "avg_usable": "1.01"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่กึ๊ด",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "1.30",
+      "avg_volume": "1.09",
+      "avg_usable": "0.93"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยแม่งอน",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "1.28",
+      "avg_volume": "0.59",
+      "avg_usable": "0.47"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยหลวง",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "1.26",
+      "avg_volume": "0.97",
+      "avg_usable": "0.80"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยหลวงวังวัว",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "1.25",
+      "avg_volume": "1.25",
+      "avg_usable": "1.10"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ทรายคำ",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "1.25",
+      "avg_volume": "0.90",
+      "avg_usable": "0.76"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ไฮ",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "1.23",
+      "avg_volume": "0.96",
+      "avg_usable": "0.85"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยสมัย",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "1.20",
+      "avg_volume": "0.90",
+      "avg_usable": "0.74"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่เฟือง",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "1.13",
+      "avg_volume": "0.83",
+      "avg_usable": "0.66"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่เรียง",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "1.12",
+      "avg_volume": "0.87",
+      "avg_usable": "0.53"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ทก",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "1.11",
+      "avg_volume": "0.80",
+      "avg_usable": "0.74"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่ต๋ำน้อย",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "1.09",
+      "avg_volume": "0.85",
+      "avg_usable": "0.78"
+    },
+    {
+      "dam_name": "อ่างฯแม่ยอนสันดอนแก้ว",
+      "dam_type": "อ่างขนาดเล็ก",
+      "capacity": "0.32",
+      "avg_volume": "0.27",
+      "avg_usable": ""
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำห้วยแม่แพนน้อย",
+      "dam_type": "อ่างขนาดเล็ก",
+      "capacity": "0.03",
+      "avg_volume": "0.02",
+      "avg_usable": ""
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำ แม่อาง",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "0.00",
+      "avg_volume": "2.42",
+      "avg_usable": "2.32"
+    },
+    {
+      "dam_name": "อ่างเก็บน้ำแม่อ้อน 2",
+      "dam_type": "อ่างขนาดกลาง",
+      "capacity": "0.00",
+      "avg_volume": "12.54",
+      "avg_usable": "12.04"
+    }
+  ],
+  "dTotal": "13609",
+  "pStatus": [
+    {
+      "air_quality_status": "ดีมาก",
+      "cnt": "17634"
+    },
+    {
+      "air_quality_status": "ดี",
+      "cnt": "1798"
+    },
+    {
+      "air_quality_status": "ปานกลาง",
+      "cnt": "567"
+    },
+    {
+      "air_quality_status": "เริ่มมีผลต่อสุขภาพ",
+      "cnt": "519"
+    },
+    {
+      "air_quality_status": "มีผลกระทบต่อสุขภาพ",
+      "cnt": "349"
+    }
+  ],
+  "pTotal": {
+    "cnt": "20867",
+    "stations": "53"
+  },
+  "pAmphoe": [
+    {
+      "amphoe": "อำเภอแจ้ห่ม",
+      "stations": "7",
+      "avg_pm25": "15.74",
+      "max_pm25": "140.00"
+    },
+    {
+      "amphoe": "อำเภอเถิน",
+      "stations": "6",
+      "avg_pm25": "15.63",
+      "max_pm25": "120.00"
+    },
+    {
+      "amphoe": "อำเภอเมืองปาน",
+      "stations": "11",
+      "avg_pm25": "15.25",
+      "max_pm25": "175.40"
+    },
+    {
+      "amphoe": "อำเภอเมืองลำปาง",
+      "stations": "2",
+      "avg_pm25": "8.15",
+      "max_pm25": "67.00"
+    },
+    {
+      "amphoe": "อำเภอวังเหนือ",
+      "stations": "1",
+      "avg_pm25": "7.17",
+      "max_pm25": "30.00"
+    },
+    {
+      "amphoe": "อำเภอเสริมงาม",
+      "stations": "3",
+      "avg_pm25": "6.64",
+      "max_pm25": "107.00"
+    },
+    {
+      "amphoe": "อำเภอเกาะคา",
+      "stations": "1",
+      "avg_pm25": "6.45",
+      "max_pm25": "32.00"
+    },
+    {
+      "amphoe": "อำเภอแม่พริก",
+      "stations": "1",
+      "avg_pm25": "6.25",
+      "max_pm25": "33.00"
+    },
+    {
+      "amphoe": "อำเภอสบปราบ",
+      "stations": "1",
+      "avg_pm25": "5.85",
+      "max_pm25": "59.00"
+    },
+    {
+      "amphoe": "อำเภองาว",
+      "stations": "9",
+      "avg_pm25": "5.43",
+      "max_pm25": "101.00"
+    },
+    {
+      "amphoe": "อำเภอแม่เมาะ",
+      "stations": "3",
+      "avg_pm25": "4.78",
+      "max_pm25": "71.00"
+    },
+    {
+      "amphoe": "อำเภอแม่ทะ",
+      "stations": "2",
+      "avg_pm25": "4.05",
+      "max_pm25": "22.00"
+    },
+    {
+      "amphoe": "อำเภอห้างฉัตร",
+      "stations": "6",
+      "avg_pm25": "3.96",
+      "max_pm25": "69.00"
+    }
+  ],
+  "pExceed": [
+    {
+      "station_name": "บ้านเลขที่ 6 หมู่ 8",
+      "amphoe": "อำเภอเมืองปาน",
+      "max_pm25": "175.40",
+      "times": "2",
+      "air_quality_status": "มีผลกระทบต่อสุขภาพ"
+    },
+    {
+      "station_name": "ศาลาเอนกประสงค์บ้านหลุก หมู่ 2",
+      "amphoe": "อำเภอแจ้ห่ม",
+      "max_pm25": "140.00",
+      "times": "107",
+      "air_quality_status": "มีผลกระทบต่อสุขภาพ"
+    },
+    {
+      "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ ศช. 4 (แม่มอก)",
+      "amphoe": "อำเภอเถิน",
+      "max_pm25": "120.00",
+      "times": "112",
+      "air_quality_status": "มีผลกระทบต่อสุขภาพ"
+    },
+    {
+      "station_name": "หน่วยจัดการต้นน้ำและพัฒนาชุมชนในพื้นที่ป่าอนุรักษ์แม่นึง",
+      "amphoe": "อำเภอเมืองปาน",
+      "max_pm25": "118.00",
+      "times": "104",
+      "air_quality_status": "มีผลกระทบต่อสุขภาพ"
+    },
+    {
+      "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ มว.5 (แม่ปะ)",
+      "amphoe": "อำเภอเถิน",
+      "max_pm25": "115.00",
+      "times": "16",
+      "air_quality_status": "มีผลกระทบต่อสุขภาพ"
+    },
+    {
+      "station_name": "หน่วยจัดการต้นน้ำและพัฒนาชุมชนในพื้นที่ป่าอนุรักษ์แม่เลียง",
+      "amphoe": "อำเภอเสริมงาม",
+      "max_pm25": "107.00",
+      "times": "2",
+      "air_quality_status": "มีผลกระทบต่อสุขภาพ"
+    },
+    {
+      "station_name": "หน่วยศึกษาการพัฒนาการอนุรักษ์ต้นน้ำแม่หวด",
+      "amphoe": "อำเภองาว",
+      "max_pm25": "101.00",
+      "times": "4",
+      "air_quality_status": "มีผลกระทบต่อสุขภาพ"
+    },
+    {
+      "station_name": "สะพานน้ำแม่ต๋ำ",
+      "amphoe": "อำเภอเสริมงาม",
+      "max_pm25": "92.00",
+      "times": "1",
+      "air_quality_status": "มีผลกระทบต่อสุขภาพ"
+    },
+    {
+      "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ มว.1 (น้ำตกแม่วะ)",
+      "amphoe": "อำเภอเถิน",
+      "max_pm25": "77.00",
+      "times": "1",
+      "air_quality_status": "มีผลกระทบต่อสุขภาพ"
+    },
+    {
+      "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ ศช. 4 (แม่มอก)",
+      "amphoe": "อำเภอเถิน",
+      "max_pm25": "75.00",
+      "times": "86",
+      "air_quality_status": "เริ่มมีผลต่อสุขภาพ"
+    }
+  ],
+  "pStations": [
+    {
+      "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ ศช. 4 (แม่มอก)",
+      "amphoe": "อำเภอเถิน",
+      "avg_pm25": "62.66",
+      "max_pm25": "120.00",
+      "records": "278"
+    },
+    {
+      "station_name": "ศาลาเอนกประสงค์บ้านหลุก หมู่ 2",
+      "amphoe": "อำเภอแจ้ห่ม",
+      "avg_pm25": "52.53",
+      "max_pm25": "140.00",
+      "records": "404"
+    },
+    {
+      "station_name": "หน่วยจัดการต้นน้ำและพัฒนาชุมชนในพื้นที่ป่าอนุรักษ์แม่นึง",
+      "amphoe": "อำเภอเมืองปาน",
+      "avg_pm25": "51.89",
+      "max_pm25": "118.00",
+      "records": "389"
+    },
+    {
+      "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ มว.5 (แม่ปะ)",
+      "amphoe": "อำเภอเถิน",
+      "avg_pm25": "37.36",
+      "max_pm25": "115.00",
+      "records": "118"
+    },
+    {
+      "station_name": "หน่วยศึกษาการพัฒนาการอนุรักษ์ต้นน้ำแม่หวด",
+      "amphoe": "อำเภองาว",
+      "avg_pm25": "26.86",
+      "max_pm25": "101.00",
+      "records": "393"
+    },
+    {
+      "station_name": "บ้านเลขที่ 6 หมู่ 8",
+      "amphoe": "อำเภอเมืองปาน",
+      "avg_pm25": "23.46",
+      "max_pm25": "175.40",
+      "records": "389"
+    },
+    {
+      "station_name": "ด้านข้างวัดบ้านทุ่งทอง หมู่ 7",
+      "amphoe": "อำเภอแจ้ห่ม",
+      "avg_pm25": "21.63",
+      "max_pm25": "34.45",
+      "records": "284"
+    },
+    {
+      "station_name": "ศาลาเอนกประสงค์บ้านขอใต้ หมู่ 4",
+      "amphoe": "อำเภอเมืองปาน",
+      "avg_pm25": "18.82",
+      "max_pm25": "35.24",
+      "records": "400"
+    },
+    {
+      "station_name": "ศาลาเอนกประสงค์ หมู่ 2 (ติดกับโรงเรียนบ้านทุ่งสะแกง)",
+      "amphoe": "อำเภอเมืองปาน",
+      "avg_pm25": "17.35",
+      "max_pm25": "26.31",
+      "records": "6"
+    },
+    {
+      "station_name": "วัดแพะก้อม หมู่ 4",
+      "amphoe": "อำเภอเมืองปาน",
+      "avg_pm25": "15.42",
+      "max_pm25": "35.80",
+      "records": "404"
+    },
+    {
+      "station_name": "สะพานคลองแม่มอญ",
+      "amphoe": "อำเภอเมืองปาน",
+      "avg_pm25": "14.70",
+      "max_pm25": "73.00",
+      "records": "299"
+    },
+    {
+      "station_name": "วัดบ้านทุ่งโป่ง หมู่ 4",
+      "amphoe": "อำเภอเมืองปาน",
+      "avg_pm25": "11.64",
+      "max_pm25": "28.80",
+      "records": "404"
+    },
+    {
+      "station_name": "หน่วยจัดการต้นน้ำและพัฒนาชุมชนในพื้นที่ป่าอนุรักษ์แม่เลียง",
+      "amphoe": "อำเภอเสริมงาม",
+      "avg_pm25": "11.59",
+      "max_pm25": "107.00",
+      "records": "32"
+    },
+    {
+      "station_name": "สะพานพัฒนามิตรภาพแม่น้ำตุ๋ย",
+      "amphoe": "อำเภอเมืองลำปาง",
+      "avg_pm25": "9.07",
+      "max_pm25": "67.00",
+      "records": "464"
+    },
+    {
+      "station_name": "ศาลาเอนกประสงค์บ้านสอนดอกคำ หมู่ 4",
+      "amphoe": "อำเภอแจ้ห่ม",
+      "avg_pm25": "8.47",
+      "max_pm25": "23.45",
+      "records": "404"
+    },
+    {
+      "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติ มว.๔ (แม่แสลม)",
+      "amphoe": "อำเภอเถิน",
+      "avg_pm25": "8.26",
+      "max_pm25": "32.00",
+      "records": "464"
+    },
+    {
+      "station_name": "อบต.เวียงตาล",
+      "amphoe": "อำเภอห้างฉัตร",
+      "avg_pm25": "8.00",
+      "max_pm25": "69.00",
+      "records": "464"
+    },
+    {
+      "station_name": "สะพานน้ำคลองแม่สอย",
+      "amphoe": "อำเภอแจ้ห่ม",
+      "avg_pm25": "7.93",
+      "max_pm25": "64.00",
+      "records": "364"
+    },
+    {
+      "station_name": "หน่วยจัดการต้นน้ำและพัฒนาชุมชนในพื้นที่ป่าอนุรักษ์ขุนสอย",
+      "amphoe": "อำเภอเมืองปาน",
+      "avg_pm25": "7.69",
+      "max_pm25": "33.00",
+      "records": "464"
+    },
+    {
+      "station_name": "น้ำแม่งาว",
+      "amphoe": "อำเภองาว",
+      "avg_pm25": "7.55",
+      "max_pm25": "55.00",
+      "records": "464"
+    },
+    {
+      "station_name": "หน่วยจัดการต้นน้ำและพัฒนาชุมชนในพื้นที่ป่าอนุรักษ์แม่เสริม",
+      "amphoe": "อำเภอเสริมงาม",
+      "avg_pm25": "7.44",
+      "max_pm25": "25.00",
+      "records": "464"
+    },
+    {
+      "station_name": "ที่ทำการอุทยานแห่งชาติถ้ำผาไท",
+      "amphoe": "อำเภองาว",
+      "avg_pm25": "7.34",
+      "max_pm25": "28.00",
+      "records": "464"
+    },
+    {
+      "station_name": "อ่างเก็บน้ำแม่เกี๋ยง",
+      "amphoe": "อำเภอเมืองลำปาง",
+      "avg_pm25": "7.23",
+      "max_pm25": "43.00",
+      "records": "462"
+    },
+    {
+      "station_name": "วัดปางป๋วยศรัทธาราม หมู่ 2",
+      "amphoe": "อำเภอแม่เมาะ",
+      "avg_pm25": "7.20",
+      "max_pm25": "16.75",
+      "records": "390"
+    },
+    {
+      "station_name": "สะพานน้ำวัง",
+      "amphoe": "อำเภอวังเหนือ",
+      "avg_pm25": "7.17",
+      "max_pm25": "30.00",
+      "records": "464"
+    },
+    {
+      "station_name": "ศาลาเอนกประสงค์บ้านป่าเหว ม.3",
+      "amphoe": "อำเภอเมืองปาน",
+      "avg_pm25": "6.99",
+      "max_pm25": "15.85",
+      "records": "385"
+    },
+    {
+      "station_name": "เกาะคา",
+      "amphoe": "อำเภอเกาะคา",
+      "avg_pm25": "6.45",
+      "max_pm25": "32.00",
+      "records": "464"
+    },
+    {
+      "station_name": "แม่พริก",
+      "amphoe": "อำเภอแม่พริก",
+      "avg_pm25": "6.25",
+      "max_pm25": "33.00",
+      "records": "464"
+    },
+    {
+      "station_name": "หน่วยจัดการต้นน้ำและพัฒนาชุมชนในพื้นที่ป่าอนุรักษ์แม่แจ้ฟ้า",
+      "amphoe": "อำเภอแจ้ห่ม",
+      "avg_pm25": "5.95",
+      "max_pm25": "28.00",
+      "records": "391"
+    },
+    {
+      "station_name": "อบต.นายาง",
+      "amphoe": "อำเภอสบปราบ",
+      "avg_pm25": "5.85",
+      "max_pm25": "59.00",
+      "records": "464"
+    }
+  ],
+  "pDaily": [
+    {
+      "day": "2026-06-30",
+      "avg_pm25": "9.52",
+      "max_pm25": "133.50",
+      "readings": "687"
+    },
+    {
+      "day": "2026-07-01",
+      "avg_pm25": "8.10",
+      "max_pm25": "140.00",
+      "readings": "674"
+    },
+    {
+      "day": "2026-07-02",
+      "avg_pm25": "6.61",
+      "max_pm25": "129.10",
+      "readings": "671"
+    },
+    {
+      "day": "2026-07-03",
+      "avg_pm25": "6.75",
+      "max_pm25": "103.80",
+      "readings": "671"
+    },
+    {
+      "day": "2026-07-04",
+      "avg_pm25": "7.99",
+      "max_pm25": "124.60",
+      "readings": "685"
+    },
+    {
+      "day": "2026-07-05",
+      "avg_pm25": "8.89",
+      "max_pm25": "116.00",
+      "readings": "676"
+    },
+    {
+      "day": "2026-07-06",
+      "avg_pm25": "11.83",
+      "max_pm25": "114.30",
+      "readings": "679"
+    },
+    {
+      "day": "2026-07-07",
+      "avg_pm25": "9.86",
+      "max_pm25": "120.60",
+      "readings": "691"
+    },
+    {
+      "day": "2026-07-08",
+      "avg_pm25": "11.68",
+      "max_pm25": "109.90",
+      "readings": "675"
+    },
+    {
+      "day": "2026-07-09",
+      "avg_pm25": "9.27",
+      "max_pm25": "114.40",
+      "readings": "617"
+    },
+    {
+      "day": "2026-07-10",
+      "avg_pm25": "10.33",
+      "max_pm25": "120.00",
+      "readings": "615"
+    },
+    {
+      "day": "2026-07-11",
+      "avg_pm25": "7.01",
+      "max_pm25": "107.00",
+      "readings": "671"
+    },
+    {
+      "day": "2026-07-12",
+      "avg_pm25": "9.07",
+      "max_pm25": "105.00",
+      "readings": "596"
+    },
+    {
+      "day": "2026-07-13",
+      "avg_pm25": "10.54",
+      "max_pm25": "119.00",
+      "readings": "666"
+    },
+    {
+      "day": "2026-07-14",
+      "avg_pm25": "11.16",
+      "max_pm25": "102.00",
+      "readings": "684"
+    },
+    {
+      "day": "2026-07-15",
+      "avg_pm25": "11.26",
+      "max_pm25": "99.60",
+      "readings": "683"
+    },
+    {
+      "day": "2026-07-16",
+      "avg_pm25": "13.24",
+      "max_pm25": "119.00",
+      "readings": "686"
+    },
+    {
+      "day": "2026-07-17",
+      "avg_pm25": "15.88",
+      "max_pm25": "113.60",
+      "readings": "681"
+    },
+    {
+      "day": "2026-07-18",
+      "avg_pm25": "14.11",
+      "max_pm25": "117.00",
+      "readings": "692"
+    },
+    {
+      "day": "2026-07-19",
+      "avg_pm25": "14.52",
+      "max_pm25": "115.00",
+      "readings": "736"
+    },
+    {
+      "day": "2026-07-20",
+      "avg_pm25": "9.27",
+      "max_pm25": "175.40",
+      "readings": "740"
+    },
+    {
+      "day": "2026-07-21",
+      "avg_pm25": "7.05",
+      "max_pm25": "99.90",
+      "readings": "733"
+    },
+    {
+      "day": "2026-07-22",
+      "avg_pm25": "8.05",
+      "max_pm25": "108.00",
+      "readings": "712"
+    },
+    {
+      "day": "2026-07-23",
+      "avg_pm25": "8.52",
+      "max_pm25": "87.00",
+      "readings": "704"
+    },
+    {
+      "day": "2026-07-24",
+      "avg_pm25": "7.55",
+      "max_pm25": "91.40",
+      "readings": "683"
+    },
+    {
+      "day": "2026-07-25",
+      "avg_pm25": "6.49",
+      "max_pm25": "108.00",
+      "readings": "583"
+    },
+    {
+      "day": "2026-07-26",
+      "avg_pm25": "9.36",
+      "max_pm25": "118.00",
+      "readings": "604"
+    },
+    {
+      "day": "2026-07-27",
+      "avg_pm25": "8.60",
+      "max_pm25": "115.00",
+      "readings": "629"
+    },
+    {
+      "day": "2026-07-28",
+      "avg_pm25": "8.08",
+      "max_pm25": "109.00",
+      "readings": "708"
+    },
+    {
+      "day": "2026-07-29",
+      "avg_pm25": "6.26",
+      "max_pm25": "98.00",
+      "readings": "670"
+    },
+    {
+      "day": "2026-07-30",
+      "avg_pm25": "7.65",
+      "max_pm25": "106.00",
+      "readings": "665"
+    }
+  ],
+  "cAll": [
+    {
+      "ticket_id": "2026-2WTP3N",
+      "state_name": "ส่งต่อ(ใหม่)",
+      "problem_type": "เสียง",
+      "location": "8G8X+5R อำเภอเมืองลำปาง ลำปาง 52000 ประเทศไทย",
+      "ticket_datetime": "ศุกร์ 22 พ.ค. 69 08:35 น.",
+      "agency_status": "หน่วยงานส่งต่อให้ อบจ.ดำเนินการ"
+    },
+    {
+      "ticket_id": "2026-EDUNC2",
+      "state_name": "รับเรื่อง",
+      "problem_type": "อื่นๆ",
+      "location": "98PW+93 ตำบล วอแก้ว อำเภอห้างฉัตร ลำปาง ประเทศไทย",
+      "ticket_datetime": "พฤหัส 21 พ.ค. 69 11:25 น.",
+      "agency_status": "งานที่เป็นสถานะอื่นๆ"
+    },
+    {
+      "ticket_id": "2026-JVJDKH",
+      "state_name": "ส่งต่อ(ใหม่)",
+      "problem_type": "ถนน",
+      "location": "ตำบลลำปางหลวง อำเภอเกาะคา จังหวัดลำปาง",
+      "ticket_datetime": "ศุกร์ 8 พ.ค. 69 10:16 น.",
+      "agency_status": "หน่วยงานส่งต่อให้ อบจ.ดำเนินการ"
+    },
+    {
+      "ticket_id": "2026-C882FM",
+      "state_name": "ติดตามเรื่อง",
+      "problem_type": "ถนน",
+      "location": "ตำบลบ้านเป้า อำเภอเมืองลำปาง จังหวัดลำปาง",
+      "ticket_datetime": "พฤหัส 7 พ.ค. 69 09:05 น.",
+      "agency_status": "งานที่เป็นสถานะอื่นๆ"
+    },
+    {
+      "ticket_id": "2026-J2TU9H",
+      "state_name": "รอรับเรื่อง",
+      "problem_type": "ความสะอาด",
+      "location": "ตำบลปงแสนทอง อำเภอเมืองลำปาง จังหวัดลำปาง",
+      "ticket_datetime": "อาทิตย์ 3 พ.ค. 69 12:21 น.",
+      "agency_status": "งานที่รับเรื่องร้องเรียน"
+    },
+    {
+      "ticket_id": "2026-2HECL8",
+      "state_name": "เสร็จสิ้น",
+      "problem_type": "ถนน",
+      "location": "ตำบลบ้านเป้า อำเภอเมืองลำปาง จังหวัดลำปาง",
+      "ticket_datetime": "พุธ 3 มิ.ย. 69 13:24 น.",
+      "agency_status": "งานที่ อบจ.ดำเนินการเสร็จ"
+    },
+    {
+      "ticket_id": "2026-E83JJJ",
+      "state_name": "เสร็จสิ้น",
+      "problem_type": "อุปกรณ์ชำรุด",
+      "location": "ตำบลแม่กัวะ อำเภอสบปราบ จังหวัดลำปาง",
+      "ticket_datetime": "ศุกร์ 5 มิ.ย. 69 09:47 น.",
+      "agency_status": "สถานะที่รับ อบจ.รับมอบแล้วเสร็จ"
+    },
+    {
+      "ticket_id": "2026-EXB9XE",
+      "state_name": "ส่งต่อ(ใหม่)",
+      "problem_type": "อื่นๆ",
+      "location": "179 สายลมจอย ซอย 6 ตำบล บ่อแฮ้ว อำเภอเมืองลำปาง ลำปาง 52100 ประเทศไทย",
+      "ticket_datetime": "เสาร์ 6 มิ.ย. 69 19:22 น.",
+      "agency_status": "หน่วยงานส่งต่อให้ อบจ.ดำเนินการ"
+    },
+    {
+      "ticket_id": "2026-4JM9DE",
+      "state_name": "ส่งต่อ(ใหม่)",
+      "problem_type": "อุปกรณ์ชำรุด",
+      "location": "8F2V+3G4 ตำบล เวียงเหนือ อำเภอเมืองลำปาง ลำปาง 52000 ประเทศไทย",
+      "ticket_datetime": "อังคาร 16 มิ.ย. 69 08:50 น.",
+      "agency_status": "หน่วยงานส่งต่อให้ อบจ.ดำเนินการ"
+    },
+    {
+      "ticket_id": "2026-F9V6TH",
+      "state_name": "รอรับเรื่อง",
+      "problem_type": "น้ำท่วม",
+      "location": "ตำบลปงยางคก อำเภอห้างฉัตร จังหวัดลำปาง",
+      "ticket_datetime": "ศุกร์ 31 ก.ค. 69 10:10 น.",
+      "agency_status": "งานที่รับเรื่องร้องเรียน"
+    },
+    {
+      "ticket_id": "2026-692KUH",
+      "state_name": "รอรับเรื่อง",
+      "problem_type": "ถนน",
+      "location": "ตำบลชมพู อำเภอเมืองลำปาง จังหวัดลำปาง",
+      "ticket_datetime": "พฤหัส 18 มิ.ย. 69 11:06 น.",
+      "agency_status": "งานที่รับเรื่องร้องเรียน"
+    },
+    {
+      "ticket_id": "2026-XUT9CU",
+      "state_name": "รอรับเรื่อง",
+      "problem_type": "ป้าย",
+      "location": "ตำบลวังพร้าว อำเภอเกาะคา จังหวัดลำปาง",
+      "ticket_datetime": "อังคาร 28 ก.ค. 69 09:58 น.",
+      "agency_status": "งานที่รับเรื่องร้องเรียน"
+    },
+    {
+      "ticket_id": "2026-6LX68K",
+      "state_name": "เสร็จสิ้น",
+      "problem_type": "ไฟฟ้า",
+      "location": "ตำบลทุ่งฝาย อำเภอเมืองลำปาง จังหวัดลำปาง",
+      "ticket_datetime": "พุธ 22 เม.ย. 69 01:50 น.",
+      "agency_status": "สถานะที่รับ อบจ.รับมอบแล้วเสร็จ"
+    }
+  ],
+  "cByType": [
+    {
+      "problem_type": "ถนน",
+      "cnt": "4"
+    },
+    {
+      "problem_type": "อื่นๆ",
+      "cnt": "2"
+    },
+    {
+      "problem_type": "อุปกรณ์ชำรุด",
+      "cnt": "2"
+    },
+    {
+      "problem_type": "เสียง",
+      "cnt": "1"
+    },
+    {
+      "problem_type": "ความสะอาด",
+      "cnt": "1"
+    },
+    {
+      "problem_type": "ไฟฟ้า",
+      "cnt": "1"
+    },
+    {
+      "problem_type": "ป้าย",
+      "cnt": "1"
+    },
+    {
+      "problem_type": "น้ำท่วม",
+      "cnt": "1"
+    }
+  ],
+  "cByStatus": [
+    {
+      "state_name": "ส่งต่อ(ใหม่)",
+      "cnt": "4"
+    },
+    {
+      "state_name": "รอรับเรื่อง",
+      "cnt": "4"
+    },
+    {
+      "state_name": "เสร็จสิ้น",
+      "cnt": "3"
+    },
+    {
+      "state_name": "รับเรื่อง",
+      "cnt": "1"
+    },
+    {
+      "state_name": "ติดตามเรื่อง",
+      "cnt": "1"
+    }
+  ],
+  "cTotal": {
+    "cnt": "13",
+    "done": "3"
+  }
+}

@@ -1,0 +1,238 @@
+/* Dedicated Traffy Fondue Scraper - CSS Styling */
+
+/* Floating Toggle Button */
+#traffy-sys-ext-toggle {
+  position: fixed;
+  top: 60%;
+  right: 0;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: white;
+  border: none;
+  padding: 18px 10px; /* Slightly increased padding */
+  border-radius: 12px 0 0 12px;
+  cursor: pointer;
+  z-index: 999998;
+  box-shadow: -4px 0 15px rgba(124, 58, 237, 0.3);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: 'Prompt', 'Inter', 'Sarabun', sans-serif;
+  font-weight: 700;
+  font-size: 15px; /* Increased from 14px */
+  letter-spacing: 1px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#traffy-sys-ext-toggle:hover {
+  padding-right: 14px;
+  background: linear-gradient(135deg, #6d28d9, #9333ea);
+  box-shadow: -4px 0 20px rgba(124, 58, 237, 0.5);
+}
+
+/* Glassmorphic Main Panel */
+#traffy-sys-ext-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 345px; /* Slightly wider for reading comfort (from 320px) */
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
+  z-index: 999999;
+  font-family: 'Prompt', 'Inter', 'Sarabun', 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(0);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+#traffy-sys-ext-panel.hidden {
+  transform: translateX(100%);
+}
+
+/* Premium Gradient Header */
+#traffy-sys-ext-header {
+  padding: 22px 18px; /* Balanced padding */
+  background: linear-gradient(135deg, #7c3aed, #9333ea);
+  color: white;
+  font-weight: 700;
+  font-size: 20px; /* Increased from 18px */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+}
+
+#traffy-sys-ext-header span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#traffy-sys-ext-close {
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 20px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+#traffy-sys-ext-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+/* Scrollable Container Content */
+#traffy-sys-ext-content {
+  padding: 22px 18px;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* More breathable gap */
+}
+
+.ext-section-title {
+  font-size: 14px; /* Increased from 13px */
+  font-weight: 700;
+  color: #4b5563;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Status Cards & Info Boxes */
+.info-card {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 14px 16px; /* Slightly increased padding */
+  font-size: 14px; /* Increased from 13px */
+  color: #4b5563;
+  line-height: 1.6;
+  border: 1px solid #e2e8f0;
+}
+
+.info-card b {
+  color: #1f2937;
+}
+
+/* Premium Buttons */
+.traffy-sys-btn {
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+  color: white;
+  border: none;
+  padding: 14px 18px; /* Increased padding */
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 15px; /* Increased from 14px */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 10px rgba(124, 58, 237, 0.25);
+}
+
+.traffy-sys-btn:hover {
+  background: linear-gradient(135deg, #6d28d9, #7c3aed);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(124, 58, 237, 0.4);
+}
+
+.traffy-sys-btn:active {
+  transform: translateY(0);
+}
+
+.traffy-sys-btn-secondary {
+  background: white;
+  color: #7c3aed;
+  border: 2px solid #7c3aed;
+  box-shadow: none;
+}
+
+.traffy-sys-btn-secondary:hover {
+  background: #f5f3ff;
+  color: #6d28d9;
+  border-color: #6d28d9;
+  box-shadow: 0 4px 10px rgba(124, 58, 237, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Connection Status Indicator */
+#node-connection-status {
+  padding: 12px; /* Increased padding */
+  border-radius: 8px;
+  font-size: 13px; /* Increased from 12px */
+  text-align: center;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+}
+
+.conn-connected {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.conn-disconnected {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+
+/* Scraper Activity Log */
+#scraper-activity-box {
+  background: #0f172a;
+  color: #34d399;
+  font-family: 'Fira Code', 'Courier New', Courier, monospace;
+  font-size: 12px; /* Increased from 11px */
+  padding: 12px;
+  border-radius: 8px;
+  height: 130px;
+  overflow-y: auto;
+  border: 1px solid #1e293b;
+  white-space: pre-wrap;
+}
+
+/* Status Notifications */
+#traffy-sys-ext-status {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px; /* Increased from 12px */
+  font-weight: 600;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  border: 1px solid #bae6fd;
+}
+
+#traffy-sys-ext-status.show {
+  opacity: 1;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+  margin: 8px 0; /* More spacing */
+}

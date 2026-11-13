@@ -1,0 +1,270 @@
+body {
+      font-family: 'Prompt', 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* Professional typography scaling and UX enhancements */
+    h1 {
+      font-size: 1.5rem !important;
+      /* ~24px */
+      font-weight: 700 !important;
+    }
+
+    /* Sidebar Menu Links */
+    .menu-link {
+      font-size: 14.5px !important;
+      padding: 10px 14px !important;
+      /* Slightly more clickable area */
+      font-weight: 600 !important;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    .menu-link svg {
+      width: 22px !important;
+      height: 22px !important;
+    }
+
+    /* Subtab Buttons */
+    .subtab-btn {
+      font-size: 14.5px !important;
+      font-weight: 700 !important;
+      padding: 12px 20px !important;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    /* KPI Value Display */
+    span[id^="kpi"],
+    [id^="kpi"] {
+      font-size: 1.85rem !important;
+      /* ~30px - extremely clear */
+      font-weight: 900 !important;
+      letter-spacing: -0.02em;
+    }
+
+    /* Headers inside Analytical Sections */
+    h4 {
+      font-size: 1.15rem !important;
+      /* ~18.5px */
+      font-weight: 700 !important;
+    }
+
+    /* Standard descriptions */
+    .page-content p,
+    main p {
+      font-size: 13.5px !important;
+      line-height: 1.6 !important;
+    }
+
+    /* Table text readability */
+    table th {
+      font-size: 14px !important;
+      font-weight: 700 !important;
+      padding: 12px 16px !important;
+    }
+
+    table td {
+      font-size: 14px !important;
+      padding: 12px 16px !important;
+    }
+
+    /* Chart labels and date range inputs */
+    #globalDateRange {
+      font-size: 14px !important;
+      font-weight: 600 !important;
+    }
+
+
+
+
+    @keyframes flashRedWhite {
+
+      0%,
+      100% {
+        background-color: #ff0000;
+        box-shadow: 0 0 8px #ff0000;
+      }
+
+      50% {
+        background-color: #ffffff;
+        box-shadow: 0 0 10px #ffffff;
+      }
+    }
+
+    .animate-flash-red-white {
+      animation: flashRedWhite 0.8s ease-in-out infinite;
+    }
+
+    /* Professional Background Gradient System */
+    .main-bg-gradient {
+      transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      background-attachment: fixed;
+    }
+
+    /* 1. Water theme (overview, water subtab) */
+    .bg-theme-water {
+      background: linear-gradient(135deg, #e3effa 0%, #c6e0f9 100%) !important;
+    }
+
+    .dark .bg-theme-water {
+      background: radial-gradient(circle at 80% 20%, rgba(37, 99, 235, 0.15) 0%, rgba(15, 23, 42, 0) 60%), linear-gradient(135deg, #090f21 0%, #050914 100%) !important;
+    }
+
+    /* 2. Drought theme (drought) */
+    .bg-theme-drought {
+      background: linear-gradient(135deg, #f7ede0 0%, #edd8b8 100%) !important;
+    }
+
+    .dark .bg-theme-drought {
+      background: radial-gradient(circle at 80% 20%, rgba(217, 119, 6, 0.13) 0%, rgba(15, 23, 42, 0) 60%), linear-gradient(135deg, #140d06 0%, #0a0603 100%) !important;
+    }
+
+    /* 3. PM 2.5 theme (pm25) */
+    .bg-theme-pm25 {
+      background: linear-gradient(135deg, #e3f6ed 0%, #c1ecd6 100%) !important;
+    }
+
+    .dark .bg-theme-pm25 {
+      background: radial-gradient(circle at 80% 20%, rgba(5, 150, 105, 0.14) 0%, rgba(15, 23, 42, 0) 60%), linear-gradient(135deg, #051410 0%, #030d0a 100%) !important;
+    }
+
+    /* 4. Complaints theme (complaints) */
+    .bg-theme-complaints {
+      background: linear-gradient(135deg, #eeeafd 0%, #d8d0fa 100%) !important;
+    }
+
+    .dark .bg-theme-complaints {
+      background: radial-gradient(circle at 80% 20%, rgba(124, 58, 237, 0.14) 0%, rgba(15, 23, 42, 0) 60%), linear-gradient(135deg, #0f0a1f 0%, #090612 100%) !important;
+    }
+
+    /* 5. Fire theme (fire) */
+    .bg-theme-fire {
+      background: linear-gradient(135deg, #fbeaea 0%, #f6cfcf 100%) !important;
+    }
+
+    .dark .bg-theme-fire {
+      background: radial-gradient(circle at 80% 20%, rgba(220, 38, 38, 0.12) 0%, rgba(15, 23, 42, 0) 60%), linear-gradient(135deg, #170707 0%, #0d0404 100%) !important;
+    }
+
+    /* 6. General / Home / Settings theme (home, dashboard general, schedule) */
+    .bg-theme-general {
+      background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%) !important;
+    }
+
+    .dark .bg-theme-general {
+      background: radial-gradient(circle at 80% 20%, rgba(148, 163, 184, 0.08) 0%, rgba(15, 23, 42, 0) 60%), linear-gradient(135deg, #090e1a 0%, #05080f 100%) !important;
+    }
+
+    /* 7. Home theme only (Solid white background in light mode, professional dark slate in dark mode) */
+    .bg-theme-home {
+      background: #ffffff !important;
+    }
+
+    .dark .bg-theme-home {
+      background: #0f172a !important;
+      /* Premium dark background */
+    }
+
+    /* Professional Background Watermark Logo */
+    .bg-watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40vw;
+      height: 40vw;
+      max-width: 450px;
+      max-height: 450px;
+      min-width: 250px;
+      min-height: 250px;
+      background-image: url('logo_pao.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 0;
+      filter: grayscale(100%);
+      transition: opacity 0.3s ease;
+    }
+
+    .dark .bg-watermark {
+      opacity: 0.04;
+    }
+
+    /* Collapsible Sidebar & Hamburger Toggle */
+    #sidebar {
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, border-color 0.3s ease;
+      will-change: width, transform, opacity;
+    }
+    
+    /* Desktop Collapsible Layout (sm: 640px and above) */
+    @media (min-width: 640px) {
+      .sidebar-collapsed #sidebar {
+        width: 0 !important;
+        opacity: 0 !important;
+        transform: translateX(-100%) !important;
+        border-right-width: 0 !important;
+        pointer-events: none !important;
+      }
+    }
+    
+    /* Mobile Layout (below 640px) */
+    @media (max-width: 639px) {
+      #sidebar {
+        transform: translateX(-100%) !important;
+        width: 16rem !important; /* Ensure fixed w-64 when visible */
+      }
+      .sidebar-open #sidebar {
+        transform: translateX(0) !important;
+        opacity: 1 !important;
+      }
+    }
+
+    /* 🗺️ Leaflet GIS Custom Styling */
+    .leaflet-popup-content-wrapper {
+      background: rgba(255, 255, 255, 0.96) !important;
+      backdrop-filter: blur(12px) !important;
+      border-radius: 1.25rem !important;
+      box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.18), 0 8px 12px -6px rgba(0, 0, 0, 0.1) !important;
+      border: 1px solid rgba(226, 232, 240, 0.9) !important;
+      padding: 0 !important;
+      overflow: hidden;
+    }
+    .dark .leaflet-popup-content-wrapper {
+      background: rgba(30, 41, 59, 0.96) !important;
+      border-color: rgba(51, 65, 85, 0.9) !important;
+      box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5) !important;
+    }
+    .leaflet-popup-content {
+      margin: 0 !important;
+      line-height: 1.5 !important;
+      font-family: 'Prompt', 'Inter', sans-serif !important;
+    }
+    .leaflet-popup-tip {
+      background: rgba(255, 255, 255, 0.96) !important;
+    }
+    .dark .leaflet-popup-tip {
+      background: rgba(30, 41, 59, 0.96) !important;
+    }
+    .gis-pin-pulse {
+      animation: gisPulse 2s infinite;
+    }
+    @keyframes gisPulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+    .district-map-badge {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 9999px;
+      padding: 2px 8px;
+      white-space: nowrap;
+      pointer-events: none;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <script src="/auth-client.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ระบบควบคุมการแจ้งเตือนวิกฤตอัตโนมัติ องค์การบริหารส่วนจังหวัดลำปาง" />
+  <title>ระบบแจ้งเตือนวิกฤต - อบจ.ลำปาง</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/notification-1.css">
+</head>
+
+<body>
+  <div class="p-4 md:p-6 max-w-[1400px] mx-auto">
+
+    <!-- ===== HEADER BANNER ===== -->
+    <div class="mb-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-700 rounded-2xl p-6 text-white relative overflow-hidden">
+      <div class="absolute -top-10 -right-10 w-48 h-48 bg-white/10 rounded-full blur-2xl"></div>
+      <div class="absolute -bottom-8 -left-8 w-32 h-32 bg-white/5 rounded-full blur-xl"></div>
+      <div class="relative z-10 flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h1 class="text-xl md:text-2xl font-bold mb-1">🔔 ระบบแจ้งเตือนวิกฤตอัตโนมัติ</h1>
+          <p class="text-indigo-200 text-sm">องค์การบริหารส่วนจังหวัดลำปาง — E-mail Notification System</p>
+        </div>
+        <div class="flex items-center gap-3 flex-wrap">
+          <span id="systemStatusBadge" class="px-4 py-1.5 rounded-full text-sm font-semibold bg-white/20 text-white backdrop-blur-sm">
+            ⏳ กำลังตรวจสอบ...
+          </span>
+          <button onclick="checkNow()" class="btn-primary text-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            ตรวจสอบทันที
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== STAT CARDS ===== -->
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+      <div class="stat-card total">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-2xl">🔔</span>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">วันนี้</span>
+        </div>
+        <p id="statTotalToday" class="text-3xl font-bold text-slate-800 mb-1">—</p>
+        <p class="text-xs text-slate-500 font-medium">แจ้งเตือนทั้งหมด</p>
+      </div>
+      <div class="stat-card critical">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-2xl">🚨</span>
+          <span class="text-[10px] font-bold text-red-400 uppercase tracking-wider">CRITICAL</span>
+        </div>
+        <p id="statCritical" class="text-3xl font-bold text-red-600 mb-1">—</p>
+        <p class="text-xs text-slate-500 font-medium">ระดับวิกฤต</p>
+      </div>
+      <div class="stat-card warning">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-2xl">⚠️</span>
+          <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider">WARNING</span>
+        </div>
+        <p id="statWarning" class="text-3xl font-bold text-amber-600 mb-1">—</p>
+        <p class="text-xs text-slate-500 font-medium">เฝ้าระวัง</p>
+      </div>
+      <div class="stat-card success">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-2xl">📧</span>
+          <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">SENT</span>
+        </div>
+        <p id="statSent" class="text-3xl font-bold text-emerald-600 mb-1">—</p>
+        <p class="text-xs text-slate-500 font-medium">ส่งสำเร็จ</p>
+      </div>
+      <div class="stat-card info col-span-2 lg:col-span-1">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-2xl">📊</span>
+          <span class="text-[10px] font-bold text-blue-400 uppercase tracking-wider">เดือนนี้</span>
+        </div>
+        <p id="statMonthly" class="text-3xl font-bold text-blue-600 mb-1">—</p>
+        <p class="text-xs text-slate-500 font-medium">แจ้งเตือนรวม</p>
+      </div>
+    </div>
+
+    <!-- ===== MAIN GRID ===== -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+      <!-- LEFT COLUMN -->
+      <div class="xl:col-span-1 space-y-5">
+
+        <!-- SMTP Configuration Panel -->
+        <div id="smtpPanel" class="smtp-panel not-configured">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">📧</span>
+              <span class="font-bold text-sm">SMTP Configuration</span>
+            </div>
+            <span id="smtpStatusDot" class="w-2.5 h-2.5 rounded-full bg-red-400 inline-block"></span>
+          </div>
+          <p id="smtpStatusText" class="text-xs opacity-80 mb-3">ยังไม่ได้ตั้งค่า — กรุณากำหนด Email / App Password</p>
+          <div class="space-y-2">
+            <div>
+              <label class="block text-[10px] font-semibold opacity-60 uppercase mb-1">Gmail Account</label>
+              <input id="smtpUserInput" type="email" placeholder="your@gmail.com"
+                class="w-full px-3 py-2 rounded-lg text-sm font-medium bg-white/10 text-white placeholder-white/40 border border-white/20 outline-none focus:bg-white/20 focus:border-white/50 transition-all">
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold opacity-60 uppercase mb-1">App Password (16 ตัวอักษร)</label>
+              <input id="smtpPassInput" type="password" placeholder="xxxx xxxx xxxx xxxx"
+                class="w-full px-3 py-2 rounded-lg text-sm font-medium bg-white/10 text-white placeholder-white/40 border border-white/20 outline-none focus:bg-white/20 focus:border-white/50 transition-all">
+            </div>
+            <button onclick="saveSMTP()" class="w-full mt-1 py-2.5 rounded-lg text-sm font-semibold bg-white/20 text-white hover:bg-white/30 transition-all border border-white/20">
+              💾 บันทึกการตั้งค่า
+            </button>
+          </div>
+          <!-- Guide -->
+          <details class="mt-3">
+            <summary class="text-[11px] opacity-60 cursor-pointer hover:opacity-80 transition-opacity">📋 วิธีสร้าง Gmail App Password</summary>
+            <div class="mt-2 text-[11px] opacity-70 space-y-1 pl-2 border-l border-white/20">
+              <p>1. เปิด myaccount.google.com</p>
+              <p>2. ไปที่ Security → 2-Step Verification → เปิดใช้งาน</p>
+              <p>3. ค้นหา "App passwords" → เลือก Mail / Windows Computer</p>
+              <p>4. Copy รหัส 16 ตัว มาใส่ในช่อง App Password ด้านบน</p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Alert Type Toggle Card -->
+        <div class="section-card">
+          <div class="section-header">
+            <div>
+              <h2 class="text-sm font-bold text-slate-800">⚙️ เปิด/ปิด การแจ้งเตือน</h2>
+              <p class="text-xs text-slate-400 mt-0.5">เลือกด้านที่ต้องการแจ้งเตือน</p>
+            </div>
+          </div>
+          <div>
+            <div class="alert-type-row">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-base">🌊</div>
+                <div>
+                  <p class="text-sm font-semibold text-slate-700">ระดับน้ำ / น้ำฝน</p>
+                  <p class="text-[11px] text-slate-400">ล้นตลิ่ง / น้ำน้อย / ฝนหนัก</p>
+                </div>
+              </div>
+              <label class="toggle-wrap">
+                <input type="checkbox" id="toggle-water" checked onchange="toggleAlertType('water', this.checked)">
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
+            </div>
+            <div class="alert-type-row">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-base">🏜️</div>
+                <div>
+                  <p class="text-sm font-semibold text-slate-700">ภัยแล้ง</p>
+                  <p class="text-[11px] text-slate-400">ปริมาตรน้ำกักเก็บ ≤30% / ≤50%</p>
+                </div>
+              </div>
+              <label class="toggle-wrap">
+                <input type="checkbox" id="toggle-drought" checked onchange="toggleAlertType('drought', this.checked)">
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
+            </div>
+            <div class="alert-type-row">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-base">💨</div>
+                <div>
+                  <p class="text-sm font-semibold text-slate-700">PM 2.5</p>
+                  <p class="text-[11px] text-slate-400">≥37.6 / ≥75.1 µg/m³</p>
+                </div>
+              </div>
+              <label class="toggle-wrap">
+                <input type="checkbox" id="toggle-pm25" checked onchange="toggleAlertType('pm25', this.checked)">
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
+            </div>
+            <div class="alert-type-row">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-base">📢</div>
+                <div>
+                  <p class="text-sm font-semibold text-slate-700">เรื่องร้องเรียน</p>
+                  <p class="text-[11px] text-slate-400">≥10 เรื่อง/วัน / ค้าง &gt;30 วัน</p>
+                </div>
+              </div>
+              <label class="toggle-wrap">
+                <input type="checkbox" id="toggle-complaints" checked onchange="toggleAlertType('complaints', this.checked)">
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="section-card p-5 space-y-3">
+          <h2 class="text-sm font-bold text-slate-700 mb-1">🎯 ดำเนินการ</h2>
+          <button onclick="checkNow()" class="btn-primary w-full justify-center text-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            ตรวจสอบและแจ้งเตือนทันที
+          </button>
+          <button onclick="sendTestEmail()" class="btn-success w-full justify-center text-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            ทดสอบส่ง E-mail
+          </button>
+          <button onclick="loadAll()" class="btn-secondary w-full justify-center text-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            รีเฟรชข้อมูล
+          </button>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="xl:col-span-2 space-y-5">
+
+        <!-- Recipients Table -->
+        <div class="section-card">
+          <div class="section-header">
+            <div>
+              <h2 class="text-sm font-bold text-slate-800">👥 ผู้รับการแจ้งเตือน</h2>
+              <p class="text-xs text-slate-400 mt-0.5">จัดการรายชื่อและระดับการรับแจ้งเตือน</p>
+            </div>
+            <button onclick="showAddModal()" class="btn-primary text-xs px-4 py-2.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+              เพิ่มผู้รับ
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:50px;">สถานะ</th>
+                  <th>ชื่อ-สกุล</th>
+                  <th class="hidden md:table-cell">ตำแหน่ง</th>
+                  <th>E-mail</th>
+                  <th class="text-center" style="width:110px;">ระดับ</th>
+                  <th class="text-center hidden lg:table-cell" style="width:80px;">ด้าน</th>
+                  <th class="text-center" style="width:100px;">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="recipientsBody">
+                <tr><td colspan="7" class="text-center py-10 text-slate-400 text-sm">กำลังโหลด...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Alert History Table -->
+        <div class="section-card">
+          <div class="section-header">
+            <div>
+              <h2 class="text-sm font-bold text-slate-800">📋 ประวัติการแจ้งเตือน</h2>
+              <p class="text-xs text-slate-400 mt-0.5">50 รายการล่าสุด</p>
+            </div>
+            <button onclick="loadHistory()" class="btn-secondary text-xs px-3 py-2">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              รีเฟรช
+            </button>
+          </div>
+          <div class="overflow-x-auto" style="max-height: 480px; overflow-y: auto;">
+            <table class="data-table">
+              <thead class="sticky top-0">
+                <tr>
+                  <th>เวลา</th>
+                  <th class="text-center" style="width:90px;">ระดับ</th>
+                  <th style="width:80px;">ประเภท</th>
+                  <th>หัวข้อ</th>
+                  <th class="text-center" style="width:90px;">สถานะส่ง</th>
+                </tr>
+              </thead>
+              <tbody id="historyBody">
+                <tr><td colspan="5" class="text-center py-10 text-slate-400 text-sm">กำลังโหลด...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: Add / Edit Recipient ===== -->
+  <div id="recipientModal" class="modal-backdrop" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modalTitle" class="text-base font-bold text-slate-800">เพิ่มผู้รับแจ้งเตือน</h3>
+        <p class="text-xs text-slate-400 mt-1">กรอกข้อมูลผู้รับการแจ้งเตือน E-mail</p>
+      </div>
+      <div class="modal-body space-y-4">
+        <input type="hidden" id="editId">
+        <div class="grid grid-cols-1 gap-4">
+          <div>
+            <label class="form-label">ชื่อ-นามสกุล <span class="text-red-400">*</span></label>
+            <input type="text" id="inputName" class="form-input" placeholder="เช่น นายสมชาย ใจดี">
+          </div>
+          <div>
+            <label class="form-label">ตำแหน่ง <span class="text-red-400">*</span></label>
+            <input type="text" id="inputPosition" class="form-input" placeholder="เช่น นักวิชาการคอมพิวเตอร์ชำนาญการ">
+          </div>
+          <div>
+            <label class="form-label">E-mail <span class="text-red-400">*</span></label>
+            <input type="email" id="inputEmail" class="form-input" placeholder="example@gmail.com">
+          </div>
+          <div>
+            <label class="form-label">ระดับขั้นต่ำที่รับแจ้ง</label>
+            <select id="inputLevel" class="form-select">
+              <option value="info">ℹ️ INFO — รับทุกระดับ</option>
+              <option value="warning" selected>⚠️ WARNING — เฝ้าระวังขึ้นไป</option>
+              <option value="critical">🚨 CRITICAL — วิกฤตเท่านั้น</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">รับแจ้งเตือนด้าน</label>
+            <div class="grid grid-cols-2 gap-2 mt-1">
+              <label class="flex items-center gap-2 cursor-pointer p-2.5 rounded-lg hover:bg-slate-50 border border-slate-100">
+                <input type="checkbox" id="chkWater" checked class="rounded accent-blue-600">
+                <span class="text-sm">🌊 ระดับน้ำ/ฝน</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer p-2.5 rounded-lg hover:bg-slate-50 border border-slate-100">
+                <input type="checkbox" id="chkDrought" checked class="rounded accent-amber-500">
+                <span class="text-sm">🏜️ ภัยแล้ง</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer p-2.5 rounded-lg hover:bg-slate-50 border border-slate-100">
+                <input type="checkbox" id="chkPM25" checked class="rounded accent-emerald-600">
+                <span class="text-sm">💨 PM 2.5</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer p-2.5 rounded-lg hover:bg-slate-50 border border-slate-100">
+                <input type="checkbox" id="chkComplaints" checked class="rounded accent-purple-600">
+                <span class="text-sm">📢 ร้องเรียน</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal()" class="btn-secondary">ยกเลิก</button>
+        <button onclick="saveRecipient()" class="btn-primary">💾 บันทึก</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <script src="/js/notification-1.js"></script>
+</body>
+</html>

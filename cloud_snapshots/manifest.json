@@ -1,0 +1,17 @@
+{
+    "updated_at": "2026-11-13 13:54:57",
+    "snapshots": {
+        "gh_20261113_1354": {
+            "id": "gh_20261113_1354",
+            "recorded_at": "2026-11-13 13:54:57",
+            "path": "2026-11-13\/snapshot_20261113_1354.json",
+            "counts": {
+                "water": 25,
+                "rainfall": 197,
+                "drought": 36,
+                "pm25": 33,
+                "complaints": 60
+            }
+        }
+    }
+}

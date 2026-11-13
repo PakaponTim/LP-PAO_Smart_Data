@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "เครื่องมือดึงข้อมูล WaterSys",
+  "version": "1.0",
+  "description": "ดึงข้อมูลจากเว็บ lampang.thaiwater.net ผ่านปุ่มลัดหรือแผงควบคุม",
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "storage",
+    "alarms",
+    "scripting",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "https://lampang.thaiwater.net/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://lampang.thaiwater.net/*"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "js": [
+        "xlsx.mini.min.js",
+        "socket.io.min.js",
+        "auth.js",
+        "content.js"
+      ]
+    }
+  ],
+  "commands": {
+    "extract-dom": {
+      "suggested_key": {
+        "default": "Alt+X",
+        "mac": "Alt+X"
+      },
+      "description": "ดึงข้อมูลและคัดลอกลงคลิปบอร์ด"
+    }
+  },
+  "options_page": "options.html",
+  "optional_host_permissions": [
+    "http://localhost/*",
+    "http://127.0.0.1/*",
+    "https://*/*"
+  ]
+}

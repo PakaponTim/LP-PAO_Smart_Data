@@ -1,0 +1,484 @@
+{
+    "completedTasks": [
+        {
+            "id": "T-1794552908653-501",
+            "projectName": "ซิงค์ข้อมูลจาก GitHub Actions (ขณะปิดเครื่อง)",
+            "taskType": "เก็บข้อมูลลง Database (Direct API)",
+            "status": "success",
+            "timestamp": "2026-11-13 13:55:08",
+            "count": 1,
+            "details": "นำเข้าข้อมูลย้อนหลัง 1 รอบเวลา เข้าสู่ฐานข้อมูล water_system2 สำเร็จ"
+        },
+        {
+            "id": "T-1794544184853-403",
+            "projectName": "ดึงข้อมูลเรื่องร้องเรียน",
+            "taskType": "เก็บข้อมูลลง Database (Direct API)",
+            "status": "success",
+            "timestamp": "2026-11-13 11:29:44",
+            "count": 60,
+            "details": "DB: committed (60 เรื่องร้องเรียน); Direct API; batch: complaints:php7000-20261113112944-a00a3807"
+        },
+        {
+            "id": "T-1794544179620-438",
+            "projectName": "ดึงข้อมูล PM 2.5",
+            "taskType": "เก็บข้อมูลลง Database (Direct API)",
+            "status": "success",
+            "timestamp": "2026-11-13 11:29:39",
+            "count": 33,
+            "details": "DB: committed (33 สถานี PM 2.5); Direct API; batch: pm25:php7000-20261113112939-0653a4fb"
+        },
+        {
+            "id": "T-1794544176735-207",
+            "projectName": "ดึงข้อมูลภัยแล้ง",
+            "taskType": "เก็บข้อมูลลง Database (Direct API)",
+            "status": "success",
+            "timestamp": "2026-11-13 11:29:36",
+            "count": 36,
+            "details": "DB: committed (36 อ่างเก็บน้ำ); Direct API; batch: drought:php7000-20261113112936-57cc5d54"
+        },
+        {
+            "id": "T-1794544176242-100",
+            "projectName": "ดึงข้อมูลระดับน้ำ",
+            "taskType": "เก็บข้อมูลลง Database (Direct API)",
+            "status": "success",
+            "timestamp": "2026-11-13 11:29:36",
+            "count": 25,
+            "details": "DB: committed (25 สถานีน้ำ + 197 สถานีฝน); Direct API; batch: water:php7000-20261113112936-ee8d77a3"
+        },
+        {
+            "id": "T-1794043495895-244",
+            "projectName": "ดึงข้อมูลเรื่องร้องเรียน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-07 16:24:55",
+            "count": 20,
+            "details": "DB: saved; Excel: queued; batch: complaints:a680d6f4-8835-4240-bbeb-9468535905ca"
+        },
+        {
+            "id": "T-1794043217074-250",
+            "projectName": "ดึงข้อมูลเรื่องร้องเรียน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-07 16:20:17",
+            "count": 19,
+            "details": "DB: saved; Excel: queued; batch: complaints:9992b104-217a-4f3b-bdb0-2dce81f0e675"
+        },
+        {
+            "id": "T-1793963594515-42",
+            "projectName": "ดึงข้อมูลเรื่องร้องเรียน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 18:13:14",
+            "count": 19,
+            "details": "DB: saved; Excel: queued; batch: complaints:422f4095-e5f7-4372-8f06-7c94e9c8e57e"
+        },
+        {
+            "id": "T-1793955720593-322",
+            "projectName": "ดึงข้อมูลเรื่องร้องเรียน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 16:02:00",
+            "count": 19,
+            "details": "DB: saved; Excel: queued; batch: complaints:0c0fc332-4f7e-41f7-8c1e-3372b36e7bd5"
+        },
+        {
+            "id": "T-1793955714295-705",
+            "projectName": "ดึงข้อมูล PM 2.5",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 16:01:54",
+            "count": 31,
+            "details": "DB: saved; Excel: queued; batch: pm25:e6728a1b-f650-40b3-9b38-125c7df38d13"
+        },
+        {
+            "id": "T-1793955699139-747",
+            "projectName": "ดึงข้อมูลภัยแล้ง",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 16:01:39",
+            "count": 36,
+            "details": "DB: saved; Excel: queued; batch: drought:f2e88318-b8ad-4427-adbf-0203121efdbd"
+        },
+        {
+            "id": "T-1793955667729-350",
+            "projectName": "ดึงข้อมูลระดับน้ำ",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 16:01:07",
+            "count": 24,
+            "details": "DB: saved; Excel: queued; batch: water:db4b7ecb-2b3b-4d14-9602-6cc2ebef177f"
+        },
+        {
+            "id": "T-1793955662588-226",
+            "projectName": "ดึงข้อมูลน้ำฝน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 16:01:02",
+            "count": 196,
+            "details": "DB: saved; Excel: queued; batch: rainfall:98324068-b4d2-42cc-991b-cea3e99be8cb"
+        },
+        {
+            "id": "T-1793953920127-892",
+            "projectName": "ดึงข้อมูลเรื่องร้องเรียน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 15:32:00",
+            "count": 19,
+            "details": "DB: saved; Excel: queued; batch: complaints:ca2c8f17-4320-4c42-b2f2-773bb9b60acd"
+        },
+        {
+            "id": "T-1793953913359-40",
+            "projectName": "ดึงข้อมูล PM 2.5",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 15:31:53",
+            "count": 31,
+            "details": "DB: saved; Excel: queued; batch: pm25:0dc7c586-b502-4613-97f9-6e1c7fc4cfb9"
+        },
+        {
+            "id": "T-1793953897510-752",
+            "projectName": "ดึงข้อมูลภัยแล้ง",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 15:31:37",
+            "count": 36,
+            "details": "DB: saved; Excel: queued; batch: drought:077df67e-80f3-4eef-b15e-6ae71ab128a5"
+        },
+        {
+            "id": "T-1793953865435-674",
+            "projectName": "ดึงข้อมูลระดับน้ำ",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 15:31:05",
+            "count": 24,
+            "details": "DB: saved; Excel: queued; batch: water:576c6d2a-2cd7-41b2-a0c5-4ed28ebebbda"
+        },
+        {
+            "id": "T-1793953860561-973",
+            "projectName": "ดึงข้อมูลน้ำฝน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 15:31:00",
+            "count": 196,
+            "details": "DB: saved; Excel: queued; batch: rainfall:e00e3de2-a30b-41f8-b3d9-b5f71da2c387"
+        },
+        {
+            "id": "T-1793952119457-953",
+            "projectName": "ดึงข้อมูลน้ำฝน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 15:01:59",
+            "count": 196,
+            "details": "DB: saved; Excel: queued; batch: rainfall:eff99bab-7cca-4003-9f88-a3b9ada9eaed"
+        },
+        {
+            "id": "T-1793952119423-62",
+            "projectName": "ดึงข้อมูลระดับน้ำ",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 15:01:59",
+            "count": 24,
+            "details": "DB: saved; Excel: queued; batch: water:e695fe4d-9bf7-4557-ad36-921d8693086a"
+        },
+        {
+            "id": "T-1793952117404-110",
+            "projectName": "ดึงข้อมูลเรื่องร้องเรียน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 15:01:57",
+            "count": 19,
+            "details": "DB: saved; Excel: queued; batch: complaints:c89e7c0e-ed03-420c-8e58-e272ad3ff7a2"
+        },
+        {
+            "id": "T-1793952111172-790",
+            "projectName": "ดึงข้อมูล PM 2.5",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 15:01:51",
+            "count": 32,
+            "details": "DB: saved; Excel: queued; batch: pm25:9537b3de-7759-4a8d-abe7-f80e50678afe"
+        },
+        {
+            "id": "T-1793952095479-461",
+            "projectName": "ดึงข้อมูลภัยแล้ง",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 15:01:35",
+            "count": 36,
+            "details": "DB: saved; Excel: queued; batch: drought:43eaac5a-41d0-4622-bf32-94559f8ea032"
+        },
+        {
+            "id": "T-1793952064121-548",
+            "projectName": "ดึงข้อมูลระดับน้ำ",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 15:01:04",
+            "count": 24,
+            "details": "DB: saved; Excel: queued; batch: water:96b72f45-6e31-4c8b-8d5b-5cee9f4d42af"
+        },
+        {
+            "id": "T-1793952056122-3",
+            "projectName": "ดึงข้อมูลน้ำฝน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 15:00:56",
+            "count": 196,
+            "details": "DB: saved; Excel: queued; batch: rainfall:50735870-6c58-45df-bcfb-b11d5e9e3687"
+        },
+        {
+            "id": "T-1793950319189-561",
+            "projectName": "ดึงข้อมูลเรื่องร้องเรียน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 14:31:59",
+            "count": 19,
+            "details": "DB: saved; Excel: queued; batch: complaints:b9d6ec3b-c004-4dbc-8bec-f42b077a6bf2"
+        },
+        {
+            "id": "T-1793950312367-819",
+            "projectName": "ดึงข้อมูล PM 2.5",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 14:31:52",
+            "count": 32,
+            "details": "DB: saved; Excel: queued; batch: pm25:69085284-3103-4951-880e-28d80508ff56"
+        },
+        {
+            "id": "T-1793950297541-459",
+            "projectName": "ดึงข้อมูลภัยแล้ง",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 14:31:37",
+            "count": 36,
+            "details": "DB: saved; Excel: queued; batch: drought:cb10b0d4-4385-4e27-9651-5bbc61e6ab34"
+        },
+        {
+            "id": "T-1793950267425-432",
+            "projectName": "ดึงข้อมูลระดับน้ำ",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 14:31:07",
+            "count": 24,
+            "details": "DB: saved; Excel: queued; batch: water:f2fc650c-bfb0-4ca5-a69c-ad09d1057a22"
+        },
+        {
+            "id": "T-1793950262463-916",
+            "projectName": "ดึงข้อมูลน้ำฝน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 14:31:02",
+            "count": 196,
+            "details": "DB: saved; Excel: queued; batch: rainfall:f1c4ffb1-5f69-4b42-9973-8aaeaa29e271"
+        },
+        {
+            "id": "T-1793948518632-758",
+            "projectName": "ดึงข้อมูลเรื่องร้องเรียน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 14:01:58",
+            "count": 19,
+            "details": "DB: saved; Excel: queued; batch: complaints:8449a0cf-e033-4c72-82ac-f6674d0a288e"
+        },
+        {
+            "id": "T-1793948512120-489",
+            "projectName": "ดึงข้อมูล PM 2.5",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 14:01:52",
+            "count": 32,
+            "details": "DB: saved; Excel: queued; batch: pm25:c59b4bbf-ff11-495b-a970-df8eb855e88c"
+        },
+        {
+            "id": "T-1793948496246-447",
+            "projectName": "ดึงข้อมูลภัยแล้ง",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 14:01:36",
+            "count": 36,
+            "details": "DB: saved; Excel: queued; batch: drought:1e7afd04-6eb7-402b-8ca7-18c194c2e5aa"
+        },
+        {
+            "id": "T-1793948465654-95",
+            "projectName": "ดึงข้อมูลระดับน้ำ",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 14:01:05",
+            "count": 24,
+            "details": "DB: saved; Excel: queued; batch: water:7e8cf0f6-69de-4c6f-b932-4b9407dac0fb"
+        },
+        {
+            "id": "T-1793948460713-344",
+            "projectName": "ดึงข้อมูลน้ำฝน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 14:01:00",
+            "count": 196,
+            "details": "DB: saved; Excel: queued; batch: rainfall:58fdc0c6-4788-4247-a050-4a2a8e96fb55"
+        },
+        {
+            "id": "T-1793946816171-277",
+            "projectName": "ดึงข้อมูลเรื่องร้องเรียน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 13:33:36",
+            "count": 19,
+            "details": "DB: saved; Excel: queued; batch: complaints:be2da02f-3f3e-441a-b32e-651ece90e2f1"
+        },
+        {
+            "id": "T-1793946810447-557",
+            "projectName": "ดึงข้อมูล PM 2.5",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 13:33:30",
+            "count": 32,
+            "details": "DB: saved; Excel: queued; batch: pm25:cc3f4006-0b50-4eb7-8255-8ed44ff6f6b5"
+        },
+        {
+            "id": "T-1793946695653-65",
+            "projectName": "ดึงข้อมูลภัยแล้ง",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 13:31:35",
+            "count": 36,
+            "details": "DB: saved; Excel: queued; batch: drought:53e79a8f-a73e-4bf9-871f-9efdfabc0453"
+        },
+        {
+            "id": "T-1793946664233-328",
+            "projectName": "ดึงข้อมูลระดับน้ำ",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 13:31:04",
+            "count": 24,
+            "details": "DB: saved; Excel: queued; batch: water:a7a9cb84-3a6f-4f78-8333-40e81d76eb45"
+        },
+        {
+            "id": "T-1793946659344-968",
+            "projectName": "ดึงข้อมูลน้ำฝน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 13:30:59",
+            "count": 196,
+            "details": "DB: saved; Excel: queued; batch: rainfall:e08a95ca-a46b-4af8-b3d8-dfca083dfe18"
+        },
+        {
+            "id": "T-1793944917660-436",
+            "projectName": "ดึงข้อมูลเรื่องร้องเรียน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 13:01:57",
+            "count": 19,
+            "details": "DB: saved; Excel: queued; batch: complaints:dc0200b6-f95d-4be9-9d71-897a759f19e8"
+        },
+        {
+            "id": "T-1793944911085-258",
+            "projectName": "ดึงข้อมูล PM 2.5",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 13:01:51",
+            "count": 32,
+            "details": "DB: saved; Excel: queued; batch: pm25:77d07fd2-70b0-45c8-a7a9-aea3d339c9b7"
+        },
+        {
+            "id": "T-1793944895338-461",
+            "projectName": "ดึงข้อมูลภัยแล้ง",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 13:01:35",
+            "count": 36,
+            "details": "DB: saved; Excel: queued; batch: drought:305a7f2e-a296-4bfd-8383-e614f87955c5"
+        },
+        {
+            "id": "T-1793944863574-315",
+            "projectName": "ดึงข้อมูลระดับน้ำ",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 13:01:03",
+            "count": 24,
+            "details": "DB: saved; Excel: queued; batch: water:98f4e8fa-8cbb-4406-b6a7-14c2a42283b4"
+        },
+        {
+            "id": "T-1793944858258-731",
+            "projectName": "ดึงข้อมูลน้ำฝน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 13:00:58",
+            "count": 196,
+            "details": "DB: saved; Excel: queued; batch: rainfall:a6bc48b9-d633-4ffa-bc44-c4d995b21915"
+        },
+        {
+            "id": "T-1793943119468-801",
+            "projectName": "ดึงข้อมูลน้ำฝน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 12:31:59",
+            "count": 196,
+            "details": "DB: saved; Excel: queued; batch: rainfall:07b6cdf2-c31c-4c19-b312-6b3eff210e5a"
+        },
+        {
+            "id": "T-1793943119402-748",
+            "projectName": "ดึงข้อมูลระดับน้ำ",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 12:31:59",
+            "count": 24,
+            "details": "DB: saved; Excel: queued; batch: water:0e09973c-eab0-4370-ae29-a454d11c50b2"
+        },
+        {
+            "id": "T-1793943115180-82",
+            "projectName": "ดึงข้อมูลเรื่องร้องเรียน",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 12:31:55",
+            "count": 19,
+            "details": "DB: saved; Excel: queued; batch: complaints:376062ed-17ae-4fab-a5d3-8a8a980275b8"
+        },
+        {
+            "id": "T-1793943108825-359",
+            "projectName": "ดึงข้อมูล PM 2.5",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 12:31:48",
+            "count": 32,
+            "details": "DB: saved; Excel: queued; batch: pm25:c5d7395e-cd0b-41a3-8e4d-123debc346a6"
+        },
+        {
+            "id": "T-1793943093006-931",
+            "projectName": "ดึงข้อมูลภัยแล้ง",
+            "taskType": "เก็บข้อมูลลง Database",
+            "status": "success",
+            "timestamp": "2026-11-06 12:31:33",
+            "count": 36,
+            "details": "DB: saved; Excel: queued; batch: drought:6e8e2663-de19-491a-8807-5087bfcad67d"
+        }
+    ],
+    "projectStats": {
+        "waterLevel": {
+            "lastFetchSuccess": "2026-11-13 11:29:36",
+            "lastFetchStatus": "Success",
+            "lastFetchMessage": "DB: committed (25 สถานีน้ำ + 197 สถานีฝน); Direct API; batch: water:php7000-20261113112936-ee8d77a3",
+            "lastFetchMode": "Database",
+            "rowCountSaved": 83396
+        },
+        "drought": {
+            "lastFetchSuccess": "2026-11-13 11:29:36",
+            "lastFetchStatus": "Success",
+            "lastFetchMessage": "DB: committed (36 อ่างเก็บน้ำ); Direct API; batch: drought:php7000-20261113112936-57cc5d54",
+            "lastFetchMode": "Database",
+            "rowCountSaved": 69712
+        },
+        "pm25": {
+            "lastFetchSuccess": "2026-11-13 11:29:39",
+            "lastFetchStatus": "Success",
+            "lastFetchMessage": "DB: committed (33 สถานี PM 2.5); Direct API; batch: pm25:php7000-20261113112939-0653a4fb",
+            "lastFetchMode": "Database",
+            "rowCountSaved": 119583
+        },
+        "complaints": {
+            "lastFetchSuccess": "2026-11-13 11:29:44",
+            "lastFetchStatus": "Success",
+            "lastFetchMessage": "DB: committed (60 เรื่องร้องเรียน); Direct API; batch: complaints:php7000-20261113112944-a00a3807",
+            "lastFetchMode": "Database",
+            "rowCountSaved": 29527
+        }
+    }
+}

@@ -1,0 +1,44 @@
+body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    @keyframes flashRedWhite {
+
+      0%,
+      100% {
+        background-color: #ff0000;
+        box-shadow: 0 0 8px #ff0000;
+      }
+
+      50% {
+        background-color: #ffffff;
+        box-shadow: 0 0 10px #ffffff;
+      }
+    }
+
+    .animate-flash-red-white {
+      animation: flashRedWhite 0.8s ease-in-out infinite;
+    }
+
+    /* Professional Background Watermark Logo */
+    .bg-watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40vw;
+      height: 40vw;
+      max-width: 450px;
+      max-height: 450px;
+      min-width: 250px;
+      min-height: 250px;
+      background-image: url('logo_pao.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 0;
+      filter: grayscale(100%);
+      transition: opacity 0.3s ease;
+    }

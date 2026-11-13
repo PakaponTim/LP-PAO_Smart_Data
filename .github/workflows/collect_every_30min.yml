@@ -1,0 +1,47 @@
+name: Water_System2 Cloud Collector (Every 30 Minutes)
+
+on:
+  schedule:
+    # รันอัตโนมัติทุกๆ 30 นาที ตลอด 24 ชั่วโมง (แม้ปิดคอมพิวเตอร์ส่วนตัว)
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # สามารถกดปุ่ม "Run workflow" บนหน้าเว็บ GitHub เพื่อสั่งดึงข้อมูลทันทีได้ด้วย
+
+permissions:
+  contents: write
+
+jobs:
+  collect-lampang-data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: 🐘 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: curl, mbstring, json, openssl
+          coverage: none
+
+      - name: 📡 Run PHP Direct API Collector (Water, Rain, Dam, PM2.5, Traffy)
+        run: |
+          php php_server/github_collect_snapshot.php
+
+      - name: 💾 Save & Commit Snapshot to GitHub Repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add cloud_snapshots/
+          if git diff --staged --quiet; then
+            echo "No new snapshot files to commit."
+          else
+            TIMESTAMP=$(TZ='Asia/Bangkok' date +'%Y-%m-%d %H:%M:%S')
+            git commit -m "chore(snapshot): auto-collect Lampang data at ${TIMESTAMP} ICT"
+            git pull --rebase origin ${{ github.ref_name }}
+            git push origin ${{ github.ref_name }}
+          fi
+

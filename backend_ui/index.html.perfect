@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Water System</title>
+  <!-- Use Inter font for a modern look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    @keyframes flashRedWhite {
+
+      0%,
+      100% {
+        background-color: #ff0000;
+        box-shadow: 0 0 8px #ff0000;
+      }
+
+      50% {
+        background-color: #ffffff;
+        box-shadow: 0 0 10px #ffffff;
+      }
+    }
+
+    .animate-flash-red-white {
+      animation: flashRedWhite 0.8s ease-in-out infinite;
+    }
+
+    /* Professional Background Watermark Logo */
+    .bg-watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40vw;
+      height: 40vw;
+      max-width: 450px;
+      max-height: 450px;
+      min-width: 250px;
+      min-height: 250px;
+      background-image: url('logo_pao.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 0;
+      filter: grayscale(100%);
+      transition: opacity 0.3s ease;
+    }
+  </style>
+</head>
+
+<body class="font-sans antialiased text-slate-900 bg-slate-50 flex h-screen overflow-hidden">
+
+  <!-- Sidebar / Left Menu -->
+  <aside id="sidebar"
+    class="bg-white w-64 border-r border-emerald-100 flex flex-col transition-transform duration-300 absolute z-20 h-full sm:relative sm:translate-x-0 -translate-x-full shadow-lg sm:shadow-none">
+    <div
+      class="h-16 flex items-center gap-3 px-6 border-b-4 border-pink-500 bg-emerald-800 shrink-0 shadow-sm relative overflow-hidden">
+      <img src="/logo_pao.png" class="w-8 h-8 object-contain shrink-0 select-none relative z-10" alt="อบจ.ลำปาง Logo">
+      <div class="flex flex-col relative z-10">
+        <span class="text-xs font-extrabold text-white tracking-wider leading-none">อบจ.ลำปาง</span>
+        <span class="text-[8px] text-pink-100 font-semibold tracking-wide uppercase mt-0.5">Control Panel</span>
+      </div>
+    </div>
+
+    <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1.5">
+      <a href="#" id="nav-dashboard" onclick="switchTab('dashboard')"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-emerald-800 hover:bg-emerald-50 hover:text-emerald-950 transition-all duration-200 group">
+        <svg class="w-5 h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 5v-1a1 1 0 00-1-1h-1a1 1 0 00-1 1v1M8 9h12M8 13h12m-12 4h12M4 6h.01M4 10h.01M4 14h.01M4 18h.01">
+          </path>
+        </svg>
+        ดึงข้อมูลน้ำ
+      </a>
+      <a href="#" id="nav-drought" onclick="switchTab('drought')"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-emerald-800 hover:bg-emerald-50 hover:text-emerald-950 transition-all duration-200 group">
+        <svg class="w-5 h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z">
+          </path>
+        </svg>
+        ดึงข้อมูลภัยแล้ง
+      </a>
+      <a href="#" id="nav-fire" onclick="switchTab('fire')"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-emerald-800 hover:bg-emerald-50 hover:text-emerald-950 transition-all duration-200 group">
+        <svg class="w-5 h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.966 7.966 0 01-2.343 5.657z">
+          </path>
+        </svg>
+        ดึงข้อมูลหมอกควันไฟป่า
+      </a>
+      <a href="#" id="nav-pm25" onclick="switchTab('pm25')"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-emerald-800 hover:bg-emerald-50 hover:text-emerald-950 transition-all duration-200 group">
+        <svg class="w-5 h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 17v-2a4 4 0 014-4h4m0 0l-4-4m4 4l-4 4m-5 3a2 2 0 11-4 0 2 2 0 014 0zM3 9h.01M3 13h.01M3 17h.01">
+          </path>
+        </svg>
+        PM 2.5
+      </a>
+      <a href="#" id="nav-complaints" onclick="switchTab('complaints')"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-emerald-800 hover:bg-emerald-50 hover:text-emerald-950 transition-all duration-200 group">
+        <svg class="w-5 h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+          </path>
+        </svg>
+        ดึงข้อมูลระบบร้องเรียน
+      </a>
+      <a href="#" id="nav-settings" onclick="switchTab('settings')"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-emerald-800 hover:bg-emerald-50 hover:text-emerald-950 transition-all duration-200 group">
+        <svg class="w-5 h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        ตั้งค่าเวลา (Schedule)
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 flex flex-col h-screen overflow-hidden relative">
+
+    <!-- Watermark Background Logo -->
+    <div class="bg-watermark"></div>
+
+    <!-- Header -->
+    <header
+      class="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 z-10 sticky top-0">
+      <div class="flex items-center gap-4">
+        <!-- Mobile menu button -->
+        <button id="mobile-menu-btn"
+          class="sm:hidden p-2 rounded-md text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        <h1 class="text-xl font-semibold text-slate-800">Overview</h1>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <!-- User Profile Dummy -->
+        <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded-full transition-colors">
+          <div
+            class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-white font-bold text-sm">
+            PB
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Scrollable Main Content -->
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative">
+      <!-- Content Container -->
+      <div id="view-dashboard" class="max-w-[1400px] mx-auto space-y-6">
+
+        <!-- Welcome Banner -->
+        <div
+          class="bg-gradient-to-r from-blue-600 to-cyan-500 rounded-2xl p-8 text-white shadow-lg shadow-blue-500/20 relative overflow-hidden">
+          <div class="relative z-10">
+            <h2 class="text-3xl font-bold mb-2">Welcome back!</h2>
+            <p class="text-blue-100 max-w-xl">Your system overview is looking great today. Explore the latest insights
+              and metrics from your dashboard.</p>
+          </div>
+          <!-- Decorative circle -->
+          <div class="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
+          <div class="absolute -bottom-24 -right-12 w-48 h-48 bg-white opacity-10 rounded-full blur-2xl"></div>
+        </div>
+
+        <!-- Dummy Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div class="text-slate-500 text-sm font-medium mb-1">Total Users</div>
+            <div class="text-3xl font-bold text-slate-800">12,450</div>
+            <div class="mt-2 text-sm text-green-600 font-medium flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18">
+                </path>
+              </svg>
+              12% from last month
+            </div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div class="text-slate-500 text-sm font-medium mb-1">System Status</div>
+            <div class="text-3xl font-bold text-slate-800">Active</div>
+            <div class="mt-2 text-sm text-green-600 font-medium flex items-center gap-1">
+              <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+              All services operational
+            </div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div class="text-slate-500 text-sm font-medium mb-1">Alerts</div>
+            <div class="text-3xl font-bold text-slate-800">3</div>
+            <div class="mt-2 text-sm text-amber-600 font-medium flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                </path>
+              </svg>
+              Requires attention
+            </div>
+          </div>
+        </div>
+
+        <!-- Automation Controls -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Left Column: Status and Schedule -->
+          <div class="space-y-6">
+            <!-- System Status -->
+            <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+              <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                System Status
+              </h3>
+              <div class="space-y-3 text-sm">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                  <span class="font-semibold text-slate-600">Chrome Extension:</span>
+                  <span id="extStatus" class="flex items-center gap-2 text-red-500 font-medium">
+                    <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div> ไม่ได้เชื่อมต่อ (Disconnected)
+                  </span>
+                </div>
+                <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                  <span class="font-semibold text-slate-600">ดึงข้อมูลล่าสุดเมื่อ:</span>
+                  <span id="lastFetchTime" class="text-slate-700">Never</span>
+                </div>
+              </div>
+              <p class="text-xs text-slate-400 mt-4 italic">
+                * หาก Extension ไม่ได้เชื่อมต่อ ระบบจะใช้ Puppeteer (หุ่นยนต์) ดึงข้อมูลแทน
+              </p>
+            </div>
+
+            <!-- Automation Status -->
+            <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+              <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold text-slate-800">⚙️ สถานะระบบอัตโนมัติ</h3>
+                <button id="toggleScheduleBtn" onclick="toggleSchedule()"
+                  class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
+                  <div class="w-3.5 h-3.5 rounded-full animate-flash-red-white"></div> เปิดใช้งาน (ON)
+                </button>
+              </div>
+            </div>
+
+            <!-- Manual Trigger -->
+            <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+              <h3 class="text-lg font-bold text-slate-800 mb-2">🔧 สั่งการด้วยตัวเอง</h3>
+              <p class="text-sm text-slate-500 mb-3">กดปุ่มด้านล่างเพื่อบังคับเก็บข้อมูลทันทีโดยไม่ต้องรอ</p>
+              <button id="forceFetchBtn" onclick="forceFetch()"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                </svg>
+                สั่งเก็บข้อมูลเดี๋ยวนี้ (Force Fetch Excel)
+              </button>
+              <button id="forceFetchDbBtn" onclick="forceFetchDB()"
+                class="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-3 mt-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4">
+                  </path>
+                </svg>
+                สั่งเก็บข้อมูลลงฐานข้อมูล (Force Fetch DB)
+              </button>
+              <button id="forceFetchRainfallDbBtn" onclick="forceFetchRainfallDB()"
+                class="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 mt-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 14l-7 7m0 0l-7-7m7 7V3">
+                  </path>
+                </svg>
+                สั่งเก็บเฉพาะปริมาณน้ำฝน (Force Fetch Rainfall)
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Column: Live Logs -->
+          <div class="bg-slate-900 rounded-xl border border-slate-800 p-1 shadow-lg flex flex-col h-[500px]">
+            <div
+              class="bg-slate-800 text-slate-200 px-4 py-3 rounded-t-lg border-b border-slate-700 flex justify-between items-center">
+              <h3 class="font-bold flex items-center gap-2">
+                <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                Live System Logs
+              </h3>
+              <div class="flex gap-1.5">
+                <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                <div class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+              </div>
+            </div>
+            <div id="logBox"
+              class="flex-1 overflow-y-auto p-4 font-mono text-sm text-green-400 space-y-1 bg-slate-900 rounded-b-lg">
+              <!-- Logs will appear here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Completed Tasks History -->
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            ประวัติงานที่ทำงานเสร็จสิ้น (Completed Tasks)
+          </h3>
+          <div id="completedTasksBox" class="space-y-2 max-h-[400px] overflow-y-auto">
+            <div class="text-slate-400 text-sm text-center py-4">กำลังโหลด...</div>
+          </div>
+        </div>
+      
+<!-- Scraper Storage & Verification Dashboard -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h3 data-translate="verifier-title" class="text-xl font-bold text-slate-800">📦 ตรวจสอบการจัดเก็บข้อมูลหลัก (Storage Verifier)</h3>
+                <p data-translate="verifier-subtitle" class="text-slate-500 text-sm">การตรวจสอบความสมบูรณ์และพิกัดการบันทึกข้อมูลแบบเรียลไทม์ทั้ง MySQL Database และ Excel</p>
+              </div>
+              <div
+                class="bg-blue-50 text-blue-700 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider shadow-inner flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span> Auto Verifying
+              </div>
+            </div>
+
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+              <!-- Project 1: Water Level -->
+              <div
+                class="bg-slate-50/50 rounded-2xl border border-slate-100 p-5 hover:border-blue-200 hover:-translate-y-1 hover:shadow-md transition-all duration-300 flex flex-col justify-between group shadow-sm">
+                <div>
+                  <!-- Header Row -->
+                  <div class="flex items-start gap-3.5 mb-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shadow-inner shrink-0 mt-0.5">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 9.172V5L8 4z"></path>
+                      </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <h4 data-translate="menu-overview" class="font-bold text-slate-800 text-[15px] xl:text-base leading-tight">ดึงข้อมูลระดับน้ำ</h4>
+                      <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                        <span class="text-[9px] bg-blue-100 text-blue-800 font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">Water Level Scraper</span>
+                        <span id="verifyBadgeWater" class="text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200/60 font-semibold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm shrink-0 whitespace-nowrap">
+                          <svg class="w-3.5 h-3.5 shrink-0 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                          บันทึกถูกต้อง
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Automation Status Row -->
+                  <div class="flex items-center justify-between bg-slate-100/60 border border-slate-200/60 rounded-xl px-3 py-2 mb-3.5">
+                    <span data-translate="verifier-auto-label" class="text-[11px] font-bold text-slate-500 tracking-wide uppercase">ระบบดึงข้อมูลอัตโนมัติ</span>
+                    <button id="toggleScheduleBtn_water" onclick="toggleSchedule('water')" title="เปิด/ปิด ดึงข้อมูลอัตโนมัติ" class="bg-slate-500 hover:bg-slate-600 text-white px-2.5 py-1 rounded-full font-medium transition-colors text-[11px] flex items-center gap-1.5 shadow-sm shrink-0">
+                      <div class="w-2 h-2 rounded-full bg-slate-300"></div> ปิด (OFF)
+                    </button>
+                  </div>
+
+                  <!-- Details Container -->
+                  <div class="space-y-3.5 my-4">
+
+                    <!-- Section: MySQL DB -->
+                    <div class="bg-blue-50/20 border border-blue-100/30 rounded-xl p-3.5 space-y-2.5">
+                      <div
+                        class="flex items-center gap-1.5 text-blue-700 font-semibold text-[11px] uppercase tracking-wider mb-1">
+                        <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4">
+                          </path>
+                        </svg>
+                        <span data-translate="verifier-mysql-title">ฐานข้อมูล MySQL</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-table-name" class="text-slate-400 font-medium whitespace-nowrap">ชื่อตาราง:</span>
+                        <span
+                          class="font-mono bg-white border border-slate-100 px-1.5 py-0.5 rounded text-slate-600 truncate max-w-[130px] xl:max-w-[155px]"
+                          title="tbl_water_disaster_monitoring">tbl_water_disaster_monitoring</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-row-count" class="text-slate-400 font-medium whitespace-nowrap">จำนวนข้อมูล:</span>
+                        <span id="verifyDbCountWater" class="font-bold text-slate-700">0 แถว</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-db-update" class="text-slate-400 font-medium whitespace-nowrap">อัปเดตล่าสุด:</span>
+                        <span id="verifyDbMtimeWater"
+                          class="text-slate-600 font-mono font-medium whitespace-nowrap">N/A</span>
+                      </div>
+                    </div>
+
+                    <!-- Section: Excel File -->
+                    <div class="bg-emerald-50/10 border border-emerald-100/20 rounded-xl p-3.5 space-y-2.5">
+                      <div
+                        class="flex items-center gap-1.5 text-emerald-700 font-semibold text-[11px] uppercase tracking-wider mb-1">
+                        <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                          </path>
+                        </svg>
+                        <span data-translate="verifier-excel-title">ไฟล์เอกสาร Excel</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-file-name" class="text-slate-400 font-medium whitespace-nowrap">ชื่อไฟล์:</span>
+                        <span class="font-mono truncate max-w-[130px] xl:max-w-[155px] text-slate-600"
+                          title="Water_Database_Master.xlsx">Water_Database_Master.xlsx</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-file-size" class="text-slate-400 font-medium whitespace-nowrap">ขนาดไฟล์:</span>
+                        <span id="verifyExcelSizeWater" class="font-bold text-slate-700">0 KB</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-file-update" class="text-slate-400 font-medium whitespace-nowrap">อัปเดตล่าสุด:</span>
+                        <span id="verifyExcelMtimeWater" class="text-slate-600 font-mono whitespace-nowrap">N/A</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div class="flex gap-2 mt-2">
+                  <button onclick="forceFetchDB()"
+                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-semibold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1 shadow-sm font-medium">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4">
+                      </path>
+                    </svg>
+                    <span data-translate="verifier-btn-db">ดึงด่วน (DB)</span>
+                  </button>
+                  <button onclick="forceFetch()"
+                    class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-semibold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1 font-medium">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                    </svg>
+                    <span data-translate="verifier-btn-excel">ดึงด่วน (Excel)</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Project 2: Drought -->
+              <div
+                class="bg-slate-50/50 rounded-2xl border border-slate-100 p-5 hover:border-amber-200 hover:-translate-y-1 hover:shadow-md transition-all duration-300 flex flex-col justify-between group shadow-sm">
+                <div>
+                  <!-- Header Row -->
+                  <div class="flex items-start gap-3.5 mb-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shadow-inner shrink-0 mt-0.5">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707"></path></svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <h4 data-translate="menu-drought" class="font-bold text-slate-800 text-[15px] xl:text-base leading-tight">ดึงข้อมูลภัยแล้ง</h4>
+                      <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                        <span class="text-[9px] bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">Drought Scraper</span>
+                        <span id="verifyBadgeDrought" class="text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200/60 font-semibold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm shrink-0 whitespace-nowrap">
+                          <svg class="w-3.5 h-3.5 shrink-0 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                          บันทึกถูกต้อง
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Automation Status Row -->
+                  <div class="flex items-center justify-between bg-slate-100/60 border border-slate-200/60 rounded-xl px-3 py-2 mb-3.5">
+                    <span data-translate="verifier-auto-label" class="text-[11px] font-bold text-slate-500 tracking-wide uppercase">ระบบดึงข้อมูลอัตโนมัติ</span>
+                    <button id="toggleScheduleBtn_drought" onclick="toggleSchedule('drought')" title="เปิด/ปิด ดึงข้อมูลอัตโนมัติ" class="bg-slate-500 hover:bg-slate-600 text-white px-2.5 py-1 rounded-full font-medium transition-colors text-[11px] flex items-center gap-1.5 shadow-sm shrink-0">
+                      <div class="w-2 h-2 rounded-full bg-slate-300"></div> ปิด (OFF)
+                    </button>
+                  </div>
+
+                  <!-- Details Container -->
+                  <div class="space-y-3.5 my-4">
+
+                    <!-- Section: MySQL DB -->
+                    <div class="bg-blue-50/20 border border-blue-100/30 rounded-xl p-3.5 space-y-2.5">
+                      <div
+                        class="flex items-center gap-1.5 text-blue-700 font-semibold text-[11px] uppercase tracking-wider mb-1">
+                        <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4">
+                          </path>
+                        </svg>
+                        <span data-translate="verifier-mysql-title">ฐานข้อมูล MySQL</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-table-name" class="text-slate-400 font-medium whitespace-nowrap">ชื่อตาราง:</span>
+                        <span
+                          class="font-mono bg-white border border-slate-100 px-1.5 py-0.5 rounded text-slate-600 truncate max-w-[130px] xl:max-w-[155px]"
+                          title="tbl_drought_monitoring">tbl_drought_monitoring</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-row-count" class="text-slate-400 font-medium whitespace-nowrap">จำนวนข้อมูล:</span>
+                        <span id="verifyDbCountDrought" class="font-bold text-slate-700">0 แถว</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-db-update" class="text-slate-400 font-medium whitespace-nowrap">อัปเดตล่าสุด:</span>
+                        <span id="verifyDbMtimeDrought"
+                          class="text-slate-600 font-mono font-medium whitespace-nowrap">N/A</span>
+                      </div>
+                    </div>
+
+                    <!-- Section: Excel File -->
+                    <div class="bg-emerald-50/10 border border-emerald-100/20 rounded-xl p-3.5 space-y-2.5">
+                      <div
+                        class="flex items-center gap-1.5 text-emerald-700 font-semibold text-[11px] uppercase tracking-wider mb-1">
+                        <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                          </path>
+                        </svg>
+                        <span data-translate="verifier-excel-title">ไฟล์เอกสาร Excel</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-file-name" class="text-slate-400 font-medium whitespace-nowrap">ชื่อไฟล์:</span>
+                        <span class="font-mono truncate max-w-[130px] xl:max-w-[155px] text-slate-600"
+                          title="Drought_Dam_Data.xlsx">Drought_Dam_Data.xlsx</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-file-size" class="text-slate-400 font-medium whitespace-nowrap">ขนาดไฟล์:</span>
+                        <span id="verifyExcelSizeDrought" class="font-bold text-slate-700">0 KB</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-file-update" class="text-slate-400 font-medium whitespace-nowrap">อัปเดตล่าสุด:</span>
+                        <span id="verifyExcelMtimeDrought" class="text-slate-600 font-mono whitespace-nowrap">N/A</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div class="flex gap-2 mt-2">
+                  <button onclick="triggerDroughtFetch('db')"
+                    class="flex-1 bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-semibold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1 shadow-sm font-medium">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4">
+                      </path>
+                    </svg>
+                    <span data-translate="verifier-btn-db">ดึงด่วน (DB)</span>
+                  </button>
+                  <button onclick="triggerDroughtFetch('excel')"
+                    class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-semibold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1 font-medium">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                    </svg>
+                    <span data-translate="verifier-btn-excel">ดึงด่วน (Excel)</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Project 3: PM 2.5 -->
+              <div
+                class="bg-slate-50/50 rounded-2xl border border-slate-100 p-5 hover:border-emerald-200 hover:-translate-y-1 hover:shadow-md transition-all duration-300 flex flex-col justify-between group shadow-sm">
+                <div>
+                  <!-- Header Row -->
+                  <div class="flex items-start gap-3.5 mb-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-inner shrink-0 mt-0.5">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <h4 data-translate="menu-pm25" class="font-bold text-slate-800 text-[15px] xl:text-base leading-tight">ดึงข้อมูล PM 2.5</h4>
+                      <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                        <span class="text-[9px] bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">PM 2.5 Scraper</span>
+                        <span id="verifyBadgePM25" class="text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200/60 font-semibold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm shrink-0 whitespace-nowrap">
+                          <svg class="w-3.5 h-3.5 shrink-0 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                          บันทึกถูกต้อง
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Automation Status Row -->
+                  <div class="flex items-center justify-between bg-slate-100/60 border border-slate-200/60 rounded-xl px-3 py-2 mb-3.5">
+                    <span data-translate="verifier-auto-label" class="text-[11px] font-bold text-slate-500 tracking-wide uppercase">ระบบดึงข้อมูลอัตโนมัติ</span>
+                    <button id="toggleScheduleBtn_pm25" onclick="toggleSchedule('pm25')" title="เปิด/ปิด ดึงข้อมูลอัตโนมัติ" class="bg-slate-500 hover:bg-slate-600 text-white px-2.5 py-1 rounded-full font-medium transition-colors text-[11px] flex items-center gap-1.5 shadow-sm shrink-0">
+                      <div class="w-2 h-2 rounded-full bg-slate-300"></div> ปิด (OFF)
+                    </button>
+                  </div>
+
+                  <!-- Details Container -->
+                  <div class="space-y-3.5 my-4">
+
+                    <!-- Section: MySQL DB -->
+                    <div class="bg-blue-50/20 border border-blue-100/30 rounded-xl p-3.5 space-y-2.5">
+                      <div
+                        class="flex items-center gap-1.5 text-blue-700 font-semibold text-[11px] uppercase tracking-wider mb-1">
+                        <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4">
+                          </path>
+                        </svg>
+                        <span data-translate="verifier-mysql-title">ฐานข้อมูล MySQL</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-table-name" class="text-slate-400 font-medium whitespace-nowrap">ชื่อตาราง:</span>
+                        <span
+                          class="font-mono bg-white border border-slate-100 px-1.5 py-0.5 rounded text-slate-600 truncate max-w-[130px] xl:max-w-[155px]"
+                          title="tbl_pm25_monitoring">tbl_pm25_monitoring</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-row-count" class="text-slate-400 font-medium whitespace-nowrap">จำนวนข้อมูล:</span>
+                        <span id="verifyDbCountPM25" class="font-bold text-slate-700">0 แถว</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-db-update" class="text-slate-400 font-medium whitespace-nowrap">อัปเดตล่าสุด:</span>
+                        <span id="verifyDbMtimePM25"
+                          class="text-slate-600 font-mono font-medium whitespace-nowrap">N/A</span>
+                      </div>
+                    </div>
+
+                    <!-- Section: Excel File -->
+                    <div class="bg-emerald-50/10 border border-emerald-100/20 rounded-xl p-3.5 space-y-2.5">
+                      <div
+                        class="flex items-center gap-1.5 text-emerald-700 font-semibold text-[11px] uppercase tracking-wider mb-1">
+                        <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                          </path>
+                        </svg>
+                        <span data-translate="verifier-excel-title">ไฟล์เอกสาร Excel</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-file-name" class="text-slate-400 font-medium whitespace-nowrap">ชื่อไฟล์:</span>
+                        <span class="font-mono truncate max-w-[130px] xl:max-w-[155px] text-slate-600"
+                          title="PM25_Air_Quality_Data.xlsx">PM25_Air_Quality_Data.xlsx</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-file-size" class="text-slate-400 font-medium whitespace-nowrap">ขนาดไฟล์:</span>
+                        <span id="verifyExcelSizePM25" class="font-bold text-slate-700">0 KB</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-file-update" class="text-slate-400 font-medium whitespace-nowrap">อัปเดตล่าสุด:</span>
+                        <span id="verifyExcelMtimePM25" class="text-slate-600 font-mono whitespace-nowrap">N/A</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div class="flex gap-2 mt-2">
+                  <button onclick="triggerPM25Fetch('db')"
+                    class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-semibold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1 shadow-sm font-medium">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4">
+                      </path>
+                    </svg>
+                    <span data-translate="verifier-btn-db">ดึงด่วน (DB)</span>
+                  </button>
+                  <button onclick="triggerPM25Fetch('excel')"
+                    class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-semibold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1 font-medium">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                    </svg>
+                    <span data-translate="verifier-btn-excel">ดึงด่วน (Excel)</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Project 4: Complaints -->
+              <div
+                class="bg-slate-50/50 rounded-2xl border border-slate-100 p-5 hover:border-violet-200 hover:-translate-y-1 hover:shadow-md transition-all duration-300 flex flex-col justify-between group shadow-sm">
+                <div>
+                  <!-- Header Row -->
+                  <div class="flex items-start gap-3.5 mb-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center shadow-inner shrink-0 mt-0.5">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <h4 data-translate="menu-complaints" class="font-bold text-slate-800 text-[15px] xl:text-base leading-tight">ดึงข้อมูลระบบร้องเรียน</h4>
+                      <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                        <span class="text-[9px] bg-violet-100 text-violet-800 font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">Complaints Scraper</span>
+                        <span id="verifyBadgeComplaints" class="text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200/60 font-semibold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm shrink-0 whitespace-nowrap">
+                          <svg class="w-3.5 h-3.5 shrink-0 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                          บันทึกถูกต้อง
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Automation Status Row -->
+                  <div class="flex items-center justify-between bg-slate-100/60 border border-slate-200/60 rounded-xl px-3 py-2 mb-3.5">
+                    <span data-translate="verifier-auto-label" class="text-[11px] font-bold text-slate-500 tracking-wide uppercase">ระบบดึงข้อมูลอัตโนมัติ</span>
+                    <button id="toggleScheduleBtn_complaints" onclick="toggleSchedule('complaints')" title="เปิด/ปิด ดึงข้อมูลอัตโนมัติ" class="bg-slate-500 hover:bg-slate-600 text-white px-2.5 py-1 rounded-full font-medium transition-colors text-[11px] flex items-center gap-1.5 shadow-sm shrink-0">
+                      <div class="w-2 h-2 rounded-full bg-slate-300"></div> ปิด (OFF)
+                    </button>
+                  </div>
+
+                  <!-- Details Container -->
+                  <div class="space-y-3.5 my-4">
+
+                    <!-- Section: MySQL DB -->
+                    <div class="bg-blue-50/20 border border-blue-100/30 rounded-xl p-3.5 space-y-2.5">
+                      <div
+                        class="flex items-center gap-1.5 text-blue-700 font-semibold text-[11px] uppercase tracking-wider mb-1">
+                        <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4">
+                          </path>
+                        </svg>
+                        <span data-translate="verifier-mysql-title">ฐานข้อมูล MySQL</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-table-name" class="text-slate-400 font-medium whitespace-nowrap">ชื่อตาราง:</span>
+                        <span
+                          class="font-mono bg-white border border-slate-100 px-1.5 py-0.5 rounded text-slate-600 truncate max-w-[130px] xl:max-w-[155px]"
+                          title="tbl_complaints_monitoring">tbl_complaints_monitoring</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-row-count" class="text-slate-400 font-medium whitespace-nowrap">จำนวนข้อมูล:</span>
+                        <span id="verifyDbCountComplaints" class="font-bold text-slate-700">0 แถว</span>
+                      </div>
+                      <div class="flex justify-between items-center text-xs gap-2">
+                        <span data-translate="verifier-db-update" class="text-slate-400 font-medium whitespace-nowrap">อัปเดตล่าสุด:</span>
+                        <span id="verifyDbMtimeComplaints"
+                          class="text-slate-600 font-mono font-medium whitespace-nowrap">N/A</span>
+                      </div>
+                    </div>
+
+                    <!-- Section: Excel File (Not applicable / DB Only) -->
+                    <div
+                      class="bg-slate-100/50 border border-slate-200/40 rounded-xl p-3.5 flex flex-col items-center justify-center text-center h-[126px]">
+                      <svg class="w-6 h-6 text-slate-400 mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636">
+                        </path>
+                      </svg>
+                      <span data-translate="verifier-db-only" class="text-slate-500 font-semibold text-xs whitespace-nowrap">จัดเก็บเฉพาะฐานข้อมูล</span>
+                      <span data-translate="verifier-no-excel" class="text-[10px] text-slate-400 italic mt-0.5 whitespace-nowrap">(ไม่จำเป็นต้องใช้ไฟล์ Excel)</span>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div class="flex gap-2 mt-2">
+                  <button id="forceFetchComplaintsDbBtn" onclick="triggerComplaintsFetch()"
+                    class="w-full bg-violet-600 hover:bg-violet-700 text-white text-[11px] font-semibold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-1 shadow-sm font-medium">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4">
+                      </path>
+                    </svg>
+                    <span data-translate="verifier-force-sync">ดึงข้อมูล (DB)</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+</div> <!-- End Dashboard View -->
+
+      <!-- Drought View -->
+      <div id="view-drought" class="max-w-[1400px] mx-auto space-y-6 hidden">
+        <div
+          class="bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-8 text-white shadow-lg shadow-orange-500/20 relative overflow-hidden">
+          <div class="relative z-10">
+            <h2 class="text-3xl font-bold mb-2">ดึงข้อมูลภัยแล้ง</h2>
+            <p class="text-amber-100 max-w-xl">ระบบตรวจสอบปริมาณน้ำสำรองและเฝ้าระวังพื้นที่เสี่ยงภัยแล้งแบบเรียลไทม์</p>
+          </div>
+          <div class="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">พื้นที่เฝ้าระวังภัยแล้ง</div>
+            <div class="text-3xl font-bold text-slate-800">12 จังหวัด</div>
+            <div class="mt-2 text-sm text-red-600 font-medium flex items-center gap-1">เพิ่มขึ้น 2 จังหวัดจากสัปดาห์ก่อน
+            </div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">ปริมาณน้ำสำรองเฉลี่ย</div>
+            <div class="text-3xl font-bold text-slate-800">42.5 %</div>
+            <div class="mt-2 text-sm text-amber-600 font-medium flex items-center gap-1">ระดับเฝ้าระวังพิเศษ</div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">การอัปเดตระบบ</div>
+            <div class="text-3xl font-bold text-slate-800">อัตโนมัติ</div>
+            <div class="mt-2 text-sm text-green-600 font-medium flex items-center gap-1">เชื่อมต่อ API กรมชลประทานแล้ว
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">📥 สั่งดึงข้อมูลภัยแล้ง</h3>
+          <p class="text-sm text-slate-500 mb-4">
+            คลิกปุ่มด้านล่างเพื่อบังคับดาวน์โหลดข้อมูลปริมาณน้ำและสถิติภัยแล้งล่าสุดเข้าสู่ระบบโดยตรง</p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <button id="forceDroughtExcelBtn" onclick="forceFetchDroughtExcel()"
+              class="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
+              📥 ดึงข้อมูลภัยแล้ง (Excel)
+            </button>
+            <button id="forceDroughtDbBtn" onclick="forceFetchDroughtDB()"
+              class="flex-1 bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
+              💾 ดึงข้อมูลภัยแล้ง (Database)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fire/Smoke View -->
+      <div id="view-fire" class="max-w-[1400px] mx-auto space-y-6 hidden">
+        <div
+          class="bg-gradient-to-r from-red-600 to-orange-500 rounded-2xl p-8 text-white shadow-lg shadow-red-500/20 relative overflow-hidden">
+          <div class="relative z-10">
+            <h2 class="text-3xl font-bold mb-2">ดึงข้อมูลหมอกควันไฟป่า</h2>
+            <p class="text-red-100 max-w-xl">กำลังพัฒนา</p>
+          </div>
+          <div class="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">จุดความร้อนล่าสุด (Hotspots)</div>
+            <div class="text-4xl font-bold text-red-600">42 จุด</div>
+            <p class="text-xs text-slate-400 mt-2">อัปเดตดาวเทียม Suomi NPP ล่าสุดเมื่อ 1 ชม. ที่ผ่านมา</p>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">พื้นที่เสี่ยงหมอกควันสะสม</div>
+            <div class="text-4xl font-bold text-amber-500">สูงมาก</div>
+            <p class="text-xs text-slate-400 mt-2">ส่วนใหญ่อยู่ในเขตภาคเหนือตอนบน</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">📥 สั่งดึงข้อมูลหมอกควันไฟป่า</h3>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <button onclick="alert('🚧 ฟีเจอร์นี้กำลังอยู่ระหว่างการพัฒนา')"
+              class="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm opacity-60 cursor-not-allowed">
+              🚧 ดึงข้อมูลหมอกควันไฟป่า (Excel) — กำลังพัฒนา
+            </button>
+            <button onclick="alert('🚧 ฟีเจอร์นี้กำลังอยู่ระหว่างการพัฒนา')"
+              class="flex-1 bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm opacity-60 cursor-not-allowed">
+              🚧 ดึงข้อมูลหมอกควันไฟป่า (Database) — กำลังพัฒนา
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PM 2.5 View -->
+      <div id="view-pm25" class="max-w-[1400px] mx-auto space-y-6 hidden">
+        <div
+          class="bg-gradient-to-r from-teal-500 to-emerald-600 rounded-2xl p-8 text-white shadow-lg shadow-teal-500/20 relative overflow-hidden">
+          <div class="relative z-10">
+            <h2 class="text-3xl font-bold mb-2">ดึงข้อมูล PM 2.5</h2>
+            <p class="text-teal-100 max-w-xl">ระบบดึงข้อมูลดัชนีคุณภาพอากาศและฝุ่นละอองขนาดเล็ก PM 2.5</p>
+          </div>
+          <div class="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">ค่าฝุ่นเฉลี่ยในพื้นที่</div>
+            <div class="text-3xl font-bold text-slate-800">32 µg/m³</div>
+            <div class="mt-2 text-sm text-green-600 font-medium">คุณภาพอากาศปานกลาง</div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">สถานีวัดที่มีผลกระทบ</div>
+            <div class="text-3xl font-bold text-slate-800">1 สถานี</div>
+            <div class="mt-2 text-sm text-amber-600 font-medium">ควรหลีกเลี่ยงการทำกิจกรรมกลางแจ้ง</div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">แหล่งข้อมูลอ้างอิง</div>
+            <div class="text-3xl font-bold text-slate-800">Air4Thai</div>
+            <div class="mt-2 text-sm text-teal-600 font-medium">เชื่อมต่อกับระบบควบคุมฝุ่นจังหวัด</div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">📥 ดึงข้อมูลฝุ่น PM 2.5 ล่าสุด</h3>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <button id="forcePm25ExcelBtn" onclick="forceFetchPM25Excel()"
+              class="flex-1 bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
+              📥 ดึงข้อมูล PM 2.5 (Excel)
+            </button>
+            <button id="forcePm25DbBtn" onclick="forceFetchPM25DB()"
+              class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
+              💾 ดึงข้อมูล PM 2.5 (Database)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Complaints View -->
+      <div id="view-complaints" class="max-w-[1400px] mx-auto space-y-6 hidden">
+        <div
+          class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-8 text-white shadow-lg shadow-indigo-500/20 relative overflow-hidden">
+          <div class="relative z-10">
+            <h2 class="text-3xl font-bold mb-2">ดึงข้อมูลระบบร้องเรียน</h2>
+            <p class="text-indigo-100 max-w-xl">ระบบรวบรวมและวิเคราะห์เรื่องร้องเรียนปัญหาภัยแล้ง น้ำท่วม
+              หรือสิ่งแวดล้อมจากประชาชน</p>
+          </div>
+          <div class="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">เรื่องร้องเรียนทั้งหมด</div>
+            <div class="text-3xl font-bold text-slate-800">148 เรื่อง</div>
+            <div class="mt-2 text-sm text-green-600 font-medium">แก้ไขเสร็จสิ้น 92 เรื่อง</div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">กำลังรอดำเนินการ</div>
+            <div class="text-3xl font-bold text-slate-800">12 เรื่อง</div>
+            <div class="mt-2 text-sm text-red-600 font-medium">เรื่องเร่งด่วน 3 เรื่อง</div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">หัวข้อที่ร้องเรียนมากที่สุด</div>
+            <div class="text-3xl font-bold text-slate-800">ขาดแคลนน้ำ</div>
+            <div class="mt-2 text-sm text-indigo-600 font-medium">คิดเป็น 64% ของทั้งหมด</div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">📥 ซิงค์เรื่องร้องเรียนใหม่ล่าสุด
+          </h3>
+          <button id="forceComplaintsDbBtn" onclick="forceFetchComplaintsDB()"
+            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
+            💾 ซิงค์เรื่องร้องเรียนลง Database ทันที
+          </button>
+        </div>
+      </div>
+
+      <!-- Settings View -->
+      <div id="view-settings" class="max-w-4xl mx-auto space-y-6 hidden">
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Task Scheduling (เวลาบันทึกข้อมูล Database)
+          </h2>
+
+          <p class="text-slate-600 mb-6 text-sm">ตั้งค่าเวลาในการดึงข้อมูลลงฐานข้อมูลโดยอัตโนมัติ คุณสามารถเพิ่มเวลา
+            และลากสลับตำแหน่งได้ (ระบบจะเรียงลำดับเวลาอัตโนมัติ)</p>
+
+          <!-- Add Task Form -->
+          <div class="flex flex-wrap items-end gap-3 mb-8 bg-slate-50 p-4 rounded-lg border border-slate-100">
+            <div class="flex flex-col gap-1">
+              <label class="text-sm font-semibold text-slate-700">กำหนดเวลา (HH:mm)</label>
+              <input type="time" id="taskTimeInput"
+                class="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-lg">
+            </div>
+            <button onclick="addTask()"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 h-[46px] rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              เพิ่มเวลา (Append)
+            </button>
+          </div>
+
+          <!-- Tasks List -->
+          <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">รายการเวลาที่ทำงาน (Tasks)
+          </h3>
+          <ul id="taskList" class="space-y-2 mb-8 min-h-[50px]">
+            <!-- Task Items injected by JS -->
+          </ul>
+
+          <!-- Save Button -->
+          <div class="flex justify-end pt-4 border-t border-slate-100">
+            <button onclick="saveTasks()"
+              class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-md flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              บันทึกการตั้งค่าทั้งหมด
+            </button>
+          </div>
+        </div>
+      </div> <!-- End Settings View -->
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 px-6 text-center text-sm text-slate-500 z-10">
+      Created by <span class="font-semibold text-slate-700">Pakapon Butti</span>
+    </footer>
+
+  </div>
+
+  <script type="module" src="/main.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = typeof io !== 'undefined' ? io() : null;
+    if (socket) {
+      socket.on('server_log', (msg) => {
+        const logBox = document.getElementById('logBox');
+        if (logBox) logBox.innerHTML = `<div class="border-b border-slate-800 pb-1 mb-1">${msg}</div>` + logBox.innerHTML;
+      });
+    }
+
+    let logsLoaded = false;
+    async function loadStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+
+        const extStatus = document.getElementById('extStatus');
+        if (extStatus) {
+          if (data.extensionConnected) {
+            extStatus.innerHTML = '<div class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></div> <span class="text-green-600">เชื่อมต่อแล้ว (Connected)</span>';
+          } else {
+            extStatus.innerHTML = '<div class="w-2.5 h-2.5 rounded-full bg-red-500"></div> ไม่ได้เชื่อมต่อ (Disconnected)';
+          }
+        }
+
+        if (document.getElementById('lastFetchTime')) document.getElementById('lastFetchTime').innerText = data.lastFetch;
+
+        // Only overwrite local list if user hasn't made unsaved edits
+        if (data.scheduledTasks !== undefined && !tasksDirty) {
+          currentTasks = data.scheduledTasks;
+          renderTasks();
+        }
+
+        if (data.isScheduleActive !== undefined) {
+          currentScheduleState = data.isScheduleActive;
+          const toggleBtn = document.getElementById('toggleScheduleBtn');
+          if (toggleBtn) {
+            if (data.isScheduleActive) {
+              toggleBtn.className = "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2";
+              toggleBtn.innerHTML = '<div class="w-3.5 h-3.5 rounded-full animate-flash-red-white"></div> เปิดใช้งาน (ON)';
+            } else {
+              toggleBtn.className = "bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2";
+              toggleBtn.innerHTML = '<div class="w-3.5 h-3.5 rounded-full bg-slate-300"></div> ปิดใช้งาน (OFF)';
+            }
+          }
+        }
+
+        const logBox = document.getElementById('logBox');
+        if (logBox && !logsLoaded && data.logs) {
+          const existingLines = Array.from(logBox.querySelectorAll('div')).map(el => el.innerText.trim());
+          let newHTML = '';
+          data.logs.forEach(log => {
+            if (!existingLines.includes(log.trim())) {
+              newHTML += `<div class="border-b border-slate-800 pb-1 mb-1">${log}</div>`;
+            }
+          });
+          logBox.innerHTML = logBox.innerHTML + newHTML;
+          logsLoaded = true;
+        }
+
+        // Render completed tasks
+        if (data.completedTasks) {
+          renderCompletedTasks(data.completedTasks);
+        }
+      } catch (e) {
+        console.error('Error fetching status', e);
+      }
+    }
+
+    async function forceFetch() {
+      const btn = document.getElementById('forceFetchBtn');
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = '⏳ กำลังสั่งการ...';
+      btn.disabled = true;
+      try {
+        await fetch('/api/force-fetch', { method: 'POST' });
+      } catch (e) {
+        alert('เกิดข้อผิดพลาดในการสั่งการ');
+      }
+      setTimeout(() => {
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+        loadStatus();
+      }, 2000);
+    }
+
+    async function forceFetchDB() {
+      const btn = document.getElementById('forceFetchDbBtn');
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = '⏳ กำลังสั่งการ...';
+      btn.disabled = true;
+      try {
+        await fetch('/api/force-fetch-db', { method: 'POST' });
+      } catch (e) {
+        alert('เกิดข้อผิดพลาดในการสั่งการฐานข้อมูล');
+      }
+      setTimeout(() => {
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+        loadStatus();
+      }, 2000);
+    }
+
+    // === Force Fetch Functions for all projects ===
+    async function genericForceFetch(btnId, apiUrl, label) {
+      const btn = document.getElementById(btnId);
+      if (!btn) return;
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = '⏳ กำลังสั่งการ...';
+      btn.disabled = true;
+      btn.classList.add('opacity-60', 'cursor-not-allowed');
+      try {
+        const res = await fetch(apiUrl, { method: 'POST' });
+        const data = await res.json();
+        btn.innerHTML = '✅ สั่งการสำเร็จ!';
+        setTimeout(() => { btn.innerHTML = originalHTML; btn.disabled = false; btn.classList.remove('opacity-60', 'cursor-not-allowed'); loadStatus(); }, 2500);
+      } catch (e) {
+        btn.innerHTML = '❌ เกิดข้อผิดพลาด';
+        setTimeout(() => { btn.innerHTML = originalHTML; btn.disabled = false; btn.classList.remove('opacity-60', 'cursor-not-allowed'); }, 2500);
+      }
+    }
+
+    function forceFetchDroughtExcel() { genericForceFetch('forceDroughtExcelBtn', '/api/force-fetch-drought-excel', 'ภัยแล้ง Excel'); }
+    function forceFetchDroughtDB() { genericForceFetch('forceDroughtDbBtn', '/api/force-fetch-drought-db', 'ภัยแล้ง DB'); }
+    function forceFetchPM25Excel() { genericForceFetch('forcePm25ExcelBtn', '/api/force-fetch-pm25-excel', 'PM 2.5 Excel'); }
+    function forceFetchPM25DB() { genericForceFetch('forcePm25DbBtn', '/api/force-fetch-pm25-db', 'PM 2.5 DB'); }
+    function forceFetchComplaintsDB() { genericForceFetch('forceComplaintsDbBtn', '/api/force-fetch-complaints-db', 'ร้องเรียน DB'); }
+    function forceFetchRainfallDB() { genericForceFetch('forceFetchRainfallDbBtn', '/api/force-fetch-rainfall-db', 'ดึงข้อมูลน้ำฝน DB'); }
+
+    // === Render Completed Tasks ===
+    function renderCompletedTasks(tasks) {
+      const box = document.getElementById('completedTasksBox');
+      if (!box) return;
+      if (!tasks || tasks.length === 0) {
+        box.innerHTML = '<div class="text-slate-400 text-sm text-center py-4 border-2 border-dashed border-slate-200 rounded-lg">ยังไม่มีประวัติงาน</div>';
+        return;
+      }
+      box.innerHTML = tasks.slice(0, 20).map(t => {
+        const statusIcon = t.status === 'success' ? '✅' : '❌';
+        const statusColor = t.status === 'success' ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50';
+        return `<div class="flex items-start gap-3 p-3 rounded-lg border ${statusColor} text-sm">
+            <span class="text-lg mt-0.5">${statusIcon}</span>
+            <div class="flex-1 min-w-0">
+              <div class="font-semibold text-slate-700">${t.projectName}</div>
+              <div class="text-slate-500 text-xs">${t.taskType} | ${t.timestamp}</div>
+              <div class="text-slate-600 text-xs mt-1 truncate">${t.details || ''}</div>
+            </div>
+            <span class="text-xs font-mono text-slate-400 whitespace-nowrap">${t.count || 0} รายการ</span>
+          </div>`;
+      }).join('');
+    }
+
+    // Tab switching logic — persist active tab to localStorage
+    const tabs = ['dashboard', 'drought', 'fire', 'pm25', 'complaints', 'settings'];
+    function switchTab(tabId) {
+      tabs.forEach(t => {
+        const viewEl = document.getElementById('view-' + t);
+        if (viewEl) viewEl.classList.add('hidden');
+
+        const navEl = document.getElementById('nav-' + t);
+        if (navEl) {
+          // Reset to inactive state with emerald-themed colors
+          navEl.className = "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-emerald-800 hover:bg-emerald-50 hover:text-emerald-950 transition-all duration-200 group";
+          const svg = navEl.querySelector('svg');
+          if (svg) {
+            svg.setAttribute('class', 'w-5 h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors');
+          }
+        }
+      });
+
+      const targetView = document.getElementById('view-' + tabId);
+      if (targetView) targetView.classList.remove('hidden');
+
+      const targetNav = document.getElementById('nav-' + tabId);
+      if (targetNav) {
+        const activeColors = {
+          'dashboard': 'bg-blue-600 text-white shadow-md shadow-blue-500/20',
+          'drought': 'bg-amber-600 text-white shadow-md shadow-amber-500/20',
+          'fire': 'bg-red-600 text-white shadow-md shadow-red-500/20',
+          'pm25': 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20',
+          'complaints': 'bg-purple-600 text-white shadow-md shadow-purple-500/20',
+          'settings': 'bg-pink-600 text-white shadow-md shadow-pink-600/20'
+        };
+        const activeClass = activeColors[tabId] || 'bg-blue-600 text-white shadow-md shadow-blue-500/20';
+        targetNav.className = `flex items-center gap-3 px-3 py-2 text-sm font-bold rounded-md ${activeClass} transition-all duration-200`;
+
+        const svg = targetNav.querySelector('svg');
+        if (svg) {
+          svg.setAttribute('class', 'w-5 h-5 text-white transition-colors duration-200');
+        }
+      }
+
+      localStorage.setItem('activeTab', tabId);
+    }
+    // Restore last active tab on page load
+    (function () {
+      const saved = localStorage.getItem('activeTab');
+      if (saved && tabs.includes(saved)) {
+        switchTab(saved);
+      } else {
+        switchTab('dashboard');
+      }
+    })();
+
+    // Tasks Logic
+    let currentTasks = [];
+    let tasksDirty = false; // true = user made local changes not yet saved
+    const taskListEl = document.getElementById('taskList');
+
+    // Initialize Sortable
+    if (taskListEl) {
+      new Sortable(taskListEl, {
+        animation: 150,
+        ghostClass: 'bg-blue-50',
+        onEnd: function (evt) {
+          updateTasksFromArray();
+          sortTasks(); // Auto sort after drag
+        }
+      });
+    }
+
+    let editingTaskIndex = -1;
+
+    function renderTasks() {
+      if (!taskListEl) return;
+      taskListEl.innerHTML = '';
+      if (currentTasks.length === 0) {
+        taskListEl.innerHTML = '<li class="text-slate-400 text-sm py-4 text-center border-2 border-dashed border-slate-200 rounded-lg">ไม่มีการตั้งเวลาไว้</li>';
+        return;
+      }
+
+      currentTasks.forEach((time, index) => {
+        const li = document.createElement('li');
+        li.className = "flex items-center justify-between bg-white border border-slate-200 p-3 rounded-lg shadow-sm hover:border-blue-300 transition-colors group";
+        li.dataset.time = time;
+
+        if (editingTaskIndex === index) {
+          li.innerHTML = `
+                <div class="flex items-center gap-3 flex-1 mr-4">
+                  <svg class="w-5 h-5 text-slate-400 cursor-move" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path></svg>
+                  <input type="time" id="editTimeInput_${index}" value="${time}" class="flex-1 px-3 py-1 border border-blue-500 rounded focus:outline-none font-mono text-lg">
+                </div>
+                <div class="flex items-center gap-1">
+                  <button onclick="saveEdit(${index})" class="text-green-600 hover:text-green-800 hover:bg-green-50 p-1.5 rounded-md transition-colors" title="บันทึก">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                  </button>
+                  <button onclick="cancelEdit()" class="text-slate-500 hover:text-slate-700 hover:bg-slate-100 p-1.5 rounded-md transition-colors" title="ยกเลิก">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                  </button>
+                </div>
+             `;
+        } else {
+          li.innerHTML = `
+                <div class="flex items-center gap-3 cursor-move flex-1">
+                  <svg class="w-5 h-5 text-slate-400 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path></svg>
+                  <span class="font-mono font-bold text-lg text-slate-700">${time}</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button onclick="editTask(${index})" class="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-1.5 rounded-md transition-colors" title="แก้ไข">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                  </button>
+                  <button onclick="removeTask(${index})" class="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-md transition-colors" title="ลบ">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                  </button>
+                </div>
+              `;
+        }
+        taskListEl.appendChild(li);
+      });
+    }
+
+    window.addTask = function () {
+      const input = document.getElementById('taskTimeInput');
+      const timeVal = input.value;
+      if (!timeVal) {
+        alert('กรุณาระบุเวลา');
+        return;
+      }
+      if (currentTasks.includes(timeVal)) {
+        alert('เวลานี้ถูกตั้งไว้แล้ว');
+        return;
+      }
+      tasksDirty = true;
+      currentTasks.push(timeVal);
+      sortTasks();
+      input.value = '';
+    };
+
+    window.editTask = function (index) {
+      editingTaskIndex = index;
+      renderTasks();
+    };
+
+    window.cancelEdit = function () {
+      editingTaskIndex = -1;
+      renderTasks();
+    };
+
+    window.saveEdit = function (index) {
+      const input = document.getElementById('editTimeInput_' + index);
+      const timeVal = input.value;
+      if (!timeVal) {
+        alert('กรุณาระบุเวลา');
+        return;
+      }
+      if (currentTasks.includes(timeVal) && currentTasks.indexOf(timeVal) !== index) {
+        alert('เวลานี้ถูกตั้งไว้แล้ว');
+        return;
+      }
+      tasksDirty = true;
+      currentTasks[index] = timeVal;
+      editingTaskIndex = -1;
+      sortTasks();
+    };
+
+    window.removeTask = function (index) {
+      tasksDirty = true;
+      currentTasks.splice(index, 1);
+      renderTasks();
+    };
+
+    function updateTasksFromArray() {
+      const items = taskListEl.querySelectorAll('li[data-time]');
+      currentTasks = Array.from(items).map(li => li.dataset.time);
+    }
+
+    function sortTasks() {
+      currentTasks.sort();
+      renderTasks();
+    }
+
+    window.saveTasks = async function () {
+      try {
+        await fetch('/api/schedule', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tasks: currentTasks })
+        });
+        tasksDirty = false; // saved — allow loadStatus to sync again
+        alert('บันทึกการตั้งค่าตารางเวลาสำเร็จ!');
+        loadStatus();
+      } catch (e) {
+        alert('เกิดข้อผิดพลาดในการบันทึกเวลา');
+      }
+    };
+
+    let currentScheduleState = true;
+    window.toggleSchedule = async function () {
+      const newState = !currentScheduleState;
+      try {
+        await fetch('/api/schedule/toggle', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ active: newState })
+        });
+        loadStatus();
+      } catch (e) {
+        alert('เกิดข้อผิดพลาดในการเปลี่ยนสถานะ');
+      }
+    };
+
+    window.forceFetch = forceFetch;
+    window.forceFetchDB = forceFetchDB;
+    window.forceFetchDroughtExcel = forceFetchDroughtExcel;
+    window.forceFetchDroughtDB = forceFetchDroughtDB;
+    window.forceFetchPM25Excel = forceFetchPM25Excel;
+    window.forceFetchPM25DB = forceFetchPM25DB;
+    window.forceFetchComplaintsDB = forceFetchComplaintsDB;
+    window.forceFetchRainfallDB = forceFetchRainfallDB;
+
+    loadStatus();
+    setInterval(loadStatus, 5000);
+  </script>
+</body>
+
+</html>

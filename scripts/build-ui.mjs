@@ -1,0 +1,12 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+const root = path.resolve(import.meta.dirname,'..');
+const source = path.join(root,'backend_ui');
+const target = path.join(root,'dist','water-ui');
+await fs.mkdir(target,{recursive:true});
+const pages = ['index.html','login.html','setup.html','control.html','notification.html','accounts.html','operations.html'];
+const assets = ['auth-client.js','setup.js','accounts.js','operations.js','logo_pao.png','drought_standard.png','pm25_standard.png','complaints_standard.png'];
+for (const filename of [...pages,...assets]) await fs.copyFile(path.join(source,filename),path.join(target,filename));
+for (const directory of ['js','css']) await fs.cp(path.join(source,directory),path.join(target,directory),{recursive:true});
+console.log(`Built authenticated UI assets: ${target}`);
+console.log('Serve through server.js (authentication required); do not expose as an unauthenticated static site.');

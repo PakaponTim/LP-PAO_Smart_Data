@@ -1,0 +1,5 @@
+Asset: Water System executive summary infographic
+Mode: built-in image_gen
+Audience: Thai senior executives
+Source: verified project summary in docs/system-summary and project README
+Brief: One portrait infographic with large Thai text, four data categories, a four-step data flow, three executive benefits, and a short data-freshness note. Navy and teal on white; minimal text; no invented metrics or official seal.

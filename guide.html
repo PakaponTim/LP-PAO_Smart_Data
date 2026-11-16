@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>คู่มือการใช้งานและทดสอบระบบ — Water_System2 (อบจ.ลำปาง)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Prompt', sans-serif; scroll-behavior: smooth; }
+    .shot-card img { transition: transform 0.25s ease; }
+    .shot-card:hover img { transform: scale(1.02); }
+    .code-box { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased">
+
+  <!-- Top Navbar -->
+  <header class="sticky top-0 z-50 bg-emerald-900/95 backdrop-blur border-b-4 border-pink-500 text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-10 h-10 object-contain bg-white/10 rounded-xl p-1" />
+        <div>
+          <h1 class="text-base sm:text-lg font-bold leading-tight">คู่มือการใช้งานและทดสอบระบบ Water_System2</h1>
+          <p class="text-xs text-emerald-200">PHP + Socket.IO + curl_multi + Smart Sleep + แจ้งเตือนวิกฤต (Port 7000 / Drop-in Server)</p>
+        </div>
+      </div>
+      <nav class="flex flex-wrap items-center gap-2 text-xs font-medium">
+        <a href="#arch" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">📐 สถาปัตยกรรม</a>
+        <a href="#live-test" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold transition">🧪 ทดสอบระบบสด</a>
+        <a href="#screens" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">🖼️ ภาพหน้าจอ</a>
+        <a href="#alerts" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">🔔 เกณฑ์แจ้งเตือน</a>
+        <a href="#deploy" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">🚀 ขึ้น Server จริง</a>
+        <a href="./index.html" class="px-3.5 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white font-semibold transition">← เปิด Dashboard</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-10">
+
+    <!-- Hero Summary -->
+    <section class="bg-gradient-to-br from-emerald-800 via-emerald-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+        <div class="lg:col-span-2 space-y-3">
+          <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs font-semibold">
+            ✅ แยกขาดจากระบบเก่า (Port 3000) · ใช้ฐานข้อมูล water_system2 · ไม่ต้องเปิด Chrome Extension
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold leading-snug">
+            ระบบบูรณาการข้อมูลภัยพิบัติและเรื่องร้องเรียน อบจ.ลำปาง (เวอร์ชัน 2)
+          </h2>
+          <p class="text-sm text-slate-200 leading-relaxed">
+            ออกแบบใหม่ให้ทำงานด้วย <strong>PHP 100%</strong> ดึงข้อมูลตรงจาก Public JSON API ทั้ง 5 ด้านพร้อมกันด้วย
+            <code class="bg-black/30 px-1.5 py-0.5 rounded text-amber-300">curl_multi</code> จบภายใน ~3 วินาที
+            ใช้ระบบนาฬิกาปลุก <strong>Smart Sleep (กิน Bandwidth 0 Byte ขณะรอเวลา)</strong> พร้อมระบบแจ้งเตือนวิกฤต
+            <strong>Gmail SMTP + LINE Messaging API</strong> ทันทีเมื่อพบเหตุฉุกเฉิน และมี <strong>GitHub Actions</strong> สำรองข้อมูลทุก 30 นาที
+          </p>
+          <div class="flex flex-wrap gap-2 pt-2 text-xs">
+            <a href="./index.html" class="px-4 py-2 rounded-xl bg-white text-emerald-900 font-bold hover:bg-emerald-50 transition">📊 Dashboard หลัก</a>
+            <a href="./control.html" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-semibold transition">🎛️ แผงควบคุมการดึงข้อมูล</a>
+            <a href="./notification.html" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 font-semibold transition">🔔 ตั้งค่า Gmail &amp; LINE แจ้งเตือน</a>
+            <a href="./server_setup.php" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 font-semibold transition">⚙️ ตั้งค่า Database บน Server</a>
+            <a href="./operations.html" class="px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 font-semibold transition">🛠️ ติดตามงาน &amp; คุณภาพข้อมูล</a>
+          </div>
+        </div>
+        <div class="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-4 space-y-2 text-xs">
+          <div class="font-bold text-amber-300 text-sm mb-2">📌 จุดเด่นของระบบใหม่</div>
+          <div class="flex items-start gap-2"><span>⚡</span><span>ดึง 5 API พร้อมกันใน <strong>~1.5–3 วินาที</strong> ไม่ต้องเปิด Chrome</span></div>
+          <div class="flex items-start gap-2"><span>😴</span><span><strong>Smart Sleep:</strong> พักรอ 0 Byte จนถึงเวลาในตาราง</span></div>
+          <div class="flex items-start gap-2"><span>📧</span><span><strong>Gmail SMTP + LINE:</strong> เตือนผู้บริหารทันทีหลังดึงข้อมูล</span></div>
+          <div class="flex items-start gap-2"><span>☁️</span><span><strong>GitHub Actions:</strong> เก็บสำรองทุก 30 นาทีแม้ Server ดับ</span></div>
+          <div class="flex items-start gap-2"><span>📁</span><span><strong>Zero-Admin Drop-in:</strong> โยนโฟลเดอร์ลง Server ใช้ได้ทันที</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 1: Architecture Diagram -->
+    <section id="arch" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">1. ภาพรวมสถาปัตยกรรมการทำงาน (System Architecture)</h2>
+          <p class="text-xs text-slate-500 mt-1">ผังการทำงานเชื่อมโยงระหว่าง API ต้นทาง, Server (Smart Sleep + curl_multi), ฐานข้อมูล water_system2 และระบบแจ้งเตือน</p>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto bg-slate-50 border border-slate-200 rounded-2xl p-4">
+        <svg viewBox="0 0 1120 380" class="w-full min-w-[880px] h-auto" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669" />
+            </marker>
+            <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#0284c7" />
+            </marker>
+            <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#dc2626" />
+            </marker>
+          </defs>
+
+          <!-- Background Zones -->
+          <rect x="10" y="15" width="240" height="350" rx="16" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2" />
+          <text x="130" y="42" text-anchor="middle" font-size="14" font-weight="700" fill="#1e40af">🌐 1. API ต้นทาง (สาธารณะ)</text>
+
+          <rect x="290" y="15" width="500" height="350" rx="16" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="2" />
+          <text x="540" y="42" text-anchor="middle" font-size="14" font-weight="700" fill="#065f46">🖥️ 2. PHP Server (Drop-in Folder / Port 7000)</text>
+
+          <rect x="830" y="15" width="280" height="350" rx="16" fill="#fff1f2" stroke="#fecdd3" stroke-width="2" />
+          <text x="970" y="42" text-anchor="middle" font-size="14" font-weight="700" fill="#9f1239">🔔 3. แจ้งเตือน &amp; ผู้ใช้งาน</text>
+
+          <!-- API Boxes -->
+          <rect x="28" y="65" width="204" height="46" rx="10" fill="#ffffff" stroke="#93c5fd" />
+          <text x="130" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">🌊 ThaiWater30: ระดับน้ำ</text>
+          <text x="130" y="101" text-anchor="middle" font-size="10" fill="#64748b">provinces/waterlevel?province_code=52</text>
+
+          <rect x="28" y="123" width="204" height="46" rx="10" fill="#ffffff" stroke="#93c5fd" />
+          <text x="130" y="143" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">🌧️ ThaiWater30: ปริมาณฝน</text>
+          <text x="130" y="159" text-anchor="middle" font-size="10" fill="#64748b">provinces/rain24 (194+ สถานี)</text>
+
+          <rect x="28" y="181" width="204" height="46" rx="10" fill="#ffffff" stroke="#93c5fd" />
+          <text x="130" y="201" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">🏜️ ThaiWater30: อ่างเก็บน้ำ</text>
+          <text x="130" y="217" text-anchor="middle" font-size="10" fill="#64748b">provinces/dam (36 อ่าง จ.ลำปาง)</text>
+
+          <rect x="28" y="239" width="204" height="46" rx="10" fill="#ffffff" stroke="#93c5fd" />
+          <text x="130" y="259" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">💨 ThaiWater30: ฝุ่น PM 2.5</text>
+          <text x="130" y="275" text-anchor="middle" font-size="10" fill="#64748b">thaiwater/weather (32+ สถานี)</text>
+
+          <rect x="28" y="297" width="204" height="46" rx="10" fill="#ffffff" stroke="#93c5fd" />
+          <text x="130" y="317" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">📢 Traffy Fondue Public API</text>
+          <text x="130" y="333" text-anchor="middle" font-size="10" fill="#64748b">geojson/v1?text=ลำปาง</text>
+
+          <!-- Server Boxes -->
+          <rect x="315" y="68" width="210" height="82" rx="12" fill="#ffffff" stroke="#34d399" stroke-width="2" />
+          <text x="420" y="92" text-anchor="middle" font-size="13" font-weight="700" fill="#065f46">😴 Smart Sleep Scheduler</text>
+          <text x="420" y="110" text-anchor="middle" font-size="11" fill="#475569">worker.php / scheduler.php</text>
+          <text x="420" y="128" text-anchor="middle" font-size="10" fill="#059669">พักรอ 0 Byte จนถึงเวลา config.json</text>
+
+          <rect x="315" y="172" width="210" height="86" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2" />
+          <text x="420" y="198" text-anchor="middle" font-size="13" font-weight="700" fill="#92400e">⚡ curl_multi Parallel</text>
+          <text x="420" y="216" text-anchor="middle" font-size="11" fill="#78350f">collect_all_parallel_direct()</text>
+          <text x="420" y="234" text-anchor="middle" font-size="10" fill="#b45309">ดึงครบ 5 API พร้อมกันใน ~3 วินาที</text>
+
+          <rect x="315" y="280" width="210" height="64" rx="12" fill="#e0f2fe" stroke="#38bdf8" stroke-width="2" />
+          <text x="420" y="305" text-anchor="middle" font-size="13" font-weight="700" fill="#0369a1">☁️ GitHub Actions Backup</text>
+          <text x="420" y="323" text-anchor="middle" font-size="10" fill="#0c4a6e">รันทุก 30 นาที + ซิงค์ลง MySQL</text>
+
+          <rect x="560" y="88" width="205" height="106" rx="12" fill="#ffffff" stroke="#0284c7" stroke-width="2" />
+          <text x="662" y="116" text-anchor="middle" font-size="14" font-weight="700" fill="#0c4a6e">🗄️ MySQL Database</text>
+          <text x="662" y="136" text-anchor="middle" font-size="12" font-weight="700" fill="#0284c7">water_system2</text>
+          <text x="662" y="156" text-anchor="middle" font-size="10" fill="#64748b">9 ตาราง (แยกขาดจากตัวเก่า)</text>
+          <text x="662" y="174" text-anchor="middle" font-size="10" fill="#64748b">บันทึก Batch ป้องกันข้อมูลซ้ำ</text>
+
+          <rect x="560" y="220" width="205" height="114" rx="12" fill="#ffffff" stroke="#10b981" stroke-width="2" />
+          <text x="662" y="246" text-anchor="middle" font-size="13" font-weight="700" fill="#065f46">📡 Socket.IO + REST API</text>
+          <text x="662" y="266" text-anchor="middle" font-size="10" fill="#475569">endpoint.php?r=/api/*</text>
+          <text x="662" y="284" text-anchor="middle" font-size="10" fill="#475569">ส่ง server_log เรียลไทม์เข้า UI</text>
+          <text x="662" y="302" text-anchor="middle" font-size="10" fill="#059669">Risk Index + GIS Map + Reports</text>
+
+          <!-- Output Boxes -->
+          <rect x="852" y="70" width="236" height="82" rx="12" fill="#ffffff" stroke="#f43f5e" stroke-width="2" />
+          <text x="970" y="95" text-anchor="middle" font-size="13" font-weight="700" fill="#9f1239">📧 Gmail SMTP (STARTTLS)</text>
+          <text x="970" y="114" text-anchor="middle" font-size="10" fill="#475569">สรุปรายงานวิกฤต Digest HTML</text>
+          <text x="970" y="131" text-anchor="middle" font-size="10" fill="#dc2626">พร้อมลงประวัติ tbl_alert_notifications</text>
+
+          <rect x="852" y="170" width="236" height="76" rx="12" fill="#f0fdf4" stroke="#22c55e" stroke-width="2" />
+          <text x="970" y="196" text-anchor="middle" font-size="13" font-weight="700" fill="#166534">💬 LINE Messaging API</text>
+          <text x="970" y="215" text-anchor="middle" font-size="10" fill="#475569">Push แจ้งเหตุเข้ากลุ่ม LINE ผู้บริหาร</text>
+          <text x="970" y="231" text-anchor="middle" font-size="10" fill="#15803d">Real-time ทันทีหลังดึงข้อมูลเสร็จ</text>
+
+          <rect x="852" y="264" width="236" height="80" rx="12" fill="#ffffff" stroke="#64748b" stroke-width="2" />
+          <text x="970" y="290" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">💻 เบราว์เซอร์ / มือถือ</text>
+          <text x="970" y="309" text-anchor="middle" font-size="10" fill="#475569">Dashboard, GIS, Control Panel</text>
+          <text x="970" y="325" text-anchor="middle" font-size="10" fill="#475569">เข้าดูได้ 24 ชม. (ไม่ต้องเปิดคอม)</text>
+
+          <!-- Arrows -->
+          <line x1="232" y1="205" x2="310" y2="212" stroke="#0284c7" stroke-width="2.5" marker-end="url(#arrowBlue)" />
+          <line x1="420" y1="150" x2="420" y2="167" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow)" />
+          <line x1="525" y1="200" x2="555" y2="155" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow)" />
+          <line x1="525" y1="312" x2="555" y2="180" stroke="#0284c7" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#arrowBlue)" />
+          <line x1="662" y1="194" x2="662" y2="215" stroke="#059669" stroke-width="2" marker-end="url(#arrow)" />
+          <line x1="765" y1="128" x2="846" y2="112" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrowRed)" />
+          <line x1="765" y1="155" x2="846" y2="205" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrowRed)" />
+          <line x1="765" y1="285" x2="846" y2="300" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow)" />
+        </svg>
+      </div>
+    </section>
+
+    <!-- Section 2: Interactive Live Testing Checklist -->
+    <section id="live-test" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">2. ชุดทดสอบระบบแบบโต้ตอบได้ทันที (Interactive Test Checklist)</h2>
+          <p class="text-xs text-slate-500 mt-1">กดปุ่มทดสอบแต่ละขั้นตอนจากหน้าคู่มือนี้ได้เลย ระบบจะยิงทดสอบจริงกับเซิร์ฟเวอร์ที่เปิดอยู่และแสดงผลลัพธ์ด้านขวา</p>
+        </div>
+        <button onclick="runAllSmokeTests()" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold shadow transition">
+          ▶ ทดสอบเช็กความพร้อมทั้งหมด (ข้อ 1–3)
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Steps Left -->
+        <div class="lg:col-span-7 space-y-3">
+          <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 1: ตรวจสอบฐานข้อมูลและสถานะเซิร์ฟเวอร์ (<code class="text-xs text-emerald-700">system-health</code>)</div>
+              <div class="text-xs text-slate-500">ตรวจสอบว่าเชื่อมต่อ MySQL ชื่อ <strong>water_system2</strong> สำเร็จ และพร้อมใช้ <code>curl_multi</code></div>
+            </div>
+            <button onclick="runTestHealth()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold">🔍 ทดสอบ Health</button>
+          </div>
+
+          <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 2: ตรวจสอบนาฬิกา Smart Sleep (<code class="text-xs text-emerald-700">worker.php?action=status</code>)</div>
+              <div class="text-xs text-slate-500">เช็กเวลารอบถัดไป (เช่น 10:30) และยืนยันว่าระหว่างรอใช้ Bandwidth = 0 Byte</div>
+            </div>
+            <button onclick="runTestWorker()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold">⏰ เช็ก Smart Sleep</button>
+          </div>
+
+          <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 3: ทดสอบดึง 5 API พร้อมกัน (<code class="text-xs text-amber-700">curl_multi</code>)</div>
+              <div class="text-xs text-slate-500">ยิงดึงน้ำฝน + ระดับน้ำ + อ่างเก็บน้ำ + PM 2.5 + Traffy พร้อมกันในรอบเดียว (~3 วินาที)</div>
+            </div>
+            <button onclick="runTestParallel()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold">⚡ ทดสอบ curl_multi</button>
+          </div>
+
+          <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 4: ทดสอบระบบแจ้งเตือน Gmail SMTP &amp; เกณฑ์วิกฤต</div>
+              <div class="text-xs text-slate-500">ตรวจเกณฑ์ล่าสุดและบันทึกลง <code>tbl_alert_notifications</code> หรือส่ง Test Email</div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="runTestCheckNotify()" class="px-3 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold">🔔 ตรวจเกณฑ์ทันที</button>
+              <button onclick="runTestEmail()" class="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold">📧 ส่ง Test Email</button>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-2xl border border-emerald-200 bg-emerald-50/60 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div class="font-bold text-sm text-emerald-950">ขั้นตอนที่ 5: ทดสอบการเชื่อมต่อ Real-time Socket.IO</div>
+              <div class="text-xs text-emerald-700">ส่งข้อความทดสอบเข้า Log stream แล้วเปิดดูที่หน้า Control Panel หรือ Dashboard</div>
+            </div>
+            <button onclick="runTestSocketLog()" class="px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold">📡 ยิง Log ทดสอบ</button>
+          </div>
+        </div>
+
+        <!-- Output Console Right -->
+        <div class="lg:col-span-5 bg-slate-900 text-emerald-300 rounded-2xl p-4 flex flex-col">
+          <div class="flex items-center justify-between border-b border-slate-700 pb-2 mb-3">
+            <span class="text-xs font-bold text-white">🖥️ ผลการทดสอบ (Live Output)</span>
+            <button onclick="clearTestOutput()" class="text-[11px] text-slate-400 hover:text-white">ล้างหน้าจอ</button>
+          </div>
+          <pre id="testOutput" class="code-box text-xs leading-relaxed overflow-y-auto flex-1 max-h-[380px] whitespace-pre-wrap">พร้อมทดสอบ... กดปุ่มด้านซ้ายเพื่อเริ่มตรวจสอบระบบได้เลยครับ</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Screenshots Tour -->
+    <section id="screens" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200">
+      <div class="mb-6">
+        <h2 class="text-xl font-bold text-slate-900">3. ภาพประกอบส่วนประกอบหลักของระบบ (Visual Walkthrough)</h2>
+        <p class="text-xs text-slate-500 mt-1">ภาพหน้าจอจริงของหน้า Dashboard, แผนที่วิเคราะห์ความเสี่ยง, ตัวดึงข้อมูล และระบบตั้งเวลา</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="shot-card rounded-2xl border border-slate-200 overflow-hidden bg-slate-50">
+          <div class="overflow-hidden bg-white h-48 border-b border-slate-200">
+            <img src="./report_images/01_dashboard_main.png" alt="Dashboard หลัก" class="w-full h-full object-cover object-top" />
+          </div>
+          <div class="p-4">
+            <div class="font-bold text-sm text-slate-900">1) หน้า Dashboard ภาพรวมหลัก</div>
+            <p class="text-xs text-slate-500 mt-1">สรุปดัชนีความเสี่ยงทั้ง 13 อำเภอ จ.ลำปาง, แผนที่ GIS, สถานะระดับน้ำ, อ่างเก็บน้ำ, PM 2.5 และเรื่องร้องเรียน</p>
+            <a href="./index.html" class="inline-block mt-2 text-xs font-semibold text-emerald-700 hover:underline">เปิดหน้า Dashboard →</a>
+          </div>
+        </div>
+
+        <div class="shot-card rounded-2xl border border-slate-200 overflow-hidden bg-slate-50">
+          <div class="overflow-hidden bg-white h-48 border-b border-slate-200">
+            <img src="./report_images/03_analysis_water.png" alt="วิเคราะห์ระดับน้ำและฝน" class="w-full h-full object-cover object-top" />
+          </div>
+          <div class="p-4">
+            <div class="font-bold text-sm text-slate-900">2) วิเคราะห์ระดับน้ำและปริมาณฝน</div>
+            <p class="text-xs text-slate-500 mt-1">เปรียบเทียบระดับน้ำปัจจุบันกับระดับตลิ่งซ้าย แนวโน้มขึ้น-ลง และกราฟย้อนหลังรายสถานี</p>
+          </div>
+        </div>
+
+        <div class="shot-card rounded-2xl border border-slate-200 overflow-hidden bg-slate-50">
+          <div class="overflow-hidden bg-white h-48 border-b border-slate-200">
+            <img src="./report_images/04_analysis_drought.png" alt="วิเคราะห์ภัยแล้ง" class="w-full h-full object-cover object-top" />
+          </div>
+          <div class="p-4">
+            <div class="font-bold text-sm text-slate-900">3) สถานการณ์อ่างเก็บน้ำ / ภัยแล้ง</div>
+            <p class="text-xs text-slate-500 mt-1">ติดตามปริมาณน้ำกักเก็บของอ่างขนาดใหญ่ (กิ่วลม, กิ่วคอหมา, แม่มอก) ขนาดกลาง และขนาดเล็กครบ 36 แห่ง</p>
+          </div>
+        </div>
+
+        <div class="shot-card rounded-2xl border border-slate-200 overflow-hidden bg-slate-50">
+          <div class="overflow-hidden bg-white h-48 border-b border-slate-200">
+            <img src="./report_images/05_analysis_pm25.png" alt="วิเคราะห์ฝุ่น PM 2.5" class="w-full h-full object-cover object-top" />
+          </div>
+          <div class="p-4">
+            <div class="font-bold text-sm text-slate-900">4) คุณภาพอากาศฝุ่น PM 2.5</div>
+            <p class="text-xs text-slate-500 mt-1">ดึงค่าฝุ่น PM 2.5 และค่าเฉลี่ย 24 ชม. ของสถานีในจังหวัดลำปางครบทุกอำเภอ</p>
+          </div>
+        </div>
+
+        <div class="shot-card rounded-2xl border border-slate-200 overflow-hidden bg-slate-50">
+          <div class="overflow-hidden bg-white h-48 border-b border-slate-200">
+            <img src="./report_images/06_analysis_complaints.png" alt="เรื่องร้องเรียน Traffy Fondue" class="w-full h-full object-cover object-top" />
+          </div>
+          <div class="p-4">
+            <div class="font-bold text-sm text-slate-900">5) เรื่องร้องเรียน Traffy Fondue</div>
+            <p class="text-xs text-slate-500 mt-1">ดึงตรงจาก Traffy Public API ไม่ต้องล็อกอิน พร้อมแยกงาน อบจ.ลำปาง และบันทึกประวัติการเปลี่ยนสถานะ</p>
+          </div>
+        </div>
+
+        <div class="shot-card rounded-2xl border border-slate-200 overflow-hidden bg-slate-50">
+          <div class="overflow-hidden bg-white h-48 border-b border-slate-200">
+            <img src="./report_images/10_schedule_settings.png" alt="ตั้งเวลาดึงข้อมูลอัตโนมัติ" class="w-full h-full object-cover object-top" />
+          </div>
+          <div class="p-4">
+            <div class="font-bold text-sm text-slate-900">6) แผงควบคุมและตั้งเวลา (Smart Sleep)</div>
+            <p class="text-xs text-slate-500 mt-1">ตั้งเวลาดึงข้อมูลอัตโนมัติ ดู Terminal Log สดผ่าน Socket.IO และสั่งดึงข้อมูลรายโปรเจค</p>
+            <a href="./control.html" class="inline-block mt-2 text-xs font-semibold text-emerald-700 hover:underline">เปิดหน้า Control Panel →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Crisis Notification Thresholds -->
+    <section id="alerts" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">4. เกณฑ์แจ้งเตือนวิกฤตอัตโนมัติ (Gmail SMTP &amp; LINE Messaging API)</h2>
+          <p class="text-xs text-slate-500 mt-1">ระบบจะตรวจสอบเกณฑ์เหล่านี้อัตโนมัติทันทีหลังดึงข้อมูลรอบใหม่เสร็จ และบันทึกลง <code class="text-rose-600">tbl_alert_notifications</code></p>
+        </div>
+        <a href="./notification.html" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition">🔔 เปิดหน้าตั้งค่าผู้รับแจ้งเตือน &amp; LINE</a>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+          <thead>
+            <tr class="bg-slate-100 text-slate-700 text-xs uppercase">
+              <th class="p-3 rounded-tl-xl border-b border-slate-200">ด้านข้อมูล</th>
+              <th class="p-3 border-b border-slate-200">⚠️ ระดับเฝ้าระวัง (Warning)</th>
+              <th class="p-3 border-b border-slate-200">🚨 ระดับวิกฤต (Critical)</th>
+              <th class="p-3 rounded-tr-xl border-b border-slate-200">การป้องกันส่งซ้ำ (Deduplication)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-xs sm:text-sm">
+            <tr>
+              <td class="p-3 font-semibold">🌊 ระดับน้ำ</td>
+              <td class="p-3 text-amber-700">น้ำมาก / เฝ้าระวัง (&gt;70–100% ความจุลำน้ำ)</td>
+              <td class="p-3 text-red-700 font-semibold">น้ำล้นตลิ่ง (&gt;100% หรือเลยตลิ่ง) / น้ำน้อยวิกฤต (≤10%)</td>
+              <td class="p-3 text-slate-500">Cooldown 120 นาที ถ้าค่าไม่เปลี่ยนแปลง</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold">🌧️ ปริมาณฝน</td>
+              <td class="p-3 text-amber-700">ฝนตกหนัก (&gt;35 – 90 มม.)</td>
+              <td class="p-3 text-red-700 font-semibold">ฝนตกหนักมาก (&gt;90 มม.)</td>
+              <td class="p-3 text-slate-500">Cooldown 120 นาที ถ้าค่าไม่เปลี่ยนแปลง</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold">🏜️ อ่างเก็บน้ำ / ภัยแล้ง</td>
+              <td class="p-3 text-amber-700">น้ำกักเก็บ 31% – 50%</td>
+              <td class="p-3 text-red-700 font-semibold">แล้งวิกฤต ≤30% หรือ น้ำล้นสันเขื่อน &gt;100%</td>
+              <td class="p-3 text-slate-500">แจ้งเฉพาะเมื่อเปอร์เซ็นต์/ระดับเปลี่ยน</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold">💨 ฝุ่น PM 2.5</td>
+              <td class="p-3 text-amber-700">37.6 – 75.0 µg/m³ (เริ่มมีผลต่อสุขภาพ)</td>
+              <td class="p-3 text-red-700 font-semibold">≥ 75.1 µg/m³ (มีผลกระทบต่อสุขภาพ)</td>
+              <td class="p-3 text-slate-500">Cooldown 120 นาที ถ้าค่าไม่เปลี่ยนแปลง</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold">📢 เรื่องร้องเรียน Traffy</td>
+              <td class="p-3 text-amber-700">รับเรื่อง / ส่งต่อ / ติดตามเรื่อง (ใน 2 วัน)</td>
+              <td class="p-3 text-red-700 font-semibold">เรื่องร้องเรียนใหม่ (รอรับเรื่อง)</td>
+              <td class="p-3 text-slate-500">แจ้งเฉพาะเรื่องใหม่หรือเปลี่ยนสถานะ/หน่วยงาน</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 5: Deployment Guide (Zero-Admin Server + GitHub) -->
+    <section id="deploy" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200">
+      <h2 class="text-xl font-bold text-slate-900 mb-2">5. ขั้นตอนนำขึ้น Server จริง (ปิดคอมพิวเตอร์ตัวเองได้ 100%)</h2>
+      <p class="text-xs text-slate-500 mb-6">เหมาะสำหรับ Server ที่คุณวางโฟลเดอร์ได้อย่างเดียวและไม่ได้เป็น Admin ตั้งค่าเครื่อง</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50">
+          <div class="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center mb-3">1</div>
+          <h3 class="font-bold text-sm mb-1">ส่งโค้ดขึ้น GitHub</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            ดับเบิลคลิกไฟล์ <code>push_to_github.bat</code> เพื่ออัปโหลดโค้ดขึ้น <strong>PakaponTim/Water_System2</strong> และเปิดใช้งานบอท GitHub Actions สำรองข้อมูลทุก 30 นาที
+          </p>
+        </div>
+
+        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50">
+          <div class="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center mb-3">2</div>
+          <h3 class="font-bold text-sm mb-1">วางโฟลเดอร์บน Server</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            นำไฟล์ใน <code>Water_System2</code> (ยกเว้น <code>node_modules</code>) ไปวางในโฟลเดอร์เว็บของ Server เช่น <code>http://ชื่อเซิร์ฟเวอร์/Water_System2/</code>
+          </p>
+        </div>
+
+        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50">
+          <div class="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center mb-3">3</div>
+          <h3 class="font-bold text-sm mb-1">ตั้งค่าฐานข้อมูล MySQL</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            เปิดหน้า <a href="./server_setup.php" class="text-sky-700 font-semibold underline">server_setup.php</a> บน Server กรอกรหัส MySQL แล้วกดบันทึก ระบบจะสร้างตารางทั้ง 9 ตารางให้อัตโนมัติ
+          </p>
+        </div>
+
+        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50">
+          <div class="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center mb-3">4</div>
+          <h3 class="font-bold text-sm mb-1">เปิด Smart Sleep Worker</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            กดเปิดลิงก์ <a href="./worker.php?action=start" target="_blank" class="text-emerald-700 font-semibold underline">worker.php?action=start</a> ครั้งเดียว จากนั้นสามารถปิดเบราว์เซอร์และปิดคอมพิวเตอร์ของคุณได้เลย!
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="max-w-7xl mx-auto px-4 sm:px-6 py-8 text-center text-xs text-slate-400">
+    คู่มือระบบ Water_System2 — องค์การบริหารส่วนจังหวัดลำปาง (Port 7000 / Drop-in PHP Edition)
+  </footer>
+
+  <script>
+    const out = document.getElementById('testOutput');
+    function logLine(text) {
+      const ts = new Date().toLocaleTimeString('th-TH', { hour12: false });
+      out.textContent += `\n[${ts}] ${text}`;
+      out.scrollTop = out.scrollHeight;
+    }
+    function clearTestOutput() {
+      out.textContent = 'พร้อมทดสอบ... กดปุ่มด้านซ้ายเพื่อเริ่มตรวจสอบระบบได้เลยครับ';
+    }
+    function apiEndpoint(route) {
+      const p = location.pathname;
+      const base = location.origin + p.slice(0, p.lastIndexOf('/') + 1);
+      return base + 'endpoint.php?r=' + encodeURIComponent(route);
+    }
+
+    async function runTestHealth() {
+      logLine('⏳ กำลังตรวจสอบ /api/system-health ...');
+      try {
+        const res = await fetch(apiEndpoint('/api/system-health'), { cache: 'no-store' });
+        const d = await res.json();
+        logLine(`✅ HTTP ${res.status} | DB=${d.database?.databaseName} (${d.database?.status}) | Rows=${d.database?.estimatedTotalRows} | curl_multi=${d.extension?.parallelCurlMultiReady}`);
+        return true;
+      } catch (e) {
+        logLine(`❌ Error: ${e.message}`);
+        return false;
+      }
+    }
+
+    async function runTestWorker() {
+      logLine('⏳ กำลังเช็กสถานะ Smart Sleep Worker ...');
+      try {
+        const res = await fetch(apiEndpoint('/api/worker/status'), { cache: 'no-store' });
+        const d = await res.json();
+        const w = d.worker || {};
+        logLine(`✅ HTTP ${res.status} | NextSlot=${w.nextSlot} (อีก ${w.secondsUntilNext} วิ) | IdleBandwidth=${w.bandwidthWhileSleeping} | Running=${w.running}`);
+        return true;
+      } catch (e) {
+        logLine(`❌ Error: ${e.message}`);
+        return false;
+      }
+    }
+
+    async function runTestParallel() {
+      logLine('⚡ กำลังยิงดึง 5 API พร้อมกันด้วย curl_multi ... (รอ ~2-4 วินาที)');
+      const t0 = performance.now();
+      try {
+        const res = await fetch(apiEndpoint('/api/force-fetch-all'), { method: 'POST', cache: 'no-store' });
+        const d = await res.json();
+        const dt = ((performance.now() - t0) / 1000).toFixed(2);
+        if (d.success) {
+          const r = d.result?.results || {};
+          logLine(`✅ สำเร็จใน ${d.result?.elapsedSec || dt} วินาที -> ฝน:${r.rainfall?.count||0}, น้ำ:${r.water?.count||0}, เขื่อน:${r.drought?.count||0}, PM2.5:${r.pm25?.count||0}, ร้องเรียน:${r.complaints?.count||0}`);
+          if (d.result?.notifications) {
+            const n = d.result.notifications;
+            logLine(`   🔔 Alert Check: พบ ${n.totalAlerts} | ส่งเมล ${n.sentEmails} | ข้าม(ไม่เปลี่ยน) ${n.skipped}`);
+          }
+        } else {
+          logLine(`❌ ล้มเหลว: ${d.error}`);
+        }
+      } catch (e) {
+        logLine(`❌ Error: ${e.message}`);
+      }
+    }
+
+    async function runTestCheckNotify() {
+      logLine('🔍 กำลังตรวจเกณฑ์แจ้งเตือนวิกฤตทันที ...');
+      try {
+        const res = await fetch(apiEndpoint('/api/notifications/check-now'), { method: 'POST', cache: 'no-store' });
+        const d = await res.json();
+        const r = d.result || {};
+        logLine(`✅ ตรวจเสร็จ: พบ ${r.totalAlerts ?? 0} รายการ | ส่ง Email=${r.sentEmails ?? 0} | ข้าม=${r.skipped ?? 0}`);
+      } catch (e) {
+        logLine(`❌ Error: ${e.message}`);
+      }
+    }
+
+    async function runTestEmail() {
+      logLine('📧 กำลังทดสอบส่ง Email ผ่าน Gmail SMTP ...');
+      try {
+        const res = await fetch(apiEndpoint('/api/notifications/test'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        });
+        const d = await res.json();
+        if (d.success) {
+          logLine(`✅ ส่ง Test Email สำเร็จไปยัง: ${d.sentTo}`);
+        } else {
+          logLine(`❌ ส่ง Test Email ล้มเหลว: ${d.error}`);
+        }
+      } catch (e) {
+        logLine(`❌ Error: ${e.message}`);
+      }
+    }
+
+    async function runTestSocketLog() {
+      logLine('📡 กำลังส่ง Log ทดสอบเข้า Socket.IO stream ...');
+      try {
+        await fetch(apiEndpoint('/socket.io/?EIO=4&transport=polling'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ event: 'client_log', data: { source: 'GuideTest', message: '🧪 ทดสอบส่งข้อความเรียลไทม์จากหน้าคู่มือ guide.html สำเร็จ!' } })
+        });
+        logLine('✅ ส่ง Log ทดสอบเข้า Socket.IO แล้ว (เปิดดูในกล่อง Log หน้า Control Panel หรือ Dashboard ได้เลย)');
+      } catch (e) {
+        logLine(`❌ Error: ${e.message}`);
+      }
+    }
+
+    async function runAllSmokeTests() {
+      out.textContent = '=== เริ่มชุดทดสอบอัตโนมัติ (ข้อ 1–3) ===';
+      await runTestHealth();
+      await runTestWorker();
+      await runTestParallel();
+      logLine('🎉 ทดสอบครบทั้ง 3 ขั้นตอนเสร็จสมบูรณ์!');
+    }
+  </script>
+</body>
+</html>

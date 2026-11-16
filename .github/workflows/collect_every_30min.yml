@@ -2,9 +2,8 @@ name: Water_System2 Cloud Collector (Every 30 Minutes)
 
 on:
   schedule:
-    # รันอัตโนมัติทุกๆ 30 นาที ตลอด 24 ชั่วโมง (แม้ปิดคอมพิวเตอร์ส่วนตัว)
     - cron: '*/30 * * * *'
-  workflow_dispatch: # สามารถกดปุ่ม "Run workflow" บนหน้าเว็บ GitHub เพื่อสั่งดึงข้อมูลทันทีได้ด้วย
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -15,29 +14,34 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - name: 📥 Checkout Repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: 🐘 Setup PHP
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: curl, mbstring, json, openssl
           coverage: none
 
-      - name: 📡 Run PHP Direct API Collector (Water, Rain, Dam, PM2.5, Traffy)
+      - name: Run PHP Direct API Collector (Water, Rain, Dam, PM2.5, Traffy)
         run: |
           php php_server/github_collect_snapshot.php
 
-      - name: 🔔 Optional Ping to Live Server cron.php (if WATER_SERVER_CRON_URL secret is set)
-        if: ${{ secrets.WATER_SERVER_CRON_URL != '' }}
+      - name: Optional Ping to Live Server cron.php
         continue-on-error: true
+        env:
+          WATER_SERVER_CRON_URL: ${{ secrets.WATER_SERVER_CRON_URL }}
         run: |
-          curl -fsSL --max-time 30 "${{ secrets.WATER_SERVER_CRON_URL }}" || true
+          if [ -n "$WATER_SERVER_CRON_URL" ]; then
+            curl -fsSL --max-time 30 "$WATER_SERVER_CRON_URL" || true
+          else
+            echo "WATER_SERVER_CRON_URL secret is not set; skipping live server ping."
+          fi
 
-      - name: 💾 Save & Commit Snapshot to GitHub Repository
+      - name: Save & Commit Snapshot to GitHub Repository
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -47,7 +51,6 @@ jobs:
           else
             TIMESTAMP=$(TZ='Asia/Bangkok' date +'%Y-%m-%d %H:%M:%S')
             git commit -m "chore(snapshot): auto-collect Lampang data at ${TIMESTAMP} ICT"
-            git pull --rebase origin ${{ github.ref_name }}
-            git push origin ${{ github.ref_name }}
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "${GITHUB_REF_NAME}"
           fi
-

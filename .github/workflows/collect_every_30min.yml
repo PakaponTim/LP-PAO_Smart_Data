@@ -31,6 +31,12 @@ jobs:
         run: |
           php php_server/github_collect_snapshot.php
 
+      - name: 🔔 Optional Ping to Live Server cron.php (if WATER_SERVER_CRON_URL secret is set)
+        if: ${{ secrets.WATER_SERVER_CRON_URL != '' }}
+        continue-on-error: true
+        run: |
+          curl -fsSL --max-time 30 "${{ secrets.WATER_SERVER_CRON_URL }}" || true
+
       - name: 💾 Save & Commit Snapshot to GitHub Repository
         run: |
           git config user.name "github-actions[bot]"

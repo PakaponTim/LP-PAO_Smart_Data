@@ -36,6 +36,7 @@ backend_ui/index_*.html
 
 .work-backups/
 runtime/
+deploy_server/
 scratch/
 archive_scratch/
 *.xlsx

@@ -381,42 +381,189 @@
       </div>
     </section>
 
-    <!-- Section 5: Deployment Guide (Zero-Admin Server + GitHub) -->
-    <section id="deploy" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200">
-      <h2 class="text-xl font-bold text-slate-900 mb-2">5. ขั้นตอนนำขึ้น Server จริง (ปิดคอมพิวเตอร์ตัวเองได้ 100%)</h2>
-      <p class="text-xs text-slate-500 mb-6">เหมาะสำหรับ Server ที่คุณวางโฟลเดอร์ได้อย่างเดียวและไม่ได้เป็น Admin ตั้งค่าเครื่อง</p>
+    <!-- Section 5: Visual Step-by-Step Deployment & Usage Guide -->
+    <section id="deploy" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-8">
+      <div>
+        <span class="inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-2">📖 ภาพประกอบ Step-by-Step (ทำตามทีละขั้น)</span>
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900">5. ขั้นตอนนำขึ้น Server จริงและทดสอบใช้งาน (ปิดคอมพิวเตอร์ตัวเองได้ 100%)</h2>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">ทำตามลำดับ Step 1 → Step 4 ด้านล่างนี้ได้เลยครับ ดูตามภาพจำลองทีละขั้น ไม่ต้องมีสิทธิ์ Admin บน Server</p>
+      </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50">
-          <div class="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center mb-3">1</div>
-          <h3 class="font-bold text-sm mb-1">ส่งโค้ดขึ้น GitHub</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            ดับเบิลคลิกไฟล์ <code>push_to_github.bat</code> เพื่ออัปโหลดโค้ดขึ้น <strong>PakaponTim/Water_System2</strong> และเปิดใช้งานบอท GitHub Actions สำรองข้อมูลทุก 30 นาที
-          </p>
+      <!-- STEP 1 -->
+      <div class="rounded-2xl border-2 border-slate-200 bg-slate-50/70 p-5 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <div class="lg:col-span-5 space-y-3">
+          <div class="inline-flex items-center gap-2 bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-bold">STEP 1</div>
+          <h3 class="text-lg font-bold text-slate-900">ส่งโค้ดขึ้น GitHub เพื่อให้บอทสำรองข้อมูลทุก 30 นาที</h3>
+          <ol class="text-xs sm:text-sm text-slate-600 space-y-2 list-decimal pl-5 leading-relaxed">
+            <li>เปิดโฟลเดอร์ <code>d:\Water_System2</code> ในเครื่องคุณ</li>
+            <li>ดับเบิลคลิกไฟล์ <strong><code>push_to_github.bat</code></strong></li>
+            <li>ถ้ามีหน้าต่าง GitHub Sign-in เด้งขึ้นมา ให้กดปุ่ม <strong>Sign in with your browser</strong> เพื่อยืนยันสิทธิ์</li>
+            <li>เปิดหน้าเว็บ <code>github.com/PakaponTim/Water_System2</code> แท็บ <strong>Actions</strong> แล้วกด <strong>Run workflow</strong> เพื่อทดสอบครั้งแรก</li>
+          </ol>
         </div>
+        <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 p-3 shadow-sm">
+          <svg viewBox="0 0 640 210" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="12" width="175" height="186" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+            <text x="95" y="34" text-anchor="middle" font-size="11" font-weight="700" fill="#334155">📁 d:\Water_System2</text>
+            <rect x="20" y="48" width="150" height="44" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+            <text x="95" y="67" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e">🖱️ ดับเบิลคลิกไฟล์นี้</text>
+            <text x="95" y="83" text-anchor="middle" font-size="11" font-weight="700" fill="#b45309">push_to_github.bat</text>
+            <rect x="20" y="106" width="150" height="74" rx="8" fill="#0f172a"/>
+            <text x="30" y="126" font-size="10" fill="#38bdf8" font-family="monospace">&gt; git push -u origin main</text>
+            <text x="30" y="144" font-size="10" fill="#a7f3d0" font-family="monospace">Enumerating objects...</text>
+            <text x="30" y="162" font-size="10" fill="#34d399" font-family="monospace">main -&gt; main [OK]</text>
 
-        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50">
-          <div class="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center mb-3">2</div>
-          <h3 class="font-bold text-sm mb-1">วางโฟลเดอร์บน Server</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            นำไฟล์ใน <code>Water_System2</code> (ยกเว้น <code>node_modules</code>) ไปวางในโฟลเดอร์เว็บของ Server เช่น <code>http://ชื่อเซิร์ฟเวอร์/Water_System2/</code>
-          </p>
+            <path d="M 190 105 L 222 105" stroke="#059669" stroke-width="3" marker-end="url(#arrow)"/>
+
+            <rect x="230" y="12" width="180" height="186" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+            <text x="320" y="36" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">🔐 หน้าต่างล็อกอิน</text>
+            <rect x="248" y="56" width="144" height="38" rx="8" fill="#1e293b"/>
+            <text x="320" y="79" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">Sign in with browser</text>
+            <text x="320" y="118" text-anchor="middle" font-size="10" fill="#475569">กดยืนยันในเบราว์เซอร์ 1 ครั้ง</text>
+            <text x="320" y="135" text-anchor="middle" font-size="10" fill="#475569">โค้ดจะถูกส่งขึ้น GitHub ทันที</text>
+            <rect x="260" y="152" width="120" height="28" rx="14" fill="#dcfce7" stroke="#22c55e"/>
+            <text x="320" y="170" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">✅ Push สำเร็จ</text>
+
+            <path d="M 416 105 L 448 105" stroke="#059669" stroke-width="3" marker-end="url(#arrow)"/>
+
+            <rect x="456" y="12" width="176" height="186" rx="12" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+            <text x="544" y="36" text-anchor="middle" font-size="12" font-weight="700" fill="#166534">🤖 GitHub Actions</text>
+            <rect x="470" y="52" width="148" height="32" rx="6" fill="#16a34a"/>
+            <text x="544" y="72" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">▶ กด Run workflow</text>
+            <rect x="470" y="96" width="148" height="84" rx="8" fill="#ffffff" stroke="#bbf7d0"/>
+            <text x="544" y="118" text-anchor="middle" font-size="11" font-weight="700" fill="#15803d">✅ เก็บข้อมูลทุก 30 นาที</text>
+            <text x="544" y="138" text-anchor="middle" font-size="10" fill="#64748b">บันทึกลง cloud_snapshots/</text>
+            <text x="544" y="156" text-anchor="middle" font-size="10" fill="#64748b">ฟรี 24 ชม. แม้ปิดคอม</text>
+          </svg>
         </div>
+      </div>
 
-        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50">
-          <div class="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center mb-3">3</div>
-          <h3 class="font-bold text-sm mb-1">ตั้งค่าฐานข้อมูล MySQL</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            เปิดหน้า <a href="./server_setup.php" class="text-sky-700 font-semibold underline">server_setup.php</a> บน Server กรอกรหัส MySQL แล้วกดบันทึก ระบบจะสร้างตารางทั้ง 9 ตารางให้อัตโนมัติ
-          </p>
+      <!-- STEP 2 -->
+      <div class="rounded-2xl border-2 border-slate-200 bg-slate-50/70 p-5 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <div class="lg:col-span-5 space-y-3">
+          <div class="inline-flex items-center gap-2 bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-bold">STEP 2</div>
+          <h3 class="text-lg font-bold text-slate-900">ก๊อปปี้โฟลเดอร์ไปวางบน Server (คัดเฉพาะไฟล์ใช้งาน)</h3>
+          <ol class="text-xs sm:text-sm text-slate-600 space-y-2 list-decimal pl-5 leading-relaxed">
+            <li>สร้างโฟลเดอร์ชื่อ <strong><code>Water_System2</code></strong> ในพื้นที่วางเว็บของ Server</li>
+            <li>ก๊อปปี้ <strong>โฟลเดอร์และไฟล์สีเขียว</strong> จากรูปด้านขวาไปวาง (รวมขนาดเล็กมาก ~3 MB)</li>
+            <li><strong>ไม่ต้องก๊อปปี้</strong> โฟลเดอร์ <code>node_modules/</code>, <code>runtime/</code>, <code>scratch/</code> เพราะมีขนาดใหญ่และไม่ได้ใช้ฝั่ง PHP ครับ</li>
+          </ol>
         </div>
+        <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 p-3 shadow-sm">
+          <svg viewBox="0 0 640 220" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="10" width="300" height="200" rx="12" fill="#f0fdf4" stroke="#4ade80" stroke-width="2"/>
+            <text x="158" y="34" text-anchor="middle" font-size="12" font-weight="700" fill="#166534">✅ ก๊อปปี้ไฟล์เหล่านี้ไปวางบน Server</text>
+            <text x="26" y="60" font-size="11" font-weight="700" fill="#1e293b">📁 php_server/ <tspan font-weight="400" fill="#475569">(ระบบหลังบ้าน PHP ทั้งหมด)</tspan></text>
+            <text x="26" y="82" font-size="11" font-weight="700" fill="#1e293b">📁 js/  css/  report_images/ <tspan font-weight="400" fill="#475569">(หน้าตา &amp; รูป)</tspan></text>
+            <text x="26" y="104" font-size="11" font-weight="700" fill="#1e293b">📄 index.php, index.html, guide.html</text>
+            <text x="26" y="126" font-size="11" font-weight="700" fill="#1e293b">📄 control.html, notification.html</text>
+            <text x="26" y="148" font-size="11" font-weight="700" fill="#0369a1">📄 server_setup.php, endpoint.php</text>
+            <text x="26" y="170" font-size="11" font-weight="700" fill="#0369a1">📄 cron.php, worker.php, config.json</text>
+            <text x="26" y="192" font-size="11" font-weight="700" fill="#1e293b">📄 auth-client.js, socketio_client.js, *.png</text>
 
-        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50">
-          <div class="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center mb-3">4</div>
-          <h3 class="font-bold text-sm mb-1">เปิด Smart Sleep Worker</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            กดเปิดลิงก์ <a href="./worker.php?action=start" target="_blank" class="text-emerald-700 font-semibold underline">worker.php?action=start</a> ครั้งเดียว จากนั้นสามารถปิดเบราว์เซอร์และปิดคอมพิวเตอร์ของคุณได้เลย!
-          </p>
+            <rect x="332" y="10" width="300" height="200" rx="12" fill="#fff1f2" stroke="#fb7185" stroke-width="2"/>
+            <text x="482" y="34" text-anchor="middle" font-size="12" font-weight="700" fill="#9f1239">❌ ไม่ต้องก๊อปปี้ไป (ข้ามได้เลย)</text>
+            <text x="352" y="66" font-size="11" font-weight="700" fill="#be123c">🚫 node_modules/ <tspan font-weight="400" fill="#64748b">(ของ Node.js ไฟล์เยอะ)</tspan></text>
+            <text x="352" y="92" font-size="11" font-weight="700" fill="#be123c">🚫 runtime/ <tspan font-weight="400" fill="#64748b">(เดี๋ยว Server สร้างใหม่เอง)</tspan></text>
+            <text x="352" y="118" font-size="11" font-weight="700" fill="#be123c">🚫 scratch/ , archive_scratch/</text>
+            <text x="352" y="144" font-size="11" font-weight="700" fill="#be123c">🚫 .git/ <tspan font-weight="400" fill="#64748b">(ไม่ต้องเอาโฟลเดอร์ git ไป)</tspan></text>
+            <rect x="352" y="162" width="260" height="34" rx="8" fill="#ffffff" stroke="#fecdd3"/>
+            <text x="482" y="183" text-anchor="middle" font-size="11" font-weight="600" fill="#9f1239">Path บน Server: /Water_System2/</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="rounded-2xl border-2 border-slate-200 bg-slate-50/70 p-5 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <div class="lg:col-span-5 space-y-3">
+          <div class="inline-flex items-center gap-2 bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-bold">STEP 3</div>
+          <h3 class="text-lg font-bold text-slate-900">ตั้งค่า MySQL บน Server และสร้างตารางอัตโนมัติ</h3>
+          <ol class="text-xs sm:text-sm text-slate-600 space-y-2 list-decimal pl-5 leading-relaxed">
+            <li>เปิดเบราว์เซอร์ไปที่หน้าตั้งค่าบน Server:<br/>
+              <code class="text-xs bg-white px-2 py-0.5 rounded border border-slate-300 text-sky-700">http://ชื่อเซิร์ฟเวอร์/Water_System2/server_setup.php</code></li>
+            <li>กรอก <strong>Host, Database Name, Username, Password</strong> ของ MySQL บน Server</li>
+            <li>กดปุ่มเขียว <strong>"💾 บันทึกค่าและสร้างตารางฐานข้อมูลอัตโนมัติ"</strong> (ระบบสร้างครบทั้ง 9 ตารางให้อัตโนมัติ)</li>
+            <li>กดปุ่มน้ำเงิน <strong>"🚀 ทดสอบดึงข้อมูล... (cron.php)"</strong> เพื่อดูดข้อมูลชุดแรกเข้า Server</li>
+          </ol>
+        </div>
+        <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 p-3 shadow-sm">
+          <svg viewBox="0 0 640 220" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="8" width="624" height="204" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+            <rect x="8" y="8" width="624" height="36" rx="12" fill="#065f46"/>
+            <text x="26" y="31" font-size="12" font-weight="700" fill="#ffffff">⚙️ server_setup.php — ตั้งค่าการเชื่อมต่อฐานข้อมูลบน Server</text>
+            <rect x="460" y="15" width="158" height="22" rx="6" fill="#047857"/>
+            <text x="539" y="30" text-anchor="middle" font-size="10" font-weight="700" fill="#a7f3d0">http://.../server_setup.php</text>
+
+            <text x="26" y="66" font-size="11" font-weight="700" fill="#334155">1. MySQL Host / Port</text>
+            <rect x="26" y="72" width="270" height="28" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+            <text x="36" y="90" font-size="11" fill="#0f172a">localhost : 3306</text>
+
+            <text x="320" y="66" font-size="11" font-weight="700" fill="#334155">2. Database Name</text>
+            <rect x="320" y="72" width="290" height="28" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+            <text x="330" y="90" font-size="11" font-weight="700" fill="#0284c7">water_system2</text>
+
+            <text x="26" y="122" font-size="11" font-weight="700" fill="#334155">3. Username / Password ของ MySQL บน Server</text>
+            <rect x="26" y="128" width="270" height="28" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+            <text x="36" y="146" font-size="11" fill="#0f172a">user บน Server / ********</text>
+
+            <rect x="320" y="122" width="290" height="34" rx="8" fill="#ecfdf5" stroke="#34d399"/>
+            <text x="465" y="143" text-anchor="middle" font-size="11" font-weight="700" fill="#065f46">🟢 สร้างตารางอัตโนมัติครบ 9 ตาราง!</text>
+
+            <rect x="26" y="170" width="285" height="30" rx="8" fill="#047857"/>
+            <text x="168" y="189" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">① กดปุ่ม: 💾 บันทึกและสร้างตารางอัตโนมัติ</text>
+
+            <rect x="326" y="170" width="284" height="30" rx="8" fill="#2563eb"/>
+            <text x="468" y="189" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">② กดปุ่ม: 🚀 ทดสอบดึงข้อมูลทันที (cron.php)</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="rounded-2xl border-2 border-emerald-200 bg-emerald-50/40 p-5 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <div class="lg:col-span-5 space-y-3">
+          <div class="inline-flex items-center gap-2 bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-bold">STEP 4</div>
+          <h3 class="text-lg font-bold text-slate-900">เปิด Smart Sleep + ตั้งแจ้งเตือน Gmail/LINE แล้วปิดคอมได้เลย</h3>
+          <ol class="text-xs sm:text-sm text-slate-600 space-y-2 list-decimal pl-5 leading-relaxed">
+            <li>เปิดลิงก์ <a href="./worker.php?action=start" target="_blank" class="text-emerald-700 font-bold underline"><code>worker.php?action=start</code></a> บน Server 1 ครั้ง เพื่อเปิดระบบนาฬิกาปลุก Smart Sleep</li>
+            <li>เปิดหน้า <a href="./notification.html" target="_blank" class="text-purple-700 font-bold underline"><code>notification.html</code></a> ใส่ <strong>LINE Token + Group ID</strong> และเพิ่มอีเมลผู้บริหารที่ต้องการรับแจ้งเตือน</li>
+            <li>กดปุ่ม <strong>"ทดสอบส่ง E-mail"</strong> เพื่อยืนยันว่าอีเมลเข้าจริง</li>
+            <li><strong>เสร็จสมบูรณ์! ปิดเบราว์เซอร์และปิดคอมพิวเตอร์ของคุณได้เลย</strong> Server จะทำงานต่อ 24 ชม. เองทั้งหมดครับ</li>
+          </ol>
+        </div>
+        <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 p-3 shadow-sm">
+          <svg viewBox="0 0 640 210" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="16" width="190" height="178" rx="12" fill="#ecfdf5" stroke="#34d399" stroke-width="1.5"/>
+            <text x="105" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#065f46">① เปิด Smart Sleep</text>
+            <rect x="24" y="56" width="162" height="32" rx="8" fill="#059669"/>
+            <text x="105" y="76" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">worker.php?action=start</text>
+            <text x="105" y="112" text-anchor="middle" font-size="11" font-weight="700" fill="#047857">สถานะ: running = true</text>
+            <text x="105" y="132" text-anchor="middle" font-size="10" fill="#475569">พักรอ 0 Byte จนถึงเวลา</text>
+            <text x="105" y="150" text-anchor="middle" font-size="10" fill="#475569">ตื่นดึง 5 API ใน ~3 วินาที</text>
+
+            <path d="M 206 105 L 228 105" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+            <rect x="234" y="16" width="196" height="178" rx="12" fill="#faf5ff" stroke="#c084fc" stroke-width="1.5"/>
+            <text x="332" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#6b21a8">② ตั้งค่า notification.html</text>
+            <rect x="248" y="54" width="168" height="38" rx="6" fill="#ffffff" stroke="#d8b4fe"/>
+            <text x="332" y="71" text-anchor="middle" font-size="10" font-weight="700" fill="#9f1239">📧 Gmail SMTP (ตั้งให้แล้ว)</text>
+            <text x="332" y="85" text-anchor="middle" font-size="9" fill="#64748b">เพิ่มรายชื่อผู้รับ &amp; กด Test Email</text>
+            <rect x="248" y="102" width="168" height="42" rx="6" fill="#f0fdf4" stroke="#86efac"/>
+            <text x="332" y="120" text-anchor="middle" font-size="10" font-weight="700" fill="#166534">💬 LINE Messaging API</text>
+            <text x="332" y="135" text-anchor="middle" font-size="9" fill="#64748b">ใส่ Token + Group ID ผู้บริหาร</text>
+            <rect x="248" y="154" width="168" height="28" rx="6" fill="#7e22ce"/>
+            <text x="332" y="172" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">🔔 แจ้งเตือนทันทีเมื่อเกิดวิกฤต</text>
+
+            <path d="M 436 105 L 458 105" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+            <rect x="464" y="16" width="166" height="178" rx="12" fill="#0f172a"/>
+            <text x="547" y="52" text-anchor="middle" font-size="24">💻</text>
+            <text x="547" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#34d399">ปิดคอมตัวเองได้เลย!</text>
+            <text x="547" y="108" text-anchor="middle" font-size="10" fill="#cbd5e1">Server รันดึงข้อมูลเอง 24 ชม.</text>
+            <text x="547" y="128" text-anchor="middle" font-size="10" fill="#cbd5e1">แจ้งเตือน Gmail + LINE อัตโนมัติ</text>
+            <text x="547" y="148" text-anchor="middle" font-size="10" fill="#38bdf8">ดู Dashboard จากมือถือได้ทันที</text>
+            <rect x="486" y="162" width="122" height="22" rx="11" fill="#059669"/>
+            <text x="547" y="177" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">100% Autonomous</text>
+          </svg>
         </div>
       </div>
     </section>

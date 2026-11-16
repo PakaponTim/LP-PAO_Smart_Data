@@ -585,6 +585,56 @@
             </svg>
           </div>
         </div>
+
+        <!-- Option 1C: On GitHub Actions Page Follow-Up -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-emerald-50/70 rounded-2xl border-2 border-emerald-200 p-4">
+          <div class="lg:col-span-6 space-y-2">
+            <span class="inline-block px-2.5 py-0.5 rounded bg-emerald-700 text-white text-[11px] font-bold">เมื่อเปิดหน้า GitHub Actions (/actions) อยู่ — ต้องคลิกอะไรต่อ?</span>
+            <ol class="text-xs sm:text-sm text-slate-700 space-y-1.5 list-decimal pl-5 leading-relaxed">
+              <li><strong>ตรวจให้แน่ใจว่า Push โค้ดล่าสุดขึ้น GitHub แล้ว:</strong> จากเครื่องคอมฯ กดรัน <code>push_to_github.bat</code> (หรือ <code>git push -u origin main</code>) เพื่อให้ Commit ใหม่ล่าสุดไปอยู่บน GitHub ก่อน</li>
+              <li><strong>สั่งทดสอบรันบนหน้า Actions:</strong> คลิกชื่อ <strong><code>Water_System2 Cloud Collector (Every 30 Minutes)</code></strong> ที่เมนูซ้าย → กดปุ่ม <strong><code>Run workflow</code></strong> ด้านขวาบน → เลือก <code>Branch: main</code> แล้วกดปุ่มเขียว <strong>Run workflow</strong></li>
+              <li><strong>รอประมาณ 1 นาที:</strong> รีเฟรชหน้าแล้วตรวจให้ขึ้นเครื่องหมาย <strong>✅ สีเขียว</strong> และมีการเก็บไฟล์ลง <code>cloud_snapshots/</code></li>
+              <li><strong>ตั้งค่าปลุก Subdomain Server อัตโนมัติ (เมื่อนำขึ้นโฮสต์แล้ว):</strong> คลิกแท็บ <strong>⚙️ Settings</strong> ด้านบน → เมนูซ้าย <strong>Secrets and variables → Actions</strong> → กด <strong>New repository secret</strong> ตั้งชื่อ <code>WATER_SERVER_CRON_URL</code> ใส่ค่า <code>https://ซับโดเมนของคุณ/Water_System2/cron.php</code> แล้วทำต่อ <strong>STEP 2</strong> ด้านล่างได้เลย</li>
+            </ol>
+          </div>
+          <div class="lg:col-span-6 bg-white rounded-xl border border-emerald-200 p-3">
+            <svg viewBox="0 0 600 185" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+              <rect x="6" y="10" width="182" height="165" rx="10" fill="#0f172a"/>
+              <text x="97" y="34" text-anchor="middle" font-size="11" font-weight="700" fill="#38bdf8">① เครื่องคอมฯ (D:\Water_System2)</text>
+              <rect x="18" y="48" width="158" height="32" rx="6" fill="#065f46"/>
+              <text x="97" y="68" text-anchor="middle" font-size="10" font-weight="700" fill="#6ee7b7">▶ push_to_github.bat</text>
+              <text x="97" y="104" text-anchor="middle" font-size="9.5" fill="#cbd5e1">ส่ง Commit ล่าสุดขึ้น GitHub</text>
+              <text x="97" y="122" text-anchor="middle" font-size="9.5" fill="#94a3b8">(pull --rebase + push)</text>
+              <rect x="28" y="136" width="138" height="24" rx="6" fill="#1e293b" stroke="#334155"/>
+              <text x="97" y="152" text-anchor="middle" font-size="9.5" fill="#fbbf24">ทำขั้นนี้ก่อนเสมอ!</text>
+
+              <path d="M 192 92 L 210 92" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+              <rect x="216" y="10" width="182" height="165" rx="10" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.5"/>
+              <text x="307" y="34" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">② บนหน้า Actions</text>
+              <rect x="228" y="46" width="158" height="30" rx="6" fill="#ffffff" stroke="#86efac"/>
+              <text x="307" y="65" text-anchor="middle" font-size="9.5" font-weight="700" fill="#15803d">คลิก: Cloud Collector (ซ้าย)</text>
+              <rect x="228" y="84" width="158" height="28" rx="6" fill="#16a34a"/>
+              <text x="307" y="102" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">▶ กด Run workflow</text>
+              <rect x="228" y="122" width="158" height="40" rx="6" fill="#ffffff" stroke="#bbf7d0"/>
+              <text x="307" y="140" text-anchor="middle" font-size="10" font-weight="700" fill="#065f46">✅ รอขึ้นติ๊กสีเขียว</text>
+              <text x="307" y="155" text-anchor="middle" font-size="8.5" fill="#64748b">อัปเดต cloud_snapshots/</text>
+
+              <path d="M 402 92 L 420 92" stroke="#0284c7" stroke-width="2.5" marker-end="url(#arrowBlue)"/>
+
+              <rect x="426" y="10" width="168" height="165" rx="10" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+              <text x="510" y="34" text-anchor="middle" font-size="11" font-weight="700" fill="#1e40af">③ Settings → Secrets</text>
+              <rect x="436" y="48" width="148" height="36" rx="6" fill="#ffffff" stroke="#bfdbfe"/>
+              <text x="510" y="63" text-anchor="middle" font-size="8.5" font-weight="700" fill="#1d4ed8">Secrets &amp; variables → Actions</text>
+              <text x="510" y="77" text-anchor="middle" font-size="8.5" fill="#475569">WATER_SERVER_CRON_URL</text>
+              <rect x="436" y="92" width="148" height="34" rx="6" fill="#fef3c7" stroke="#f59e0b"/>
+              <text x="510" y="107" text-anchor="middle" font-size="8.5" font-weight="700" fill="#92400e">ใส่ URL .../cron.php</text>
+              <text x="510" y="120" text-anchor="middle" font-size="8" fill="#78350f">(ทำเมื่อมี Subdomain แล้ว)</text>
+              <rect x="436" y="134" width="148" height="28" rx="6" fill="#0284c7"/>
+              <text x="510" y="152" text-anchor="middle" font-size="9.5" font-weight="700" fill="#ffffff">ไปต่อ STEP 2 ด้านล่าง ↓</text>
+            </svg>
+          </div>
+        </div>
       </div>
 
       <!-- STEP 2 -->

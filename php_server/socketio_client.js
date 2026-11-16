@@ -21,7 +21,7 @@
       if (closed || polling) return;
       polling = true;
       try {
-        var res = await window.fetch('/socket.io/?EIO=4&transport=polling&seq=' + lastSeq, {
+        var res = await window.fetch('./endpoint.php?r=' + encodeURIComponent('/socket.io/?EIO=4&transport=polling&seq=' + lastSeq), {
           method: 'GET',
           cache: 'no-store'
         });
@@ -80,7 +80,7 @@
         return socket;
       },
       emit: function (event, data) {
-        window.fetch('/socket.io/?EIO=4&transport=polling', {
+        window.fetch('./endpoint.php?r=' + encodeURIComponent('/socket.io/?EIO=4&transport=polling'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ event: event, data: data })

@@ -10,6 +10,19 @@ require_once __DIR__ . '/api.php';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 
+// Support universal subfolder endpoint.php?r=/api/... or ?r=/socket.io/...
+if ((basename($uri) === 'endpoint.php' || isset($_GET['r'])) && !empty($_GET['r']) && is_string($_GET['r'])) {
+    $route = $_GET['r'];
+    $parsed = parse_url($route);
+    $uri = $parsed['path'] ?? '/';
+    if (!empty($parsed['query'])) {
+        parse_str($parsed['query'], $extraQuery);
+        if (is_array($extraQuery)) {
+            $_GET = array_merge($extraQuery, $_GET);
+        }
+    }
+}
+
 // Security & Isolation Headers
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: SAMEORIGIN');
@@ -42,10 +55,20 @@ if ($method === 'OPTIONS') {
 // =========================================================================
 // 1. Socket.IO Client JS & Real-Time Polling Stream (/socket.io/*)
 // =========================================================================
-if ($uri === '/socket.io/socket.io.js') {
+if ($uri === '/socket.io/socket.io.js' || $uri === '/socketio_client.js') {
     header('Content-Type: application/javascript; charset=utf-8');
     header('Cache-Control: no-store');
     readfile(__DIR__ . '/socketio_client.js');
+    exit;
+}
+
+if ($uri === '/server_setup.php') {
+    require WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'server_setup.php';
+    exit;
+}
+
+if ($uri === '/cron.php') {
+    require WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'cron.php';
     exit;
 }
 

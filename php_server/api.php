@@ -211,6 +211,57 @@ function recent_dates(int $days): array {
     return $out;
 }
 
+function run_auto_server_collection_if_due(): void {
+    $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
+    $state = read_json_file($stateFile, []);
+    $now = time();
+
+    // 1. Sync any snapshots collected by GitHub Actions (every 60s check)
+    if ($now - (int)($state['lastGitHubSyncCheck'] ?? 0) >= 60) {
+        $state['lastGitHubSyncCheck'] = $now;
+        write_json_file($stateFile, $state);
+        try {
+            sync_github_snapshots_to_mysql();
+        } catch (Throwable $e) {}
+    }
+
+    // 2. Pseudo-Cron on Server: Automatically run Direct API Collectors every 30 minutes
+    // or when current HH:mm matches scheduledTasks (no Server Admin / OS Cron needed!)
+    $cfg = get_app_config();
+    $active = $cfg['isScheduleActive'] ?? [];
+    $tasks = $cfg['scheduledTasks'] ?? [];
+    $currentSlot = date('Y-m-d H:i', $now);
+    $hm = date('H:i', $now);
+
+    $isScheduledMinute = in_array($hm, $tasks, true) && (($state['lastScheduledSlot'] ?? '') !== $currentSlot);
+    $isIntervalDue = ($now - (int)($state['lastAutoDirectCollect'] ?? 0)) >= 1800;
+
+    if ($isScheduledMinute || $isIntervalDue) {
+        $state['lastAutoDirectCollect'] = $now;
+        if ($isScheduledMinute) {
+            $state['lastScheduledSlot'] = $currentSlot;
+        }
+        write_json_file($stateFile, $state);
+
+        @ignore_user_abort(true);
+        @set_time_limit(120);
+
+        add_server_log('ServerAutoCron', '⏰ เริ่มดึงข้อมูลอัตโนมัติบน Server (รอบ 30 นาที / ตามตารางเวลา)...');
+        if (!empty($active['water'])) {
+            try { collect_water_level_direct('db'); } catch (Throwable $e) {}
+        }
+        if (!empty($active['drought'])) {
+            try { collect_drought_direct('db'); } catch (Throwable $e) {}
+        }
+        if (!empty($active['pm25'])) {
+            try { collect_pm25_direct('db'); } catch (Throwable $e) {}
+        }
+        if (!empty($active['complaints'])) {
+            try { collect_complaints_direct('db'); } catch (Throwable $e) {}
+        }
+    }
+}
+
 function handle_api_request(string $method, string $path): void {
     $rawBody = file_get_contents('php://input');
     $body = [];
@@ -263,13 +314,7 @@ function handle_api_request(string $method, string $path): void {
     // GET /api/status
     // =====================================================================
     if ($path === '/api/status' && $method === 'GET') {
-        $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
-        $state = read_json_file($stateFile, []);
-        if (time() - (int)($state['lastGitHubSyncCheck'] ?? 0) >= 60) {
-            $state['lastGitHubSyncCheck'] = time();
-            write_json_file($stateFile, $state);
-            try { sync_github_snapshots_to_mysql(); } catch (Throwable $e) {}
-        }
+        run_auto_server_collection_if_due();
 
         $cfg = get_app_config();
         $hist = get_task_history();
@@ -455,6 +500,7 @@ function handle_api_request(string $method, string $path): void {
     // GET /api/dashboard-summary
     // =====================================================================
     if ($path === '/api/dashboard-summary' && $method === 'GET') {
+        run_auto_server_collection_if_due();
         $dateFilterRec = '';
         $andDateFilterRec = '';
         $dateFilterCreated = '';

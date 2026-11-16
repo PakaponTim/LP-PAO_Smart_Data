@@ -1,7 +1,7 @@
 <?php
 // =========================================================================
-// Water_System2 (Port 7000) — Configuration & Shared State
-// Strictly isolated on Port 7000 (Never interacts with Port 3000)
+// Water_System2 — Server & Local Configuration (Zero-Admin Drop-in Ready)
+// Works both on Server Subfolder (http://server/Water_System2/) and Port 7000
 // =========================================================================
 
 date_default_timezone_set('Asia/Bangkok');
@@ -30,6 +30,17 @@ if (file_exists($envFile)) {
     }
 }
 
+// Also allow overriding DB config via runtime/php_7000/db_config.json (from server_setup.php)
+$dbOverrideFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'db_config.json';
+if (file_exists($dbOverrideFile)) {
+    $dbOverride = json_decode((string)@file_get_contents($dbOverrideFile), true);
+    if (is_array($dbOverride)) {
+        foreach ($dbOverride as $k => $v) {
+            if ($v !== '' && $v !== null) $ENV_VARS[$k] = (string)$v;
+        }
+    }
+}
+
 function env_val($key, $default = '') {
     global $ENV_VARS;
     if (isset($ENV_VARS[$key]) && $ENV_VARS[$key] !== '') return $ENV_VARS[$key];
@@ -37,9 +48,6 @@ function env_val($key, $default = '') {
     return ($val !== false && $val !== '') ? $val : $default;
 }
 
-// Auth enforcement toggle:
-// Currently false so the system runs immediately on port 7000 without blocking on login,
-// while full session/CSRF/account structures are already prepared and can be enabled anytime.
 define('AUTH_ENFORCE', env_val('WATER_PHP_AUTH_ENFORCE', '0') === '1');
 define('SESSION_COOKIE_NAME', 'water_session_7000');
 
@@ -59,13 +67,178 @@ function get_db(): PDO {
     $user = env_val('DB_USER', 'root');
     $pass = env_val('DB_PASS', 'root');
 
-    $dsn = "mysql:host={$host};port={$port};dbname={$db};charset=utf8mb4";
-    $pdo = new PDO($dsn, $user, $pass, [
+    $opts = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES => false,
-    ]);
+    ];
+
+    try {
+        $dsn = "mysql:host={$host};port={$port};dbname={$db};charset=utf8mb4";
+        $pdo = new PDO($dsn, $user, $pass, $opts);
+    } catch (PDOException $e) {
+        // If database does not exist yet on the Server (SQLSTATE 42000 / 1049), create it automatically!
+        if (strpos($e->getMessage(), '1049') !== false || stripos($e->getMessage(), 'Unknown database') !== false) {
+            $rootDsn = "mysql:host={$host};port={$port};charset=utf8mb4";
+            $tmpPdo = new PDO($rootDsn, $user, $pass, $opts);
+            $safeDb = preg_replace('/[^a-zA-Z0-9_]/', '', $db);
+            $tmpPdo->exec("CREATE DATABASE IF NOT EXISTS `{$safeDb}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+            $tmpPdo = null;
+            $pdo = new PDO("mysql:host={$host};port={$port};dbname={$safeDb};charset=utf8mb4", $user, $pass, $opts);
+        } else {
+            throw $e;
+        }
+    }
+
+    ensure_all_tables($pdo, $db);
     return $pdo;
+}
+
+function ensure_all_tables(PDO $pdo, string $dbName = 'water_system2'): void {
+    static $checked = false;
+    if ($checked) return;
+
+    $flagFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'schema_ready_' . preg_replace('/[^a-zA-Z0-9_]/', '', $dbName) . '.flag';
+    if (file_exists($flagFile)) {
+        $checked = true;
+        return;
+    }
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `tbl_water_disaster_monitoring` (
+      `id` bigint(20) NOT NULL AUTO_INCREMENT,
+      `station_name` varchar(150) NOT NULL,
+      `river` varchar(100) DEFAULT NULL,
+      `amphoe` varchar(100) NOT NULL,
+      `province` varchar(50) DEFAULT 'ลำปาง',
+      `current_water_level_m` decimal(6,2) DEFAULT NULL,
+      `left_bank_level_m` decimal(6,2) DEFAULT NULL,
+      `bank_difference_m` decimal(6,2) DEFAULT NULL,
+      `trend` varchar(50) DEFAULT NULL,
+      `status` varchar(50) DEFAULT NULL,
+      `current_rain_mm` decimal(5,2) DEFAULT NULL,
+      `forecast_rain_24h_mm` decimal(5,2) DEFAULT NULL,
+      `risk_level` varchar(50) DEFAULT NULL,
+      `recorded_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+      `created_add` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+      `updated_add` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`),
+      KEY `idx_amphoe` (`amphoe`),
+      KEY `idx_risk_level` (`risk_level`),
+      KEY `idx_station_recorded` (`station_name`,`recorded_at`),
+      KEY `idx_recorded_at` (`recorded_at`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `tbl_rainfall_monitoring` (
+      `id` bigint(20) NOT NULL AUTO_INCREMENT,
+      `station_name` varchar(150) NOT NULL,
+      `location` varchar(150) DEFAULT NULL,
+      `river_basin` varchar(100) DEFAULT NULL,
+      `rain_mm` decimal(6,2) DEFAULT NULL,
+      `rain_status` varchar(50) DEFAULT NULL,
+      `measured_time` varchar(50) DEFAULT NULL,
+      `record_date` varchar(100) DEFAULT NULL,
+      `recorded_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+      `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`),
+      KEY `idx_station` (`station_name`),
+      KEY `idx_station_recorded` (`station_name`,`recorded_at`),
+      KEY `idx_recorded_at` (`recorded_at`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `tbl_drought_monitoring` (
+      `id` bigint(20) NOT NULL AUTO_INCREMENT,
+      `record_date` varchar(100) NOT NULL,
+      `recorded_at` datetime NOT NULL,
+      `dam_type` varchar(100) DEFAULT NULL,
+      `dam_name` varchar(100) NOT NULL,
+      `capacity_m_cum` decimal(12,4) DEFAULT NULL,
+      `inflow_m_cum` decimal(12,4) DEFAULT NULL,
+      `water_volume_m_cum` decimal(12,4) DEFAULT NULL,
+      `water_percent` varchar(20) DEFAULT NULL,
+      `usable_water_m_cum` decimal(12,4) DEFAULT NULL,
+      `discharge_m_cum` decimal(12,4) DEFAULT NULL,
+      `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`),
+      KEY `idx_dam_recorded` (`dam_name`,`recorded_at`),
+      KEY `idx_recorded_at` (`recorded_at`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `tbl_pm25_monitoring` (
+      `id` bigint(20) NOT NULL AUTO_INCREMENT,
+      `record_date` varchar(100) NOT NULL,
+      `recorded_at` datetime NOT NULL,
+      `station_name` varchar(150) NOT NULL,
+      `tambon` varchar(100) DEFAULT NULL,
+      `amphoe` varchar(100) NOT NULL,
+      `province` varchar(50) DEFAULT 'ลำปาง',
+      `time_label` varchar(50) DEFAULT NULL,
+      `pm25_value` decimal(6,2) DEFAULT NULL,
+      `pm25_avg_24h` decimal(6,2) DEFAULT NULL,
+      `air_quality_status` varchar(100) DEFAULT NULL,
+      `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`),
+      KEY `idx_station_recorded` (`station_name`,`recorded_at`),
+      KEY `idx_recorded_at` (`recorded_at`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `tbl_complaints_monitoring` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `ticket_id` varchar(50) NOT NULL,
+      `state_name` varchar(100) NOT NULL,
+      `problem_type` varchar(150) DEFAULT NULL,
+      `description` text,
+      `photo_url` text,
+      `location` text,
+      `org_name` text,
+      `agency_status` varchar(100) DEFAULT NULL,
+      `ticket_datetime` varchar(100) DEFAULT NULL,
+      `satisfaction_stars` varchar(50) DEFAULT NULL,
+      `raw_timeline` longtext,
+      `is_in_scope` tinyint(1) DEFAULT '1',
+      `recorded_at` datetime NOT NULL,
+      `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `ticket_id` (`ticket_id`),
+      KEY `idx_state` (`state_name`),
+      KEY `idx_recorded_at` (`recorded_at`),
+      KEY `idx_created_at` (`created_at`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `tbl_alert_notifications` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `alert_type` enum('water','rainfall','drought','pm25','complaints') NOT NULL,
+      `alert_level` enum('info','warning','critical') NOT NULL,
+      `alert_title` varchar(255) NOT NULL,
+      `alert_message` text NOT NULL,
+      `trigger_value` varchar(100) DEFAULT NULL,
+      `threshold_value` varchar(100) DEFAULT NULL,
+      `station_name` varchar(150) DEFAULT NULL,
+      `recipients_sent` text,
+      `email_status` enum('sent','failed','skipped') DEFAULT 'skipped',
+      `email_error` text,
+      `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `tbl_alert_recipients` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `name` varchar(100) NOT NULL,
+      `position` varchar(100) NOT NULL,
+      `email` varchar(255) NOT NULL,
+      `alert_level_min` enum('info','warning','critical') DEFAULT 'warning',
+      `is_active` tinyint(1) DEFAULT '1',
+      `notify_water` tinyint(1) DEFAULT '1',
+      `notify_drought` tinyint(1) DEFAULT '1',
+      `notify_pm25` tinyint(1) DEFAULT '1',
+      `notify_complaints` tinyint(1) DEFAULT '1',
+      `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+      `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+    ensure_ingest_tables($pdo);
+    @file_put_contents($flagFile, date('c'));
+    $checked = true;
 }
 
 function ensure_ingest_tables(PDO $pdo) {
@@ -91,10 +264,6 @@ function ensure_ingest_tables(PDO $pdo) {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
     $ensured = true;
 }
-
-// =========================================================================
-// Real-time Server Log & Socket.IO Event Buffer
-// =========================================================================
 
 function format_iso_datetime($timestamp = null): string {
     if ($timestamp === null) $timestamp = time();
@@ -144,7 +313,6 @@ function add_server_log(string $source, string $message): string {
     $datetimeStr = format_iso_datetime();
     $logStr = "[{$datetimeStr}] [{$source}] {$message}";
 
-    // 1. Append to Socket.IO real-time event ring buffer
     $eventsFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'socketio_events.json';
     $eventsData = read_json_file($eventsFile, ['seq' => 0, 'events' => []]);
     $seq = (int)($eventsData['seq'] ?? 0) + 1;
@@ -160,7 +328,6 @@ function add_server_log(string $source, string $message): string {
     }
     write_json_file($eventsFile, ['seq' => $seq, 'events' => $events]);
 
-    // 2. Prepend to recent 50 logs for /api/status
     $logsFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'recent_logs.json';
     $logs = read_json_file($logsFile, []);
     array_unshift($logs, $logStr);
@@ -169,7 +336,6 @@ function add_server_log(string $source, string $message): string {
     }
     write_json_file($logsFile, $logs);
 
-    // 3. Also append to permanent fetch_history.log
     $fetchLogPath = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'fetch_history.log';
     @file_put_contents($fetchLogPath, $logStr . PHP_EOL, FILE_APPEND);
 
@@ -181,8 +347,8 @@ function get_recent_logs(): array {
     $logs = read_json_file($logsFile, []);
     if (empty($logs)) {
         $logs = [
-            '[' . format_iso_datetime() . '] [PHP-7000] 🚀 PHP + Socket.IO Server เริ่มทำงานที่ Port 7000 (Direct API Collector พร้อมทำงาน ไม่ต้องพึ่งพา Chrome Extension)',
-            '[' . format_iso_datetime() . '] [PHP-7000] 🛡️ ระบบเชื่อมต่อ Direct API (ThaiWater30 API + Traffy Public API) พร้อมบันทึกข้อมูลลง MySQL'
+            '[' . format_iso_datetime() . '] [Water_System2] 🚀 ระบบ PHP + Socket.IO + Direct API Collector พร้อมทำงานบน Server',
+            '[' . format_iso_datetime() . '] [Water_System2] 🛡️ เชื่อมต่อฐานข้อมูล MySQL (' . env_val('DB_NAME', 'water_system2') . ') และระบบซิงค์ข้อมูลอัตโนมัติเรียบร้อย'
         ];
         write_json_file($logsFile, $logs);
     }
@@ -271,7 +437,6 @@ function log_task_run(string $projectName, string $mode, string $status, int $co
 
     write_json_file($histPath, $hist);
 
-    // Update runtime state timestamps
     $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
     $state = read_json_file($stateFile, []);
     if ($status === 'success') {
@@ -348,4 +513,3 @@ function DATA_DEFINITIONS(): array {
         'missing_values' => 'null หมายถึงไม่มีข้อมูล; 0 หมายถึงตรวจได้ศูนย์'
     ];
 }
-

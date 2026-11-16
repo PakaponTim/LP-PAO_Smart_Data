@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script src="./auth-client.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ระบบควบคุมการซิงค์ข้อมูล - Lampang PAO Scraper Control</title>
+  <!-- Use Inter font for a modern look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+  <link rel="stylesheet" href="./css/control-1.css">
+</head>
+
+<body class="font-sans antialiased text-slate-900 bg-slate-50 flex h-screen overflow-hidden">
+
+  <!-- Sidebar / Left Menu -->
+  <aside id="sidebar"
+    class="bg-pink-100/90 w-64 border-r border-pink-200/60 flex flex-col transition-transform duration-300 absolute z-20 h-full sm:relative sm:translate-x-0 -translate-x-full shadow-lg sm:shadow-none">
+    <div
+      class="h-16 flex items-center gap-3 px-6 border-b-4 border-pink-500 bg-emerald-800 shrink-0 shadow-sm relative overflow-hidden">
+      <img src="logo_pao.png" class="w-8 h-8 object-contain shrink-0 select-none relative z-10" alt="อบจ.ลำปาง Logo">
+      <div class="flex flex-col relative z-10">
+        <span class="text-xs font-extrabold text-white tracking-wider leading-none">อบจ.ลำปาง</span>
+        <span class="text-[8px] text-pink-100 font-semibold tracking-wide uppercase mt-0.5">Control Panel</span>
+      </div>
+    </div>
+
+    <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1.5">
+      <a href="#" id="nav-dashboard" onclick="switchTab('dashboard')"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-emerald-800 hover:bg-emerald-50 hover:text-emerald-950 transition-all duration-200 group">
+        <svg class="w-5 h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 5v-1a1 1 0 00-1-1h-1a1 1 0 00-1 1v1M8 9h12M8 13h12m-12 4h12M4 6h.01M4 10h.01M4 14h.01M4 18h.01">
+          </path>
+        </svg>
+        ดึงข้อมูลน้ำ
+      </a>
+      <a href="#" id="nav-drought" onclick="switchTab('drought')"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-emerald-800 hover:bg-emerald-50 hover:text-emerald-950 transition-all duration-200 group">
+        <svg class="w-5 h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z">
+          </path>
+        </svg>
+        ดึงข้อมูลภัยแล้ง
+      </a>
+      <a href="#" id="nav-fire" onclick="switchTab('fire')"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-emerald-800 hover:bg-emerald-50 hover:text-emerald-950 transition-all duration-200 group">
+        <svg class="w-5 h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.966 7.966 0 01-2.343 5.657z">
+          </path>
+        </svg>
+        ดึงข้อมูลหมอกควันไฟป่า
+      </a>
+      <a href="#" id="nav-pm25" onclick="switchTab('pm25')"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-emerald-800 hover:bg-emerald-50 hover:text-emerald-950 transition-all duration-200 group">
+        <svg class="w-5 h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 17v-2a4 4 0 014-4h4m0 0l-4-4m4 4l-4 4m-5 3a2 2 0 11-4 0 2 2 0 014 0zM3 9h.01M3 13h.01M3 17h.01">
+          </path>
+        </svg>
+        PM 2.5
+      </a>
+      <a href="#" id="nav-complaints" onclick="switchTab('complaints')"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-emerald-800 hover:bg-emerald-50 hover:text-emerald-950 transition-all duration-200 group">
+        <svg class="w-5 h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+          </path>
+        </svg>
+        ดึงข้อมูลระบบร้องเรียน
+      </a>
+      <a href="#" id="nav-report" onclick="switchTab('report')"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-emerald-800 hover:bg-emerald-50 hover:text-emerald-950 transition-all duration-200 group">
+        <svg class="w-5 h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        📊 ดึงข้อมูลรายงาน
+      </a>
+      <a href="#" id="nav-settings" onclick="switchTab('settings')"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-emerald-800 hover:bg-emerald-50 hover:text-emerald-950 transition-all duration-200 group">
+        <svg class="w-5 h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        ตั้งค่าเวลา (Schedule)
+      </a>
+
+      <!-- Divider -->
+      <hr class="border-emerald-100 my-2 mx-3" />
+
+      <!-- Notification Control -->
+      <a href="notification.html"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-semibold rounded-md bg-amber-500 text-white shadow-md shadow-amber-500/20 hover:bg-amber-600 transition-all duration-200 group">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+        </svg>
+        🔔 แจ้งเตือนวิกฤต
+      </a>
+
+      <!-- Divider -->
+      <hr class="border-emerald-100 my-2 mx-3" />
+
+      <!-- Back to Main Dashboard Link -->
+      <a href="./index.html"
+        class="flex items-center gap-3 px-3 py-2 text-sm font-semibold rounded-md bg-pink-600 text-white shadow-md shadow-pink-600/20 hover:bg-pink-700 transition-all duration-200">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+        </svg>
+        <span>แดชบอร์ดวิเคราะห์ (Dashboard)</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 flex flex-col h-screen overflow-hidden relative">
+
+    <!-- Watermark Background Logo -->
+    <div class="bg-watermark"></div>
+
+    <!-- Header -->
+    <header
+      class="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 z-10 sticky top-0">
+      <div class="flex items-center gap-4">
+        <!-- Mobile menu button -->
+        <button id="mobile-menu-btn"
+          class="sm:hidden p-2 rounded-md text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        <h1 class="text-xl font-semibold text-slate-800">Overview</h1>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <!-- User Profile Dummy -->
+        <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded-full transition-colors">
+          <div
+            class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-white font-bold text-sm">
+            PB
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Scrollable Main Content -->
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative">
+      <!-- Content Container -->
+      <div id="view-dashboard" class="max-w-6xl mx-auto space-y-6">
+
+        <!-- Welcome Banner -->
+        <div
+          class="bg-gradient-to-r from-blue-600 to-cyan-500 rounded-2xl p-8 text-white shadow-lg shadow-blue-500/20 relative overflow-hidden">
+          <div class="relative z-10">
+            <h2 class="text-3xl font-bold mb-2">Welcome back!</h2>
+            <p class="text-blue-100 max-w-xl">Your system overview is looking great today. Explore the latest insights
+              and metrics from your dashboard.</p>
+          </div>
+          <!-- Decorative circle -->
+          <div class="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
+          <div class="absolute -bottom-24 -right-12 w-48 h-48 bg-white opacity-10 rounded-full blur-2xl"></div>
+        </div>
+
+        <!-- Dummy Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div class="text-slate-500 text-sm font-medium mb-1">ข้อมูลทั้งหมดใน Database</div>
+            <div id="cardTotalRows" class="text-3xl font-bold text-slate-800">กำลังโหลด...</div>
+            <div id="cardTotalDetail" class="mt-2 text-sm text-green-600 font-medium flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4">
+                </path>
+              </svg>
+              <span>รวมทุกตาราง</span>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div class="text-slate-500 text-sm font-medium mb-1">สถานะระบบ</div>
+            <div id="cardSystemStatus" class="text-3xl font-bold text-slate-800">กำลังโหลด...</div>
+            <div id="cardSystemDetail" class="mt-2 text-sm text-green-600 font-medium flex items-center gap-1">
+              <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+              <span>ตรวจสอบการเชื่อมต่อ...</span>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div class="text-slate-500 text-sm font-medium mb-1">งานที่ล้มเหลว</div>
+            <div id="cardAlertCount" class="text-3xl font-bold text-slate-800">0</div>
+            <div id="cardAlertDetail" class="mt-2 text-sm text-slate-500 font-medium flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                </path>
+              </svg>
+              <span>ไม่มีข้อผิดพลาด</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Automation Controls -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Left Column: Status and Schedule -->
+          <div class="space-y-6">
+            <!-- System Status -->
+            <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+              <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                System Status
+              </h3>
+              <div class="space-y-3 text-sm">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                  <span class="font-semibold text-slate-600">Chrome Extension:</span>
+                  <span id="extStatus" class="flex items-center gap-2 text-red-500 font-medium">
+                    <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div> ไม่ได้เชื่อมต่อ (Disconnected)
+                  </span>
+                </div>
+                <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                  <span class="font-semibold text-slate-600">ดึงข้อมูลล่าสุดเมื่อ:</span>
+                  <span id="lastFetchTime" class="text-slate-700">Never</span>
+                </div>
+              </div>
+              <p class="text-xs text-slate-400 mt-4 italic">
+                * หาก Extension ไม่ได้เชื่อมต่อ ระบบจะใช้ Puppeteer (หุ่นยนต์) ดึงข้อมูลแทน
+              </p>
+            </div>
+
+            <!-- Automation Status -->
+            <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+              <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold text-slate-800">⚙️ สถานะระบบอัตโนมัติ</h3>
+                <button id="toggleScheduleBtn" onclick="toggleSchedule()"
+                  class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
+                  <div class="w-3.5 h-3.5 rounded-full animate-flash-red-white"></div> เปิดใช้งาน (ON)
+                </button>
+              </div>
+            </div>
+
+            <!-- Manual Trigger -->
+            <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+              <h3 class="text-lg font-bold text-slate-800 mb-2">🔧 สั่งการด้วยตัวเอง</h3>
+              <p class="text-sm text-slate-500 mb-3">กดปุ่มด้านล่างเพื่อบังคับเก็บข้อมูลทันทีโดยไม่ต้องรอ</p>
+              <button id="forceFetchBtn" onclick="forceFetch()"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                </svg>
+                สั่งเก็บข้อมูลเดี๋ยวนี้ (Force Fetch Excel)
+              </button>
+              <button id="forceFetchDbBtn" onclick="forceFetchDB()"
+                class="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-3 mt-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4">
+                  </path>
+                </svg>
+                สั่งเก็บข้อมูลลงฐานข้อมูล (Force Fetch DB)
+              </button>
+              <button id="forceFetchRainfallDbBtn" onclick="forceFetchRainfallDB()"
+                class="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 mt-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 14l-7 7m0 0l-7-7m7 7V3">
+                  </path>
+                </svg>
+                สั่งเก็บเฉพาะปริมาณน้ำฝน (Force Fetch Rainfall)
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Column: Live Logs -->
+          <div class="bg-slate-900 rounded-xl border border-slate-800 p-1 shadow-lg flex flex-col h-[500px]">
+            <div
+              class="bg-slate-800 text-slate-200 px-4 py-3 rounded-t-lg border-b border-slate-700 flex justify-between items-center">
+              <h3 class="font-bold flex items-center gap-2">
+                <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                Live System Logs
+              </h3>
+              <div class="flex gap-1.5">
+                <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                <div class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+              </div>
+            </div>
+            <div id="logBox"
+              class="flex-1 overflow-y-auto p-4 font-mono text-sm text-green-400 space-y-1 bg-slate-900 rounded-b-lg">
+              <!-- Logs will appear here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Completed Tasks History -->
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            ประวัติงานที่ทำงานเสร็จสิ้น (Completed Tasks)
+          </h3>
+          <div id="completedTasksBox" class="space-y-2 max-h-[400px] overflow-y-auto">
+            <div class="text-slate-400 text-sm text-center py-4">กำลังโหลด...</div>
+          </div>
+        </div>
+      </div> <!-- End Dashboard View -->
+
+      <!-- Drought View -->
+      <div id="view-drought" class="max-w-6xl mx-auto space-y-6 hidden">
+        <div
+          class="bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-8 text-white shadow-lg shadow-orange-500/20 relative overflow-hidden">
+          <div class="relative z-10">
+            <h2 class="text-3xl font-bold mb-2">ดึงข้อมูลภัยแล้ง</h2>
+            <p class="text-amber-100 max-w-xl">ระบบตรวจสอบปริมาณน้ำสำรองและเฝ้าระวังพื้นที่เสี่ยงภัยแล้งแบบเรียลไทม์</p>
+          </div>
+          <div class="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">พื้นที่เฝ้าระวังภัยแล้ง</div>
+            <div class="text-3xl font-bold text-slate-800">12 จังหวัด</div>
+            <div class="mt-2 text-sm text-red-600 font-medium flex items-center gap-1">เพิ่มขึ้น 2 จังหวัดจากสัปดาห์ก่อน
+            </div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">ปริมาณน้ำสำรองเฉลี่ย</div>
+            <div class="text-3xl font-bold text-slate-800">42.5 %</div>
+            <div class="mt-2 text-sm text-amber-600 font-medium flex items-center gap-1">ระดับเฝ้าระวังพิเศษ</div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">การอัปเดตระบบ</div>
+            <div class="text-3xl font-bold text-slate-800">อัตโนมัติ</div>
+            <div class="mt-2 text-sm text-green-600 font-medium flex items-center gap-1">เชื่อมต่อ API กรมชลประทานแล้ว
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">📥 สั่งดึงข้อมูลภัยแล้ง</h3>
+          <p class="text-sm text-slate-500 mb-4">
+            คลิกปุ่มด้านล่างเพื่อบังคับดาวน์โหลดข้อมูลปริมาณน้ำและสถิติภัยแล้งล่าสุดเข้าสู่ระบบโดยตรง</p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <button id="forceDroughtExcelBtn" onclick="forceFetchDroughtExcel()"
+              class="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
+              📥 ดึงข้อมูลภัยแล้ง (Excel)
+            </button>
+            <button id="forceDroughtDbBtn" onclick="forceFetchDroughtDB()"
+              class="flex-1 bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
+              💾 ดึงข้อมูลภัยแล้ง (Database)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fire/Smoke View -->
+      <div id="view-fire" class="max-w-6xl mx-auto space-y-6 hidden">
+        <div
+          class="bg-gradient-to-r from-red-600 to-orange-500 rounded-2xl p-8 text-white shadow-lg shadow-red-500/20 relative overflow-hidden">
+          <div class="relative z-10">
+            <h2 class="text-3xl font-bold mb-2">ดึงข้อมูลหมอกควันไฟป่า</h2>
+            <p class="text-red-100 max-w-xl">กำลังพัฒนา</p>
+          </div>
+          <div class="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">จุดความร้อนล่าสุด (Hotspots)</div>
+            <div class="text-4xl font-bold text-red-600">42 จุด</div>
+            <p class="text-xs text-slate-400 mt-2">อัปเดตดาวเทียม Suomi NPP ล่าสุดเมื่อ 1 ชม. ที่ผ่านมา</p>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">พื้นที่เสี่ยงหมอกควันสะสม</div>
+            <div class="text-4xl font-bold text-amber-500">สูงมาก</div>
+            <p class="text-xs text-slate-400 mt-2">ส่วนใหญ่อยู่ในเขตภาคเหนือตอนบน</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">📥 สั่งดึงข้อมูลหมอกควันไฟป่า</h3>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <button onclick="alert('🚧 ฟีเจอร์นี้กำลังอยู่ระหว่างการพัฒนา')"
+              class="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm opacity-60 cursor-not-allowed">
+              🚧 ดึงข้อมูลหมอกควันไฟป่า (Excel) — กำลังพัฒนา
+            </button>
+            <button onclick="alert('🚧 ฟีเจอร์นี้กำลังอยู่ระหว่างการพัฒนา')"
+              class="flex-1 bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm opacity-60 cursor-not-allowed">
+              🚧 ดึงข้อมูลหมอกควันไฟป่า (Database) — กำลังพัฒนา
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PM 2.5 View -->
+      <div id="view-pm25" class="max-w-6xl mx-auto space-y-6 hidden">
+        <div
+          class="bg-gradient-to-r from-teal-500 to-emerald-600 rounded-2xl p-8 text-white shadow-lg shadow-teal-500/20 relative overflow-hidden">
+          <div class="relative z-10">
+            <h2 class="text-3xl font-bold mb-2">ดึงข้อมูล PM 2.5</h2>
+            <p class="text-teal-100 max-w-xl">ระบบดึงข้อมูลดัชนีคุณภาพอากาศและฝุ่นละอองขนาดเล็ก PM 2.5</p>
+          </div>
+          <div class="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">ค่าฝุ่นเฉลี่ยในพื้นที่</div>
+            <div class="text-3xl font-bold text-slate-800">32 µg/m³</div>
+            <div class="mt-2 text-sm text-green-600 font-medium">คุณภาพอากาศปานกลาง</div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">สถานีวัดที่มีผลกระทบ</div>
+            <div class="text-3xl font-bold text-slate-800">1 สถานี</div>
+            <div class="mt-2 text-sm text-amber-600 font-medium">ควรหลีกเลี่ยงการทำกิจกรรมกลางแจ้ง</div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">แหล่งข้อมูลอ้างอิง</div>
+            <div class="text-3xl font-bold text-slate-800">Air4Thai</div>
+            <div class="mt-2 text-sm text-teal-600 font-medium">เชื่อมต่อกับระบบควบคุมฝุ่นจังหวัด</div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">📥 ดึงข้อมูลฝุ่น PM 2.5 ล่าสุด</h3>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <button id="forcePm25ExcelBtn" onclick="forceFetchPM25Excel()"
+              class="flex-1 bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
+              📥 ดึงข้อมูล PM 2.5 (Excel)
+            </button>
+            <button id="forcePm25DbBtn" onclick="forceFetchPM25DB()"
+              class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
+              💾 ดึงข้อมูล PM 2.5 (Database)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Complaints View -->
+      <div id="view-complaints" class="max-w-6xl mx-auto space-y-6 hidden">
+        <div
+          class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-8 text-white shadow-lg shadow-indigo-500/20 relative overflow-hidden">
+          <div class="relative z-10">
+            <h2 class="text-3xl font-bold mb-2">ดึงข้อมูลระบบร้องเรียน</h2>
+            <p class="text-indigo-100 max-w-xl">ระบบรวบรวมและวิเคราะห์เรื่องร้องเรียนปัญหาภัยแล้ง น้ำท่วม
+              หรือสิ่งแวดล้อมจากประชาชน</p>
+          </div>
+          <div class="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">เรื่องร้องเรียนทั้งหมด</div>
+            <div class="text-3xl font-bold text-slate-800">148 เรื่อง</div>
+            <div class="mt-2 text-sm text-green-600 font-medium">แก้ไขเสร็จสิ้น 92 เรื่อง</div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">กำลังรอดำเนินการ</div>
+            <div class="text-3xl font-bold text-slate-800">12 เรื่อง</div>
+            <div class="mt-2 text-sm text-red-600 font-medium">เรื่องเร่งด่วน 3 เรื่อง</div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <div class="text-slate-500 text-sm font-medium mb-1">หัวข้อที่ร้องเรียนมากที่สุด</div>
+            <div class="text-3xl font-bold text-slate-800">ขาดแคลนน้ำ</div>
+            <div class="mt-2 text-sm text-indigo-600 font-medium">คิดเป็น 64% ของทั้งหมด</div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">📥 ซิงค์เรื่องร้องเรียนใหม่ล่าสุด
+          </h3>
+          <button id="forceComplaintsDbBtn" onclick="forceFetchComplaintsDB()"
+            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-medium transition-colors flex justify-center items-center gap-2 shadow-sm">
+            💾 ซิงค์เรื่องร้องเรียนลง Database ทันที
+          </button>
+        </div>
+      </div>
+
+      <!-- Report View -->
+      <div id="view-report" class="max-w-6xl mx-auto space-y-6 hidden">
+        <div
+          class="bg-gradient-to-r from-sky-500 to-blue-700 rounded-2xl p-8 text-white shadow-lg shadow-blue-500/20 relative overflow-hidden">
+          <div class="relative z-10">
+            <h2 class="text-3xl font-bold mb-2">📊 ดึงข้อมูลรายงาน</h2>
+            <p class="text-sky-100 max-w-xl">เลือกช่วงเวลาและโปรเจคเพื่อดึงข้อมูลจากฐานข้อมูลทั้งหมด — รองรับรายวัน รายสัปดาห์ และรายเดือน</p>
+          </div>
+          <div class="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+            </svg>
+            ตัวกรองข้อมูล (Filter)
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Project Select -->
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-semibold text-slate-600">โปรเจค</label>
+              <select id="reportProjectSelect" class="px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium bg-white">
+                <option value="all">📦 ทั้งหมด (All Projects)</option>
+                <option value="water">💧 ข้อมูลระดับน้ำ</option>
+                <option value="drought">☀️ ข้อมูลภัยแล้ง</option>
+                <option value="pm25">🌫️ ข้อมูล PM 2.5</option>
+                <option value="complaints">📢 ข้อมูลร้องเรียน</option>
+              </select>
+            </div>
+
+            <!-- Period Select -->
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-semibold text-slate-600">ช่วงเวลา</label>
+              <div class="flex rounded-lg overflow-hidden border border-slate-300">
+                <button id="periodBtnDaily" onclick="setReportPeriod('daily')" class="flex-1 py-2.5 text-sm font-bold bg-blue-600 text-white transition-colors">รายวัน</button>
+                <button id="periodBtnWeekly" onclick="setReportPeriod('weekly')" class="flex-1 py-2.5 text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors border-x border-slate-300">รายสัปดาห์</button>
+                <button id="periodBtnMonthly" onclick="setReportPeriod('monthly')" class="flex-1 py-2.5 text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">รายเดือน</button>
+              </div>
+            </div>
+
+            <!-- Date Picker -->
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-semibold text-slate-600">วันที่อ้างอิง</label>
+              <input type="date" id="reportDateInput" class="px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium">
+            </div>
+
+            <!-- Fetch Button -->
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-semibold text-slate-600 invisible">ปุ่ม</label>
+              <button id="reportFetchBtn" onclick="fetchReportData()"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-bold transition-colors flex justify-center items-center gap-2 shadow-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
+                ดึงข้อมูล
+              </button>
+            </div>
+          </div>
+          <!-- Date Range Display -->
+          <div id="reportDateRange" class="mt-4 text-sm text-slate-500 font-medium hidden">
+            📅 ช่วงเวลา: <span id="reportDateRangeText" class="text-blue-600 font-bold"></span>
+          </div>
+        </div>
+
+        <!-- KPI Summary Cards -->
+        <div id="reportKpiCards" class="grid grid-cols-1 md:grid-cols-4 gap-4 hidden">
+          <!-- Dynamically injected -->
+        </div>
+
+        <!-- Data Table -->
+        <div id="reportTableContainer" class="bg-white rounded-xl border border-slate-200 shadow-sm hidden">
+          <div class="p-4 sm:p-6 border-b border-slate-100">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <h3 id="reportTableTitle" class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                </svg>
+                ผลลัพธ์ข้อมูล
+              </h3>
+              <span id="reportRecordCount" class="text-sm text-slate-500 font-medium"></span>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table id="reportDataTable" class="w-full text-sm">
+              <thead id="reportTableHead" class="bg-slate-50 border-b border-slate-200">
+              </thead>
+              <tbody id="reportTableBody" class="divide-y divide-slate-100">
+              </tbody>
+            </table>
+          </div>
+          <!-- Pagination info -->
+          <div id="reportPagination" class="p-4 border-t border-slate-100 flex justify-between items-center">
+            <span id="reportShowingInfo" class="text-sm text-slate-500"></span>
+            <div class="flex gap-2">
+              <button id="reportPrevBtn" onclick="reportChangePage(-1)" class="px-3 py-1.5 text-sm border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed font-medium">← ก่อนหน้า</button>
+              <button id="reportNextBtn" onclick="reportChangePage(1)" class="px-3 py-1.5 text-sm border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed font-medium">ถัดไป →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="reportLoading" class="hidden">
+          <div class="bg-white rounded-xl border border-slate-200 p-12 shadow-sm flex flex-col items-center justify-center gap-4">
+            <div class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+            <p class="text-slate-500 font-medium">กำลังดึงข้อมูลจากฐานข้อมูล...</p>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="reportEmpty" class="hidden">
+          <div class="bg-white rounded-xl border border-slate-200 p-12 shadow-sm flex flex-col items-center justify-center gap-3">
+            <svg class="w-16 h-16 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+            </svg>
+            <p class="text-slate-500 font-bold text-lg">ไม่พบข้อมูลในช่วงเวลาที่เลือก</p>
+            <p class="text-slate-400 text-sm">ลองเปลี่ยนช่วงเวลาหรือเลือกโปรเจคอื่น</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings View -->
+      <div id="view-settings" class="max-w-4xl mx-auto space-y-6 hidden">
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Task Scheduling (เวลาบันทึกข้อมูล Database)
+          </h2>
+
+          <p class="text-slate-600 mb-6 text-sm">ตั้งค่าเวลาในการดึงข้อมูลลงฐานข้อมูลโดยอัตโนมัติ คุณสามารถเพิ่มเวลา
+            และลากสลับตำแหน่งได้ (ระบบจะเรียงลำดับเวลาอัตโนมัติ)</p>
+
+          <!-- Add Task Form -->
+          <div class="flex flex-wrap items-end gap-3 mb-8 bg-slate-50 p-4 rounded-lg border border-slate-100">
+            <div class="flex flex-col gap-1">
+              <label class="text-sm font-semibold text-slate-700">กำหนดเวลา (HH:mm)</label>
+              <input type="time" id="taskTimeInput"
+                class="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-lg">
+            </div>
+            <button onclick="addTask()"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 h-[46px] rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              เพิ่มเวลา (Append)
+            </button>
+          </div>
+
+          <!-- Tasks List -->
+          <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">รายการเวลาที่ทำงาน (Tasks)
+          </h3>
+          <ul id="taskList" class="space-y-2 mb-8 min-h-[50px]">
+            <!-- Task Items injected by JS -->
+          </ul>
+
+          <!-- Save Button -->
+          <div class="flex justify-end pt-4 border-t border-slate-100">
+            <button onclick="saveTasks()"
+              class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-md flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              บันทึกการตั้งค่าทั้งหมด
+            </button>
+          </div>
+        </div>
+      </div> <!-- End Settings View -->
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 px-6 text-center text-sm text-slate-500 z-10">
+      Created by <span class="font-semibold text-slate-700">Pakapon Butti</span>
+    </footer>
+
+  </div>
+
+  <script src="./js/control-1.js"></script>
+  <script src="./socketio_client.js"></script>
+  <script src="./js/control-2.js"></script>
+</body>
+
+</html>

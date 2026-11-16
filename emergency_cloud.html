@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>โหมดฉุกเฉิน (Cloud Snapshot Viewer) — Water_System2 อบจ.ลำปาง</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Prompt', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen">
+  <header class="bg-amber-900 text-white border-b-4 border-amber-400 shadow">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 text-xs font-bold">CLOUD FAILOVER VIEWER</span>
+          <h1 class="text-base sm:text-lg font-bold">โหมดสำรองฉุกเฉิน — ข้อมูลล่าสุดจาก GitHub Cloud Snapshot</h1>
+        </div>
+        <p class="text-xs text-amber-200 mt-0.5">เปิดดูได้ทันทีแม้ Server หลักหรือฐานข้อมูล MySQL ขัดข้อง (โหลดจาก GitHub Actions / แคชในเครื่องโดยตรง)</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 text-xs">
+        <select id="snapshotSelect" onchange="loadSelectedSnapshot()" class="bg-slate-900 border border-amber-500/50 text-white rounded-lg px-2.5 py-1.5"></select>
+        <button onclick="bootCloudViewer()" class="px-3 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold transition">🔄 รีเฟรชจากคลาวด์</button>
+        <button onclick="exportSnapshotCsv()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">📥 Export CSV</button>
+        <a href="./index.html" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 transition">← Dashboard หลัก</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+    <div id="sourceBanner" class="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-xs sm:text-sm text-amber-950 flex flex-wrap items-center justify-between gap-2">
+      <span>กำลังเชื่อมต่อ GitHub Cloud Snapshot (`PakaponTim/Water_System2`)...</span>
+    </div>
+
+    <!-- 5 KPI Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-xs sm:text-sm">
+      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+        <div class="text-slate-500 text-xs">🌊 สถานีระดับน้ำ</div>
+        <div id="kpiWater" class="text-2xl font-extrabold text-sky-700 mt-1">-</div>
+        <div id="kpiWaterCrit" class="text-[11px] text-slate-500 mt-0.5">-</div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+        <div class="text-slate-500 text-xs">🌧️ สถานีน้ำฝน</div>
+        <div id="kpiRain" class="text-2xl font-extrabold text-blue-700 mt-1">-</div>
+        <div id="kpiRainMax" class="text-[11px] text-slate-500 mt-0.5">-</div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+        <div class="text-slate-500 text-xs">🏜️ อ่างเก็บน้ำ</div>
+        <div id="kpiDrought" class="text-2xl font-extrabold text-amber-700 mt-1">-</div>
+        <div id="kpiDroughtLow" class="text-[11px] text-slate-500 mt-0.5">-</div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+        <div class="text-slate-500 text-xs">💨 สถานี PM 2.5</div>
+        <div id="kpiPm25" class="text-2xl font-extrabold text-purple-700 mt-1">-</div>
+        <div id="kpiPm25Max" class="text-[11px] text-slate-500 mt-0.5">-</div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm col-span-2 md:col-span-1">
+        <div class="text-slate-500 text-xs">📢 เรื่องร้องเรียน Traffy</div>
+        <div id="kpiComplaints" class="text-2xl font-extrabold text-emerald-700 mt-1">-</div>
+        <div id="kpiSnapTime" class="text-[11px] text-slate-500 mt-0.5">-</div>
+      </div>
+    </div>
+
+    <!-- Map + Table Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+        <div class="font-bold text-sm text-slate-800 mb-2">🗺️ แผนที่จุดตรวจวัดสำคัญ จ.ลำปาง (Cloud Snapshot)</div>
+        <div id="emergencyMap" class="w-full h-[380px] rounded-xl border border-slate-200 bg-slate-50"></div>
+      </div>
+
+      <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div class="flex flex-wrap gap-1.5 text-xs" id="tabButtons">
+            <button onclick="switchTab('water')" data-tab="water" class="tab-btn px-3 py-1.5 rounded-lg bg-slate-900 text-white font-semibold">🌊 ระดับน้ำ</button>
+            <button onclick="switchTab('rainfall')" data-tab="rainfall" class="tab-btn px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 font-semibold">🌧️ น้ำฝน</button>
+            <button onclick="switchTab('drought')" data-tab="drought" class="tab-btn px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 font-semibold">🏜️ อ่างเก็บน้ำ</button>
+            <button onclick="switchTab('pm25')" data-tab="pm25" class="tab-btn px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 font-semibold">💨 PM 2.5</button>
+            <button onclick="switchTab('complaints')" data-tab="complaints" class="tab-btn px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 font-semibold">📢 Traffy</button>
+          </div>
+          <input id="searchInput" oninput="renderActiveTable()" type="text" placeholder="ค้นหาสถานี / อำเภอ..." class="border border-slate-300 rounded-lg px-2.5 py-1 text-xs w-44">
+        </div>
+        <div class="overflow-auto max-h-[340px] border border-slate-200 rounded-xl">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead id="tableHead" class="bg-slate-100 text-slate-700 sticky top-0"></thead>
+            <tbody id="tableBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const RAW_BASE = 'https://raw.githubusercontent.com/PakaponTim/Water_System2/main/cloud_snapshots';
+    const DISTRICT_COORDS = {
+      'เมืองลำปาง': [18.2888, 99.4920], 'เกาะคา': [18.1963, 99.4005], 'แม่เมาะ': [18.2753, 99.6582],
+      'ห้างฉัตร': [18.3228, 99.3414], 'แจ้ห่ม': [18.7139, 99.5539], 'งาว': [18.7758, 99.9769],
+      'วังเหนือ': [19.1458, 99.6192], 'เถิน': [17.6167, 99.2167], 'สบปราบ': [17.8931, 99.3386],
+      'แม่พริก': [17.4475, 99.1172], 'แม่ทะ': [18.1136, 99.5647], 'เมืองปาน': [18.7517, 99.4317],
+      'เสริมงาม': [18.0667, 99.2333]
+    };
+
+    let manifestData = null;
+    let activeBaseUrl = RAW_BASE;
+    let currentSnap = null;
+    let currentTab = 'water';
+    let map = null;
+    let markersLayer = null;
+
+    function esc(v) {
+      return String(v ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    }
+
+    function initMap() {
+      if (map || typeof L === 'undefined') return;
+      map = L.map('emergencyMap', { center: [18.2888, 99.4920], zoom: 9 });
+      const esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri', maxZoom: 19
+      });
+      let fb = false;
+      esri.on('tileerror', () => {
+        if (fb) return; fb = true;
+        L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { attribution: 'OpenTopoMap', maxZoom: 17 }).addTo(map);
+      });
+      esri.addTo(map);
+      markersLayer = L.layerGroup().addTo(map);
+    }
+
+    async function fetchJsonSafe(url) {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return await res.json();
+    }
+
+    async function bootCloudViewer() {
+      initMap();
+      const banner = document.getElementById('sourceBanner');
+      try {
+        try {
+          manifestData = await fetchJsonSafe(`${RAW_BASE}/manifest.json?ts=${Date.now()}`);
+          activeBaseUrl = RAW_BASE;
+        } catch (e) {
+          manifestData = await fetchJsonSafe(`./cloud_snapshots/manifest.json?ts=${Date.now()}`);
+          activeBaseUrl = './cloud_snapshots';
+        }
+        const snaps = manifestData.snapshots || {};
+        const keys = Object.keys(snaps).sort().reverse();
+        const sel = document.getElementById('snapshotSelect');
+        sel.innerHTML = keys.map(k => `<option value="${esc(snaps[k].path)}">${esc(snaps[k].recorded_at)} (${esc(k)})</option>`).join('');
+        if (keys.length) {
+          await loadSelectedSnapshot();
+        } else {
+          banner.textContent = '⚠️ ไม่พบรายการ Snapshot ใน manifest.json';
+        }
+      } catch (err) {
+        // Fallback to local PHP endpoint if accessible
+        try {
+          const apiRes = await fetchJsonSafe('./endpoint.php?r=/api/cloud-fallback');
+          if (apiRes && apiRes.snapshot) {
+            currentSnap = apiRes.snapshot;
+            renderSnapshot();
+            return;
+          }
+        } catch (e2) {}
+        banner.textContent = '❌ โหลด Cloud Snapshot ไม่สำเร็จ: ' + err.message;
+      }
+    }
+
+    async function loadSelectedSnapshot() {
+      const sel = document.getElementById('snapshotSelect');
+      const rel = sel.value;
+      if (!rel) return;
+      currentSnap = await fetchJsonSafe(`${activeBaseUrl}/${rel}?ts=${Date.now()}`);
+      renderSnapshot();
+    }
+
+    function renderSnapshot() {
+      const s = currentSnap || {};
+      const water = s.water || [];
+      const rain = s.rainfall || [];
+      const drought = s.drought || [];
+      const pm25 = s.pm25 || [];
+      const comp = s.complaints || [];
+
+      document.getElementById('sourceBanner').innerHTML =
+        `<div>✅ แสดงข้อมูลสำรองรอบ <strong>${esc(s.recorded_at || '-')}</strong> (${esc(s.thai_date || '')}) จาก <code>${esc(activeBaseUrl === RAW_BASE ? 'GitHub Raw Cloud' : 'Local Cache')}</code></div>`
+        + `<div class="text-xs text-amber-800">โหมดอ่านข้อมูลฉุกเฉิน: ไม่ต้องใช้ MySQL</div>`;
+
+      const critWater = water.filter(r => (r.risk_level === 'วิกฤต' || String(r.status || '').includes('ล้น'))).length;
+      const maxRain = rain.reduce((m, r) => Math.max(m, parseFloat(r.rain_mm || 0)), 0);
+      const lowDam = drought.filter(r => parseFloat(r.water_percent) <= 30).length;
+      const maxPm = pm25.reduce((m, r) => Math.max(m, parseFloat(r.pm25_value || 0)), 0);
+
+      document.getElementById('kpiWater').textContent = water.length + ' สถานี';
+      document.getElementById('kpiWaterCrit').textContent = critWater > 0 ? `🚨 วิกฤต ${critWater} แห่ง` : '✅ ไม่พบล้นตลิ่ง';
+      document.getElementById('kpiRain').textContent = rain.length + ' สถานี';
+      document.getElementById('kpiRainMax').textContent = `สูงสุด ${maxRain.toFixed(1)} มม.`;
+      document.getElementById('kpiDrought').textContent = drought.length + ' แห่ง';
+      document.getElementById('kpiDroughtLow').textContent = lowDam > 0 ? `⚠️ น้ำน้อย <=30%: ${lowDam}` : '✅ เกณฑ์ปกติ';
+      document.getElementById('kpiPm25').textContent = pm25.length + ' สถานี';
+      document.getElementById('kpiPm25Max').textContent = `สูงสุด ${maxPm.toFixed(1)} µg/m³`;
+      document.getElementById('kpiComplaints').textContent = comp.length + ' เรื่อง';
+      document.getElementById('kpiSnapTime').textContent = s.snapshot_id || '-';
+
+      if (markersLayer) {
+        markersLayer.clearLayers();
+        water.slice(0, 40).forEach(w => {
+          const amp = String(w.amphoe || '').replace(/^อำเภอ/, '').trim();
+          const c = DISTRICT_COORDS[amp] || DISTRICT_COORDS['เมืองลำปาง'];
+          const jLat = c[0] + ((String(w.station_name).length % 7) - 3) * 0.008;
+          const jLng = c[1] + ((String(w.station_name).length % 5) - 2) * 0.008;
+          const col = w.risk_level === 'วิกฤต' ? '#dc2626' : (w.risk_level === 'เสี่ยงสูง' ? '#f97316' : '#059669');
+          L.circleMarker([jLat, jLng], { radius: 7, color: '#fff', weight: 1.5, fillColor: col, fillOpacity: 0.9 })
+            .bindPopup(`<b>${esc(w.station_name)}</b><br/>อำเภอ: ${esc(w.amphoe)}<br/>ระดับน้ำ: ${esc(w.current_water_level_m)} ม. (${esc(w.status)})`)
+            .addTo(markersLayer);
+        });
+      }
+
+      renderActiveTable();
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        const active = btn.dataset.tab === tab;
+        btn.className = 'tab-btn px-3 py-1.5 rounded-lg font-semibold ' + (active ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700');
+      });
+      renderActiveTable();
+    }
+
+    function renderActiveTable() {
+      const s = currentSnap || {};
+      const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+      const head = document.getElementById('tableHead');
+      const body = document.getElementById('tableBody');
+      let rows = s[currentTab] || [];
+      if (q) rows = rows.filter(r => JSON.stringify(r).toLowerCase().includes(q));
+
+      if (currentTab === 'water') {
+        head.innerHTML = '<tr><th class="p-2">สถานี</th><th class="p-2">อำเภอ</th><th class="p-2">ระดับน้ำ (ม.)</th><th class="p-2">ฝน 3 วัน</th><th class="p-2">สถานะ</th></tr>';
+        body.innerHTML = rows.map(r => `<tr><td class="p-2 font-medium">${esc(r.station_name)}</td><td class="p-2">${esc(r.amphoe)}</td><td class="p-2">${esc(r.current_water_level_m ?? '-')}</td><td class="p-2">${esc(r.forecast_rain_24h_mm ?? '-')}</td><td class="p-2">${esc(r.status)}</td></tr>`).join('');
+      } else if (currentTab === 'rainfall') {
+        head.innerHTML = '<tr><th class="p-2">สถานี</th><th class="p-2">พื้นที่</th><th class="p-2">ฝน 24 ชม. (มม.)</th><th class="p-2">สถานะ</th><th class="p-2">เวลาวัด</th></tr>';
+        body.innerHTML = rows.slice(0, 120).map(r => `<tr><td class="p-2 font-medium">${esc(r.station_name)}</td><td class="p-2">${esc(r.location)}</td><td class="p-2 font-bold">${esc(r.rain_mm)}</td><td class="p-2">${esc(r.rain_status)}</td><td class="p-2">${esc(r.measured_time)}</td></tr>`).join('');
+      } else if (currentTab === 'drought') {
+        head.innerHTML = '<tr><th class="p-2">อ่างเก็บน้ำ</th><th class="p-2">ประเภท</th><th class="p-2">ความจุ (ล้าน ลบ.ม.)</th><th class="p-2">กักเก็บ</th><th class="p-2">% น้ำ</th></tr>';
+        body.innerHTML = rows.map(r => `<tr><td class="p-2 font-medium">${esc(r.dam_name)}</td><td class="p-2">${esc(r.dam_type)}</td><td class="p-2">${esc(r.capacity_m_cum ?? '-')}</td><td class="p-2">${esc(r.water_volume_m_cum ?? '-')}</td><td class="p-2 font-bold">${esc(r.water_percent)}</td></tr>`).join('');
+      } else if (currentTab === 'pm25') {
+        head.innerHTML = '<tr><th class="p-2">สถานี</th><th class="p-2">อำเภอ</th><th class="p-2">PM 2.5 (µg/m³)</th><th class="p-2">เฉลี่ย 24 ชม.</th><th class="p-2">คุณภาพ</th></tr>';
+        body.innerHTML = rows.map(r => `<tr><td class="p-2 font-medium">${esc(r.station_name)}</td><td class="p-2">${esc(r.amphoe)}</td><td class="p-2 font-bold">${esc(r.pm25_value ?? '-')}</td><td class="p-2">${esc(r.pm25_avg_24h ?? '-')}</td><td class="p-2">${esc(r.air_quality_status)}</td></tr>`).join('');
+      } else {
+        head.innerHTML = '<tr><th class="p-2">รหัส</th><th class="p-2">ประเภท</th><th class="p-2">หน่วยงาน</th><th class="p-2">สถานะ</th><th class="p-2">วันที่แจ้ง</th></tr>';
+        body.innerHTML = rows.map(r => `<tr><td class="p-2 font-mono">${esc(r.ticket_id)}</td><td class="p-2">${esc(r.problem_type)}</td><td class="p-2">${esc(r.org_name)}</td><td class="p-2">${esc(r.state_name)}</td><td class="p-2">${esc(r.ticket_datetime)}</td></tr>`).join('');
+      }
+      if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">ไม่พบข้อมูลในหมวดนี้</td></tr>';
+      }
+    }
+
+    function exportSnapshotCsv() {
+      const s = currentSnap || {};
+      const rows = s[currentTab] || [];
+      if (!rows.length) return alert('ไม่มีข้อมูลสำหรับ Export');
+      const keys = Object.keys(rows[0]);
+      const lines = [keys.join(',')];
+      rows.forEach(r => {
+        lines.push(keys.map(k => `"${String(r[k] ?? '').replace(/"/g, '""')}"`).join(','));
+      });
+      const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `CloudFallback_${currentTab}_${(s.snapshot_id || 'latest')}.csv`;
+      a.click();
+    }
+
+    bootCloudViewer();
+  </script>
+</body>
+</html>

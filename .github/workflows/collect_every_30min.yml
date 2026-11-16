@@ -30,16 +30,36 @@ jobs:
         run: |
           php php_server/github_collect_snapshot.php
 
-      - name: Optional Ping to Live Server cron.php
+      - name: Ping Live Server cron.php & Evaluate Failover Status
+        id: ping_server
         continue-on-error: true
         env:
           WATER_SERVER_CRON_URL: ${{ secrets.WATER_SERVER_CRON_URL }}
         run: |
           if [ -n "$WATER_SERVER_CRON_URL" ]; then
-            curl -fsSL --max-time 30 "$WATER_SERVER_CRON_URL" || true
+            HTTP_CODE=$(curl -sS -o /dev/null -w "%{http_code}" --retry 2 --max-time 25 "$WATER_SERVER_CRON_URL" || echo "000")
+            echo "Server ping HTTP code: $HTTP_CODE"
+            if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 400 ]; then
+              echo "server_status=ok" >> "$GITHUB_OUTPUT"
+            else
+              echo "server_status=down" >> "$GITHUB_OUTPUT"
+            fi
           else
             echo "WATER_SERVER_CRON_URL secret is not set; skipping live server ping."
+            echo "server_status=skipped" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Cloud Failover Alert (When Primary Server is Unreachable)
+        continue-on-error: true
+        env:
+          SERVER_STATUS: ${{ steps.ping_server.outputs.server_status }}
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          LINE_GROUP_ID: ${{ secrets.LINE_GROUP_ID }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
+        run: |
+          php php_server/github_failover_alert.php --server-status="${SERVER_STATUS:-skipped}"
 
       - name: Save & Commit Snapshot to GitHub Repository
         run: |

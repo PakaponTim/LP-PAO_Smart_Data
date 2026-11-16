@@ -9,6 +9,7 @@
 
 $phpServerDir = is_dir(__DIR__ . '/php_server') ? __DIR__ . '/php_server' : dirname(__DIR__) . '/php_server';
 require_once $phpServerDir . '/smart_worker_lib.php';
+require_once $phpServerDir . '/backup_manager.php';
 
 @ignore_user_abort(true);
 @set_time_limit(180);
@@ -34,10 +35,17 @@ $now = time();
 $results = [
     'timestamp'   => date('Y-m-d H:i:s'),
     'database'    => env_val('DB_NAME', 'water_system2'),
+    'db_spool'    => null,
     'github_sync' => null,
     'parallel'    => null,
     'retry_queue' => null,
 ];
+
+try {
+    $results['db_spool'] = flush_db_spool(20);
+} catch (Throwable $e) {
+    $results['db_spool'] = ['flushed' => 0, 'error' => $e->getMessage()];
+}
 
 try {
     $results['github_sync'] = sync_github_snapshots_to_mysql(10);

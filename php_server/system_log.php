@@ -633,7 +633,18 @@ function check_upstream_freshness(string $module, array $observations, ?int $now
             $moreCount = max(0, count($staleStations) - 5);
             $extra = $moreCount > 0 ? " และอีก {$moreCount} สถานี" : '';
 
-            sys_log_record([
+            // 6. Auto daily full MySQL dump (.sql.gz) + retention pruning
+        if (file_exists(__DIR__ . '/backup_manager.php')) {
+            require_once __DIR__ . '/backup_manager.php';
+            try {
+                $bk = run_daily_db_backup_if_due();
+                $stats['dailyBackup'] = $bk['filename'] ?? ($bk['reason'] ?? 'ok');
+            } catch (Throwable $e) {
+                $stats['dailyBackup'] = 'error: ' . $e->getMessage();
+            }
+        }
+
+        sys_log_record([
                 'module'         => 'freshness',
                 'action'         => 'ตรวจความสดข้อมูลต้นทาง: ' . ($report['moduleLabel']),
                 'status'         => 'warning',
@@ -785,6 +796,17 @@ function run_system_housekeeping(bool $force = false): array {
             }
         }
 
+        // 6. Auto daily full MySQL dump (.sql.gz) + retention pruning
+        if (file_exists(__DIR__ . '/backup_manager.php')) {
+            require_once __DIR__ . '/backup_manager.php';
+            try {
+                $bk = run_daily_db_backup_if_due();
+                $stats['dailyBackup'] = $bk['filename'] ?? ($bk['reason'] ?? 'ok');
+            } catch (Throwable $e) {
+                $stats['dailyBackup'] = 'error: ' . $e->getMessage();
+            }
+        }
+
         sys_log_record([
             'module'         => 'system',
             'action'         => 'Daily Housekeeping & Log Rotation',
@@ -847,6 +869,14 @@ function get_system_health_report(): array {
     $freeBytes = @disk_free_space(WATER_SYSTEM2_ROOT);
     $freeMb = ($freeBytes !== false) ? (int)round($freeBytes / 1048576) : null;
 
+    $spoolCnt = 0;
+    $backupsList = [];
+    if (file_exists(__DIR__ . '/backup_manager.php')) {
+        require_once __DIR__ . '/backup_manager.php';
+        $spoolCnt = db_spool_count();
+        $backupsList = list_db_backups();
+    }
+
     $cfg = get_app_config();
     $anyScheduleActive = !empty($cfg['isScheduleActive']['water']) || !empty($cfg['isScheduleActive']['drought']);
     $retryQ = retry_queue_get();
@@ -902,7 +932,14 @@ function get_system_health_report(): array {
             'diskFreeMb'     => $freeMb,
             'fetchLogSizeKb' => $fetchLogKb,
             'retryQueueCount'=> count($retryQ),
+            'dbSpoolCount'   => $spoolCnt,
             'failedLast24h'  => $recentFailed24h,
+        ],
+        'backup'     => [
+            'count'       => count($backupsList),
+            'latestFile'  => $backupsList[0]['filename'] ?? null,
+            'latestAt'    => $backupsList[0]['createdAt'] ?? null,
+            'latestSizeKb'=> $backupsList[0]['sizeKb'] ?? 0,
         ],
         'security'   => [
             'hasRootHtaccess'    => file_exists(WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . '.htaccess'),

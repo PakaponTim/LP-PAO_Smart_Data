@@ -19,12 +19,12 @@
   - **Auto-Retry Queue** แบบ Non-blocking เมื่อบางโมดูลล้มเหลว (`POST /api/system-logs/retry`)
   - **Upstream Data Freshness Monitor:** แจ้งเตือน "ข้อมูลต้นทางค้าง" เมื่อเกิน **6 ชม.** (น้ำ/ฝน/PM 2.5) หรือ **36 ชม.** (อ่างเก็บน้ำรายวัน) ผ่าน `GET /api/data-freshness`
   - **Notification & Export Audit Logs + Export CSV** (`GET /api/system-logs/export`)
-- **🛡️ การบริหารความเสี่ยง Server 24 ชม. (Subdomain / Folder Hosting):**
-  - ไฟล์ `.htaccess` ป้องกันการเข้าถึงความลับ 4 จุด (`./`, `php_server/`, `cloud_snapshots/`, `runtime/`)
-  - `with_file_lock()` & `update_json_file_atomic()` ป้องกันไฟล์ JSON พังจากการเขียนชนกัน
-  - **Log Rotation (5 MB) + Housekeeping ลบ Log เก่าเกิน 30 วันอัตโนมัติ**
-  - `GET /api/health` (`endpoint.php?r=/api/health`) สำหรับ Uptime Monitor
-  - `server_setup.php` ซ่อนรหัสผ่าน MySQL และยืนยันรหัสเดิมก่อนแก้ไขจาก IP ภายนอก
+- **🛡️ การบริหารความเสี่ยง & สำรองข้อมูลภัยพิบัติ 4 ชั้น (Disaster Recovery):**
+  - **Local DB Spool (`db_spool/`):** หากดึง API ได้แล้ว MySQL ขัดข้อง ระบบจะพักข้อมูลลงดิสก์อัตโนมัติแล้วเทกลับเข้า DB ทันทีที่ฐานข้อมูลกลับมา (พร้อม Catch-up Sync จาก GitHub อัตโนมัติเมื่อ [scheduler.php](php_server/scheduler.php) ตื่นหลังไฟดับ/เน็ตมา)
+  - **Auto Full MySQL Dump (`.sql.gz` + Off-site Email):** สำรองข้อมูลครบทั้ง 10 ตารางด้วย PHP PDO ([`php_server/backup_manager.php`](php_server/backup_manager.php)) ทุกวันอัตโนมัติ (เก็บย้อนหลัง 14 วัน) พร้อมส่งแนบอีเมลและดาวน์โหลดได้ใน `server_setup.php`
+  - **Cloud Failover Alert (GitHub Actions):** หาก Server หลักไม่ตอบสนอง (`WATER_SERVER_CRON_URL`), [`php_server/github_failover_alert.php`](php_server/github_failover_alert.php) จะแจ้งเหตุขัดข้องและเตือนวิกฤตแทนผ่าน LINE/Email (ตั้งค่า Secrets เสริม: `LINE_CHANNEL_ACCESS_TOKEN`, `LINE_GROUP_ID`, `SMTP_USER`, `SMTP_PASS`, `ALERT_EMAIL_TO`)
+  - **Emergency Cloud Viewer (`emergency_cloud.html`) & API Fallback:** เปิดดูแผนที่/ตาราง/KPI ล่าสุดได้ทันทีแม้ Host หรือ MySQL ล่ม (`GET /api/cloud-fallback` และ Fallback ใน `/api/gis/map-data`)
+  - ไฟล์ `.htaccess` ป้องกันการเข้าถึงความลับ 4 จุด (`./`, `php_server/`, `cloud_snapshots/`, `runtime/`), Atomic File Lock, Log Rotation 5 MB + Housekeeping และ `GET /api/health`
 - **🔐 Session & Traffy Direct API:**
   - **Sliding Session (`AUTH_SESSION_DAYS=30`)** ต่ออายุ Cookie `water_session_7000` (`HttpOnly; SameSite=Strict`) อัตโนมัติเมื่อมีการใช้งาน (ตั้งปิด/เปิดการบังคับ Login ผ่าน `WATER_PHP_AUTH_ENFORCE`)
   - รองรับ Traffy Public API, `org_id`/`uuid` สาธารณะ, LINE Token ใน `#traffySessionPanel` (แจ้งเตือนล่วงหน้าเมื่อเหลือน้อยกว่า 48 ชม.) และพร้อมต่อยอด Traffy Exchange API / Webhook

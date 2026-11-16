@@ -10,6 +10,7 @@ $phpServerDir = is_dir(__DIR__ . '/php_server') ? __DIR__ . '/php_server' : dirn
 require_once $phpServerDir . '/config.php';
 require_once $phpServerDir . '/auth.php';
 require_once $phpServerDir . '/smart_worker_lib.php';
+require_once $phpServerDir . '/backup_manager.php';
 
 $message = '';
 $statusType = '';
@@ -61,6 +62,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } catch (Throwable $e) {
                 $statusType = 'error';
                 $message = "❌ เชื่อมต่อฐานข้อมูลไม่สำเร็จ: " . $e->getMessage();
+            }
+        }
+    } elseif ($action === 'run_backup' || $action === 'run_backup_email') {
+        $existingPass = env_val('DB_PASS', '');
+        $submittedCurrent = (string)($_POST['CURRENT_DB_PASS'] ?? '');
+        $sess = get_current_user_session();
+        $isAdminAuthed = AUTH_ENFORCE && !empty($sess['user']) && (($sess['user']['role'] ?? '') === 'admin');
+        if ($alreadyConfigured && !$isLocalRequest && !$isAdminAuthed && $existingPass !== '' && !hash_equals($existingPass, $submittedCurrent)) {
+            $statusType = 'error';
+            $message = "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันก่อนสั่งสำรองข้อมูลจากภายนอก";
+        } else {
+            try {
+                $bk = run_full_mysql_backup($action === 'run_backup_email', 'setup_ui');
+                if (!empty($bk['success'])) {
+                    $statusType = 'success';
+                    $message = "💾 สำรองฐานข้อมูลสำเร็จ: {$bk['filename']} ({$bk['tables']} ตาราง, " . number_format((int)$bk['rows']) . " แถว, {$bk['sizeKb']} KB)";
+                    if (!empty($bk['emailResult'])) {
+                        $message .= !empty($bk['emailResult']['success']) ? ' | ส่ง Off-site Email สำเร็จ' : ' | ส่ง Email ไม่สำเร็จ: ' . ($bk['emailResult']['error'] ?? '');
+                    }
+                } else {
+                    $statusType = 'error';
+                    $message = "❌ สำรองฐานข้อมูลไม่สำเร็จ: " . ($bk['error'] ?? 'Unknown error');
+                }
+            } catch (Throwable $e) {
+                $statusType = 'error';
+                $message = "❌ สำรองฐานข้อมูลไม่สำเร็จ: " . $e->getMessage();
             }
         }
     }
@@ -202,7 +229,35 @@ try {
       <?php
         $health = get_system_health_report();
         $baseSubUrl = preg_replace('/\/server_setup\.php$/i', '', smart_build_self_url('server_setup.php'));
+        $backupsList = list_db_backups();
+        $spoolCnt = db_spool_count();
       ?>
+      <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-4 text-xs space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="font-bold text-emerald-950 text-sm">💾 ระบบสำรองฐานข้อมูล &amp; กู้คืนภัยพิบัติ (Backup + Local Spool + Cloud Viewer)</div>
+          <a href="./emergency_cloud.html" target="_blank" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-semibold transition">☁️ เปิดโหมดฉุกเฉิน (Cloud Viewer)</a>
+        </div>
+        <div class="text-slate-700">
+          • <b>ไฟล์สำรองฐานข้อมูล (10 ตาราง):</b> <?= count($backupsList) ?> ไฟล์
+          <?php if (!empty($backupsList[0])): ?>
+            (ล่าสุด: <code><?= htmlspecialchars($backupsList[0]['filename']) ?></code>, <?= htmlspecialchars((string)$backupsList[0]['sizeKb']) ?> KB เมื่อ <?= htmlspecialchars($backupsList[0]['createdAt']) ?>)
+          <?php else: ?>
+            (ยังไม่มีไฟล์สำรอง — ระบบสร้างอัตโนมัติทุกวัน หรือกดปุ่มด้านล่าง)
+          <?php endif; ?>
+          <br>• <b>Local DB Spool (คิวพักข้อมูลหาก DB ดับ):</b> <?= (int)$spoolCnt ?> ไฟล์
+        </div>
+        <form method="POST" class="flex flex-wrap gap-2 items-center">
+          <?php if ($alreadyConfigured && !$isLocalRequest): ?>
+            <input type="password" name="CURRENT_DB_PASS" value="" required placeholder="รหัสผ่าน DB เดิม" class="border border-amber-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
+          <?php endif; ?>
+          <button type="submit" name="action" value="run_backup" class="px-3.5 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-semibold transition">💾 สำรองฐานข้อมูลทันที (.sql.gz)</button>
+          <button type="submit" name="action" value="run_backup_email" class="px-3.5 py-2 rounded-lg bg-purple-700 hover:bg-purple-800 text-white font-semibold transition">📧 สำรอง + ส่งเข้า Email (Off-site)</button>
+          <?php if (!empty($backupsList[0])): ?>
+            <a href="./endpoint.php?r=/api/backup/download" class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-semibold transition">📥 ดาวน์โหลดไฟล์ล่าสุด</a>
+          <?php endif; ?>
+        </form>
+      </div>
+
       <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs space-y-2">
         <div class="font-bold text-slate-800 text-sm">🛡️ คู่มือเชื่อมต่อ Subdomain Server 24 ชั่วโมง (Zero-Admin Checklist)</div>
         <div>• <b>สิทธิ์ความปลอดภัย `.htaccess`:</b> Root <?= !empty($health['security']['hasRootHtaccess']) ? '✅ ป้องกันแล้ว' : '⚠️ ยังไม่มี' ?> | Runtime <?= !empty($health['security']['hasRuntimeHtaccess']) ? '✅ ป้องกันแล้ว' : '⚠️ ยังไม่มี' ?></div>

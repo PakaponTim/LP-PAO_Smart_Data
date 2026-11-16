@@ -11,6 +11,7 @@ require_once __DIR__ . '/collectors.php';
 require_once __DIR__ . '/notifier.php';
 require_once __DIR__ . '/github_sync_to_mysql.php';
 require_once __DIR__ . '/smart_worker_lib.php';
+require_once __DIR__ . '/backup_manager.php';
 
 function send_json($data, int $status = 200): void {
     http_response_code($status);
@@ -269,7 +270,111 @@ function handle_api_request(string $method, string $path): void {
         }
     }
 
-    $pdo = get_db();
+    // =====================================================================
+    // GET /api/health & Cloud/Backup endpoints (Resilient even when MySQL is down!)
+    // =====================================================================
+    if ($path === '/api/health' && $method === 'GET') {
+        $health = get_system_health_report();
+        send_json($health, (int)($health['httpCode'] ?? 200));
+    }
+
+    if ($path === '/api/cloud-fallback' && $method === 'GET') {
+        $snap = get_latest_cloud_snapshot_bundle();
+        if (empty($snap)) {
+            send_json(['success' => false, 'error' => 'ไม่พบไฟล์ Cloud Snapshot สำรอง'], 404);
+        }
+        send_json(['success' => true, 'snapshot' => $snap]);
+    }
+
+    if ($path === '/api/backup/status' && $method === 'GET') {
+        send_json([
+            'success'      => true,
+            'dbSpoolCount' => db_spool_count(),
+            'backups'      => list_db_backups(),
+        ]);
+    }
+
+    if ($path === '/api/backup/download' && ($method === 'GET' || $method === 'HEAD')) {
+        if (AUTH_ENFORCE) {
+            $u = get_current_user_session();
+            if (empty($u['user']) || (($u['user']['role'] ?? '') !== 'admin')) {
+                send_json(['success' => false, 'error' => 'Admin permission required'], 403);
+            }
+        }
+        $reqFile = basename((string)($_GET['file'] ?? ''));
+        $backups = list_db_backups();
+        if ($reqFile === '' && !empty($backups[0]['filename'])) {
+            $reqFile = $backups[0]['filename'];
+        }
+        if ($reqFile === '' || !preg_match('/^water_system2_backup_\d{8}_\d{6}\.sql(\.gz)?$/', $reqFile)) {
+            send_json(['success' => false, 'error' => 'ไม่พบไฟล์สำรองฐานข้อมูลที่ระบุ'], 404);
+        }
+        $fullPath = db_backup_dir() . DIRECTORY_SEPARATOR . $reqFile;
+        if (!file_exists($fullPath)) {
+            send_json(['success' => false, 'error' => 'ไม่พบไฟล์สำรองบนดิสก์'], 404);
+        }
+        $mime = (substr($reqFile, -3) === '.gz') ? 'application/gzip' : 'application/sql; charset=utf-8';
+        header('Content-Type: ' . $mime);
+        header('Content-Disposition: attachment; filename="' . $reqFile . '"');
+        header('Content-Length: ' . filesize($fullPath));
+        if ($method !== 'HEAD') {
+            readfile($fullPath);
+        }
+        exit;
+    }
+
+    $pdo = null;
+    $dbConnError = null;
+    try {
+        $pdo = get_db();
+    } catch (Throwable $e) {
+        $dbConnError = $e->getMessage();
+    }
+
+    if ($pdo === null) {
+        if ($path === '/api/status' && $method === 'GET') {
+            $cfg = get_app_config();
+            send_json([
+                'cloudFallback'      => true,
+                'dbError'            => $dbConnError,
+                'extensionConnected' => true,
+                'extensionPaired'    => true,
+                'collectorMode'      => 'Cloud Failover Mode (MySQL Offline)',
+                'smartWorker'        => smart_worker_status(),
+                'scheduledTasks'     => $cfg['scheduledTasks'],
+                'isScheduleActive'   => $cfg['isScheduleActive'],
+                'dbSpoolCount'       => db_spool_count(),
+                'backups'            => list_db_backups(),
+            ]);
+        }
+        if ($path !== '/api/gis/map-data') {
+            send_json([
+                'success'                => false,
+                'error'                  => 'ฐานข้อมูล MySQL ขัดข้องชั่วคราว: ' . ($dbConnError ?: 'ไม่สามารถเชื่อมต่อได้'),
+                'cloudFallbackAvailable' => true,
+                'emergencyViewerUrl'     => './emergency_cloud.html',
+            ], 503);
+        }
+    }
+
+    if ($path === '/api/backup/run' && $method === 'POST') {
+        $sendEmail = !empty($body['sendEmail']);
+        try {
+            $bk = run_full_mysql_backup($sendEmail, 'manual');
+            send_json($bk, !empty($bk['success']) ? 200 : 500);
+        } catch (Throwable $e) {
+            send_json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    if ($path === '/api/backup/flush-spool' && $method === 'POST') {
+        try {
+            $fl = flush_db_spool(50);
+            send_json(array_merge(['success' => true], $fl));
+        } catch (Throwable $e) {
+            send_json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
+    }
 
     // =====================================================================
     // GET /api/data-definitions
@@ -348,13 +453,7 @@ function handle_api_request(string $method, string $path): void {
         send_json(['success' => true, 'worker' => smart_worker_status()]);
     }
 
-    // =====================================================================
-    // GET /api/health (Lightweight 24/7 Uptime Monitor Endpoint — HTTP 200/503)
-    // =====================================================================
-    if ($path === '/api/health' && $method === 'GET') {
-        $health = get_system_health_report();
-        send_json($health, (int)($health['httpCode'] ?? 200));
-    }
+    // GET /api/system-health (handled alongside pre-DB /api/health above)
 
     // =====================================================================
     // GET /api/system-health
@@ -915,30 +1014,40 @@ function handle_api_request(string $method, string $path): void {
     // GET /api/gis/map-data
     // =====================================================================
     if ($path === '/api/gis/map-data' && $method === 'GET') {
-        $waterRows = $pdo->query("
-            SELECT w.station_name, w.river, w.amphoe, w.province,
-                   w.current_water_level_m, w.left_bank_level_m, w.bank_difference_m,
-                   w.trend, w.status, w.current_rain_mm, w.forecast_rain_24h_mm,
-                   w.risk_level, w.recorded_at
-            FROM tbl_water_disaster_monitoring w
-            INNER JOIN (
-                SELECT station_name, MAX(id) as max_id
-                FROM tbl_water_disaster_monitoring
-                GROUP BY station_name
-            ) latest ON w.id = latest.max_id
-        ")->fetchAll();
+        $cloudFallbackUsed = false;
+        $cloudSnapMeta = null;
+        if ($pdo !== null) {
+            $waterRows = $pdo->query("
+                SELECT w.station_name, w.river, w.amphoe, w.province,
+                       w.current_water_level_m, w.left_bank_level_m, w.bank_difference_m,
+                       w.trend, w.status, w.current_rain_mm, w.forecast_rain_24h_mm,
+                       w.risk_level, w.recorded_at
+                FROM tbl_water_disaster_monitoring w
+                INNER JOIN (
+                    SELECT station_name, MAX(id) as max_id
+                    FROM tbl_water_disaster_monitoring
+                    GROUP BY station_name
+                ) latest ON w.id = latest.max_id
+            ")->fetchAll();
 
-        $damRows = $pdo->query("
-            SELECT d.dam_name, d.dam_type, d.capacity_m_cum,
-                   d.inflow_m_cum, d.water_volume_m_cum, d.water_percent,
-                   d.usable_water_m_cum, d.discharge_m_cum, d.recorded_at
-            FROM tbl_drought_monitoring d
-            INNER JOIN (
-                SELECT dam_name, MAX(id) as max_id
-                FROM tbl_drought_monitoring
-                GROUP BY dam_name
-            ) latest ON d.id = latest.max_id
-        ")->fetchAll();
+            $damRows = $pdo->query("
+                SELECT d.dam_name, d.dam_type, d.capacity_m_cum,
+                       d.inflow_m_cum, d.water_volume_m_cum, d.water_percent,
+                       d.usable_water_m_cum, d.discharge_m_cum, d.recorded_at
+                FROM tbl_drought_monitoring d
+                INNER JOIN (
+                    SELECT dam_name, MAX(id) as max_id
+                    FROM tbl_drought_monitoring
+                    GROUP BY dam_name
+                ) latest ON d.id = latest.max_id
+            ")->fetchAll();
+        } else {
+            $snap = get_latest_cloud_snapshot_bundle();
+            $waterRows = $snap['water'] ?? [];
+            $damRows   = $snap['drought'] ?? [];
+            $cloudFallbackUsed = true;
+            $cloudSnapMeta = ['snapshot_id' => $snap['snapshot_id'] ?? null, 'recorded_at' => $snap['recorded_at'] ?? null];
+        }
 
         $stations = [];
         foreach ($waterRows as $row) {
@@ -1108,6 +1217,8 @@ function handle_api_request(string $method, string $path): void {
 
         send_json([
             'success' => true,
+            'cloudFallback' => $cloudFallbackUsed,
+            'cloudSnapshot' => $cloudSnapMeta,
             'summary' => [
                 'totalStations' => count($stations),
                 'totalDams' => count($dams),

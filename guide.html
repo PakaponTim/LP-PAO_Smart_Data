@@ -191,8 +191,8 @@
           <p class="text-slate-600">มี <code>.htaccess</code> ป้องกันไฟล์ลับ 4 จุด (Root, <code>runtime/</code>, <code>php_server/</code>, <code>cloud_snapshots/</code>), Atomic File Lock, Log Rotation 5 MB + Housekeeping 30 วัน และ <code>/api/health</code> สำหรับ Uptime Monitor</p>
         </div>
         <div class="rounded-2xl border border-purple-200 bg-purple-50/70 p-4 space-y-1.5">
-          <div class="font-bold text-purple-900 text-sm">🔐 Session &amp; Traffy Direct API</div>
-          <p class="text-slate-600">Sliding Session 30 วันต่ออายุอัตโนมัติ (<code>AUTH_SESSION_DAYS</code>), Traffy Dual-Feed (Public API / <code>org_id</code>/<code>uuid</code> / LINE Token ใน UI) และแยก Timeout ไม่ให้ฉุด 4 ด้านหลัก</p>
+          <div class="font-bold text-purple-900 text-sm">💾 Disaster Recovery (4 ชั้น)</div>
+          <p class="text-slate-600">มี <strong>Local DB Spool</strong> พักข้อมูลเมื่อ DB ดับ + <strong>Auto Backup (.sql.gz)</strong> ทุกวัน + <strong>GitHub Cloud Failover Alert</strong> + <a href="./emergency_cloud.html" class="underline font-bold text-amber-800">โหมดดูฉุกเฉิน (emergency_cloud.html)</a></p>
         </div>
       </div>
     </section>
@@ -280,6 +280,17 @@
               <button onclick="runTestCheckNotify()" class="px-3 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold">🔔 ตรวจเกณฑ์ทันที</button>
               <button onclick="runTestEmail()" class="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold">📧 ส่ง Test Email</button>
               <button onclick="runTestSocketLog()" class="px-3 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold">📡 ยิง Log</button>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-2xl border border-amber-200 bg-amber-50/60 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div class="font-bold text-sm text-amber-950">ขั้นตอนที่ 8: ตรวจระบบสำรองข้อมูล (.sql.gz), Local Spool &amp; Cloud Fallback</div>
+              <div class="text-xs text-amber-800">ตรวจคิว <code>db_spool</code>, ไฟล์ Backup 10 ตาราง และเปิดดู <code>emergency_cloud.html</code></div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="runTestBackupStatus()" class="px-3 py-2 rounded-xl bg-white border border-amber-300 hover:bg-amber-100 text-amber-900 text-xs font-semibold">💾 เช็ก Backup/Spool</button>
+              <a href="./emergency_cloud.html" target="_blank" class="px-3 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold">☁️ เปิด Cloud Viewer</a>
             </div>
           </div>
         </div>
@@ -943,6 +954,23 @@
       }
     }
 
+    async function runTestBackupStatus() {
+      logLine('💾 กำลังตรวจสถานะ Backup (.sql.gz), Local DB Spool และ Cloud Fallback...');
+      try {
+        const [bk, fb] = await Promise.all([
+          fetch(apiEndpoint('/api/backup/status'), { cache: 'no-store' }).then(r => r.json()),
+          fetch(apiEndpoint('/api/cloud-fallback'), { cache: 'no-store' }).then(r => r.json())
+        ]);
+        const latest = (bk.backups && bk.backups[0]) ? `${bk.backups[0].filename} (${bk.backups[0].sizeKb} KB)` : 'ยังไม่มีไฟล์ (กดสำรองได้ใน server_setup.php)';
+        const snap = fb.snapshot || {};
+        logLine(`✅ BackupCount=${(bk.backups || []).length} | Latest=${latest} | LocalSpoolQueue=${bk.dbSpoolCount ?? 0} | CloudFallback=${snap.snapshot_id || '-'} (${snap.recorded_at || '-'})`);
+        return true;
+      } catch (e) {
+        logLine(`❌ Error: ${e.message}`);
+        return false;
+      }
+    }
+
     async function runAllSmokeTests() {
       out.textContent = '=== เริ่มชุดเช็กความพร้อมทั้งหมด (Read-Only Smoke Suite) ===';
       await runTestHealth();
@@ -950,6 +978,7 @@
       await runTestWorker();
       await runTestSystemLogsV2();
       await runTestTraffySession(false);
+      await runTestBackupStatus();
       logLine('🎉 เช็กความพร้อมระบบทั้งหมดเสร็จสมบูรณ์! (กด "⚡ ทดสอบดึงจริง 5 API" เพื่อทดสอบเก็บข้อมูลสด)');
     }
   </script>

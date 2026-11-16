@@ -409,7 +409,7 @@ function smtp_command($fp, string $cmd, array $expectedCodes): string {
     return $resp;
 }
 
-function php_smtp_send_email(array $smtpConfig, array $toEmails, string $subject, string $htmlBody): array {
+function php_smtp_send_email(array $smtpConfig, array $toEmails, string $subject, string $htmlBody, array $attachments = []): array {
     $user = trim((string)($smtpConfig['user'] ?? ''));
     $pass = preg_replace('/\s+/', '', (string)($smtpConfig['pass'] ?? ''));
     $host = trim((string)($smtpConfig['host'] ?? 'smtp.gmail.com')) ?: 'smtp.gmail.com';
@@ -431,11 +431,11 @@ function php_smtp_send_email(array $smtpConfig, array $toEmails, string $subject
         ]
     ]);
 
-    $fp = @stream_socket_client("{$transportHost}:{$port}", $errno, $errstr, 15, STREAM_CLIENT_CONNECT, $ctx);
+    $fp = @stream_socket_client("{$transportHost}:{$port}", $errno, $errstr, 20, STREAM_CLIENT_CONNECT, $ctx);
     if (!$fp) {
         return ['success' => false, 'error' => "เชื่อมต่อ SMTP {$host}:{$port} ไม่ได้ ({$errstr})"];
     }
-    stream_set_timeout($fp, 15);
+    stream_set_timeout($fp, 25);
 
     try {
         [$code, $resp] = smtp_read_response($fp);
@@ -484,12 +484,40 @@ function php_smtp_send_email(array $smtpConfig, array $toEmails, string $subject
         $headers .= "To: " . implode(', ', $toHeaderList) . "\r\n";
         $headers .= "Subject: {$encodedSubject}\r\n";
         $headers .= "MIME-Version: 1.0\r\n";
-        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-        $headers .= "Content-Transfer-Encoding: base64\r\n";
 
-        $bodyEncoded = chunk_split(base64_encode($htmlBody));
-        // Dot-stuff lines starting with "."
-        $fullData = $headers . "\r\n" . $bodyEncoded . "\r\n.";
+        $validAtt = [];
+        foreach ($attachments as $att) {
+            if (!empty($att['filename']) && isset($att['content'])) {
+                $validAtt[] = $att;
+            }
+        }
+
+        if (empty($validAtt)) {
+            $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+            $headers .= "Content-Transfer-Encoding: base64\r\n";
+            $mimeBody = chunk_split(base64_encode($htmlBody));
+        } else {
+            $boundary = 'ws2_mix_' . bin2hex(random_bytes(8));
+            $headers .= "Content-Type: multipart/mixed; boundary=\"{$boundary}\"\r\n";
+            $mimeBody  = "--{$boundary}\r\n";
+            $mimeBody .= "Content-Type: text/html; charset=UTF-8\r\n";
+            $mimeBody .= "Content-Transfer-Encoding: base64\r\n\r\n";
+            $mimeBody .= chunk_split(base64_encode($htmlBody)) . "\r\n";
+            foreach ($validAtt as $att) {
+                $fname = preg_replace('/[^a-zA-Z0-9._-]/', '_', (string)$att['filename']);
+                $mime  = (string)($att['mime'] ?? 'application/octet-stream');
+                $mimeBody .= "--{$boundary}\r\n";
+                $mimeBody .= "Content-Type: {$mime}; name=\"{$fname}\"\r\n";
+                $mimeBody .= "Content-Transfer-Encoding: base64\r\n";
+                $mimeBody .= "Content-Disposition: attachment; filename=\"{$fname}\"\r\n\r\n";
+                $mimeBody .= chunk_split(base64_encode((string)$att['content'])) . "\r\n";
+            }
+            $mimeBody .= "--{$boundary}--\r\n";
+        }
+
+        // Dot-stuff lines starting with "." per RFC 5321
+        $mimeBody = preg_replace('/^\./m', '..', $mimeBody);
+        $fullData = $headers . "\r\n" . $mimeBody . "\r\n.";
         fwrite($fp, $fullData . "\r\n");
 
         [$dataCode, $dataResp] = smtp_read_response($fp);

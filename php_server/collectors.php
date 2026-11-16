@@ -15,6 +15,26 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/collectors_transform.php';
 require_once __DIR__ . '/system_log.php';
 require_once __DIR__ . '/notifier.php';
+require_once __DIR__ . '/backup_manager.php';
+
+/**
+ * Spools transformed rows to local disk if MySQL write fails during an outage.
+ */
+function try_spool_failed_module_save(string $module, array $rawJson, array $extra = []): array {
+    $rows = [];
+    if ($module === 'rainfall') {
+        $rows = transform_rainfall_items($rawJson)['rows'] ?? [];
+    } elseif ($module === 'water') {
+        $rows = transform_water_level_items($rawJson, $extra['rainResult'] ?? [], $extra['rain3dResult'] ?? [])['rows'] ?? [];
+    } elseif ($module === 'drought') {
+        $rows = transform_drought_items($rawJson)['rows'] ?? [];
+    } elseif ($module === 'pm25') {
+        $rows = transform_pm25_items($rawJson)['rows'] ?? [];
+    } elseif ($module === 'complaints') {
+        $rows = transform_traffy_complaints($rawJson, 100);
+    }
+    return db_spool_enqueue_module($module, $rows);
+}
 
 function build_curl_handle(string $url, array $extraHeaders = [], int $timeoutSec = 25) {
     $ch = curl_init($url);
@@ -1194,7 +1214,8 @@ function _collect_all_parallel_direct_locked(array $activeFlags = [], string $tr
             $totalRows += $rainResult['count'];
         } catch (Throwable $e) {
             $err = $e->getMessage();
-            $results['rainfall'] = ['success' => false, 'error' => $err];
+            $sp = try_spool_failed_module_save('rainfall', $responses['rain']['data']);
+            $results['rainfall'] = ['success' => false, 'spooled' => !empty($sp['spooled']), 'error' => $err];
             $failCount++;
             $failedModules[] = 'น้ำฝน';
             log_task_run('ดึงข้อมูลน้ำฝน', 'db', 'failed', 0, 'ล้มเหลว: ' . $err);
@@ -1202,7 +1223,7 @@ function _collect_all_parallel_direct_locked(array $activeFlags = [], string $tr
                 'run_group_id' => $runGroupId, 'module' => 'rainfall', 'action' => 'ดึงข้อมูลปริมาณน้ำฝน 24 ชม.',
                 'status' => 'failed', 'trigger_source' => $triggerSource, 'scheduled_slot' => $scheduledSlot,
                 'started_at' => $batchStartedAt, 'duration_ms' => $responses['rain']['durationMs'] ?? 0,
-                'summary' => 'ดึงข้อมูลน้ำฝนไม่สำเร็จ', 'error_detail' => $err
+                'summary' => !empty($sp['spooled']) ? "DB ขัดข้อง — พักน้ำฝนลง Local Spool ({$sp['rows']} แถว)" : 'ดึงข้อมูลน้ำฝนไม่สำเร็จ', 'error_detail' => $err
             ]);
             retry_queue_enqueue('rainfall', $scheduledSlot, $err);
         }
@@ -1236,7 +1257,8 @@ function _collect_all_parallel_direct_locked(array $activeFlags = [], string $tr
             $totalRows += (int)($results['water']['count'] ?? 0);
         } catch (Throwable $e) {
             $err = $e->getMessage();
-            $results['water'] = ['success' => false, 'error' => $err];
+            $sp = try_spool_failed_module_save('water', $responses['water']['data'], ['rainResult' => $rainResult, 'rain3dResult' => $rain3dResult]);
+            $results['water'] = ['success' => false, 'spooled' => !empty($sp['spooled']), 'error' => $err];
             $failCount++;
             $failedModules[] = 'ระดับน้ำ';
             log_task_run('ดึงข้อมูลระดับน้ำ', 'db', 'failed', 0, 'ล้มเหลว: ' . $err);
@@ -1244,7 +1266,7 @@ function _collect_all_parallel_direct_locked(array $activeFlags = [], string $tr
                 'run_group_id' => $runGroupId, 'module' => 'water', 'action' => 'ดึงข้อมูลระดับน้ำรายสถานี',
                 'status' => 'failed', 'trigger_source' => $triggerSource, 'scheduled_slot' => $scheduledSlot,
                 'started_at' => $batchStartedAt, 'duration_ms' => $responses['water']['durationMs'] ?? 0,
-                'summary' => 'บันทึกระดับน้ำไม่สำเร็จ', 'error_detail' => $err
+                'summary' => !empty($sp['spooled']) ? "DB ขัดข้อง — พักระดับน้ำลง Local Spool ({$sp['rows']} แถว)" : 'บันทึกระดับน้ำไม่สำเร็จ', 'error_detail' => $err
             ]);
             retry_queue_enqueue('water', $scheduledSlot, $err);
         }
@@ -1276,7 +1298,8 @@ function _collect_all_parallel_direct_locked(array $activeFlags = [], string $tr
             $totalRows += (int)($results['drought']['count'] ?? 0);
         } catch (Throwable $e) {
             $err = $e->getMessage();
-            $results['drought'] = ['success' => false, 'error' => $err];
+            $sp = try_spool_failed_module_save('drought', $responses['drought']['data']);
+            $results['drought'] = ['success' => false, 'spooled' => !empty($sp['spooled']), 'error' => $err];
             $failCount++;
             $failedModules[] = 'ภัยแล้ง/อ่างเก็บน้ำ';
             log_task_run('ดึงข้อมูลภัยแล้ง', 'db', 'failed', 0, 'ล้มเหลว: ' . $err);
@@ -1284,7 +1307,7 @@ function _collect_all_parallel_direct_locked(array $activeFlags = [], string $tr
                 'run_group_id' => $runGroupId, 'module' => 'drought', 'action' => 'ดึงข้อมูลอ่างเก็บน้ำ/ภัยแล้ง',
                 'status' => 'failed', 'trigger_source' => $triggerSource, 'scheduled_slot' => $scheduledSlot,
                 'started_at' => $batchStartedAt, 'duration_ms' => $responses['drought']['durationMs'] ?? 0,
-                'summary' => 'บันทึกข้อมูลอ่างเก็บน้ำไม่สำเร็จ', 'error_detail' => $err
+                'summary' => !empty($sp['spooled']) ? "DB ขัดข้อง — พักอ่างเก็บน้ำลง Local Spool ({$sp['rows']} แถว)" : 'บันทึกข้อมูลอ่างเก็บน้ำไม่สำเร็จ', 'error_detail' => $err
             ]);
             retry_queue_enqueue('drought', $scheduledSlot, $err);
         }
@@ -1316,7 +1339,8 @@ function _collect_all_parallel_direct_locked(array $activeFlags = [], string $tr
             $totalRows += (int)($results['pm25']['count'] ?? 0);
         } catch (Throwable $e) {
             $err = $e->getMessage();
-            $results['pm25'] = ['success' => false, 'error' => $err];
+            $sp = try_spool_failed_module_save('pm25', $responses['pm25']['data']);
+            $results['pm25'] = ['success' => false, 'spooled' => !empty($sp['spooled']), 'error' => $err];
             $failCount++;
             $failedModules[] = 'PM 2.5';
             log_task_run('ดึงข้อมูล PM 2.5', 'db', 'failed', 0, 'ล้มเหลว: ' . $err);
@@ -1324,7 +1348,7 @@ function _collect_all_parallel_direct_locked(array $activeFlags = [], string $tr
                 'run_group_id' => $runGroupId, 'module' => 'pm25', 'action' => 'ดึงข้อมูลคุณภาพอากาศ PM 2.5',
                 'status' => 'failed', 'trigger_source' => $triggerSource, 'scheduled_slot' => $scheduledSlot,
                 'started_at' => $batchStartedAt, 'duration_ms' => $responses['pm25']['durationMs'] ?? 0,
-                'summary' => 'บันทึกข้อมูล PM 2.5 ไม่สำเร็จ', 'error_detail' => $err
+                'summary' => !empty($sp['spooled']) ? "DB ขัดข้อง — พัก PM 2.5 ลง Local Spool ({$sp['rows']} แถว)" : 'บันทึกข้อมูล PM 2.5 ไม่สำเร็จ', 'error_detail' => $err
             ]);
             retry_queue_enqueue('pm25', $scheduledSlot, $err);
         }
@@ -1356,7 +1380,8 @@ function _collect_all_parallel_direct_locked(array $activeFlags = [], string $tr
             $totalRows += (int)($results['complaints']['count'] ?? 0);
         } catch (Throwable $e) {
             $err = $e->getMessage();
-            $results['complaints'] = ['success' => false, 'error' => $err];
+            $sp = try_spool_failed_module_save('complaints', $responses['complaints']['data']);
+            $results['complaints'] = ['success' => false, 'spooled' => !empty($sp['spooled']), 'error' => $err];
             $failCount++;
             $failedModules[] = 'ร้องเรียน Traffy';
             log_task_run('ดึงข้อมูลเรื่องร้องเรียน', 'db', 'failed', 0, 'ล้มเหลว: ' . $err);
@@ -1364,7 +1389,7 @@ function _collect_all_parallel_direct_locked(array $activeFlags = [], string $tr
                 'run_group_id' => $runGroupId, 'module' => 'complaints', 'action' => 'ดึงข้อมูลเรื่องร้องเรียน Traffy Fondue',
                 'status' => 'failed', 'trigger_source' => $triggerSource, 'scheduled_slot' => $scheduledSlot,
                 'started_at' => $batchStartedAt, 'duration_ms' => $responses['complaints']['durationMs'] ?? 0,
-                'summary' => 'บันทึกเรื่องร้องเรียน Traffy ไม่สำเร็จ', 'error_detail' => $err
+                'summary' => !empty($sp['spooled']) ? "DB ขัดข้อง — พักเรื่องร้องเรียนลง Local Spool ({$sp['rows']} แถว)" : 'บันทึกเรื่องร้องเรียน Traffy ไม่สำเร็จ', 'error_detail' => $err
             ]);
             retry_queue_enqueue('complaints', $scheduledSlot, $err);
         }

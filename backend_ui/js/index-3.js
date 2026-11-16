@@ -1546,11 +1546,22 @@ const socket = typeof io !== 'undefined' ? io() : null;
         zoomControl: true
       });
 
-      // OpenStreetMap Basemap (Crisp, complete Thai geographic names, no API key watermark)
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      // CartoDB Voyager Basemap (CDN-backed, avoids tile.openstreetmap.org 403 Referer blocks) + Esri fallback
+      const primaryTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        subdomains: 'abcd',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
         maxZoom: 19
-      }).addTo(gisMap);
+      });
+      let fallbackActivated = false;
+      primaryTiles.on('tileerror', () => {
+        if (fallbackActivated) return;
+        fallbackActivated = true;
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+          attribution: 'Tiles &copy; Esri',
+          maxZoom: 19
+        }).addTo(gisMap);
+      });
+      primaryTiles.addTo(gisMap);
 
       // Initialize feature layer groups
       layerStations = L.layerGroup().addTo(gisMap);

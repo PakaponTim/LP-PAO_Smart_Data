@@ -72,6 +72,11 @@ if ($uri === '/cron.php') {
     exit;
 }
 
+if ($uri === '/worker.php') {
+    require WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'worker.php';
+    exit;
+}
+
 if (strpos($uri, '/socket.io/') === 0) {
     $eventsFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'socketio_events.json';
     if ($method === 'GET') {

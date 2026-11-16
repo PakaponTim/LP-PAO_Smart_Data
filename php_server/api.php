@@ -8,6 +8,7 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/collectors.php';
 require_once __DIR__ . '/github_sync_to_mysql.php';
+require_once __DIR__ . '/smart_worker_lib.php';
 
 function send_json($data, int $status = 200): void {
     http_response_code($status);
@@ -216,7 +217,7 @@ function run_auto_server_collection_if_due(): void {
     $state = read_json_file($stateFile, []);
     $now = time();
 
-    // 1. Sync any snapshots collected by GitHub Actions (every 60s check)
+    // 1. Sync any backup snapshots collected by GitHub Actions (checked at most once every 60s)
     if ($now - (int)($state['lastGitHubSyncCheck'] ?? 0) >= 60) {
         $state['lastGitHubSyncCheck'] = $now;
         write_json_file($stateFile, $state);
@@ -225,41 +226,9 @@ function run_auto_server_collection_if_due(): void {
         } catch (Throwable $e) {}
     }
 
-    // 2. Pseudo-Cron on Server: Automatically run Direct API Collectors every 30 minutes
-    // or when current HH:mm matches scheduledTasks (no Server Admin / OS Cron needed!)
-    $cfg = get_app_config();
-    $active = $cfg['isScheduleActive'] ?? [];
-    $tasks = $cfg['scheduledTasks'] ?? [];
-    $currentSlot = date('Y-m-d H:i', $now);
-    $hm = date('H:i', $now);
-
-    $isScheduledMinute = in_array($hm, $tasks, true) && (($state['lastScheduledSlot'] ?? '') !== $currentSlot);
-    $isIntervalDue = ($now - (int)($state['lastAutoDirectCollect'] ?? 0)) >= 1800;
-
-    if ($isScheduledMinute || $isIntervalDue) {
-        $state['lastAutoDirectCollect'] = $now;
-        if ($isScheduledMinute) {
-            $state['lastScheduledSlot'] = $currentSlot;
-        }
-        write_json_file($stateFile, $state);
-
-        @ignore_user_abort(true);
-        @set_time_limit(120);
-
-        add_server_log('ServerAutoCron', '⏰ เริ่มดึงข้อมูลอัตโนมัติบน Server (รอบ 30 นาที / ตามตารางเวลา)...');
-        if (!empty($active['water'])) {
-            try { collect_water_level_direct('db'); } catch (Throwable $e) {}
-        }
-        if (!empty($active['drought'])) {
-            try { collect_drought_direct('db'); } catch (Throwable $e) {}
-        }
-        if (!empty($active['pm25'])) {
-            try { collect_pm25_direct('db'); } catch (Throwable $e) {}
-        }
-        if (!empty($active['complaints'])) {
-            try { collect_complaints_direct('db'); } catch (Throwable $e) {}
-        }
-    }
+    // 2. Smart Sleep Check: run curl_multi parallel fetch ONLY when current HH:mm
+    // matches a configured scheduledTasks slot (0 idle API bandwidth between slots!)
+    smart_check_and_run_if_due(true);
 }
 
 function handle_api_request(string $method, string $path): void {
@@ -333,7 +302,8 @@ function handle_api_request(string $method, string $path): void {
         send_json([
             'extensionConnected' => true,
             'extensionPaired'    => true,
-            'collectorMode'      => 'Direct API (PHP Server-to-Server Port 7000)',
+            'collectorMode'      => 'Direct API + curl_multi + Smart Sleep (Port 7000)',
+            'smartWorker'        => smart_worker_status(),
             'scheduledTasks'     => $cfg['scheduledTasks'],
             'isScheduleActive'   => $cfg['isScheduleActive'],
             'lastFetch'          => $lastFetchStr,
@@ -342,6 +312,27 @@ function handle_api_request(string $method, string $path): void {
             'completedTasks'     => $hist['completedTasks'],
             'storageStats'       => $storageStats
         ]);
+    }
+
+    // =====================================================================
+    // GET/POST /api/worker/* (Smart Sleep Background Worker Control)
+    // =====================================================================
+    if ($path === '/api/worker/status' && $method === 'GET') {
+        send_json(['success' => true, 'worker' => smart_worker_status()]);
+    }
+    if ($path === '/api/worker/stop' && $method === 'POST') {
+        @file_put_contents(smart_worker_stop_flag_file(), date('c'));
+        add_server_log('SmartSleep', '⏹️ สั่งหยุด Smart Sleep Worker แล้ว');
+        send_json(['success' => true, 'worker' => smart_worker_status()]);
+    }
+    if ($path === '/api/worker/start' && $method === 'POST') {
+        @unlink(smart_worker_stop_flag_file());
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? '127.0.0.1:7000';
+        $scriptDir = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/');
+        smart_fire_self_chain("{$scheme}://{$host}{$scriptDir}/worker.php?action=chain");
+        add_server_log('SmartSleep', '🚀 เริ่มระบบ Smart Sleep Worker แล้ว');
+        send_json(['success' => true, 'worker' => smart_worker_status()]);
     }
 
     // =====================================================================
@@ -415,9 +406,25 @@ function handle_api_request(string $method, string $path): void {
                 'connected' => true,
                 'activeSocketsCount' => 1,
                 'directApiCollectorReady' => true,
+                'parallelCurlMultiReady' => true,
                 'puppeteerFallbackReady' => true
-            ]
+            ],
+            'smartWorker' => smart_worker_status()
         ]);
+    }
+
+    // =====================================================================
+    // POST /api/force-fetch-all (Parallel curl_multi all 5 APIs in ~1.5s)
+    // =====================================================================
+    if ($path === '/api/force-fetch-all' && $method === 'POST') {
+        try {
+            $cfg = get_app_config();
+            $res = collect_all_parallel_direct($cfg['isScheduleActive'] ?? []);
+            send_json(['success' => true, 'message' => "ดึงข้อมูลทุกโปรเจคพร้อมกันสำเร็จ ({$res['elapsedSec']} วินาที)", 'result' => $res]);
+        } catch (Throwable $e) {
+            add_server_log('ParallelAPI', '❌ เกิดข้อผิดพลาด: ' . $e->getMessage());
+            send_json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
     }
 
     // =====================================================================

@@ -1,6 +1,6 @@
 <?php
 // =========================================================================
-// Water_System2 (Port 7000) — Direct API Collectors (Replaces Chrome Extensions)
+// Water_System2 — Direct API Collectors (Sequential & Parallel curl_multi)
 // Pulls directly from:
 //   1. https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/rain24?province_code=52
 //   2. https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/waterlevel?province_code=52
@@ -11,7 +11,7 @@
 
 require_once __DIR__ . '/config.php';
 
-function http_get_json(string $url, array $extraHeaders = [], int $timeoutSec = 25): ?array {
+function build_curl_handle(string $url, array $extraHeaders = [], int $timeoutSec = 25) {
     $ch = curl_init($url);
     $headers = array_merge([
         'Accept: application/json, text/plain, */*',
@@ -29,7 +29,11 @@ function http_get_json(string $url, array $extraHeaders = [], int $timeoutSec = 
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTPHEADER => $headers
     ]);
+    return $ch;
+}
 
+function http_get_json(string $url, array $extraHeaders = [], int $timeoutSec = 25): ?array {
+    $ch = build_curl_handle($url, $extraHeaders, $timeoutSec);
     $body = curl_exec($ch);
     $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $err = curl_error($ch);
@@ -44,6 +48,68 @@ function http_get_json(string $url, array $extraHeaders = [], int $timeoutSec = 
         throw new RuntimeException("Invalid JSON response from {$url}");
     }
     return $decoded;
+}
+
+/**
+ * Parallel HTTP JSON fetcher using curl_multi_init().
+ * Fetches all requested APIs simultaneously (~1.5 - 2.5 seconds total).
+ *
+ * @param array<string, array{url:string, headers?:array}> $requests
+ * @return array<string, array{ok:bool, data:?array, error:?string}>
+ */
+function http_get_json_multi(array $requests, int $timeoutSec = 25): array {
+    $mh = curl_multi_init();
+    $handles = [];
+    $results = [];
+
+    foreach ($requests as $key => $cfg) {
+        $ch = build_curl_handle($cfg['url'], $cfg['headers'] ?? [], $timeoutSec);
+        $handles[$key] = $ch;
+        curl_multi_add_handle($mh, $ch);
+    }
+
+    $running = null;
+    do {
+        $status = curl_multi_exec($mh, $running);
+        if ($running > 0) {
+            curl_multi_select($mh, 0.2);
+        }
+    } while ($running > 0 && $status === CURLM_OK);
+
+    foreach ($handles as $key => $ch) {
+        $body = curl_multi_getcontent($ch);
+        $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $err = curl_error($ch);
+
+        if ($body === false || $httpCode < 200 || $httpCode >= 300) {
+            $results[$key] = [
+                'ok' => false,
+                'data' => null,
+                'error' => "HTTP ({$httpCode}): " . ($err ?: $requests[$key]['url'])
+            ];
+        } else {
+            $decoded = json_decode($body, true);
+            if (!is_array($decoded)) {
+                $results[$key] = [
+                    'ok' => false,
+                    'data' => null,
+                    'error' => "Invalid JSON from {$requests[$key]['url']}"
+                ];
+            } else {
+                $results[$key] = [
+                    'ok' => true,
+                    'data' => $decoded,
+                    'error' => null
+                ];
+            }
+        }
+
+        curl_multi_remove_handle($mh, $ch);
+        curl_close($ch);
+    }
+
+    curl_multi_close($mh);
+    return $results;
 }
 
 function parse_float_or_null($val): ?float {
@@ -63,15 +129,10 @@ function record_ingest_batch(PDO $pdo, string $kind, array $payload): string {
 }
 
 // =========================================================================
-// 1. Direct Collector: Rainfall (199+ Stations in Lampang)
+// 1. Direct Collector: Rainfall (197+ Stations in Lampang)
 // =========================================================================
-function collect_rainfall_direct(bool $standaloneLog = true): array {
+function save_rainfall_from_json(array $json, bool $standaloneLog = true): array {
     $pdo = get_db();
-    if ($standaloneLog) {
-        add_server_log('DirectAPI-7000', '⏳ เริ่มดึงข้อมูลปริมาณน้ำฝน จ.ลำปาง โดยตรงจาก ThaiWater30 API (ไม่ต้องใช้ Extension)...');
-    }
-
-    $json = http_get_json('https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/rain24?province_code=52');
     $items = $json['data'] ?? [];
     if (empty($items)) {
         throw new RuntimeException('ไม่พบข้อมูลสถานีน้ำฝนจาก ThaiWater30 API');
@@ -158,7 +219,7 @@ function collect_rainfall_direct(bool $standaloneLog = true): array {
     }
 
     $count = count($rowsToInsert);
-    add_server_log('DirectAPI-7000', "✅ บันทึกข้อมูลน้ำฝน จ.ลำปาง สำเร็จ {$count} สถานี ลง MySQL (Batch: {$batchId})");
+    add_server_log('DirectAPI', "✅ บันทึกข้อมูลน้ำฝน จ.ลำปาง สำเร็จ {$count} สถานี ลง MySQL (Batch: {$batchId})");
     if ($standaloneLog) {
         log_task_run('ดึงข้อมูลน้ำฝน', 'db', 'success', $count, "Direct API บันทึกลง MySQL สำเร็จ {$count} สถานี; batch: {$batchId}");
     }
@@ -172,23 +233,19 @@ function collect_rainfall_direct(bool $standaloneLog = true): array {
     ];
 }
 
+function collect_rainfall_direct(bool $standaloneLog = true): array {
+    if ($standaloneLog) {
+        add_server_log('DirectAPI', '⏳ เริ่มดึงข้อมูลปริมาณน้ำฝน จ.ลำปาง โดยตรงจาก ThaiWater30 API...');
+    }
+    $json = http_get_json('https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/rain24?province_code=52');
+    return save_rainfall_from_json($json, $standaloneLog);
+}
+
 // =========================================================================
 // 2. Direct Collector: Water Level + Rainfall Mapping (25 Stations in Lampang)
 // =========================================================================
-function collect_water_level_direct(string $mode = 'db'): array {
+function save_water_level_from_json(array $json, array $rainResult, string $mode = 'db'): array {
     $pdo = get_db();
-    add_server_log('DirectAPI-7000', "⏳ เริ่มดึงข้อมูลระดับน้ำและปริมาณน้ำฝน จ.ลำปาง ผ่าน Direct API ({$mode})...");
-
-    // Step 1: Collect rainfall & build subdistrict/district rain maps
-    $rainResult = ['subdistrictRainAvg' => [], 'districtRainAvg' => [], 'count' => 0];
-    try {
-        $rainResult = collect_rainfall_direct(false);
-    } catch (Throwable $rainErr) {
-        add_server_log('DirectAPI-7000', '⚠️ ดึงข้อมูลน้ำฝนเบื้องต้นไม่สำเร็จ ใช้ค่าเริ่มต้น: ' . $rainErr->getMessage());
-    }
-
-    // Step 2: Fetch Water Level from ThaiWater30 API
-    $json = http_get_json('https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/waterlevel?province_code=52');
     $items = $json['data'] ?? [];
     if (empty($items)) {
         throw new RuntimeException('ไม่พบข้อมูลระดับน้ำจาก ThaiWater30 API');
@@ -218,7 +275,6 @@ function collect_water_level_direct(string $mode = 'db'): array {
             $bankDiff = round($minBank - $wlCurrent, 2);
         }
 
-        // Trend calculation
         $trend = 'คงที่';
         if ($wlCurrent !== null && $wlPrev !== null) {
             $delta = $wlCurrent - $wlPrev;
@@ -226,7 +282,6 @@ function collect_water_level_direct(string $mode = 'db'): array {
             elseif ($delta < -0.01) $trend = 'ลดลง';
         }
 
-        // Status mapping from situation_level / storage_percent
         $sitLevel = (int)($item['situation_level'] ?? 0);
         $storagePct = parse_float_or_null($item['storage_percent'] ?? null);
         $status = 'ปกติ';
@@ -242,7 +297,6 @@ function collect_water_level_direct(string $mode = 'db'): array {
             $status = 'น้ำน้อย';
         }
 
-        // Map rainfall from subdistrict / district
         $currentRain = null;
         $subKey = "{$tumbon}_{$amphoeKey}";
         if (isset($rainResult['subdistrictRainAvg'][$subKey])) {
@@ -303,26 +357,47 @@ function collect_water_level_direct(string $mode = 'db'): array {
     }
 
     $count = count($rowsToInsert);
-    $msg = "DB: committed ({$count} สถานีน้ำ + {$rainResult['count']} สถานีฝน); Direct API; batch: {$batchId}";
-    add_server_log('DirectAPI-7000', "✅ ดึงข้อมูลระดับน้ำ จ.ลำปาง สำเร็จ {$count} สถานี บันทึกลง MySQL เรียบร้อยแล้ว");
+    $rainCount = (int)($rainResult['count'] ?? 0);
+    $msg = "DB: committed ({$count} สถานีน้ำ + {$rainCount} สถานีฝน); Direct API; batch: {$batchId}";
+    add_server_log('DirectAPI', "✅ ดึงข้อมูลระดับน้ำ จ.ลำปาง สำเร็จ {$count} สถานี บันทึกลง MySQL เรียบร้อยแล้ว");
     log_task_run('ดึงข้อมูลระดับน้ำ', $mode, 'success', $count, $msg);
 
     return [
         'success' => true,
         'count' => $count,
-        'rainfallCount' => $rainResult['count'],
+        'rainfallCount' => $rainCount,
         'batchId' => $batchId
     ];
+}
+
+function collect_water_level_direct(string $mode = 'db'): array {
+    add_server_log('DirectAPI', "⏳ เริ่มดึงข้อมูลระดับน้ำและปริมาณน้ำฝน จ.ลำปาง พร้อมกัน (curl_multi)...");
+    $res = http_get_json_multi([
+        'rain'  => ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/rain24?province_code=52'],
+        'water' => ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/waterlevel?province_code=52'],
+    ]);
+
+    $rainResult = ['subdistrictRainAvg' => [], 'districtRainAvg' => [], 'count' => 0];
+    if (!empty($res['rain']['ok'])) {
+        try {
+            $rainResult = save_rainfall_from_json($res['rain']['data'], false);
+        } catch (Throwable $rainErr) {
+            add_server_log('DirectAPI', '⚠️ ดึงข้อมูลน้ำฝนไม่สำเร็จ ใช้ค่าเริ่มต้น: ' . $rainErr->getMessage());
+        }
+    }
+
+    if (empty($res['water']['ok'])) {
+        throw new RuntimeException($res['water']['error'] ?? 'ดึงข้อมูลระดับน้ำไม่สำเร็จ');
+    }
+
+    return save_water_level_from_json($res['water']['data'], $rainResult, $mode);
 }
 
 // =========================================================================
 // 3. Direct Collector: Drought / Dam Storage (36 Dams in Lampang)
 // =========================================================================
-function collect_drought_direct(string $mode = 'db'): array {
+function save_drought_from_json(array $json, string $mode = 'db'): array {
     $pdo = get_db();
-    add_server_log('DirectAPI-7000', "⏳ เริ่มดึงข้อมูลอ่างเก็บน้ำ/ภัยแล้ง จ.ลำปาง ผ่าน Direct API ({$mode})...");
-
-    $json = http_get_json('https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/dam?province_code=52');
     $data = $json['data'] ?? [];
     if (empty($data)) {
         throw new RuntimeException('ไม่พบข้อมูลอ่างเก็บน้ำจาก ThaiWater30 API');
@@ -332,7 +407,6 @@ function collect_drought_direct(string $mode = 'db'): array {
     $rowsToInsert = [];
     $seenDams = [];
 
-    // 1. Large Dams (dam_daily)
     foreach (($data['dam_daily'] ?? []) as $item) {
         $pc = (string)($item['geocode']['province_code'] ?? '');
         $pn = (string)($item['geocode']['province_name']['th'] ?? '');
@@ -344,64 +418,46 @@ function collect_drought_direct(string $mode = 'db'): array {
         if (isset($seenDams[$damName])) continue;
         $seenDams[$damName] = true;
 
-        $cap = parse_float_or_null($item['dam']['normal_storage'] ?? ($item['dam_storage_cap'] ?? null));
-        $inflow = parse_float_or_null($item['dam_inflow'] ?? null);
-        $vol = parse_float_or_null($item['dam_storage'] ?? null);
         $pctVal = parse_float_or_null($item['dam_storage_percent'] ?? null);
-        $usable = parse_float_or_null($item['dam_uses_water'] ?? null);
-        $released = parse_float_or_null($item['dam_released'] ?? null);
-
-        $pctStr = $pctVal !== null ? round($pctVal) . '%' : '-';
-
         $rowsToInsert[] = [
             'record_date'        => $thaiDate,
             'dam_type'           => 'อ่างขนาดใหญ่',
             'dam_name'           => mb_substr($damName, 0, 100),
-            'capacity_m_cum'     => $cap,
-            'inflow_m_cum'       => $inflow,
-            'water_volume_m_cum' => $vol,
-            'water_percent'      => $pctStr,
-            'usable_water_m_cum' => $usable,
-            'discharge_m_cum'    => $released
+            'capacity_m_cum'     => parse_float_or_null($item['dam']['normal_storage'] ?? ($item['dam_storage_cap'] ?? null)),
+            'inflow_m_cum'       => parse_float_or_null($item['dam_inflow'] ?? null),
+            'water_volume_m_cum' => parse_float_or_null($item['dam_storage'] ?? null),
+            'water_percent'      => $pctVal !== null ? round($pctVal) . '%' : '-',
+            'usable_water_m_cum' => parse_float_or_null($item['dam_uses_water'] ?? null),
+            'discharge_m_cum'    => parse_float_or_null($item['dam_released'] ?? null)
         ];
     }
 
-    // 2. Medium Dams (dam_medium)
     foreach (($data['dam_medium'] ?? []) as $item) {
         $pc = (string)($item['geocode']['province_code'] ?? '');
         $pn = (string)($item['geocode']['province_name']['th'] ?? '');
         if ($pc !== '52' && mb_strpos($pn, 'ลำปาง') === false) continue;
 
         $damName = trim((string)($item['dam']['dam_name']['th'] ?? ''));
-        if ($damName === '' || $damName === 'แม่มอก') continue; // แม่มอก is already in dam_daily
-        if (isset($seenDams[$damName])) continue;
+        if ($damName === '' || $damName === 'แม่มอก' || isset($seenDams[$damName])) continue;
 
         $vol = parse_float_or_null($item['dam_storage'] ?? null);
         $pctVal = parse_float_or_null($item['dam_storage_percent'] ?? null);
-        // Skip inactive placeholder entries that have neither storage volume nor percentage
         if ($vol === null && $pctVal === null) continue;
 
         $seenDams[$damName] = true;
-        $cap = parse_float_or_null($item['dam']['normal_storage'] ?? null);
-        $inflow = parse_float_or_null($item['dam_inflow'] ?? null);
-        $usable = parse_float_or_null($item['dam_uses_water'] ?? null);
-        $released = parse_float_or_null($item['dam_released'] ?? null);
-        $pctStr = $pctVal !== null ? round($pctVal) . '%' : '-';
-
         $rowsToInsert[] = [
             'record_date'        => $thaiDate,
             'dam_type'           => 'อ่างขนาดกลาง',
             'dam_name'           => mb_substr($damName, 0, 100),
-            'capacity_m_cum'     => $cap,
-            'inflow_m_cum'       => $inflow,
+            'capacity_m_cum'     => parse_float_or_null($item['dam']['normal_storage'] ?? null),
+            'inflow_m_cum'       => parse_float_or_null($item['dam_inflow'] ?? null),
             'water_volume_m_cum' => $vol,
-            'water_percent'      => $pctStr,
-            'usable_water_m_cum' => $usable,
-            'discharge_m_cum'    => $released
+            'water_percent'      => $pctVal !== null ? round($pctVal) . '%' : '-',
+            'usable_water_m_cum' => parse_float_or_null($item['dam_uses_water'] ?? null),
+            'discharge_m_cum'    => parse_float_or_null($item['dam_released'] ?? null)
         ];
     }
 
-    // 3. Small Telemetry Dams (dam_small_tele)
     foreach (($data['dam_small_tele'] ?? []) as $item) {
         $pc = (string)($item['geocode']['province_code'] ?? '');
         $pn = (string)($item['geocode']['province_name']['th'] ?? '');
@@ -415,17 +471,14 @@ function collect_drought_direct(string $mode = 'db'): array {
         if ($vol === null && $pctVal === null) continue;
 
         $seenDams[$damName] = true;
-        $cap = parse_float_or_null($item['dam']['normal_storage'] ?? ($item['dam_storage_cap'] ?? null));
-        $pctStr = $pctVal !== null ? round($pctVal) . '%' : '-';
-
         $rowsToInsert[] = [
             'record_date'        => $thaiDate,
             'dam_type'           => 'อ่างขนาดเล็ก',
             'dam_name'           => mb_substr($damName, 0, 100),
-            'capacity_m_cum'     => $cap,
+            'capacity_m_cum'     => parse_float_or_null($item['dam']['normal_storage'] ?? ($item['dam_storage_cap'] ?? null)),
             'inflow_m_cum'       => null,
             'water_volume_m_cum' => $vol,
-            'water_percent'      => $pctStr,
+            'water_percent'      => $pctVal !== null ? round($pctVal) . '%' : '-',
             'usable_water_m_cum' => null,
             'discharge_m_cum'    => null
         ];
@@ -462,7 +515,7 @@ function collect_drought_direct(string $mode = 'db'): array {
 
     $count = count($rowsToInsert);
     $msg = "DB: committed ({$count} อ่างเก็บน้ำ); Direct API; batch: {$batchId}";
-    add_server_log('DirectAPI-7000', "✅ ดึงข้อมูลอ่างเก็บน้ำ/ภัยแล้ง จ.ลำปาง สำเร็จ {$count} แห่ง บันทึกลง MySQL เรียบร้อยแล้ว");
+    add_server_log('DirectAPI', "✅ ดึงข้อมูลอ่างเก็บน้ำ/ภัยแล้ง จ.ลำปาง สำเร็จ {$count} แห่ง บันทึกลง MySQL เรียบร้อยแล้ว");
     log_task_run('ดึงข้อมูลภัยแล้ง', $mode, 'success', $count, $msg);
 
     return [
@@ -472,14 +525,17 @@ function collect_drought_direct(string $mode = 'db'): array {
     ];
 }
 
+function collect_drought_direct(string $mode = 'db'): array {
+    add_server_log('DirectAPI', "⏳ เริ่มดึงข้อมูลอ่างเก็บน้ำ/ภัยแล้ง จ.ลำปาง ผ่าน Direct API ({$mode})...");
+    $json = http_get_json('https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/dam?province_code=52');
+    return save_drought_from_json($json, $mode);
+}
+
 // =========================================================================
 // 4. Direct Collector: PM 2.5 Air Quality (~33 Stations in Lampang)
 // =========================================================================
-function collect_pm25_direct(string $mode = 'db'): array {
+function save_pm25_from_json(array $json, string $mode = 'db'): array {
     $pdo = get_db();
-    add_server_log('DirectAPI-7000', "⏳ เริ่มดึงข้อมูลคุณภาพอากาศ PM 2.5 จ.ลำปาง ผ่าน Direct API ({$mode})...");
-
-    $json = http_get_json('https://api-v3.thaiwater.net/api/v1/thaiwater30/public/thaiwater/weather');
     $items = $json['pm25']['data'] ?? [];
     if (empty($items)) {
         throw new RuntimeException('ไม่พบข้อมูล PM 2.5 จาก ThaiWater30 Weather API');
@@ -560,7 +616,7 @@ function collect_pm25_direct(string $mode = 'db'): array {
 
     $count = count($rowsToInsert);
     $msg = "DB: committed ({$count} สถานี PM 2.5); Direct API; batch: {$batchId}";
-    add_server_log('DirectAPI-7000', "✅ ดึงข้อมูล PM 2.5 จ.ลำปาง สำเร็จ {$count} สถานี บันทึกลง MySQL เรียบร้อยแล้ว");
+    add_server_log('DirectAPI', "✅ ดึงข้อมูล PM 2.5 จ.ลำปาง สำเร็จ {$count} สถานี บันทึกลง MySQL เรียบร้อยแล้ว");
     log_task_run('ดึงข้อมูล PM 2.5', $mode, 'success', $count, $msg);
 
     return [
@@ -568,6 +624,12 @@ function collect_pm25_direct(string $mode = 'db'): array {
         'count' => $count,
         'batchId' => $batchId
     ];
+}
+
+function collect_pm25_direct(string $mode = 'db'): array {
+    add_server_log('DirectAPI', "⏳ เริ่มดึงข้อมูลคุณภาพอากาศ PM 2.5 จ.ลำปาง ผ่าน Direct API ({$mode})...");
+    $json = http_get_json('https://api-v3.thaiwater.net/api/v1/thaiwater30/public/thaiwater/weather');
+    return save_pm25_from_json($json, $mode);
 }
 
 // =========================================================================
@@ -585,16 +647,8 @@ function fetch_traffy_timeline_direct(string $ticketId): ?array {
     }
 }
 
-function collect_complaints_direct(string $mode = 'db'): array {
+function save_complaints_from_json(array $json, string $mode = 'db'): array {
     $pdo = get_db();
-    add_server_log('DirectAPI-7000', "⏳ เริ่มดึงข้อมูลเรื่องร้องเรียน Traffy Fondue จ.ลำปาง ผ่าน Direct Public API (ไม่ต้องล็อกอิน/ไม่ต้องใช้ Extension)...");
-
-    $url = 'https://publicapi.traffy.in.th/teamchadchart-stat-api/geojson/v1?text=%E0%B8%A5%E0%B8%B3%E0%B8%9B%E0%B8%B2%E0%B8%87';
-    $json = http_get_json($url, [
-        'Origin: https://bangkok.traffy.in.th',
-        'Referer: https://bangkok.traffy.in.th/'
-    ], 30);
-
     $features = $json['features'] ?? [];
     if (empty($features)) {
         throw new RuntimeException('ไม่พบข้อมูลเรื่องร้องเรียนจาก Traffy Public API');
@@ -617,7 +671,6 @@ function collect_complaints_direct(string $mode = 'db'): array {
 
         $stateName = trim((string)($props['state'] ?? ($props['state_type_latest'] ?? 'รอรับเรื่อง')));
 
-        // Problem type array or string
         $problemType = 'ทั่วไป';
         if (!empty($props['problem_type_abdul']) && is_array($props['problem_type_abdul'])) {
             $firstType = trim((string)($props['problem_type_abdul'][0] ?? ''));
@@ -627,7 +680,6 @@ function collect_complaints_direct(string $mode = 'db'): array {
             if ($cleanType !== '') $problemType = explode(',', $cleanType)[0];
         }
 
-        // Organization array or string
         $orgName = 'อบจ.ลำปาง';
         if (!empty($props['org']) && is_array($props['org'])) {
             $orgName = implode(', ', array_filter(array_map('trim', $props['org'])));
@@ -654,7 +706,6 @@ function collect_complaints_direct(string $mode = 'db'): array {
             'is_in_scope'        => 1
         ];
 
-        // Cap per-fetch batch to 60 latest Lampang tickets to keep response fast
         if (count($prepared) >= 60) break;
     }
 
@@ -662,7 +713,7 @@ function collect_complaints_direct(string $mode = 'db'): array {
         throw new RuntimeException('ไม่พบเรื่องร้องเรียนในเขตจังหวัดลำปางจาก Traffy API');
     }
 
-    // Check existing rows for timeline caching (fetch timeline for new/changed tickets up to 5 per run to stay fast)
+    // Fetch timeline for up to 5 new/changed tickets
     $timelineFetches = 0;
     $checkStmt = $pdo->prepare("SELECT state_name, raw_timeline FROM tbl_complaints_monitoring WHERE ticket_id = ? LIMIT 1");
     foreach ($prepared as &$row) {
@@ -709,17 +760,11 @@ function collect_complaints_direct(string $mode = 'db'): array {
             $isPao = (mb_strpos($r['org_name'], 'อบจ.ลำปาง') !== false || mb_strpos($r['org_name'], 'องค์การบริหารส่วนจังหวัดลำปาง') !== false);
             $st = $r['state_name'];
             $agency = $isPao ? 'งานที่เป็นสถานะอื่นๆ' : 'สถานะอื่นๆ ของหน่วยงาน';
-            if (mb_strpos($st, 'รอรับเรื่อง') !== false) {
-                $agency = $isPao ? 'งานที่รับเรื่องร้องเรียน' : 'อบจ.รับมอบหมายงาน';
-            } elseif (mb_strpos($st, 'ส่งต่อ') !== false) {
-                $agency = $isPao ? 'งานส่งต่อ' : 'ส่งต่อให้หน่วยงานอื่นดำเนินการ';
-            } elseif (mb_strpos($st, 'เสร็จสิ้น') !== false) {
-                $agency = $isPao ? 'งานที่ อบจ.ดำเนินการเสร็จ' : 'หน่วยงานอื่นดำเนินการเสร็จ';
-            } elseif (mb_strpos($st, 'กำลังดำเนินการ') !== false || mb_strpos($st, 'ถูกติดตาม') !== false) {
-                $agency = $isPao ? 'งานที่ อบจ.กำลังดำเนินการ' : 'หน่วยงานอื่นกำลังดำเนินการ';
-            } elseif (mb_strpos($st, 'รับมอบ') !== false) {
-                $agency = $isPao ? 'สถานะรับมอบจากหน่วยงานอื่นๆ' : 'สถานะที่หน่วยงานรับมอบจาก อบจ.ลำปาง';
-            }
+            if (mb_strpos($st, 'รอรับเรื่อง') !== false) $agency = $isPao ? 'งานที่รับเรื่องร้องเรียน' : 'อบจ.รับมอบหมายงาน';
+            elseif (mb_strpos($st, 'ส่งต่อ') !== false) $agency = $isPao ? 'งานส่งต่อ' : 'ส่งต่อให้หน่วยงานอื่นดำเนินการ';
+            elseif (mb_strpos($st, 'เสร็จสิ้น') !== false) $agency = $isPao ? 'งานที่ อบจ.ดำเนินการเสร็จ' : 'หน่วยงานอื่นดำเนินการเสร็จ';
+            elseif (mb_strpos($st, 'กำลังดำเนินการ') !== false || mb_strpos($st, 'ถูกติดตาม') !== false) $agency = $isPao ? 'งานที่ อบจ.กำลังดำเนินการ' : 'หน่วยงานอื่นกำลังดำเนินการ';
+            elseif (mb_strpos($st, 'รับมอบ') !== false) $agency = $isPao ? 'สถานะรับมอบจากหน่วยงานอื่นๆ' : 'สถานะที่หน่วยงานรับมอบจาก อบจ.ลำปาง';
 
             $upsertStmt->execute([
                 $r['ticket_id'],
@@ -748,7 +793,7 @@ function collect_complaints_direct(string $mode = 'db'): array {
 
     $count = count($prepared);
     $msg = "DB: committed ({$count} เรื่องร้องเรียน); Direct API; batch: {$batchId}";
-    add_server_log('DirectAPI-7000', "✅ ดึงข้อมูลเรื่องร้องเรียน Traffy Fondue จ.ลำปาง สำเร็จ {$count} รายการ บันทึกลง MySQL เรียบร้อยแล้ว");
+    add_server_log('DirectAPI', "✅ ดึงข้อมูลเรื่องร้องเรียน Traffy Fondue จ.ลำปาง สำเร็จ {$count} รายการ บันทึกลง MySQL เรียบร้อยแล้ว");
     log_task_run('ดึงข้อมูลเรื่องร้องเรียน', $mode, 'success', $count, $msg);
 
     return [
@@ -758,3 +803,121 @@ function collect_complaints_direct(string $mode = 'db'): array {
     ];
 }
 
+function collect_complaints_direct(string $mode = 'db'): array {
+    add_server_log('DirectAPI', "⏳ เริ่มดึงข้อมูลเรื่องร้องเรียน Traffy Fondue จ.ลำปาง ผ่าน Direct Public API...");
+    $url = 'https://publicapi.traffy.in.th/teamchadchart-stat-api/geojson/v1?text=%E0%B8%A5%E0%B8%B3%E0%B8%9B%E0%B8%B2%E0%B8%87';
+    $json = http_get_json($url, [
+        'Origin: https://bangkok.traffy.in.th',
+        'Referer: https://bangkok.traffy.in.th/'
+    ], 30);
+    return save_complaints_from_json($json, $mode);
+}
+
+// =========================================================================
+// 6. Parallel Collector: Fetch ALL 5 APIs simultaneously using curl_multi!
+// =========================================================================
+function collect_all_parallel_direct(array $activeFlags = []): array {
+    $tStart = microtime(true);
+    $active = array_merge([
+        'water' => true,
+        'drought' => true,
+        'pm25' => true,
+        'complaints' => true
+    ], $activeFlags);
+
+    $requests = [];
+    if (!empty($active['water'])) {
+        $requests['rain'] = ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/rain24?province_code=52'];
+        $requests['water'] = ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/waterlevel?province_code=52'];
+    }
+    if (!empty($active['drought'])) {
+        $requests['drought'] = ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/dam?province_code=52'];
+    }
+    if (!empty($active['pm25'])) {
+        $requests['pm25'] = ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/public/thaiwater/weather'];
+    }
+    if (!empty($active['complaints'])) {
+        $requests['complaints'] = [
+            'url' => 'https://publicapi.traffy.in.th/teamchadchart-stat-api/geojson/v1?text=%E0%B8%A5%E0%B8%B3%E0%B8%9B%E0%B8%B2%E0%B8%87',
+            'headers' => [
+                'Origin: https://bangkok.traffy.in.th',
+                'Referer: https://bangkok.traffy.in.th/'
+            ]
+        ];
+    }
+
+    if (empty($requests)) {
+        return ['success' => true, 'elapsedSec' => 0, 'results' => []];
+    }
+
+    add_server_log('ParallelAPI', '⚡ เริ่มดึงข้อมูลทั้ง ' . count($requests) . ' API พร้อมกันด้วย curl_multi...');
+    $responses = http_get_json_multi($requests, 25);
+
+    $results = [];
+    $rainResult = ['subdistrictRainAvg' => [], 'districtRainAvg' => [], 'count' => 0];
+
+    if (!empty($responses['rain']['ok'])) {
+        try {
+            $rainResult = save_rainfall_from_json($responses['rain']['data'], false);
+            $results['rainfall'] = ['success' => true, 'count' => $rainResult['count']];
+        } catch (Throwable $e) {
+            $results['rainfall'] = ['success' => false, 'error' => $e->getMessage()];
+            add_server_log('ParallelAPI', '❌ น้ำฝน: ' . $e->getMessage());
+        }
+    } elseif (isset($requests['rain'])) {
+        $results['rainfall'] = ['success' => false, 'error' => $responses['rain']['error'] ?? 'Fetch failed'];
+    }
+
+    if (!empty($responses['water']['ok'])) {
+        try {
+            $results['water'] = save_water_level_from_json($responses['water']['data'], $rainResult, 'db');
+        } catch (Throwable $e) {
+            $results['water'] = ['success' => false, 'error' => $e->getMessage()];
+            add_server_log('ParallelAPI', '❌ ระดับน้ำ: ' . $e->getMessage());
+        }
+    } elseif (isset($requests['water'])) {
+        $results['water'] = ['success' => false, 'error' => $responses['water']['error'] ?? 'Fetch failed'];
+    }
+
+    if (!empty($responses['drought']['ok'])) {
+        try {
+            $results['drought'] = save_drought_from_json($responses['drought']['data'], 'db');
+        } catch (Throwable $e) {
+            $results['drought'] = ['success' => false, 'error' => $e->getMessage()];
+            add_server_log('ParallelAPI', '❌ ภัยแล้ง: ' . $e->getMessage());
+        }
+    } elseif (isset($requests['drought'])) {
+        $results['drought'] = ['success' => false, 'error' => $responses['drought']['error'] ?? 'Fetch failed'];
+    }
+
+    if (!empty($responses['pm25']['ok'])) {
+        try {
+            $results['pm25'] = save_pm25_from_json($responses['pm25']['data'], 'db');
+        } catch (Throwable $e) {
+            $results['pm25'] = ['success' => false, 'error' => $e->getMessage()];
+            add_server_log('ParallelAPI', '❌ PM 2.5: ' . $e->getMessage());
+        }
+    } elseif (isset($requests['pm25'])) {
+        $results['pm25'] = ['success' => false, 'error' => $responses['pm25']['error'] ?? 'Fetch failed'];
+    }
+
+    if (!empty($responses['complaints']['ok'])) {
+        try {
+            $results['complaints'] = save_complaints_from_json($responses['complaints']['data'], 'db');
+        } catch (Throwable $e) {
+            $results['complaints'] = ['success' => false, 'error' => $e->getMessage()];
+            add_server_log('ParallelAPI', '❌ ร้องเรียน: ' . $e->getMessage());
+        }
+    } elseif (isset($requests['complaints'])) {
+        $results['complaints'] = ['success' => false, 'error' => $responses['complaints']['error'] ?? 'Fetch failed'];
+    }
+
+    $elapsed = round(microtime(true) - $tStart, 2);
+    add_server_log('ParallelAPI', "🎉 ดึงข้อมูลและบันทึกลง MySQL ครบทุก API เสร็จสมบูรณ์ภายใน {$elapsed} วินาที");
+
+    return [
+        'success' => true,
+        'elapsedSec' => $elapsed,
+        'results' => $results
+    ];
+}

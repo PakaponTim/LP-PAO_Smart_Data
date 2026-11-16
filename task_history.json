@@ -1,6 +1,42 @@
 {
     "completedTasks": [
         {
+            "id": "T-1794797623994-597",
+            "projectName": "ดึงข้อมูลเรื่องร้องเรียน",
+            "taskType": "เก็บข้อมูลลง Database (Direct API)",
+            "status": "success",
+            "timestamp": "2026-11-16 09:53:43",
+            "count": 60,
+            "details": "DB: committed (60 เรื่องร้องเรียน); Direct API; batch: complaints:php7000-20261116095343-51962f7d"
+        },
+        {
+            "id": "T-1794797623958-887",
+            "projectName": "ดึงข้อมูล PM 2.5",
+            "taskType": "เก็บข้อมูลลง Database (Direct API)",
+            "status": "success",
+            "timestamp": "2026-11-16 09:53:43",
+            "count": 32,
+            "details": "DB: committed (32 สถานี PM 2.5); Direct API; batch: pm25:php7000-20261116095343-dad8afcf"
+        },
+        {
+            "id": "T-1794797623943-311",
+            "projectName": "ดึงข้อมูลภัยแล้ง",
+            "taskType": "เก็บข้อมูลลง Database (Direct API)",
+            "status": "success",
+            "timestamp": "2026-11-16 09:53:43",
+            "count": 36,
+            "details": "DB: committed (36 อ่างเก็บน้ำ); Direct API; batch: drought:php7000-20261116095343-58a3bc59"
+        },
+        {
+            "id": "T-1794797623929-696",
+            "projectName": "ดึงข้อมูลระดับน้ำ",
+            "taskType": "เก็บข้อมูลลง Database (Direct API)",
+            "status": "success",
+            "timestamp": "2026-11-16 09:53:43",
+            "count": 25,
+            "details": "DB: committed (25 สถานีน้ำ + 194 สถานีฝน); Direct API; batch: water:php7000-20261116095343-86d52910"
+        },
+        {
             "id": "T-1794795889968-672",
             "projectName": "ดึงข้อมูลเรื่องร้องเรียน",
             "taskType": "เก็บข้อมูลลง Database (Direct API)",
@@ -413,72 +449,36 @@
             "timestamp": "2026-11-06 13:01:51",
             "count": 32,
             "details": "DB: saved; Excel: queued; batch: pm25:77d07fd2-70b0-45c8-a7a9-aea3d339c9b7"
-        },
-        {
-            "id": "T-1793944895338-461",
-            "projectName": "ดึงข้อมูลภัยแล้ง",
-            "taskType": "เก็บข้อมูลลง Database",
-            "status": "success",
-            "timestamp": "2026-11-06 13:01:35",
-            "count": 36,
-            "details": "DB: saved; Excel: queued; batch: drought:305a7f2e-a296-4bfd-8383-e614f87955c5"
-        },
-        {
-            "id": "T-1793944863574-315",
-            "projectName": "ดึงข้อมูลระดับน้ำ",
-            "taskType": "เก็บข้อมูลลง Database",
-            "status": "success",
-            "timestamp": "2026-11-06 13:01:03",
-            "count": 24,
-            "details": "DB: saved; Excel: queued; batch: water:98f4e8fa-8cbb-4406-b6a7-14c2a42283b4"
-        },
-        {
-            "id": "T-1793944858258-731",
-            "projectName": "ดึงข้อมูลน้ำฝน",
-            "taskType": "เก็บข้อมูลลง Database",
-            "status": "success",
-            "timestamp": "2026-11-06 13:00:58",
-            "count": 196,
-            "details": "DB: saved; Excel: queued; batch: rainfall:a6bc48b9-d633-4ffa-bc44-c4d995b21915"
-        },
-        {
-            "id": "T-1793943119468-801",
-            "projectName": "ดึงข้อมูลน้ำฝน",
-            "taskType": "เก็บข้อมูลลง Database",
-            "status": "success",
-            "timestamp": "2026-11-06 12:31:59",
-            "count": 196,
-            "details": "DB: saved; Excel: queued; batch: rainfall:07b6cdf2-c31c-4c19-b312-6b3eff210e5a"
         }
     ],
     "projectStats": {
         "waterLevel": {
-            "lastFetchSuccess": "2026-11-16 09:24:45",
+            "lastFetchSuccess": "2026-11-16 09:53:43",
             "lastFetchStatus": "Success",
-            "lastFetchMessage": "DB: committed (25 สถานีน้ำ + 194 สถานีฝน); Direct API; batch: water:php7000-20261116092445-f2962014",
+            "lastFetchMessage": "DB: committed (25 สถานีน้ำ + 194 สถานีฝน); Direct API; batch: water:php7000-20261116095343-86d52910",
             "lastFetchMode": "Database",
-            "rowCountSaved": 83421
+            "rowCountSaved": 83446
         },
         "drought": {
-            "lastFetchSuccess": "2026-11-16 09:24:46",
+            "lastFetchSuccess": "2026-11-16 09:53:43",
             "lastFetchStatus": "Success",
-            "lastFetchMessage": "DB: committed (36 อ่างเก็บน้ำ); Direct API; batch: drought:php7000-20261116092446-9095109e",
+            "lastFetchMessage": "DB: committed (36 อ่างเก็บน้ำ); Direct API; batch: drought:php7000-20261116095343-58a3bc59",
             "lastFetchMode": "Database",
-            "rowCountSaved": 69748
+            "rowCountSaved": 69784
         },
         "pm25": {
-            "lastFetchSuccess": "2026-11-16 09:24:46",
+            "lastFetchSuccess": "2026-11-16 09:53:43",
             "lastFetchStatus": "Success",
-            "lastFetchMessage": "DB: committed (32 สถานี PM 2.5); Direct API; batch: pm25:php7000-20261116092446-bdfdff60",
+            "lastFetchMessage": "DB: committed (32 สถานี PM 2.5); Direct API; batch: pm25:php7000-20261116095343-dad8afcf",
             "lastFetchMode": "Database",
-            "rowCountSaved": 119615
+            "rowCountSaved": 119647
         },
         "complaints": {
-            "lastFetchSuccess": "2026-11-16 09:24:49",
+            "lastFetchSuccess": "2026-11-16 09:53:43",
             "lastFetchStatus": "Success",
-            "lastFetchMessage": "DB: committed (60 เรื่องร้องเรียน); Direct API; batch: complaints:php7000-20261116092449-ed0fbde6",
+            "lastFetchMessage": "DB: committed (60 เรื่องร้องเรียน); Direct API; batch: complaints:php7000-20261116095343-51962f7d",
             "lastFetchMode": "Database",
-            "rowCountSaved": 29587
+            "rowCountSaved": 29647
         }
     }
 }

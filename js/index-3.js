@@ -1546,19 +1546,18 @@ const socket = typeof io !== 'undefined' ? io() : null;
         zoomControl: true
       });
 
-      // CartoDB Voyager Basemap (CDN-backed, avoids tile.openstreetmap.org 403 Referer blocks) + Esri fallback
-      const primaryTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        subdomains: 'abcd',
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      // Esri World Street Map Basemap (Public CDN, zero API key required) + OpenTopoMap fallback
+      const primaryTiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, HERE, Garmin, USGS, Intermap, INCREMENT P, NRCan, Esri Japan, METI, Esri China (Hong Kong), Esri Korea, Esri (Thailand), NGCC, (c) OpenStreetMap contributors',
         maxZoom: 19
       });
       let fallbackActivated = false;
       primaryTiles.on('tileerror', () => {
         if (fallbackActivated) return;
         fallbackActivated = true;
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-          attribution: 'Tiles &copy; Esri',
-          maxZoom: 19
+        L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+          attribution: 'Map data: &copy; OpenStreetMap contributors, SRTM | Map style: &copy; OpenTopoMap',
+          maxZoom: 17
         }).addTo(gisMap);
       });
       primaryTiles.addTo(gisMap);

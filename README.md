@@ -1,93 +1,145 @@
-# Water System
+# Water_System2 — ระบบบูรณาการข้อมูลภัยพิบัติและเรื่องร้องเรียน อบจ.ลำปาง
 
-ระบบข้อมูลน้ำ ฝน อ่างเก็บน้ำ PM2.5 และเรื่องร้องเรียน ใช้ Node.js / Express / MySQL และ Chrome Extensions
+ระบบติดตามสถานการณ์น้ำ ปริมาณฝน อ่างเก็บน้ำ/ภัยแล้ง ฝุ่น PM 2.5 และเรื่องร้องเรียน Traffy Fondue จังหวัดลำปาง  
+ทำงานด้วย **PHP 100% + MySQL (`water_system2`, 10 ตาราง) + `curl_multi` Parallel Collector + Smart Sleep Scheduler + GitHub Actions Cloud Collector** (แยกขาดจากระบบเดิมบน Port 3000 และ **ไม่ต้องใช้ Chrome Extension**)
 
-## เริ่มใช้งาน
+---
 
-1. ใช้ `.env` เดิมสำหรับ `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`, `DB_NAME` และ SMTP
-2. ติดตั้ง dependency ด้วย `npm.cmd ci` (Windows PowerShell ใช้ `npm.cmd` หาก `npm.ps1` ถูกบล็อก)
-3. รัน `node scripts/migrate.mjs` เพื่อสร้างตารางเพิ่มเติม โดยไม่ลบหรือแก้ข้อมูลเก่า
-4. รัน `npm.cmd start` หรือ `node --expose-gc server.js`
-5. ครั้งแรกเปิดลิงก์ `setup.html#...` ที่เซิร์ฟเวอร์แสดง บนเครื่องเซิร์ฟเวอร์ กรอกอีเมล/ชื่อผู้ใช้และรหัสผ่านอย่างน้อย 12 ตัวอักษรเอง
-6. เข้าสู่ระบบที่ `http://localhost:7000/login.html`
+## จุดเด่นของระบบ (v2 + Subdomain 24/7 Ready)
 
-ค่าเริ่มต้นรับการเชื่อมต่อบน `127.0.0.1` เท่านั้น การใช้งานผ่านเครือข่ายต้องกำหนด `HOST`, `ALLOWED_ORIGINS` และใช้ HTTPS พร้อม `COOKIE_SECURE=true` ให้เหมาะกับ deployment
+- **⚡ Direct PHP API (`curl_multi`):** ดึงข้อมูล 5 ด้านพร้อมกันแบบ Server-to-Server จบใน ~1.5–4 วินาที และแยก Timeout ของ Traffy ออกจาก 4 ด้านหลัก
+- **📊 ความแม่นยำตรงตารางต้นทาง (Shared Transformer [`php_server/collectors_transform.php`](php_server/collectors_transform.php)):**
+  - สถานะระดับน้ำ `"ปกติ"` → `"น้ำปกติ"` (แก้กรณีข้อมูลคลาดเคลื่อนระหว่าง Direct / GitHub Sync)
+  - จัดรูปแบบชื่ออำเภอ จ.ลำปาง ไม่ให้ซ้ำคำว่า `"ลำปาง"` (`format_lampang_amphoe`)
+  - ดึง **ฝนสะสม 3 วัน (`rain3d`)** ลงคอลัมน์ `forecast_rain_24h_mm` ตรงกับชุดข้อมูลเดิม
+  - คงค่า `pm25_avg_24h = null` เมื่อสถานีไม่มีข้อมูลจริง (ไม่แทนด้วย `0`)
+- **📋 System Log Center v2 (`tbl_system_logs`):**
+  - แสดงสถานะ **สำเร็จ / บางส่วน / ไม่สำเร็จ + วัน-เวลาที่ทำงานชัดเจน**
+  - **Heatmap 48 ช่องรายวัน** (`GET /api/system-logs/heatmap`)
+  - **Auto-Retry Queue** แบบ Non-blocking เมื่อบางโมดูลล้มเหลว (`POST /api/system-logs/retry`)
+  - **Upstream Data Freshness Monitor:** แจ้งเตือน "ข้อมูลต้นทางค้าง" เมื่อเกิน **6 ชม.** (น้ำ/ฝน/PM 2.5) หรือ **36 ชม.** (อ่างเก็บน้ำรายวัน) ผ่าน `GET /api/data-freshness`
+  - **Notification & Export Audit Logs + Export CSV** (`GET /api/system-logs/export`)
+- **🛡️ การบริหารความเสี่ยง Server 24 ชม. (Subdomain / Folder Hosting):**
+  - ไฟล์ `.htaccess` ป้องกันการเข้าถึงความลับ 4 จุด (`./`, `php_server/`, `cloud_snapshots/`, `runtime/`)
+  - `with_file_lock()` & `update_json_file_atomic()` ป้องกันไฟล์ JSON พังจากการเขียนชนกัน
+  - **Log Rotation (5 MB) + Housekeeping ลบ Log เก่าเกิน 30 วันอัตโนมัติ**
+  - `GET /api/health` (`endpoint.php?r=/api/health`) สำหรับ Uptime Monitor
+  - `server_setup.php` ซ่อนรหัสผ่าน MySQL และยืนยันรหัสเดิมก่อนแก้ไขจาก IP ภายนอก
+- **🔐 Session & Traffy Direct API:**
+  - **Sliding Session (`AUTH_SESSION_DAYS=30`)** ต่ออายุ Cookie `water_session_7000` (`HttpOnly; SameSite=Strict`) อัตโนมัติเมื่อมีการใช้งาน (ตั้งปิด/เปิดการบังคับ Login ผ่าน `WATER_PHP_AUTH_ENFORCE`)
+  - รองรับ Traffy Public API, `org_id`/`uuid` สาธารณะ, LINE Token ใน `#traffySessionPanel` (แจ้งเตือนล่วงหน้าเมื่อเหลือน้อยกว่า 48 ชม.) และพร้อมต่อยอด Traffy Exchange API / Webhook
 
-## สิทธิ์
+---
 
-- **admin**: จัดการบัญชี อุปกรณ์ และการตั้งค่าแจ้งเตือน รวมถึงคำสั่งเจ้าหน้าที่
-- **operator**: ดูข้อมูล สั่งเก็บข้อมูล ตั้งเวลา ติดตามเหตุ และลองงานที่ล้มเหลวใหม่
-- **viewer**: ดูข้อมูลเท่านั้น
-- **collector**: กุญแจเฉพาะ Extension ส่งข้อมูล/heartbeat ได้ ไม่สามารถอ่านข้อมูลระบบหรือเปลี่ยนการตั้งค่า
+## เริ่มใช้งานบนเครื่อง (Localhost Port 7000)
 
-บัญชีใช้รหัสผ่านที่ผ่าน scrypt พร้อม salt แยกรายคน เซสชันเก็บในหน่วยความจำ มีอายุ 8 ชั่วโมง และยกเลิกเมื่อรีสตาร์ต รหัสอุปกรณ์เก็บเฉพาะ hash ฝั่งเซิร์ฟเวอร์ ข้อมูลใน `runtime/security/` ต้องจำกัดสิทธิ์ไฟล์และรวมอยู่ในแผนสำรองของผู้ดูแล
+1. ตรวจสอบ MySQL และไฟล์ `.env` (ตั้ง `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`, `DB_NAME=water_system2`)
+2. เริ่มเว็บเซิร์ฟเวอร์ PHP:
+   - เปิดไฟล์ `start_php_7000.bat` หรือรัน:
+     ```powershell
+     C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe -S 127.0.0.1:7000 php_server\router.php
+     ```
+3. (ไม่บังคับ) เปิด Smart Sleep Scheduler 24 ชม. ในโหมด CLI:
+   ```powershell
+   C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe php_server\scheduler.php
+   ```
+4. เปิดเบราว์เซอร์:
+   - Dashboard & System Log Center: `http://127.0.0.1:7000/index.html`
+   - คู่มือใช้งานและชุดทดสอบสดบนหน้าเว็บ: `http://127.0.0.1:7000/guide.html`
+   - ตั้งค่า Gmail SMTP & LINE Messaging API: `http://127.0.0.1:7000/notification.html`
 
-อีเมล/ชื่อผู้ใช้สำหรับ Login แยกจาก SMTP สำหรับส่งแจ้งเตือน ไม่ต้องส่งรหัสผ่านลงแชท
+---
 
-## จับคู่ Chrome Extensions หลังอัปเดต
+## Step-by-Step Push โค้ดขึ้น GitHub (`PakaponTim/Water_System2`)
 
-1. เปิด `chrome://extensions` และกด Reload ของ `01System_Water` และ `04ext_TraffyLP`
-2. เปิดหน้าตัวเลือก (Extension options) ของแต่ละตัว
-3. กำหนด server URL แล้วใช้บัญชีผู้ดูแลเพื่อจับคู่ รหัสผ่านไม่ถูกบันทึกใน Extension
-4. อนุญาตการเข้าถึงเซิร์ฟเวอร์ และโหลดหน้าแหล่งข้อมูลใหม่
-5. ตรวจสถานะเชื่อมต่อบน Dashboard สามารถเพิกถอนกุญแจที่หน้า **จัดการบัญชี**
+> ⚠️ **สำคัญก่อน Push:** ระบบ GitHub Actions (`.github/workflows/collect_every_30min.yml`) จะ Commit ไฟล์เข้า `cloud_snapshots/` บน Branch `main` ทุก 30 นาที **จึงควร Pull Rebase ก่อน Push เสมอ** และห้าม Push ไฟล์ความลับ (`.env`, `runtime/`, `deploy_server/`, `*.zip`)
 
-## การบันทึกและกู้คืน
-
-- แต่ละ request ใช้ `X-Ingest-Key` เดิมเมื่อลอง request เดิมใหม่ ต้องไม่ใช้ key เดียวกับข้อมูลคนละชุด
-- Ledger `app_ingest_batches` และแถวข้อมูล commit ใน transaction เดียวกัน ป้องกันการบันทึกซ้ำเมื่อไม่ทราบผล commit
-- บันทึก MySQL ก่อน แล้วเก็บงาน Excel ลง outbox บนดิสก์ เขียนรวมตามประเภททุก 30 วินาที
-- `database: saved, excel: queued` หมายถึง DB สำเร็จแต่ Excel ยังรอ ไม่ใช่ทั้งสองปลายทางสำเร็จแล้ว
-- Excel ใช้ไฟล์ชั่วคราวแล้ว rename และมีชีตซ่อน `_ingest_batches` ป้องกันการเขียน batch เดิมซ้ำหลังรีสตาร์ต
-- หากไฟล์ Excel เปิดค้าง งานยังอยู่ในคิว ปิดไฟล์แล้วกด **ลองงานสำรองอีกครั้ง** ที่ `/operations.html`
-- ถ้า DB ไม่สำเร็จ ระบบพยายามสำรอง Excel และเก็บ payload ไว้ใน `runtime/ingest-recovery.json` ให้เจ้าหน้าที่ส่งเข้าฐานข้อมูลอีกครั้งได้
-- การเก็บ payload ที่ล้มเหลวไม่ใช่การย้อนดึงข้อมูลที่ไม่เคยได้รับจากต้นทาง ฟังก์ชัน backfill ต้นทางย้อนหลังยังไม่มี
-
-## นิยามข้อมูล
-
-รายละเอียดอยู่ใน `/api/data-definitions` และ [บันทึกการปรับปรุง](docs/implementation-2026-09-07.md)
-
-- `recorded_at` เป็นเวลารับเข้าระบบ ไม่ใช่เวลาวัดต้นทาง
-- ชื่อคอลัมน์เดิม `forecast_rain_24h_mm` ยังคงไว้เพื่อไม่เปลี่ยนข้อมูลเก่า แต่ scraper ที่ตรวจพบอ่าน **ฝนสะสมย้อนหลัง 3 วัน** API Dashboard ใช้ชื่อ `rainfall_accum_3d_mm`
-- ไม่บวกฝนรายวันกับฝนสะสม 3 วัน เพราะช่วงเวลาซ้อนกัน
-- ปริมาณน้ำในอ่างรายวันรวมค่าล่าสุดของแต่ละอ่าง ไม่รวมทุกรอบของวัน
-- ประวัติสถานะเรื่องร้องเรียนเริ่มบันทึกใน `app_complaint_events` หลังอัปเดตนี้
-- การตรวจข้อมูลขาดใช้ปฏิทิน Asia/Bangkok สถานีอ้างอิงจากประวัติที่มี วันปัจจุบันแสดงว่ายังรอข้อมูล
-
-## โครงสร้าง
-
-```text
-server.js                       ประกอบระบบและ API เดิม
-backend/collectors/              ตัวดึงข้อมูลเว็บไซต์
-backend/repositories/            MySQL transaction และ Excel
-backend/services/                สิทธิ์ คิว cache metrics นิยามข้อมูล
-backend/routes/                  รับข้อมูลและติดตามงาน
-backend_ui/                      หน้าใช้งานจริง
-backend_ui/js/                   JavaScript ที่แยกจากหน้า HTML เดิม
-backend_ui/css/                  CSS ที่แยกจากหน้า HTML เดิม
-01System_Water/                  Extension ข้อมูลสิ่งแวดล้อม
-04ext_TraffyLP/                  Extension เรื่องร้องเรียน
-tests/                          ทดสอบสิทธิ์ transaction คิว และนิยามข้อมูล
-scripts/                        build, migration, benchmark
-runtime/                        ข้อมูลภายในและผล benchmark ไม่เปิดผ่านเว็บ
-.work-backups/                   สำเนา source ก่อนปรับปรุง ไม่เปิดผ่านเว็บ
+### ขั้นตอนที่ 1: ตรวจสอบสถานะไฟล์และความปลอดภัยก่อน Push
+```powershell
+cd D:\Water_System2
+C:\laragon\bin\git\bin\git.exe status --short
 ```
+- ตรวจให้แน่ใจว่าไม่มีไฟล์ `.env`, `runtime/`, `deploy_server/` หรือไฟล์รหัสผ่านติดในรายการเปลี่ยนแปลง
+- หาก `task_history.json` หรือ `config.json` เปลี่ยนแปลงจากการรันทดสอบอัตโนมัติในเครื่องและยังไม่ต้องการรวมใน Commit ให้รีเซ็ตก่อน:
+  ```powershell
+  C:\laragon\bin\git\bin\git.exe checkout -- task_history.json config.json
+  ```
 
-`src/`, `index.html` ที่ root และ `vite.config.js` เป็นชุดเดิม ยังเก็บไว้ แต่ `npm.cmd dev` ใช้ Express ที่มีการตรวจสิทธิ์แล้ว `npm.cmd build` สร้างเฉพาะไฟล์ UI ที่อนุญาตใน `dist/water-ui` ห้ามเปิด UI เป็น static public site เพื่อเลี่ยงการตรวจสิทธิ์
+### ขั้นตอนที่ 2: ดึง Snapshot ล่าสุดจาก GitHub มารวมก่อน (`pull --rebase`)
+```powershell
+C:\laragon\bin\git\bin\git.exe pull --rebase --autostash origin main
+```
+- ช่วยป้องกัน Error `! [rejected] main -> main (non-fast-forward)` เมื่อ GitHub Actions Bot เพิ่งบันทึก Snapshot รอบล่าสุดไว้บน GitHub
 
-## ตรวจสอบ
+### ขั้นตอนที่ 3: Stage, Commit และ Push ขึ้น GitHub
+```powershell
+# 1. Stage ไฟล์โค้ด คู่มือ การตั้งค่าความปลอดภัย และชุดทดสอบ
+C:\laragon\bin\git\bin\git.exe add -A
+
+# 2. สร้าง Commit
+C:\laragon\bin\git\bin\git.exe commit -m "feat(v2): system log center, 24/7 safeguards, traffy direct api & updated manual"
+
+# 3. Push ขึ้น GitHub
+C:\laragon\bin\git\bin\git.exe push -u origin main
+```
+*(หรือหลัง Commit แล้ว สามารถดับเบิ้ลคลิก **`push_to_github.bat`** ซึ่งจัดการ `pull --rebase --autostash` และ `push` ให้ในตัว)*
+
+- หากขึ้นถาม Username / Password บน Windows:
+  - **Username:** `PakaponTim`
+  - **Password:** สร้าง **Personal Access Token (Classic)** ที่ [github.com/settings/tokens/new](https://github.com/settings/tokens/new) โดยติ๊กช่อง **`repo`** และ **`workflow`** แล้วนำรหัส `ghp_...` มาวางช่อง Password
+
+### ขั้นตอนที่ 4: ยืนยันผลบน GitHub & Subdomain Server
+1. เปิดแท็บ **Actions** บน GitHub → เลือก **Water_System2 Cloud Collector (Every 30 Minutes)** → กด **Run workflow** เพื่อทดสอบให้ขึ้นเครื่องหมายถูกสีเขียว
+2. (กรณีมี Subdomain Server แล้ว) เข้า **Settings → Secrets and variables → Actions** เพิ่ม Secret ชื่อ `WATER_SERVER_CRON_URL` ชี้ไปยัง `https://your-subdomain/Water_System2/cron.php`
+3. สร้างแพ็กเกจปลอดความลับสำหรับนำไปแตกไฟล์วางบน Subdomain Server:
+   ```powershell
+   C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe php_server\build_server_package.php
+   ```
+   จะได้โฟลเดอร์ `deploy_server/Water_System2/` และไฟล์ `deploy_server/Water_System2_Server_Deploy.zip` พร้อมวางบน Server แล้วเปิด `server_setup.php`
+
+---
+
+## ชุดคำสั่งทดสอบระบบทั้งหมด (Verification Suite)
 
 ```powershell
-npm.cmd test
-npm.cmd run check
-npm.cmd run build
-npm.cmd run benchmark
+# 1. ตรวจ Syntax ของ PHP และ JS
+C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe -l php_server\api.php
+C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe -l php_server\collectors.php
+C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe -l php_server\system_log.php
+C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe -l server_setup.php
+node --check js\index-3.js
+node --check js\index-4.js
+node --check js\control-2.js
 
-# ทดสอบกับ MySQL โดยสร้าง schema ชั่วคราวแยกจากข้อมูลจริง แล้วลบเฉพาะ schema ทดสอบ
-$env:WATER_DB_TEST='1'
-node --test tests/*.test.js
+# 2. รัน Automated Test Suites (System v2 + Traffy & Session E2E)
+C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe tests\verify_system_v2.php
+C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe tests\verify_traffy_session_e2e.php
+
+# 3. สร้างและตรวจความปลอดภัยแพ็กเกจ Deploy (ยืนยัน 0 Secrets)
+C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe php_server\build_server_package.php
 ```
 
-Benchmark อ่านฐานข้อมูลจริง แต่เขียน Excel เฉพาะไฟล์ทดสอบใน temporary directory ไม่เขียนทับ workbook จริง
+---
 
-ยังต้องทดสอบการจับคู่ Extension และรอบเก็บข้อมูลกับหน้าเว็บต้นทางจริงหลังผู้ดูแลตั้งค่าบัญชี ไม่ควรใช้ความสำเร็จของ unit/integration tests แทนการตรวจนี้
+## โครงสร้างไฟล์หลักของระบบ (PHP v2)
+
+```text
+php_server/
+  config.php                 การตั้งค่า, .env/db_config, Schema 10 ตาราง, File Lock & Rotation
+  auth.php                   Sliding Session 30 วัน, Cookies, Device Pairing
+  collectors.php             curl_multi 5 APIs + Traffy Session/JWT Tester
+  collectors_transform.php   ตัวแปลงมาตรฐานข้อมูล (ใช้ร่วมกันทั้ง Direct & GitHub Sync)
+  system_log.php             System Log Center v2, Heatmap 48 ช่อง, Retry Queue, Freshness, Health
+  notifier.php               Gmail SMTP + LINE Messaging API + Operational Alerts
+  scheduler.php              Smart Sleep CLI Daemon
+  api.php                    REST API หลักทุกเส้นทาง + CSV Export
+  github_collect_snapshot.php  สคริปต์ดึงข้อมูลบน GitHub Actions
+  github_sync_to_mysql.php     ซิงก์ Snapshot จาก GitHub ลง MySQL (Contents API / Raw Fallback)
+  build_server_package.php     สร้างแพ็กเกจ deploy_server/Water_System2 + .zip ปลอดความลับ
+endpoint.php / index.php     ตัวชี้เส้นทางสำหรับ Drop-in Subfolder / Subdomain
+server_setup.php             Wizard ตั้งค่า MySQL + ตรวจสอบความปลอดภัย Server 24 ชม.
+cron.php / worker.php        จุดเรียกเก็บข้อมูลและตัวจัดการ Web Worker
+guide.html                   คู่มือการใช้งานและหน้าทดสอบสด Interactive Checklist
+tests/                       Automated E2E & Integration Test Suites
+.htaccess                    ป้องกันไฟล์ลับข้ามโฟลเดอร์ (Root, php_server, cloud_snapshots, runtime)
+```

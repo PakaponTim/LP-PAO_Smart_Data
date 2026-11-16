@@ -43,32 +43,33 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
         <div class="lg:col-span-2 space-y-3">
           <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs font-semibold">
-            ✅ แยกขาดจากระบบเก่า (Port 3000) · ใช้ฐานข้อมูล water_system2 · ไม่ต้องเปิด Chrome Extension
+            ✅ แยกขาดจากตัวเก่า (Port 3000) · ฐานข้อมูล water_system2 (10 ตาราง) · Subdomain/Folder 24 ชม. · ไม่ใช้ Chrome Extension
           </span>
           <h2 class="text-2xl sm:text-3xl font-extrabold leading-snug">
             ระบบบูรณาการข้อมูลภัยพิบัติและเรื่องร้องเรียน อบจ.ลำปาง (เวอร์ชัน 2)
           </h2>
           <p class="text-sm text-slate-200 leading-relaxed">
-            ออกแบบใหม่ให้ทำงานด้วย <strong>PHP 100%</strong> ดึงข้อมูลตรงจาก Public JSON API ทั้ง 5 ด้านพร้อมกันด้วย
+            ออกแบบใหม่ให้ทำงานด้วย <strong>PHP 100%</strong> ดึงข้อมูลตรงจาก Server-to-Server API ทั้ง 5 ด้านพร้อมกันด้วย
             <code class="bg-black/30 px-1.5 py-0.5 rounded text-amber-300">curl_multi</code> จบภายใน ~3 วินาที
-            ใช้ระบบนาฬิกาปลุก <strong>Smart Sleep (กิน Bandwidth 0 Byte ขณะรอเวลา)</strong> พร้อมระบบแจ้งเตือนวิกฤต
-            <strong>Gmail SMTP + LINE Messaging API</strong> ทันทีเมื่อพบเหตุฉุกเฉิน และมี <strong>GitHub Actions</strong> สำรองข้อมูลทุก 30 นาที
+            ใช้ระบบ <strong>Smart Sleep (กิน Bandwidth 0 Byte ขณะรอเวลา)</strong>, ศูนย์บันทึก <strong>System Log Center v2</strong>
+            (Heatmap 48 ช่อง, คิว Retry อัตโนมัติ, แจ้งเตือนข้อมูลต้นทางค้าง 6 ชม./36 ชม.), ระบบป้องกันความเสี่ยง 24 ชม. (<code>.htaccess</code> 4 ชั้น + Lock + Log Rotation),
+            พร้อม <strong>GitHub Actions Cloud Collector</strong> ทุก 30 นาที
           </p>
           <div class="flex flex-wrap gap-2 pt-2 text-xs">
-            <a href="./index.html" class="px-4 py-2 rounded-xl bg-white text-emerald-900 font-bold hover:bg-emerald-50 transition">📊 Dashboard หลัก</a>
+            <a href="./index.html" class="px-4 py-2 rounded-xl bg-white text-emerald-900 font-bold hover:bg-emerald-50 transition">📊 Dashboard &amp; System Log Center</a>
             <a href="./control.html" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-semibold transition">🎛️ แผงควบคุมการดึงข้อมูล</a>
             <a href="./notification.html" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 font-semibold transition">🔔 ตั้งค่า Gmail &amp; LINE แจ้งเตือน</a>
             <a href="./server_setup.php" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 font-semibold transition">⚙️ ตั้งค่า Database บน Server</a>
-            <a href="./operations.html" class="px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 font-semibold transition">🛠️ ติดตามงาน &amp; คุณภาพข้อมูล</a>
+            <a href="./endpoint.php?r=/api/health" target="_blank" class="px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 font-semibold transition">🩺 ตรวจ /api/health 24 ชม.</a>
           </div>
         </div>
         <div class="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-4 space-y-2 text-xs">
-          <div class="font-bold text-amber-300 text-sm mb-2">📌 จุดเด่นของระบบใหม่</div>
+          <div class="font-bold text-amber-300 text-sm mb-2">📌 จุดเด่นของระบบใหม่ (v2)</div>
           <div class="flex items-start gap-2"><span>⚡</span><span>ดึง 5 API พร้อมกันใน <strong>~1.5–3 วินาที</strong> ไม่ต้องเปิด Chrome</span></div>
-          <div class="flex items-start gap-2"><span>😴</span><span><strong>Smart Sleep:</strong> พักรอ 0 Byte จนถึงเวลาในตาราง</span></div>
-          <div class="flex items-start gap-2"><span>📧</span><span><strong>Gmail SMTP + LINE:</strong> เตือนผู้บริหารทันทีหลังดึงข้อมูล</span></div>
-          <div class="flex items-start gap-2"><span>☁️</span><span><strong>GitHub Actions:</strong> เก็บสำรองทุก 30 นาทีแม้ Server ดับ</span></div>
-          <div class="flex items-start gap-2"><span>📁</span><span><strong>Zero-Admin Drop-in:</strong> โยนโฟลเดอร์ลง Server ใช้ได้ทันที</span></div>
+          <div class="flex items-start gap-2"><span>📋</span><span><strong>System Log Center v2:</strong> Heatmap 48 ช่อง + Auto-Retry + Export CSV</span></div>
+          <div class="flex items-start gap-2"><span>🛡️</span><span><strong>24/7 Safeguards:</strong> <code>.htaccess</code> กันโฟลเดอร์ลับ + Lock + Rotation 5MB</span></div>
+          <div class="flex items-start gap-2"><span>📧</span><span><strong>Gmail SMTP + LINE:</strong> เตือนเหตุวิกฤต + ข้อมูลต้นทางค้าง 6h/36h</span></div>
+          <div class="flex items-start gap-2"><span>☁️</span><span><strong>GitHub Actions + Drop-in Zip:</strong> อัปโหลดขึ้น Subdomain พร้อมใช้ทันที</span></div>
         </div>
       </div>
     </section>
@@ -145,7 +146,7 @@
           <rect x="560" y="88" width="205" height="106" rx="12" fill="#ffffff" stroke="#0284c7" stroke-width="2" />
           <text x="662" y="116" text-anchor="middle" font-size="14" font-weight="700" fill="#0c4a6e">🗄️ MySQL Database</text>
           <text x="662" y="136" text-anchor="middle" font-size="12" font-weight="700" fill="#0284c7">water_system2</text>
-          <text x="662" y="156" text-anchor="middle" font-size="10" fill="#64748b">9 ตาราง (แยกขาดจากตัวเก่า)</text>
+          <text x="662" y="156" text-anchor="middle" font-size="10" fill="#64748b">10 ตาราง (รวม tbl_system_logs)</text>
           <text x="662" y="174" text-anchor="middle" font-size="10" fill="#64748b">บันทึก Batch ป้องกันข้อมูลซ้ำ</text>
 
           <rect x="560" y="220" width="205" height="114" rx="12" fill="#ffffff" stroke="#10b981" stroke-width="2" />
@@ -180,6 +181,19 @@
           <line x1="765" y1="155" x2="846" y2="205" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrowRed)" />
           <line x1="765" y1="285" x2="846" y2="300" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow)" />
         </svg>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5 text-xs">
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 space-y-1.5">
+          <div class="font-bold text-emerald-900 text-sm">📋 System Log Center v2</div>
+          <p class="text-slate-600">บันทึกผลสำเร็จ/ล้มเหลวของทุกด้าน + เวลารันจริงลง <code>tbl_system_logs</code>, แสดง <strong>Heatmap 48 ช่องรายวัน</strong>, คิว Retry อัตโนมัติแบบไม่บล็อกงานหลัก และ Export CSV Audit Log</p>
+        </div>
+        <div class="rounded-2xl border border-sky-200 bg-sky-50/70 p-4 space-y-1.5">
+          <div class="font-bold text-sky-900 text-sm">🛡️ Subdomain 24/7 Safeguards</div>
+          <p class="text-slate-600">มี <code>.htaccess</code> ป้องกันไฟล์ลับ 4 จุด (Root, <code>runtime/</code>, <code>php_server/</code>, <code>cloud_snapshots/</code>), Atomic File Lock, Log Rotation 5 MB + Housekeeping 30 วัน และ <code>/api/health</code> สำหรับ Uptime Monitor</p>
+        </div>
+        <div class="rounded-2xl border border-purple-200 bg-purple-50/70 p-4 space-y-1.5">
+          <div class="font-bold text-purple-900 text-sm">🔐 Session &amp; Traffy Direct API</div>
+          <p class="text-slate-600">Sliding Session 30 วันต่ออายุอัตโนมัติ (<code>AUTH_SESSION_DAYS</code>), Traffy Dual-Feed (Public API / <code>org_id</code>/<code>uuid</code> / LINE Token ใน UI) และแยก Timeout ไม่ให้ฉุด 4 ด้านหลัก</p>
+        </div>
       </div>
     </section>
 
@@ -190,9 +204,14 @@
           <h2 class="text-xl font-bold text-slate-900">2. ชุดทดสอบระบบแบบโต้ตอบได้ทันที (Interactive Test Checklist)</h2>
           <p class="text-xs text-slate-500 mt-1">กดปุ่มทดสอบแต่ละขั้นตอนจากหน้าคู่มือนี้ได้เลย ระบบจะยิงทดสอบจริงกับเซิร์ฟเวอร์ที่เปิดอยู่และแสดงผลลัพธ์ด้านขวา</p>
         </div>
-        <button onclick="runAllSmokeTests()" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold shadow transition">
-          ▶ ทดสอบเช็กความพร้อมทั้งหมด (ข้อ 1–3)
-        </button>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="runAllSmokeTests()" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold shadow transition">
+            ▶ เช็กความพร้อมระบบทั้งหมด (ไม่กระทบข้อมูล)
+          </button>
+          <button onclick="runTestParallel()" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs sm:text-sm font-bold shadow transition">
+            ⚡ ทดสอบดึงจริง 5 API พร้อมกัน
+          </button>
+        </div>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -206,39 +225,62 @@
             <button onclick="runTestHealth()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold">🔍 ทดสอบ Health</button>
           </div>
 
-          <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
+          <div class="p-4 rounded-2xl border border-sky-200 bg-sky-50/60 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 2: ตรวจสอบนาฬิกา Smart Sleep (<code class="text-xs text-emerald-700">worker.php?action=status</code>)</div>
-              <div class="text-xs text-slate-500">เช็กเวลารอบถัดไป (เช่น 10:30) และยืนยันว่าระหว่างรอใช้ Bandwidth = 0 Byte</div>
+              <div class="font-bold text-sm text-sky-950">ขั้นตอนที่ 2: ตรวจความพร้อม Subdomain &amp; Security 24 ชม. (<code class="text-xs text-sky-700">/api/health</code>)</div>
+              <div class="text-xs text-sky-800">เช็ก <code>.htaccess</code>, พื้นที่ดิสก์, อายุข้อมูลล่าสุด, Worker Alive และคิว Retry</div>
             </div>
-            <button onclick="runTestWorker()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold">⏰ เช็ก Smart Sleep</button>
+            <button onclick="runTestHealth247()" class="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold">🛡️ เช็ก /api/health</button>
           </div>
 
           <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 3: ทดสอบดึง 5 API พร้อมกัน (<code class="text-xs text-amber-700">curl_multi</code>)</div>
-              <div class="text-xs text-slate-500">ยิงดึงน้ำฝน + ระดับน้ำ + อ่างเก็บน้ำ + PM 2.5 + Traffy พร้อมกันในรอบเดียว (~3 วินาที)</div>
+              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 3: ตรวจสอบนาฬิกา Smart Sleep (<code class="text-xs text-emerald-700">/api/worker/status</code>)</div>
+              <div class="text-xs text-slate-500">เช็กเวลารอบถัดไป และยืนยันว่าระหว่างรอใช้ Bandwidth = 0 Byte</div>
+            </div>
+            <button onclick="runTestWorker()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold">⏰ เช็ก Smart Sleep</button>
+          </div>
+
+          <div class="p-4 rounded-2xl border border-indigo-200 bg-indigo-50/60 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div class="font-bold text-sm text-indigo-950">ขั้นตอนที่ 4: ตรวจ System Log Center v2 &amp; ข้อมูลต้นทางค้าง (<code class="text-xs text-indigo-700">/api/system-logs</code>)</div>
+              <div class="text-xs text-indigo-800">ดูสถิติ Heatmap 48 ช่องวันนี้ คิว Retry และสถานะ Freshness (6 ชม./36 ชม.)</div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="runTestSystemLogsV2()" class="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold">📋 เช็ก Log v2</button>
+              <a href="./endpoint.php?r=/api/system-logs/export" target="_blank" class="px-3 py-2 rounded-xl bg-white border border-indigo-300 hover:bg-indigo-100 text-indigo-800 text-xs font-semibold">📥 Export CSV</a>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-2xl border border-teal-200 bg-teal-50/60 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div class="font-bold text-sm text-teal-950">ขั้นตอนที่ 5: ตรวจ Traffy Session &amp; ระบบ Cookie (<code class="text-xs text-teal-700">/api/traffy/session-status</code>)</div>
+              <div class="text-xs text-teal-800">ตรวจสถานะ Traffy Direct API, Token Expiry (&lt;48 ชม.) และ Sliding Session ของระบบ</div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="runTestTraffySession(false)" class="px-3 py-2 rounded-xl bg-white border border-teal-300 hover:bg-teal-100 text-teal-900 text-xs font-semibold">🔐 เช็กสถานะ</button>
+              <button onclick="runTestTraffySession(true)" class="px-3 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold">🧪 ทดสอบต่อ Traffy จริง</button>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 6: ทดสอบดึง 5 API พร้อมกัน (<code class="text-xs text-amber-700">curl_multi</code>)</div>
+              <div class="text-xs text-slate-500">ยิงดึงน้ำฝน + ระดับน้ำ + อ่างเก็บน้ำ + PM 2.5 + Traffy พร้อมกัน (~3 วินาที, แยก Timeout Traffy)</div>
             </div>
             <button onclick="runTestParallel()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold">⚡ ทดสอบ curl_multi</button>
           </div>
 
           <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 4: ทดสอบระบบแจ้งเตือน Gmail SMTP &amp; เกณฑ์วิกฤต</div>
-              <div class="text-xs text-slate-500">ตรวจเกณฑ์ล่าสุดและบันทึกลง <code>tbl_alert_notifications</code> หรือส่ง Test Email</div>
+              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 7: ทดสอบแจ้งเตือน Gmail SMTP &amp; เกณฑ์วิกฤต + Socket Log</div>
+              <div class="text-xs text-slate-500">ตรวจเกณฑ์ล่าสุดและบันทึกลง <code>tbl_alert_notifications</code> / ส่ง Test Email / ยิง Log</div>
             </div>
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
               <button onclick="runTestCheckNotify()" class="px-3 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold">🔔 ตรวจเกณฑ์ทันที</button>
               <button onclick="runTestEmail()" class="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold">📧 ส่ง Test Email</button>
+              <button onclick="runTestSocketLog()" class="px-3 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold">📡 ยิง Log</button>
             </div>
-          </div>
-
-          <div class="p-4 rounded-2xl border border-emerald-200 bg-emerald-50/60 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <div class="font-bold text-sm text-emerald-950">ขั้นตอนที่ 5: ทดสอบการเชื่อมต่อ Real-time Socket.IO</div>
-              <div class="text-xs text-emerald-700">ส่งข้อความทดสอบเข้า Log stream แล้วเปิดดูที่หน้า Control Panel หรือ Dashboard</div>
-            </div>
-            <button onclick="runTestSocketLog()" class="px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold">📡 ยิง Log ทดสอบ</button>
           </div>
         </div>
 
@@ -248,7 +290,7 @@
             <span class="text-xs font-bold text-white">🖥️ ผลการทดสอบ (Live Output)</span>
             <button onclick="clearTestOutput()" class="text-[11px] text-slate-400 hover:text-white">ล้างหน้าจอ</button>
           </div>
-          <pre id="testOutput" class="code-box text-xs leading-relaxed overflow-y-auto flex-1 max-h-[380px] whitespace-pre-wrap">พร้อมทดสอบ... กดปุ่มด้านซ้ายเพื่อเริ่มตรวจสอบระบบได้เลยครับ</pre>
+          <pre id="testOutput" class="code-box text-xs leading-relaxed overflow-y-auto flex-1 max-h-[540px] whitespace-pre-wrap">พร้อมทดสอบ... กดปุ่มด้านซ้ายเพื่อเริ่มตรวจสอบระบบได้เลยครับ</pre>
         </div>
       </div>
     </section>
@@ -379,6 +421,23 @@
           </tbody>
         </table>
       </div>
+
+      <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        <div class="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 space-y-1">
+          <div class="font-bold text-amber-900">⏱️ เกณฑ์เตือน "ข้อมูลต้นทางค้าง" (Upstream Data Freshness)</div>
+          <ul class="list-disc pl-4 text-slate-700 space-y-1">
+            <li><strong>ระดับน้ำ / ปริมาณฝน / PM 2.5:</strong> แจ้งเตือนหากเวลาข้อมูลจาก API ต้นทางไม่อัปเดตเกิน <strong>6 ชั่วโมง</strong> (21,600 วินาที)</li>
+            <li><strong>อ่างเก็บน้ำรายวัน:</strong> แจ้งเตือนหากข้อมูลไม่อัปเดตเกิน <strong>36 ชั่วโมง</strong> (129,600 วินาที)</li>
+          </ul>
+        </div>
+        <div class="rounded-2xl border border-indigo-200 bg-indigo-50/70 p-4 space-y-1">
+          <div class="font-bold text-indigo-900">🧾 บันทึกประวัติระบบ &amp; Audit Log Export</div>
+          <ul class="list-disc pl-4 text-slate-700 space-y-1">
+            <li>ทุกการเก็บข้อมูล, แจ้งเตือน Email/LINE, และ Export รายงาน ถูกบันทึกลง <code>tbl_system_logs</code></li>
+            <li>สามารถดาวน์โหลดเป็นไฟล์ <strong>CSV Audit Log</strong> จากปุ่มบน Dashboard หรือ <code>/api/system-logs/export</code> ได้ทันที</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
     <!-- Section 5: Visual Step-by-Step Deployment & Usage Guide -->
@@ -389,14 +448,37 @@
         <p class="text-xs sm:text-sm text-slate-500 mt-1">ทำตามลำดับ Step 1 → Step 4 ด้านล่างนี้ได้เลยครับ ดูตามภาพจำลองทีละขั้น ไม่ต้องมีสิทธิ์ Admin บน Server</p>
       </div>
 
-      <!-- STEP 1 (Manual Step-by-Step) -->
+      <!-- STEP 1 (Complete Step-by-Step Push GitHub) -->
       <div class="rounded-2xl border-2 border-slate-200 bg-slate-50/70 p-5 space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <div class="inline-flex items-center gap-2 bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-bold mb-1">STEP 1 — MANUAL UPLOAD TO GITHUB</div>
-            <h3 class="text-lg font-bold text-slate-900">วิธีอัปโหลดขึ้น GitHub แบบทำเองทีละขั้น (กรณีรันไฟล์ .bat ไม่ได้)</h3>
+            <div class="inline-flex items-center gap-2 bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-bold mb-1">STEP 1 — STEP-BY-STEP PUSH TO GITHUB</div>
+            <h3 class="text-lg font-bold text-slate-900">ขั้นตอน Push โค้ดขึ้น GitHub อย่างละเอียดและปลอดภัย 100%</h3>
           </div>
           <a href="https://github.com/settings/tokens/new" target="_blank" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold">🔑 เปิดหน้าสร้าง GitHub Token →</a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          <div class="bg-white rounded-xl border border-slate-200 p-3.5 space-y-1.5">
+            <div class="font-bold text-slate-900">① เช็กไฟล์ลับ &amp; .gitignore</div>
+            <p class="text-slate-600">ตรวจด้วย <code>git status</code> ให้แน่ใจว่าไม่มีไฟล์ความลับ (<code>.env</code>, <code>runtime/</code>, <code>deploy_server/</code>, <code>*.zip</code>) ติดเข้าไป</p>
+            <code class="block bg-slate-100 p-1.5 rounded text-[10px] text-slate-800">git status --short</code>
+          </div>
+          <div class="bg-white rounded-xl border border-amber-200 p-3.5 space-y-1.5">
+            <div class="font-bold text-amber-900">② ซิงก์ Snapshot จาก GitHub ก่อน</div>
+            <p class="text-slate-600">GitHub Actions คอมมิต <code>cloud_snapshots/</code> ทุก 30 นาที จึงต้องดึงมาต่อท้ายก่อนเสมอ เพื่อไม่ให้ Push ชนกัน (Non-fast-forward)</p>
+            <code class="block bg-amber-50 p-1.5 rounded text-[10px] text-amber-900">git pull --rebase --autostash origin main</code>
+          </div>
+          <div class="bg-white rounded-xl border border-emerald-200 p-3.5 space-y-1.5">
+            <div class="font-bold text-emerald-900">③ Commit เฉพาะโค้ดที่ทดสอบแล้ว</div>
+            <p class="text-slate-600">สเตจโค้ดและคู่มือแล้วสร้าง Commit (หรือรันทดสอบ <code>verify_system_v2.php</code> ก่อนคอมมิต)</p>
+            <code class="block bg-emerald-50 p-1.5 rounded text-[10px] text-emerald-900">git commit -m "docs &amp; v2 update"</code>
+          </div>
+          <div class="bg-white rounded-xl border border-sky-200 p-3.5 space-y-1.5">
+            <div class="font-bold text-sky-900">④ Push ขึ้น GitHub + เช็ก Actions</div>
+            <p class="text-slate-600">ใช้สคริปต์ <code>push_to_github.bat</code> หรือรันคำสั่งด้านล่าง แล้วเปิดแท็บ <strong>Actions</strong> ดูติ๊กเขียว</p>
+            <code class="block bg-sky-50 p-1.5 rounded text-[10px] text-sky-900">git push -u origin main</code>
+          </div>
         </div>
 
         <!-- Option 1A: PowerShell + Token -->
@@ -511,22 +593,22 @@
           <div class="inline-flex items-center gap-2 bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-bold">STEP 2</div>
           <h3 class="text-lg font-bold text-slate-900">ก๊อปปี้โฟลเดอร์ไปวางบน Server (คัดเฉพาะไฟล์ใช้งาน)</h3>
           <ol class="text-xs sm:text-sm text-slate-600 space-y-2 list-decimal pl-5 leading-relaxed">
-            <li>สร้างโฟลเดอร์ชื่อ <strong><code>Water_System2</code></strong> ในพื้นที่วางเว็บของ Server</li>
-            <li>ก๊อปปี้ <strong>โฟลเดอร์และไฟล์สีเขียว</strong> จากรูปด้านขวาไปวาง (รวมขนาดเล็กมาก ~3 MB)</li>
-            <li><strong>ไม่ต้องก๊อปปี้</strong> โฟลเดอร์ <code>node_modules/</code>, <code>runtime/</code>, <code>scratch/</code> เพราะมีขนาดใหญ่และไม่ได้ใช้ฝั่ง PHP ครับ</li>
+            <li>รัน <code>php php_server/build_server_package.php</code> เพื่อสร้างแพ็กเกจปลอดความลับ (0 Secrets) ที่ <code>deploy_server/Water_System2_Server_Deploy.zip</code> (~4.5 MB)</li>
+            <li>นำโฟลเดอร์ <strong><code>Water_System2</code></strong> ไปวางบน Subdomain / Folder ของ Server (พร้อมไฟล์ป้องกัน <code>.htaccess</code> ทั้ง 4 ชั้น)</li>
+            <li><strong>ไม่ต้องอัปโหลด</strong> โฟลเดอร์ <code>node_modules/</code>, <code>runtime/</code>, <code>scratch/</code> หรือ <code>.env</code> จากเครื่องพัฒนา</li>
           </ol>
         </div>
         <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 p-3 shadow-sm">
           <svg viewBox="0 0 640 220" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
             <rect x="8" y="10" width="300" height="200" rx="12" fill="#f0fdf4" stroke="#4ade80" stroke-width="2"/>
             <text x="158" y="34" text-anchor="middle" font-size="12" font-weight="700" fill="#166534">✅ ก๊อปปี้ไฟล์เหล่านี้ไปวางบน Server</text>
-            <text x="26" y="60" font-size="11" font-weight="700" fill="#1e293b">📁 php_server/ <tspan font-weight="400" fill="#475569">(ระบบหลังบ้าน PHP ทั้งหมด)</tspan></text>
-            <text x="26" y="82" font-size="11" font-weight="700" fill="#1e293b">📁 js/  css/  report_images/ <tspan font-weight="400" fill="#475569">(หน้าตา &amp; รูป)</tspan></text>
-            <text x="26" y="104" font-size="11" font-weight="700" fill="#1e293b">📄 index.php, index.html, guide.html</text>
-            <text x="26" y="126" font-size="11" font-weight="700" fill="#1e293b">📄 control.html, notification.html</text>
-            <text x="26" y="148" font-size="11" font-weight="700" fill="#0369a1">📄 server_setup.php, endpoint.php</text>
-            <text x="26" y="170" font-size="11" font-weight="700" fill="#0369a1">📄 cron.php, worker.php, config.json</text>
-            <text x="26" y="192" font-size="11" font-weight="700" fill="#1e293b">📄 auth-client.js, socketio_client.js, *.png</text>
+            <text x="26" y="58" font-size="11" font-weight="700" fill="#1e293b">📁 php_server/ + cloud_snapshots/ <tspan font-weight="400" fill="#475569">(หลังบ้าน)</tspan></text>
+            <text x="26" y="80" font-size="11" font-weight="700" fill="#1e293b">📁 js/  css/  report_images/ <tspan font-weight="400" fill="#475569">(หน้าตา &amp; รูป)</tspan></text>
+            <text x="26" y="102" font-size="11" font-weight="700" fill="#1e293b">📄 index.php, index.html, guide.html</text>
+            <text x="26" y="124" font-size="11" font-weight="700" fill="#1e293b">📄 control.html, notification.html, login.html</text>
+            <text x="26" y="146" font-size="11" font-weight="700" fill="#0369a1">📄 server_setup.php, endpoint.php</text>
+            <text x="26" y="168" font-size="11" font-weight="700" fill="#0369a1">📄 cron.php, worker.php, config.json</text>
+            <text x="26" y="190" font-size="11" font-weight="700" fill="#065f46">🔒 .htaccess (Root + php_server + runtime)</text>
 
             <rect x="332" y="10" width="300" height="200" rx="12" fill="#fff1f2" stroke="#fb7185" stroke-width="2"/>
             <text x="482" y="34" text-anchor="middle" font-size="12" font-weight="700" fill="#9f1239">❌ ไม่ต้องก๊อปปี้ไป (ข้ามได้เลย)</text>
@@ -548,8 +630,8 @@
           <ol class="text-xs sm:text-sm text-slate-600 space-y-2 list-decimal pl-5 leading-relaxed">
             <li>เปิดเบราว์เซอร์ไปที่หน้าตั้งค่าบน Server:<br/>
               <code class="text-xs bg-white px-2 py-0.5 rounded border border-slate-300 text-sky-700">http://ชื่อเซิร์ฟเวอร์/Water_System2/server_setup.php</code></li>
-            <li>กรอก <strong>Host, Database Name, Username, Password</strong> ของ MySQL บน Server</li>
-            <li>กดปุ่มเขียว <strong>"💾 บันทึกค่าและสร้างตารางฐานข้อมูลอัตโนมัติ"</strong> (ระบบสร้างครบทั้ง 9 ตารางให้อัตโนมัติ)</li>
+            <li>กรอก <strong>Host, Database Name, Username, Password</strong> ของ MySQL บน Server (เมื่อตั้งค่าแล้ว การแก้ไขจากภายนอกต้องยืนยันรหัสผ่านเดิม)</li>
+            <li>กดปุ่มเขียว <strong>"💾 บันทึกค่าและตรวจสอบตารางฐานข้อมูลอัตโนมัติ"</strong> (ระบบสร้างครบทั้ง <strong>10 ตาราง</strong> รวม <code>tbl_system_logs</code> ให้อัตโนมัติ)</li>
             <li>กดปุ่มน้ำเงิน <strong>"🚀 ทดสอบดึงข้อมูล... (cron.php)"</strong> เพื่อดูดข้อมูลชุดแรกเข้า Server</li>
           </ol>
         </div>
@@ -574,7 +656,7 @@
             <text x="36" y="146" font-size="11" fill="#0f172a">user บน Server / ********</text>
 
             <rect x="320" y="122" width="290" height="34" rx="8" fill="#ecfdf5" stroke="#34d399"/>
-            <text x="465" y="143" text-anchor="middle" font-size="11" font-weight="700" fill="#065f46">🟢 สร้างตารางอัตโนมัติครบ 9 ตาราง!</text>
+            <text x="465" y="143" text-anchor="middle" font-size="11" font-weight="700" fill="#065f46">🟢 สร้างตารางอัตโนมัติครบ 10 ตาราง!</text>
 
             <rect x="26" y="170" width="285" height="30" rx="8" fill="#047857"/>
             <text x="168" y="189" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">① กดปุ่ม: 💾 บันทึกและสร้างตารางอัตโนมัติ</text>
@@ -591,10 +673,10 @@
           <div class="inline-flex items-center gap-2 bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-bold">STEP 4</div>
           <h3 class="text-lg font-bold text-slate-900">เปิด Smart Sleep + ตั้งแจ้งเตือน Gmail/LINE แล้วปิดคอมได้เลย</h3>
           <ol class="text-xs sm:text-sm text-slate-600 space-y-2 list-decimal pl-5 leading-relaxed">
-            <li>เปิดลิงก์ <a href="./worker.php?action=start" target="_blank" class="text-emerald-700 font-bold underline"><code>worker.php?action=start</code></a> บน Server 1 ครั้ง เพื่อเปิดระบบนาฬิกาปลุก Smart Sleep</li>
-            <li>เปิดหน้า <a href="./notification.html" target="_blank" class="text-purple-700 font-bold underline"><code>notification.html</code></a> ใส่ <strong>LINE Token + Group ID</strong> และเพิ่มอีเมลผู้บริหารที่ต้องการรับแจ้งเตือน</li>
-            <li>กดปุ่ม <strong>"ทดสอบส่ง E-mail"</strong> เพื่อยืนยันว่าอีเมลเข้าจริง</li>
-            <li><strong>เสร็จสมบูรณ์! ปิดเบราว์เซอร์และปิดคอมพิวเตอร์ของคุณได้เลย</strong> Server จะทำงานต่อ 24 ชม. เองทั้งหมดครับ</li>
+            <li>ตั้งปลุก Server 24 ชม.: เพิ่ม Secret <code>WATER_SERVER_CRON_URL</code> ใน GitHub ชี้มาที่ Subdomain <code>.../cron.php</code> และตั้ง Uptime Monitor ชี้ที่ <a href="./endpoint.php?r=/api/health" target="_blank" class="text-sky-700 font-bold underline"><code>endpoint.php?r=/api/health</code></a> (หรือเปิด <a href="./worker.php?action=start" target="_blank" class="text-emerald-700 font-bold underline"><code>worker.php?action=start</code></a>)</li>
+            <li>เปิดหน้า <a href="./notification.html" target="_blank" class="text-purple-700 font-bold underline"><code>notification.html</code></a> ใส่ <strong>LINE Token + Group ID</strong> และเพิ่มอีเมลผู้บริหารที่ต้องการรับแจ้งเตือน แล้วกดทดสอบส่งอีเมล</li>
+            <li><strong>Traffy Automation:</strong> ระบบดึง Traffy Public API อัตโนมัติโดยไม่ต้องใช้ Chrome Extension (หรือใส่ <code>org_id</code>/<code>uuid</code> / LINE Token ใน UI และต่อยอด Traffy Exchange API <code>get-auth</code> ได้)</li>
+            <li><strong>เสร็จสมบูรณ์! ปิดคอมพิวเตอร์ได้เลย</strong> Server + GitHub Actions จะทำงานเก็บข้อมูลและแจ้งเตือนต่อตลอด 24 ชม.</li>
           </ol>
         </div>
         <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 p-3 shadow-sm">
@@ -651,10 +733,10 @@
     function clearTestOutput() {
       out.textContent = 'พร้อมทดสอบ... กดปุ่มด้านซ้ายเพื่อเริ่มตรวจสอบระบบได้เลยครับ';
     }
-    function apiEndpoint(route) {
+    function apiEndpoint(route, extraParams = '') {
       const p = location.pathname;
       const base = location.origin + p.slice(0, p.lastIndexOf('/') + 1);
-      return base + 'endpoint.php?r=' + encodeURIComponent(route);
+      return base + 'endpoint.php?r=' + encodeURIComponent(route) + (extraParams ? '&' + extraParams : '');
     }
 
     async function runTestHealth() {
@@ -663,6 +745,25 @@
         const res = await fetch(apiEndpoint('/api/system-health'), { cache: 'no-store' });
         const d = await res.json();
         logLine(`✅ HTTP ${res.status} | DB=${d.database?.databaseName} (${d.database?.status}) | Rows=${d.database?.estimatedTotalRows} | curl_multi=${d.extension?.parallelCurlMultiReady}`);
+        return true;
+      } catch (e) {
+        logLine(`❌ Error: ${e.message}`);
+        return false;
+      }
+    }
+
+    async function runTestHealth247() {
+      logLine('⏳ กำลังตรวจ /api/health (Subdomain 24/7 Readiness)...');
+      try {
+        const res = await fetch(apiEndpoint('/api/health'), { cache: 'no-store' });
+        const d = await res.json();
+        const sec = d.security || {};
+        const st = d.storage || {};
+        const wk = d.worker || {};
+        logLine(`✅ HTTP ${res.status} | status=${d.status} | DB=${d.database?.connected ? 'OK' : 'ERR'} (${d.database?.latencyMs}ms) | Worker=${wk.alive ? wk.mode : 'offline'} | .htaccess=(root:${sec.hasRootHtaccess},runtime:${sec.hasRuntimeHtaccess}) | FreeDisk=${st.diskFreeMb}MB | RetryQueue=${st.retryQueueCount}`);
+        if (Array.isArray(d.issues) && d.issues.length) {
+          logLine(`   ⚠️ Notes: ${d.issues.join(' | ')}`);
+        }
         return true;
       } catch (e) {
         logLine(`❌ Error: ${e.message}`);
@@ -684,8 +785,48 @@
       }
     }
 
+    async function runTestSystemLogsV2() {
+      logLine('⏳ กำลังเช็ก /api/system-logs, Heatmap 48 ช่อง และ Freshness...');
+      try {
+        const [rLogs, rHeat, rFresh] = await Promise.all([
+          fetch(apiEndpoint('/api/system-logs', 'limit=5'), { cache: 'no-store' }).then(r => r.json()),
+          fetch(apiEndpoint('/api/system-logs/heatmap'), { cache: 'no-store' }).then(r => r.json()),
+          fetch(apiEndpoint('/api/data-freshness'), { cache: 'no-store' }).then(r => r.json())
+        ]);
+        const st = rLogs.stats || {};
+        const rq = Array.isArray(rLogs.retryQueue) ? rLogs.retryQueue.length : 0;
+        const slotsCount = Array.isArray(rHeat.slots) ? rHeat.slots.length : Object.keys(rHeat.slots || {}).length;
+        const staleMods = Object.values(rFresh.modules || {}).filter(m => m && m.isStale).map(m => m.module);
+        logLine(`✅ SystemLog v2: (Total:${st.total ?? '-'}, OK:${st.success ?? '-'}, Partial:${st.partial ?? '-'}, Fail:${st.failed ?? '-'}) | HeatmapSlots=${slotsCount} | RetryQueue=${rq} | Stale=${staleMods.length ? staleMods.join(',') : 'none'}`);
+        return true;
+      } catch (e) {
+        logLine(`❌ Error: ${e.message}`);
+        return false;
+      }
+    }
+
+    async function runTestTraffySession(runLiveProbe = false) {
+      logLine(runLiveProbe ? '🧪 กำลังทดสอบเชื่อมต่อ Traffy จริง (Server-to-Server)...' : '⏳ กำลังเช็ก Traffy Session & Auth Me...');
+      try {
+        const [stRes, meRes] = await Promise.all([
+          fetch(apiEndpoint('/api/traffy/session-status'), { cache: 'no-store' }).then(r => r.json()),
+          fetch(apiEndpoint('/api/auth/me'), { cache: 'no-store' }).then(r => r.json())
+        ]);
+        const expText = stRes.jwtInfo ? `JWT exp=${stRes.jwtInfo.expiresAt || '-'}` : 'Public/No-Token';
+        logLine(`🔐 AppCookie=${stRes.appSessionCookie} (AUTH_ENFORCE=${stRes.authEnforce}, User=${meRes.user?.username || 'guest'}) | TraffyDB=${stRes.dbCount} | Mode=${expText}`);
+        if (runLiveProbe) {
+          const probe = await fetch(apiEndpoint('/api/traffy/test-session'), { method: 'POST', cache: 'no-store' }).then(r => r.json());
+          logLine(`📡 Live Probe (${probe.durationMs ?? '-'}ms): status=${probe.status || '-'} | ${probe.summary || probe.error || '-'}`);
+        }
+        return true;
+      } catch (e) {
+        logLine(`❌ Error: ${e.message}`);
+        return false;
+      }
+    }
+
     async function runTestParallel() {
-      logLine('⚡ กำลังยิงดึง 5 API พร้อมกันด้วย curl_multi ... (รอ ~2-4 วินาที)');
+      logLine('⚡ กำลังยิงดึง 5 API พร้อมกันด้วย curl_multi ... (รอ ~2-15 วินาที)');
       const t0 = performance.now();
       try {
         const res = await fetch(apiEndpoint('/api/force-fetch-all'), { method: 'POST', cache: 'no-store' });
@@ -693,7 +834,8 @@
         const dt = ((performance.now() - t0) / 1000).toFixed(2);
         if (d.success) {
           const r = d.result?.results || {};
-          logLine(`✅ สำเร็จใน ${d.result?.elapsedSec || dt} วินาที -> ฝน:${r.rainfall?.count||0}, น้ำ:${r.water?.count||0}, เขื่อน:${r.drought?.count||0}, PM2.5:${r.pm25?.count||0}, ร้องเรียน:${r.complaints?.count||0}`);
+          const cStr = r.complaints?.ok ? (r.complaints?.count || 0) : `RetryQueue(${r.complaints?.error ? 'timeout' : 'queued'})`;
+          logLine(`✅ สำเร็จ (${d.status || 'ok'}) ใน ${d.result?.elapsedSec || dt} วินาที -> ฝน:${r.rainfall?.count||0}, น้ำ:${r.water?.count||0}, เขื่อน:${r.drought?.count||0}, PM2.5:${r.pm25?.count||0}, ร้องเรียน:${cStr}`);
           if (d.result?.notifications) {
             const n = d.result.notifications;
             logLine(`   🔔 Alert Check: พบ ${n.totalAlerts} | ส่งเมล ${n.sentEmails} | ข้าม(ไม่เปลี่ยน) ${n.skipped}`);
@@ -752,11 +894,13 @@
     }
 
     async function runAllSmokeTests() {
-      out.textContent = '=== เริ่มชุดทดสอบอัตโนมัติ (ข้อ 1–3) ===';
+      out.textContent = '=== เริ่มชุดเช็กความพร้อมทั้งหมด (Read-Only Smoke Suite) ===';
       await runTestHealth();
+      await runTestHealth247();
       await runTestWorker();
-      await runTestParallel();
-      logLine('🎉 ทดสอบครบทั้ง 3 ขั้นตอนเสร็จสมบูรณ์!');
+      await runTestSystemLogsV2();
+      await runTestTraffySession(false);
+      logLine('🎉 เช็กความพร้อมระบบทั้งหมดเสร็จสมบูรณ์! (กด "⚡ ทดสอบดึงจริง 5 API" เพื่อทดสอบเก็บข้อมูลสด)');
     }
   </script>
 </body>

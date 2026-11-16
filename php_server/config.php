@@ -481,22 +481,52 @@ function get_app_config(): array {
     }
     if (isset($loaded['notifications']) && is_array($loaded['notifications'])) {
         $default['notifications'] = array_replace_recursive($default['notifications'], $loaded['notifications']);
-        if (empty($default['notifications']['smtp']['pass']) && env_val('SMTP_PASS') !== '') {
-            $default['notifications']['smtp']['pass'] = env_val('SMTP_PASS');
-        }
-        if (empty($default['notifications']['smtp']['user']) && env_val('SMTP_USER') !== '') {
-            $default['notifications']['smtp']['user'] = env_val('SMTP_USER');
-        }
+    }
+
+    // Load SMTP/LINE secrets saved via Web UI (stored outside config.json inside runtime/)
+    $secretsPath = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'notification_secrets.json';
+    $secrets = read_json_file($secretsPath, []);
+    if (!empty($secrets['smtp_user'])) $default['notifications']['smtp']['user'] = $secrets['smtp_user'];
+    if (!empty($secrets['smtp_pass'])) $default['notifications']['smtp']['pass'] = $secrets['smtp_pass'];
+    if (!empty($secrets['line_channel_token']) || env_val('LINE_CHANNEL_TOKEN') !== '') {
+        $default['notifications']['line'] = [
+            'channelToken' => !empty($secrets['line_channel_token']) ? $secrets['line_channel_token'] : env_val('LINE_CHANNEL_TOKEN', ''),
+            'targetId'     => !empty($secrets['line_target_id']) ? $secrets['line_target_id'] : env_val('LINE_TARGET_ID', '')
+        ];
+    }
+
+    if (empty($default['notifications']['smtp']['pass']) && env_val('SMTP_PASS') !== '') {
+        $default['notifications']['smtp']['pass'] = env_val('SMTP_PASS');
+    }
+    if (empty($default['notifications']['smtp']['user']) && env_val('SMTP_USER') !== '') {
+        $default['notifications']['smtp']['user'] = env_val('SMTP_USER');
     }
     return $default;
 }
 
 function save_app_config(array $cfg) {
+    $secretsPath = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'notification_secrets.json';
+    $secrets = read_json_file($secretsPath, []);
+    if (!empty($cfg['notifications']['smtp']['user'])) {
+        $secrets['smtp_user'] = $cfg['notifications']['smtp']['user'];
+    }
+    if (!empty($cfg['notifications']['smtp']['pass'])) {
+        $secrets['smtp_pass'] = $cfg['notifications']['smtp']['pass'];
+    }
+    if (!empty($cfg['notifications']['line']['channelToken'])) {
+        $secrets['line_channel_token'] = $cfg['notifications']['line']['channelToken'];
+    }
+    if (isset($cfg['notifications']['line']['targetId']) && $cfg['notifications']['line']['targetId'] !== '') {
+        $secrets['line_target_id'] = $cfg['notifications']['line']['targetId'];
+    }
+    write_json_file($secretsPath, $secrets);
+
     $configPath = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'config.json';
     $toSave = $cfg;
     if (isset($toSave['notifications']['smtp']['pass'])) {
         $toSave['notifications']['smtp']['pass'] = '';
     }
+    unset($toSave['notifications']['line']);
     write_json_file($configPath, $toSave);
 }
 

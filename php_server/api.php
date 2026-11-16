@@ -7,6 +7,7 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/collectors.php';
+require_once __DIR__ . '/notifier.php';
 require_once __DIR__ . '/github_sync_to_mysql.php';
 require_once __DIR__ . '/smart_worker_lib.php';
 
@@ -1538,6 +1539,10 @@ function handle_api_request(string $method, string $path): void {
                     'port' => $cfg['smtp']['port'] ?? 587,
                     'user' => $cfg['smtp']['user'] ?? '',
                     'pass' => !empty($cfg['smtp']['pass']) ? '********' : ''
+                ],
+                'line' => [
+                    'configured' => !empty($cfg['line']['channelToken']) && !empty($cfg['line']['targetId']),
+                    'targetId' => $cfg['line']['targetId'] ?? ''
                 ]
             ]
         ]);
@@ -1616,15 +1621,38 @@ function handle_api_request(string $method, string $path): void {
         send_json(['success' => true, 'user' => $user]);
     }
 
+    if ($path === '/api/notifications/line' && $method === 'POST') {
+        $token = trim((string)($body['channelToken'] ?? ''));
+        $targetId = trim((string)($body['targetId'] ?? ''));
+        if ($token === '' || $targetId === '') {
+            send_json(['success' => false, 'error' => 'กรุณาระบุ LINE Channel Access Token และ Target/Group ID'], 400);
+        }
+        $cfg = get_app_config();
+        $cfg['notifications']['line'] = [
+            'channelToken' => $token,
+            'targetId' => $targetId
+        ];
+        save_app_config($cfg);
+        add_server_log('Notification', "💬 บันทึกการตั้งค่า LINE Messaging API สำเร็จ (Target: {$targetId})");
+        send_json(['success' => true]);
+    }
+
     if ($path === '/api/notifications/check-now' && $method === 'POST') {
-        add_server_log('Notification', '🔍 ตรวจสอบเกณฑ์แจ้งเตือนล่าสุดเรียบร้อยแล้ว');
-        send_json(['success' => true, 'result' => ['alertsFound' => 0, 'emailsSent' => 0]]);
+        add_server_log('Notification', '🔍 เจ้าหน้าที่สั่งตรวจสอบเกณฑ์แจ้งเตือนวิกฤตด้วยตนเอง...');
+        $result = php_check_and_notify(true);
+        send_json(['success' => true, 'result' => $result]);
     }
 
     if ($path === '/api/notifications/test' && $method === 'POST') {
-        $email = $body['email'] ?? '';
-        add_server_log('Notification', "📧 ทดสอบระบบแจ้งเตือนไปยัง {$email}");
-        send_json(['success' => true, 'sentTo' => $email]);
+        $email = isset($body['email']) ? trim((string)$body['email']) : null;
+        add_server_log('Notification', '📧 กำลังทดสอบส่ง Email ผ่าน Gmail SMTP...');
+        $res = php_send_test_email($email);
+        if (!empty($res['success'])) {
+            add_server_log('Notification', "✅ ส่ง Test Email สำเร็จ → {$res['sentTo']}");
+        } else {
+            add_server_log('Notification', "❌ ส่ง Test Email ล้มเหลว: " . ($res['error'] ?? 'Unknown error'));
+        }
+        send_json($res);
     }
 
     // =====================================================================

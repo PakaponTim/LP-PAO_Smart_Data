@@ -125,6 +125,27 @@
           </details>
         </div>
 
+        <!-- LINE Messaging API Panel -->
+        <div class="section-card p-5 border border-emerald-200 bg-emerald-50/40">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">💬</span>
+              <span class="font-bold text-sm text-emerald-900">LINE Messaging API (แจ้งเตือนกลุ่มผู้บริหาร)</span>
+            </div>
+            <span id="lineStatusDot" class="w-2.5 h-2.5 rounded-full bg-slate-300 inline-block"></span>
+          </div>
+          <p id="lineStatusText" class="text-xs text-slate-500 mb-3">ไม่บังคับ — กรอก Token และ Group/User ID เพื่อส่งเข้า LINE พร้อม E-mail</p>
+          <div class="space-y-2">
+            <input id="lineTokenInput" type="password" placeholder="Channel Access Token (LINE Developers)"
+              class="w-full px-3 py-2 rounded-lg text-xs bg-white border border-slate-300 outline-none focus:border-emerald-500">
+            <input id="lineTargetInput" type="text" placeholder="Group ID / User ID (เช่น C1234abcd...)"
+              class="w-full px-3 py-2 rounded-lg text-xs bg-white border border-slate-300 outline-none focus:border-emerald-500">
+            <button onclick="saveLINE()" class="w-full py-2 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition-all">
+              💾 บันทึก LINE Token
+            </button>
+          </div>
+        </div>
+
         <!-- Alert Type Toggle Card -->
         <div class="section-card">
           <div class="section-header">

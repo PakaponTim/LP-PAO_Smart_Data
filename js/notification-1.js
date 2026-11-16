@@ -78,7 +78,42 @@ const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"
           txt.textContent = 'ยังไม่ได้ตั้งค่า SMTP — กรอก Gmail + App Password';
           badge.innerHTML = '🔴 ยังไม่พร้อมส่ง Email';
         }
+        // LINE status
+        const lineDot = document.getElementById('lineStatusDot');
+        const lineTxt = document.getElementById('lineStatusText');
+        const lineTarget = document.getElementById('lineTargetInput');
+        if (lineDot && lineTxt) {
+          if (cfg.line?.configured) {
+            lineDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block';
+            lineTxt.textContent = `🟢 เชื่อมต่อ LINE แล้ว (Target: ${cfg.line.targetId || ''})`;
+            if (lineTarget && cfg.line.targetId) lineTarget.value = cfg.line.targetId;
+          } else {
+            lineDot.className = 'w-2.5 h-2.5 rounded-full bg-slate-300 inline-block';
+          }
+        }
       } catch(e) { console.error('config:', e); }
+    }
+
+    // ============================================================
+    // SAVE LINE VIA API
+    // ============================================================
+    async function saveLINE() {
+      const channelToken = (document.getElementById('lineTokenInput')?.value || '').trim();
+      const targetId = (document.getElementById('lineTargetInput')?.value || '').trim();
+      if (!channelToken || !targetId) { showToast('⚠️ กรุณากรอก LINE Channel Access Token และ Target/Group ID', 'warning'); return; }
+      try {
+        const res = await fetch(`${API}/api/notifications/line`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ channelToken, targetId })
+        });
+        const d = await res.json();
+        if (d.success) {
+          showToast('✅ บันทึกการตั้งค่า LINE สำเร็จ', 'success');
+          if (document.getElementById('lineTokenInput')) document.getElementById('lineTokenInput').value = '';
+          loadConfig();
+        } else { showToast(`❌ ${d.error}`, 'error'); }
+      } catch(e) { showToast('❌ ไม่สามารถเชื่อมต่อ server', 'error'); }
     }
 
     // ============================================================

@@ -10,6 +10,7 @@
 // =========================================================================
 
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/notifier.php';
 
 function build_curl_handle(string $url, array $extraHeaders = [], int $timeoutSec = 25) {
     $ch = curl_init($url);
@@ -915,9 +916,18 @@ function collect_all_parallel_direct(array $activeFlags = []): array {
     $elapsed = round(microtime(true) - $tStart, 2);
     add_server_log('ParallelAPI', "🎉 ดึงข้อมูลและบันทึกลง MySQL ครบทุก API เสร็จสมบูรณ์ภายใน {$elapsed} วินาที");
 
+    // Automatically evaluate crisis thresholds and send Gmail SMTP + LINE alerts
+    $notifResult = null;
+    try {
+        $notifResult = php_check_and_notify(false);
+    } catch (Throwable $e) {
+        add_server_log('Notification', '⚠️ ระบบแจ้งเตือนอัตโนมัติล้มเหลว: ' . $e->getMessage());
+    }
+
     return [
         'success' => true,
         'elapsedSec' => $elapsed,
-        'results' => $results
+        'results' => $results,
+        'notifications' => $notifResult
     ];
 }

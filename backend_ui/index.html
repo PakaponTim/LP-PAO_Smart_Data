@@ -2001,43 +2001,131 @@
             </div>
           </div>
 
-          <!-- Live System Logs (Overview / Home Page) -->
-          <div class="bg-slate-900 rounded-2xl border border-slate-800 p-1.5 shadow-xl flex flex-col h-[520px]">
-            <div
-              class="bg-slate-800/60 backdrop-blur px-5 py-4 rounded-t-xl border-b border-slate-700/50 flex justify-between items-center">
+          <!-- System Log Center + Daily 48-Slot Heatmap (Home Page) -->
+          <div id="systemLogCenter" class="bg-slate-900 rounded-2xl border border-slate-800 p-4 shadow-xl space-y-4">
+            <!-- Header + Summary Strip -->
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
               <div class="flex items-center gap-3">
-                <div
-                  class="w-8 h-8 rounded-lg bg-green-950/40 border border-green-500/20 flex items-center justify-center">
-                  <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-9 h-9 rounded-lg bg-emerald-950/60 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                  <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                   </svg>
                 </div>
                 <div>
-                  <h3 class="font-bold text-slate-200 text-sm tracking-wide">Live System Logs</h3>
-                  <p class="text-[10px] text-slate-400">การซิงค์และประมวลผลข้อมูลของระบบทุกภาคส่วนแบบเรียลไทม์</p>
+                  <h3 class="font-bold text-slate-100 text-base tracking-wide">System Log Center &amp; ตารางตรวจสอบ 48 รอบเวลา</h3>
+                  <p class="text-xs text-slate-400">บันทึกถาวรใน MySQL แยกสถานะ สำเร็จ / ไม่สำเร็จ / เฝ้าระวัง พร้อมเวลาเริ่ม-เสร็จจริง Auto-Retry และ Audit CSV</p>
                 </div>
               </div>
-              <div class="flex items-center gap-3">
-                <button onclick="copyLogs()"
-                  class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 active:scale-95">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3">
-                    </path>
-                  </svg>
-                  คัดลอก Logs
+              <div class="flex flex-wrap items-center gap-2">
+                <span id="sysLogSummaryBadges" class="flex flex-wrap items-center gap-1.5 text-xs"></span>
+                <button onclick="loadSystemLogs(); loadExecutionHeatmap();"
+                  class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-3 py-1.5 rounded-lg transition-all">
+                  🔄 รีเฟรช
                 </button>
-                <div class="flex gap-1.5 shrink-0 pl-2">
-                  <div class="w-3 h-3 rounded-full bg-slate-700"></div>
-                  <div class="w-3 h-3 rounded-full bg-slate-700"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
-                </div>
+                <button onclick="exportSystemLogsCsv()"
+                  class="text-xs bg-emerald-700 hover:bg-emerald-600 border border-emerald-500/40 text-white px-3 py-1.5 rounded-lg transition-all font-medium">
+                  📥 Export Audit CSV
+                </button>
+                <button onclick="copyLogs()"
+                  class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1">
+                  📋 คัดลอก Live Log
+                </button>
               </div>
             </div>
-            <div id="logBox"
-              class="flex-1 overflow-y-auto p-5 font-mono text-sm text-green-400 space-y-2.5 bg-slate-950 rounded-b-xl">
-              <!-- Logs will appear here dynamically -->
+
+            <!-- Freshness & Auto-Retry Status Strip -->
+            <div id="freshnessBadgeStrip" class="flex flex-wrap items-center justify-between gap-2 bg-slate-950/70 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-300">
+              <span>🛰️ กำลังโหลดสถานะความสดของข้อมูลต้นทาง (เกณฑ์น้ำ/ฝน/PM 2.5 เกิน 6 ชม. | เขื่อนเกิน 36 ชม.)...</span>
+            </div>
+
+            <!-- Add-on 1: Daily 48-Slot Execution Heatmap -->
+            <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2 text-xs text-slate-200 font-semibold">
+                  <span>🟩 Daily 48-Slot Heatmap (00:00 – 23:30)</span>
+                  <span id="heatmapSummaryText" class="text-[11px] font-normal text-slate-400"></span>
+                </div>
+                <div class="flex items-center gap-2 text-[11px] text-slate-400">
+                  <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500"></span> สำเร็จ</span>
+                  <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-amber-400"></span> บางส่วน</span>
+                  <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-rose-500"></span> ไม่สำเร็จ</span>
+                  <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-slate-600"></span> ข้าม/ยังไม่ถึง</span>
+                  <input type="date" id="heatmapDateInput" onchange="loadExecutionHeatmap()"
+                    class="bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-xs text-slate-200">
+                </div>
+              </div>
+              <div id="executionHeatmapGrid" class="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-12 gap-1"></div>
+              <div id="heatmapSlotDetail" class="hidden text-xs bg-slate-900 border border-slate-700/80 rounded-lg p-2.5 text-slate-200"></div>
+            </div>
+
+            <!-- View Tabs + Filter Bar -->
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5">
+                <button id="tabBtnStructuredLogs" onclick="switchSystemLogView('structured')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white">
+                  📋 ประวัติการทำงานแบบละเอียด (MySQL)
+                </button>
+                <button id="tabBtnConsoleLogs" onclick="switchSystemLogView('console')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">
+                  💻 Live Console Stream
+                </button>
+              </div>
+              <div id="sysLogFiltersBar" class="flex flex-wrap items-center gap-2">
+                <select id="sysLogModuleFilter" onchange="loadSystemLogs()"
+                  class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-slate-200">
+                  <option value="all">ทุกหมวดหมู่</option>
+                  <option value="system">รอบบูรณาการรวม (Parallel)</option>
+                  <option value="water">ระดับน้ำ</option>
+                  <option value="rainfall">ปริมาณน้ำฝน</option>
+                  <option value="drought">อ่างเก็บน้ำ/ภัยแล้ง</option>
+                  <option value="pm25">ฝุ่น PM 2.5</option>
+                  <option value="complaints">ร้องเรียน Traffy</option>
+                  <option value="github_sync">ซิงค์ GitHub</option>
+                  <option value="notification">แจ้งเตือน Email/LINE</option>
+                  <option value="report">ออกรายงาน/CSV</option>
+                  <option value="freshness">ความสดข้อมูลต้นทาง</option>
+                  <option value="traffy_auth">ทดสอบ Cookie/Session</option>
+                </select>
+                <select id="sysLogStatusFilter" onchange="loadSystemLogs()"
+                  class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-slate-200">
+                  <option value="all">ทุกสถานะ</option>
+                  <option value="success">✅ สำเร็จ</option>
+                  <option value="failed">❌ ไม่สำเร็จ</option>
+                  <option value="partial">🟡 สำเร็จบางส่วน</option>
+                  <option value="warning">⚠️ เฝ้าระวัง</option>
+                </select>
+                <select id="sysLogTriggerFilter" onchange="loadSystemLogs()"
+                  class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-slate-200">
+                  <option value="all">ทุกช่องทาง</option>
+                  <option value="smart_sleep">Smart Sleep อัตโนมัติ</option>
+                  <option value="manual">เจ้าหน้าที่กดสั่งเอง</option>
+                  <option value="github_sync">ซิงค์ GitHub</option>
+                  <option value="auto_retry">Auto-Retry</option>
+                  <option value="extension">Chrome Extension</option>
+                  <option value="user">ผู้ใช้งานดาวน์โหลด</option>
+                  <option value="test">ทดสอบระบบ</option>
+                </select>
+                <input type="date" id="sysLogDateFilter" onchange="loadSystemLogs()"
+                  class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-200">
+                <input type="text" id="sysLogSearchInput" placeholder="ค้นหาสรุป/ข้อผิดพลาด..." onkeyup="if(event.key==='Enter') loadSystemLogs()"
+                  class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-slate-200 w-44">
+              </div>
+            </div>
+
+            <!-- Structured MySQL Log Feed -->
+            <div id="structuredLogsContainer" class="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden">
+              <div id="systemLogFeed" class="max-h-[380px] overflow-y-auto divide-y divide-slate-800/80 text-xs">
+                <div class="p-6 text-center text-slate-400">กำลังโหลดข้อมูล System Log...</div>
+              </div>
+            </div>
+
+            <!-- Real-time Console Stream (Preserved for Live Diagnostics) -->
+            <div id="consoleLogsContainer" class="hidden bg-slate-950 border border-slate-800 rounded-xl overflow-hidden">
+              <div id="logBox"
+                class="h-[380px] overflow-y-auto p-4 font-mono text-xs text-green-400 space-y-2 bg-slate-950">
+                <!-- Logs will appear here dynamically -->
+              </div>
             </div>
           </div>
         </div>
@@ -2858,6 +2946,67 @@
                     <div class="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-700"></div> ปิดใช้งาน (OFF)
                   </span>
                 </div>
+              </div>
+
+              <!-- Traffy Fondue Cookie & Session Diagnostics Panel -->
+              <div id="traffySessionPanel"
+                class="bg-white dark:bg-slate-800 rounded-2xl border border-indigo-200 dark:border-indigo-900/60 p-4 shadow-sm space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                      🔐 สถานะ &amp; ทดสอบ Cookie / Session / API (Traffy Fondue)
+                    </h4>
+                    <p id="traffyAuthStatusBadge" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      กำลังตรวจสอบสถานะ Cookie / Session...
+                    </p>
+                  </div>
+                  <button id="testTraffySessionBtn" onclick="testTraffyCookieAndSession()"
+                    class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow transition-all">
+                    🧪 ทดสอบ Cookie &amp; Session + API
+                  </button>
+                </div>
+
+                <details class="text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/60 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
+                  <summary class="cursor-pointer font-semibold text-indigo-700 dark:text-indigo-300">
+                    ⚙️ ตั้งค่า Session Token (fondue_token) / Cookie หลังล็อกอิน LINE ใน citydata.traffy.in.th (ไม่ต้องใช้ Extension)
+                  </summary>
+                  <div class="mt-3 space-y-2.5">
+                    <div class="p-2.5 rounded-lg bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/60 text-[11px] leading-relaxed">
+                      <b>วิธีคัดลอก Token จากบัญชีที่ล็อกอิน LINE บน <a href="https://citydata.traffy.in.th/recent-post" target="_blank" class="underline font-semibold">citydata.traffy.in.th/recent-post</a> (ทำครั้งแรกครั้งเดียว):</b><br>
+                      กด <code>F12</code> → แท็บ <b>Application</b> → <b>Local Storage</b> → คลิก <code>https://citydata.traffy.in.th</code> → คัดลอกค่าของ Key <code>local_login_data</code> (หรือ <code>Authorization: Bearer ...</code> จากแท็บ Network) มาวางด้านล่าง ระบบจะเก็บใช้ดึงข้อมูลต่อเนื่องตลอด 24 ชม. และเตือนล่วงหน้าก่อนหมดอายุ 48 ชม. (ไม่สามารถขยายอายุ <code>exp</code> ของ JWT ฝั่ง Traffy เองได้เพราะติดลายเซ็นดิจิทัลของ Traffy)
+                    </div>
+                    <div>
+                      <label class="block text-[11px] font-medium mb-1">Traffy JWT / Bearer Token (<code>fondue_token</code> จากการล็อกอิน LINE)</label>
+                      <input type="password" id="traffyTokenInput" placeholder="eyJhbGciOi..."
+                        class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-xs">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div>
+                        <label class="block text-[11px] font-medium mb-1">Traffy Cookie Header (ถ้ามี)</label>
+                        <input type="password" id="traffyCookieInput" placeholder="เช่น session=..."
+                          class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-xs">
+                      </div>
+                      <div>
+                        <label class="block text-[11px] font-medium mb-1">Org ID / UUID หน่วยงาน (ถ้าทราบ — เว้นว่างได้)</label>
+                        <input type="text" id="traffyOrgIdInput" placeholder="เช่น org_id หรือ uuid"
+                          class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-xs">
+                      </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 pt-1">
+                      <button onclick="saveTraffySessionConfig(false)"
+                        class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium">
+                        💾 บันทึก Token / Session
+                      </button>
+                      <button onclick="saveTraffySessionConfig(true)"
+                        class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-xs">
+                        🗑️ ล้างค่าที่บันทึกไว้
+                      </button>
+                      <span class="text-[11px] text-slate-500">โหมดการทำงาน: <b>Direct Server-to-Server API</b> (ไม่ใช้ Chrome Extension)</span>
+                    </div>
+                  </div>
+                </details>
+
+                <div id="traffyDiagResult" class="hidden text-xs rounded-xl p-3 border bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 space-y-1"></div>
               </div>
 
               <div

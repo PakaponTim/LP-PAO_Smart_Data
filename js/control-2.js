@@ -411,7 +411,7 @@ const socket = typeof io !== 'undefined' ? io() : null;
           if (dot) {
             dot.className = connected ? 'w-2 h-2 rounded-full bg-green-500 animate-pulse' : 'w-2 h-2 rounded-full bg-amber-500';
           }
-          if (span) span.textContent = connected ? 'Extension + Server พร้อมทำงาน' : 'Puppeteer จะทำงานแทน Extension';
+          if (span) span.textContent = connected ? 'Direct PHP API + Server พร้อมทำงาน' : 'รอการเชื่อมต่อ Server';
         }
       }
 

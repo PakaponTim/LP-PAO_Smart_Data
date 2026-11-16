@@ -7,6 +7,8 @@
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/collectors.php';
+require_once __DIR__ . '/collectors_transform.php';
+require_once __DIR__ . '/system_log.php';
 
 function import_single_snapshot_to_mysql(PDO $pdo, array $snap): array {
     ensure_ingest_tables($pdo);
@@ -70,7 +72,7 @@ function import_single_snapshot_to_mysql(PDO $pdo, array $snap): array {
                     $r['left_bank_level_m'] ?? null,
                     $r['bank_difference_m'] ?? null,
                     $r['trend'] ?? 'คงที่',
-                    $r['status'] ?? 'ปกติ',
+                    $r['status'] ?? 'น้ำปกติ',
                     $r['current_rain_mm'] ?? null,
                     $r['forecast_rain_24h_mm'] ?? null,
                     $r['risk_level'] ?? 'ปกติ',
@@ -145,13 +147,7 @@ function import_single_snapshot_to_mysql(PDO $pdo, array $snap): array {
             foreach ($snap['complaints'] as $r) {
                 $org = $r['org_name'] ?? 'อบจ.ลำปาง';
                 $st  = $r['state_name'] ?? 'รอรับเรื่อง';
-                $isPao = (mb_strpos($org, 'อบจ.ลำปาง') !== false || mb_strpos($org, 'องค์การบริหารส่วนจังหวัดลำปาง') !== false);
-                $agency = $isPao ? 'งานที่เป็นสถานะอื่นๆ' : 'สถานะอื่นๆ ของหน่วยงาน';
-                if (mb_strpos($st, 'รอรับเรื่อง') !== false) $agency = $isPao ? 'งานที่รับเรื่องร้องเรียน' : 'อบจ.รับมอบหมายงาน';
-                elseif (mb_strpos($st, 'ส่งต่อ') !== false) $agency = $isPao ? 'งานส่งต่อ' : 'ส่งต่อให้หน่วยงานอื่นดำเนินการ';
-                elseif (mb_strpos($st, 'เสร็จสิ้น') !== false) $agency = $isPao ? 'งานที่ อบจ.ดำเนินการเสร็จ' : 'หน่วยงานอื่นดำเนินการเสร็จ';
-                elseif (mb_strpos($st, 'กำลังดำเนินการ') !== false || mb_strpos($st, 'ถูกติดตาม') !== false) $agency = $isPao ? 'งานที่ อบจ.กำลังดำเนินการ' : 'หน่วยงานอื่นกำลังดำเนินการ';
-                elseif (mb_strpos($st, 'รับมอบ') !== false) $agency = $isPao ? 'สถานะรับมอบจากหน่วยงานอื่นๆ' : 'สถานะที่หน่วยงานรับมอบจาก อบจ.ลำปาง';
+                $agency = compute_traffy_agency_status((string)$org, (string)$st);
 
                 $upsertStmt->execute([
                     $r['ticket_id'] ?? '',
@@ -179,10 +175,11 @@ function import_single_snapshot_to_mysql(PDO $pdo, array $snap): array {
 
         $pdo->commit();
         return [
-            'imported' => true,
-            'snapshot_id' => $snapId,
-            'recorded_at' => $recordedAt,
-            'counts' => $counts
+            'imported'      => true,
+            'snapshot_id'   => $snapId,
+            'recorded_at'   => $recordedAt,
+            'counts'        => $counts,
+            'module_status' => $snap['module_status'] ?? null
         ];
     } catch (Throwable $e) {
         if ($pdo->inTransaction()) $pdo->rollBack();
@@ -190,7 +187,17 @@ function import_single_snapshot_to_mysql(PDO $pdo, array $snap): array {
     }
 }
 
-function sync_github_snapshots_to_mysql(): array {
+function sync_github_snapshots_to_mysql(int $maxImport = 0): array {
+    $res = with_file_lock('github_sync', function () use ($maxImport) {
+        return _sync_github_snapshots_to_mysql_locked($maxImport);
+    }, true);
+    if ($res === null) {
+        return ['success' => true, 'skipped' => true, 'reason' => 'sync_already_running', 'importedSnapshotsCount' => 0, 'alreadySyncedCount' => 0, 'imported' => []];
+    }
+    return $res;
+}
+
+function _sync_github_snapshots_to_mysql_locked(int $maxImport = 0): array {
     $pdo = get_db();
     ensure_ingest_tables($pdo);
 
@@ -199,8 +206,6 @@ function sync_github_snapshots_to_mysql(): array {
         @mkdir($baseDir, 0777, true);
     }
 
-    // Fetch latest manifest & missing snapshots directly from GitHub (no Git CLI login prompts!)
-    // Default to PakaponTim/Water_System2 if not explicitly set
     $ghRepo = env_val('GITHUB_SYNC_REPO', 'PakaponTim/Water_System2');
     $ghBranch = env_val('GITHUB_SYNC_BRANCH', 'main');
     $ghToken = env_val('GITHUB_SYNC_TOKEN', '');
@@ -213,36 +218,66 @@ function sync_github_snapshots_to_mysql(): array {
                 $rawHeaders[] = "Authorization: token {$ghToken}";
             }
 
-            // Use GitHub Contents API (uncached real-time) with fallback to raw.githubusercontent.com
             $manifestUrl = "https://api.github.com/repos/{$ghRepo}/contents/cloud_snapshots/manifest.json?ref=" . rawurlencode($ghBranch);
             $rawBase = "https://raw.githubusercontent.com/{$ghRepo}/{$ghBranch}/cloud_snapshots";
-            try {
-                $remoteManifest = http_get_json($manifestUrl, $apiHeaders, 15);
-            } catch (Throwable $e) {
-                $remoteManifest = http_get_json("{$rawBase}/manifest.json?ts=" . time(), $rawHeaders, 15);
+
+            // Prefer raw.githubusercontent.com when unauthenticated to avoid 60 req/hr REST API rate limit on shared hosting
+            if ($ghToken === '') {
+                try {
+                    $remoteManifest = http_get_json("{$rawBase}/manifest.json?ts=" . time(), $rawHeaders, 12);
+                } catch (Throwable $e) {
+                    $remoteManifest = http_get_json($manifestUrl, $apiHeaders, 12);
+                }
+            } else {
+                try {
+                    $remoteManifest = http_get_json($manifestUrl, $apiHeaders, 12);
+                } catch (Throwable $e) {
+                    $remoteManifest = http_get_json("{$rawBase}/manifest.json?ts=" . time(), $rawHeaders, 12);
+                }
             }
 
+            $downloaded = 0;
             if (!empty($remoteManifest['snapshots']) && is_array($remoteManifest['snapshots'])) {
                 foreach ($remoteManifest['snapshots'] as $sid => $meta) {
                     $relPath = $meta['path'] ?? '';
                     if ($relPath === '') continue;
                     $localFile = $baseDir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relPath);
                     if (!file_exists($localFile)) {
+                        if ($maxImport > 0 && $downloaded >= $maxImport) {
+                            break;
+                        }
                         $dir = dirname($localFile);
                         if (!is_dir($dir)) @mkdir($dir, 0777, true);
-                        try {
-                            $snapData = http_get_json("https://api.github.com/repos/{$ghRepo}/contents/cloud_snapshots/{$relPath}?ref=" . rawurlencode($ghBranch), $apiHeaders, 20);
-                        } catch (Throwable $e) {
-                            $snapData = http_get_json("{$rawBase}/{$relPath}", $rawHeaders, 20);
+                        if ($ghToken === '') {
+                            try {
+                                $snapData = http_get_json("{$rawBase}/{$relPath}", $rawHeaders, 15);
+                            } catch (Throwable $e) {
+                                $snapData = http_get_json("https://api.github.com/repos/{$ghRepo}/contents/cloud_snapshots/{$relPath}?ref=" . rawurlencode($ghBranch), $apiHeaders, 15);
+                            }
+                        } else {
+                            try {
+                                $snapData = http_get_json("https://api.github.com/repos/{$ghRepo}/contents/cloud_snapshots/{$relPath}?ref=" . rawurlencode($ghBranch), $apiHeaders, 15);
+                            } catch (Throwable $e) {
+                                $snapData = http_get_json("{$rawBase}/{$relPath}", $rawHeaders, 15);
+                            }
                         }
                         if (is_array($snapData)) {
                             file_put_contents($localFile, json_encode($snapData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                            $downloaded++;
                         }
                     }
                 }
             }
         } catch (Throwable $e) {
-            // Ignore remote fetch errors if offline
+            sys_log_record([
+                'module'         => 'github_sync',
+                'action'         => 'Fetch Remote Manifest',
+                'status'         => 'warning',
+                'trigger_source' => 'github_sync',
+                'row_count'      => 0,
+                'summary'        => 'ไม่สามารถดึง manifest จาก GitHub ได้ชั่วคราว (ใช้ไฟล์แคชในเครื่องแทน)',
+                'error_detail'   => $e->getMessage(),
+            ]);
         }
     }
 
@@ -254,6 +289,9 @@ function sync_github_snapshots_to_mysql(): array {
     $skippedCount = 0;
 
     foreach ($files as $file) {
+        if ($maxImport > 0 && count($importedList) >= $maxImport) {
+            break;
+        }
         $raw = @file_get_contents($file);
         if (!$raw) continue;
         $snap = json_decode($raw, true);
@@ -262,7 +300,33 @@ function sync_github_snapshots_to_mysql(): array {
         $res = import_single_snapshot_to_mysql($pdo, $snap);
         if (!empty($res['imported'])) {
             $importedList[] = $res;
-            add_server_log('GitHubSync-7000', "☁️➡️🗄️ ซิงค์ข้อมูลย้อนหลังจาก GitHub Snapshot ({$res['recorded_at']}) เข้าฐานข้อมูล water_system2 สำเร็จ (น้ำ {$res['counts']['water']}, ฝน {$res['counts']['rainfall']}, เขื่อน {$res['counts']['drought']}, PM2.5 {$res['counts']['pm25']}, ร้องเรียน {$res['counts']['complaints']})");
+            $c = $res['counts'];
+            $modStatus = $res['module_status'] ?? null;
+            $hasModFail = false;
+            $modNotes = [];
+            if (is_array($modStatus)) {
+                foreach ($modStatus as $mKey => $mInfo) {
+                    if (empty($mInfo['ok'])) {
+                        $hasModFail = true;
+                        $modNotes[] = "{$mKey}: " . ($mInfo['error'] ?? 'ล้มเหลว');
+                    }
+                }
+            }
+            $slotHm = substr((string)$res['recorded_at'], 11, 5);
+            add_server_log('GitHubSync-7000', "☁️➡️🗄️ ซิงค์ข้อมูลย้อนหลังจาก GitHub Snapshot ({$res['recorded_at']}) เข้าฐานข้อมูล water_system2 สำเร็จ (น้ำ {$c['water']}, ฝน {$c['rainfall']}, เขื่อน {$c['drought']}, PM2.5 {$c['pm25']}, ร้องเรียน {$c['complaints']})");
+            sys_log_record([
+                'module'         => 'github_sync',
+                'action'         => 'Import Cloud Snapshot',
+                'status'         => $hasModFail ? 'partial' : 'success',
+                'trigger_source' => 'github_sync',
+                'scheduled_slot' => $slotHm,
+                'started_at'     => $res['recorded_at'],
+                'finished_at'    => date('Y-m-d H:i:s'),
+                'row_count'      => array_sum($c),
+                'summary'        => "ซิงค์ Snapshot {$res['snapshot_id']} (น้ำ {$c['water']}, ฝน {$c['rainfall']}, เขื่อน {$c['drought']}, PM2.5 {$c['pm25']}, ร้องเรียน {$c['complaints']})",
+                'error_detail'   => $hasModFail ? implode(' | ', $modNotes) : null,
+                'meta'           => ['snapshot_id' => $res['snapshot_id'], 'counts' => $c, 'module_status' => $modStatus],
+            ]);
         } else {
             $skippedCount++;
         }

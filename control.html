@@ -219,9 +219,9 @@
               </h3>
               <div class="space-y-3 text-sm">
                 <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                  <span class="font-semibold text-slate-600">Chrome Extension:</span>
+                  <span class="font-semibold text-slate-600">Direct PHP API Collector:</span>
                   <span id="extStatus" class="flex items-center gap-2 text-red-500 font-medium">
-                    <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div> ไม่ได้เชื่อมต่อ (Disconnected)
+                    <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div> กำลังตรวจสอบ...
                   </span>
                 </div>
                 <div class="flex justify-between items-center border-b border-slate-100 pb-2">
@@ -230,7 +230,7 @@
                 </div>
               </div>
               <p class="text-xs text-slate-400 mt-4 italic">
-                * หาก Extension ไม่ได้เชื่อมต่อ ระบบจะใช้ Puppeteer (หุ่นยนต์) ดึงข้อมูลแทน
+                * ดึงข้อมูลตรงผ่าน Server-to-Server API (`curl_multi` + Smart Sleep) โดยไม่ต้องเปิด Chrome Extension
               </p>
             </div>
 

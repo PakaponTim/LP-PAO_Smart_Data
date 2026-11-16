@@ -1,16 +1,52 @@
 const socket = typeof io !== 'undefined' ? io() : null;
+    function formatRealtimeLogLine(msg) {
+      const text = String(msg || '');
+      let colorClass = 'text-green-400';
+      if (text.includes('❌') || text.includes('ไม่สำเร็จ') || text.includes('ล้มเหลว') || text.includes('ข้อผิดพลาด')) {
+        colorClass = 'text-rose-400';
+      } else if (text.includes('⚠️') || text.includes('เฝ้าระวัง') || text.includes('ค้าง')) {
+        colorClass = 'text-amber-300';
+      }
+      return `<div class="border-b border-slate-800 pb-1 mb-1 ${colorClass}">${waterEscape(text)}</div>`;
+    }
+
+    function appendFilteredLogs(boxId, lines, keywords) {
+      const box = document.getElementById(boxId);
+      if (!box) return;
+      const list = Array.isArray(lines) ? lines : [];
+      const filtered = keywords && keywords.length
+        ? list.filter(line => keywords.some(kw => String(line).includes(kw)))
+        : list;
+      if (filtered.length === 0) {
+        box.innerHTML = `<div class="text-slate-500 italic">ยังไม่มีบันทึกกิจกรรมสำหรับหมวดหมู่นี้</div>`;
+        return;
+      }
+      box.innerHTML = filtered.slice(0, 60).map(formatRealtimeLogLine).join('');
+    }
+
     if (socket) {
       socket.on('server_log', (msg) => {
-        const logBox = document.getElementById('logBox');
-        if (logBox) logBox.innerHTML = `<div class="border-b border-slate-800 pb-1 mb-1">${waterEscape(msg)}</div>` + logBox.innerHTML;
-        const waterLogBox = document.getElementById('waterLogBox');
-        if (waterLogBox) waterLogBox.innerHTML = `<div class="border-b border-slate-800 pb-1 mb-1">${waterEscape(msg)}</div>` + waterLogBox.innerHTML;
-        const droughtLogBox = document.getElementById('droughtLogBox');
-        if (droughtLogBox) droughtLogBox.innerHTML = `<div class="border-b border-slate-800 pb-1 mb-1">${waterEscape(msg)}</div>` + droughtLogBox.innerHTML;
-        const pm25LogBox = document.getElementById('pm25LogBox');
-        if (pm25LogBox) pm25LogBox.innerHTML = `<div class="border-b border-slate-800 pb-1 mb-1">${waterEscape(msg)}</div>` + pm25LogBox.innerHTML;
-        const complaintsLogBox = document.getElementById('complaintsLogBox');
-        if (complaintsLogBox) complaintsLogBox.innerHTML = `<div class="border-b border-slate-800 pb-1 mb-1">${waterEscape(msg)}</div>` + complaintsLogBox.innerHTML;
+        const htmlLine = formatRealtimeLogLine(msg);
+        const s = String(msg || '');
+        const targets = ['logBox'];
+        const isGlobal = s.includes('SmartSleep') || s.includes('ParallelAPI') || s.includes('GitHubSync');
+        if (isGlobal || s.includes('ระดับน้ำ') || s.includes('น้ำฝน') || s.includes('water') || s.includes('rainfall')) targets.push('waterLogBox');
+        if (isGlobal || s.includes('ภัยแล้ง') || s.includes('อ่าง') || s.includes('drought')) targets.push('droughtLogBox');
+        if (isGlobal || s.includes('PM 2.5') || s.includes('PM2.5') || s.includes('ฝุ่น') || s.includes('pm25')) targets.push('pm25LogBox');
+        if (isGlobal || s.includes('ร้องเรียน') || s.includes('Traffy') || s.includes('Cookie') || s.includes('Session') || s.includes('complaints')) targets.push('complaintsLogBox');
+
+        targets.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.innerHTML = htmlLine + el.innerHTML;
+        });
+      });
+
+      socket.on('system_log', () => {
+        const homePage = document.getElementById('page-home');
+        if (homePage && !homePage.classList.contains('hidden') && typeof window.loadSystemLogs === 'function') {
+          window.loadSystemLogs();
+          window.loadExecutionHeatmap();
+        }
       });
     }
 
@@ -888,51 +924,21 @@ const socket = typeof io !== 'undefined' ? io() : null;
         }
 
         const logBox = document.getElementById('logBox');
-        if (logBox && !logsLoaded && data.logs) {
-          const existingLines = Array.from(logBox.querySelectorAll('div')).map(el => el.innerText.trim());
-          let newHTML = '';
-          data.logs.forEach(log => {
-            if (!existingLines.includes(log.trim())) {
-              newHTML += `<div class="border-b border-slate-800 pb-1 mb-1">${waterEscape(log)}</div>`;
-            }
-          });
-          logBox.innerHTML = logBox.innerHTML + newHTML;
+        if (logBox && data.logs) {
+          logBox.innerHTML = data.logs.slice(0, 80).map(formatRealtimeLogLine).join('');
           logsLoaded = true;
         }
-        const waterLogBox = document.getElementById('waterLogBox');
-        if (waterLogBox && data.logs) {
-          let newHTML = '';
-          data.logs.forEach(log => {
-            newHTML += `<div class="border-b border-slate-800 pb-1 mb-1">${waterEscape(log)}</div>`;
-          });
-          waterLogBox.innerHTML = newHTML;
-        }
-        const droughtLogBox = document.getElementById('droughtLogBox');
-        if (droughtLogBox && !droughtLogsLoaded && data.logs) {
-          let newHTML = '';
-          data.logs.forEach(log => {
-            newHTML += `<div class="border-b border-slate-800 pb-1 mb-1">${waterEscape(log)}</div>`;
-          });
-          droughtLogBox.innerHTML = newHTML;
+        if (data.logs) {
+          appendFilteredLogs('waterLogBox', data.logs, ['ระดับน้ำ', 'น้ำฝน', 'SmartSleep', 'ParallelAPI', 'GitHubSync', 'แจ้งเตือน']);
+          appendFilteredLogs('droughtLogBox', data.logs, ['ภัยแล้ง', 'อ่าง', 'เขื่อน', 'SmartSleep', 'ParallelAPI', 'GitHubSync', 'แจ้งเตือน']);
+          appendFilteredLogs('pm25LogBox', data.logs, ['PM 2.5', 'PM2.5', 'ฝุ่น', 'SmartSleep', 'ParallelAPI', 'GitHubSync', 'แจ้งเตือน']);
+          appendFilteredLogs('complaintsLogBox', data.logs, ['ร้องเรียน', 'Traffy', 'Cookie', 'Session', 'Extension', 'SmartSleep', 'ParallelAPI', 'GitHubSync']);
           droughtLogsLoaded = true;
-        }
-        const pm25LogBox = document.getElementById('pm25LogBox');
-        if (pm25LogBox && !pm25LogsLoaded && data.logs) {
-          let newHTML = '';
-          data.logs.forEach(log => {
-            newHTML += `<div class="border-b border-slate-800 pb-1 mb-1">${waterEscape(log)}</div>`;
-          });
-          pm25LogBox.innerHTML = newHTML;
           pm25LogsLoaded = true;
-        }
-        const complaintsLogBox = document.getElementById('complaintsLogBox');
-        if (complaintsLogBox && !complaintsLogsLoaded && data.logs) {
-          let newHTML = '';
-          data.logs.forEach(log => {
-            newHTML += `<div class="border-b border-slate-800 pb-1 mb-1">${waterEscape(log)}</div>`;
-          });
-          complaintsLogBox.innerHTML = newHTML;
           complaintsLogsLoaded = true;
+        }
+        if (typeof window.updateFreshnessStrip === 'function') {
+          window.updateFreshnessStrip(data.freshness || {}, data.retryQueue || {});
         }
       } catch (e) {
         console.error('Error fetching status', e);
@@ -1246,8 +1252,12 @@ const socket = typeof io !== 'undefined' ? io() : null;
 
       if (pageId === 'dashboard') {
         setTimeout(initDashboardCharts, 100);
+      } else if (pageId === 'home') {
+        if (typeof window.loadSystemLogs === 'function') window.loadSystemLogs();
+        if (typeof window.loadExecutionHeatmap === 'function') window.loadExecutionHeatmap();
       } else if (pageId === 'complaints') {
         loadComplaints();
+        if (typeof window.loadTraffySessionStatus === 'function') window.loadTraffySessionStatus();
       } else if (pageId === 'notification') {
         if (typeof window.initNotificationPage === 'function') {
           window.initNotificationPage();
@@ -4570,4 +4580,353 @@ const socket = typeof io !== 'undefined' ? io() : null;
         modal.classList.add('hidden');
         modal.classList.remove('flex');
       }, 300);
+    };
+
+    // =========================================================================
+    // System Log Center, 48-Slot Heatmap, Auto-Retry, Data Freshness & Traffy Session UI
+    // =========================================================================
+    function copyLogContainerText(elementId, label) {
+      const box = document.getElementById(elementId);
+      if (!box) return;
+      const text = box.innerText.trim();
+      if (!text) {
+        alert('ไม่มีข้อมูลให้คัดลอก');
+        return;
+      }
+      navigator.clipboard.writeText(text).then(() => {
+        alert(`คัดลอก ${label} ลงในคลิปบอร์ดเรียบร้อยแล้ว!`);
+      }).catch(() => alert('ไม่สามารถคัดลอกได้'));
+    }
+
+    window.copyLogs = () => copyLogContainerText('logBox', 'Live System Logs');
+    window.copyWaterLogs = () => copyLogContainerText('waterLogBox', 'Water Logs');
+    window.copyDroughtLogs = () => copyLogContainerText('droughtLogBox', 'Drought Logs');
+    window.copyPM25Logs = () => copyLogContainerText('pm25LogBox', 'PM 2.5 Logs');
+
+    window.switchSystemLogView = function (mode) {
+      const structBox = document.getElementById('structuredLogsContainer');
+      const consoleBox = document.getElementById('consoleLogsContainer');
+      const filterBar = document.getElementById('sysLogFiltersBar');
+      const btnS = document.getElementById('tabBtnStructuredLogs');
+      const btnC = document.getElementById('tabBtnConsoleLogs');
+      if (!structBox || !consoleBox) return;
+
+      if (mode === 'console') {
+        structBox.classList.add('hidden');
+        if (filterBar) filterBar.classList.add('hidden');
+        consoleBox.classList.remove('hidden');
+        if (btnC) btnC.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white';
+        if (btnS) btnS.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700';
+      } else {
+        consoleBox.classList.add('hidden');
+        structBox.classList.remove('hidden');
+        if (filterBar) filterBar.classList.remove('hidden');
+        if (btnS) btnS.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white';
+        if (btnC) btnC.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700';
+      }
+    };
+
+    window.updateFreshnessStrip = function (freshness, retryQueue) {
+      const strip = document.getElementById('freshnessBadgeStrip');
+      if (!strip) return;
+      const modNames = { water: 'น้ำ', rainfall: 'ฝน', pm25: 'PM 2.5', drought: 'เขื่อน' };
+      const items = Object.keys(modNames).map(k => {
+        const info = freshness[k];
+        if (!info) return `<span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">${modNames[k]}: รอตรวจสอบ</span>`;
+        if (info.isStale) {
+          return `<span class="px-2 py-0.5 rounded bg-amber-950/80 border border-amber-500/40 text-amber-300" title="อัปเดตล่าสุด ${waterEscape(info.latestObsAt || '')}">⚠️ ${modNames[k]}: ค้าง ${info.maxLagHours} ชม. (>${info.thresholdHours}ชม.)</span>`;
+        }
+        return `<span class="px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-500/30 text-emerald-300">✅ ${modNames[k]}: ปกติ (${info.maxLagHours} ชม.)</span>`;
+      });
+
+      const retryKeys = retryQueue ? Object.keys(retryQueue) : [];
+      const retryBadge = retryKeys.length > 0
+        ? `<span class="px-2.5 py-0.5 rounded bg-rose-950/80 border border-rose-500/50 text-rose-300 animate-pulse">🔁 คิว Auto-Retry: ${retryKeys.map(m => `${m} (ครั้งที่ ${retryQueue[m].attempt})`).join(', ')}</span>`
+        : `<span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-400">🔁 คิว Retry: ว่าง</span>`;
+
+      strip.innerHTML = `<div class="flex flex-wrap items-center gap-1.5"><span class="text-slate-400 font-semibold mr-1">🛰️ ความสดข้อมูลต้นทาง:</span>${items.join('')}</div>${retryBadge}`;
+    };
+
+    function getSysLogFilterQuery() {
+      const params = new URLSearchParams();
+      const mod = document.getElementById('sysLogModuleFilter')?.value || 'all';
+      const st  = document.getElementById('sysLogStatusFilter')?.value || 'all';
+      const trg = document.getElementById('sysLogTriggerFilter')?.value || 'all';
+      const dt  = document.getElementById('sysLogDateFilter')?.value || '';
+      const q   = document.getElementById('sysLogSearchInput')?.value.trim() || '';
+      if (mod !== 'all') params.set('module', mod);
+      if (st !== 'all') params.set('status', st);
+      if (trg !== 'all') params.set('trigger_source', trg);
+      if (dt) { params.set('startDate', dt); params.set('endDate', dt); }
+      if (q) params.set('search', q);
+      params.set('limit', '100');
+      return params.toString();
+    }
+
+    window.loadSystemLogs = async function () {
+      const feed = document.getElementById('systemLogFeed');
+      if (!feed) return;
+      try {
+        const res = await fetch('/api/system-logs?' + getSysLogFilterQuery());
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'โหลดข้อมูลไม่สำเร็จ');
+
+        const s = data.stats || {};
+        const badges = document.getElementById('sysLogSummaryBadges');
+        if (badges) {
+          badges.innerHTML = `
+            <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-200">รวม ${s.total || 0}</span>
+            <span class="px-2 py-0.5 rounded bg-emerald-950/70 border border-emerald-500/40 text-emerald-300">✅ สำเร็จ ${s.success || 0}</span>
+            <span class="px-2 py-0.5 rounded bg-rose-950/70 border border-rose-500/40 text-rose-300">❌ ไม่สำเร็จ ${s.failed || 0}</span>
+            <span class="px-2 py-0.5 rounded bg-amber-950/70 border border-amber-500/40 text-amber-300">⚠️ เฝ้าระวัง/บางส่วน ${(s.partial || 0) + (s.warning || 0)}</span>
+          `;
+        }
+
+        window.updateFreshnessStrip(data.freshness || {}, data.retryQueue || {});
+
+        const logs = data.logs || [];
+        if (logs.length === 0) {
+          feed.innerHTML = `<div class="p-6 text-center text-slate-400">ไม่พบประวัติการทำงานที่ตรงกับเงื่อนไข</div>`;
+          return;
+        }
+
+        const pillMap = {
+          success: { cls: 'bg-emerald-950 text-emerald-300 border-emerald-500/40', txt: '✅ สำเร็จ' },
+          failed:  { cls: 'bg-rose-950 text-rose-300 border-rose-500/40', txt: '❌ ไม่สำเร็จ' },
+          partial: { cls: 'bg-amber-950 text-amber-300 border-amber-500/40', txt: '🟡 สำเร็จบางส่วน' },
+          warning: { cls: 'bg-amber-950 text-amber-200 border-amber-500/40', txt: '⚠️ เฝ้าระวัง' },
+          running: { cls: 'bg-blue-950 text-blue-300 border-blue-500/40', txt: '⏳ กำลังทำงาน' }
+        };
+
+        feed.innerHTML = logs.map(r => {
+          const p = pillMap[r.status] || { cls: 'bg-slate-800 text-slate-300 border-slate-700', txt: r.status };
+          const sec = r.duration_ms > 0 ? `${(r.duration_ms / 1000).toFixed(2)} วิ` : '-';
+          const timeRange = r.finished_at && r.finished_at !== r.started_at
+            ? `${waterEscape(r.started_at)} → ${waterEscape(String(r.finished_at).slice(11))}`
+            : waterEscape(r.started_at);
+          const canRetry = (r.status === 'failed' || r.status === 'partial') && ['water', 'rainfall', 'drought', 'pm25', 'complaints', 'github_sync', 'notification'].includes(r.module);
+          const retryBtn = canRetry
+            ? `<button onclick="retryFailedModule('${waterEscape(r.module)}', '${waterEscape(r.scheduled_slot || '')}', this)" class="px-2 py-0.5 bg-rose-700 hover:bg-rose-600 text-white rounded text-[11px] font-semibold">🔄 ดึงซ้ำเฉพาะงานนี้</button>`
+            : '';
+          const errHtml = r.error_detail
+            ? `<div class="mt-1 px-2 py-1 rounded bg-rose-950/50 border border-rose-500/30 text-rose-300 font-mono text-[11px] break-all">สาเหตุ: ${waterEscape(r.error_detail)}</div>`
+            : '';
+
+          return `
+            <div class="p-3 hover:bg-slate-900/70 transition-colors flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <span class="px-2 py-0.5 rounded border text-[11px] font-semibold ${p.cls}">${p.txt}</span>
+                  <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-200 font-semibold">${waterEscape(r.module_label || r.module)}</span>
+                  ${r.scheduled_slot ? `<span class="px-1.5 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-500/30 text-[11px]">รอบ ${waterEscape(r.scheduled_slot)}</span>` : ''}
+                  <span class="text-slate-400 text-[11px]">• ${waterEscape(r.trigger_label || r.trigger_source)}</span>
+                </div>
+                <div class="flex items-center gap-2 text-[11px] text-slate-400 font-mono">
+                  <span>🕒 ${timeRange}</span>
+                  <span>⏱️ ${sec}</span>
+                  ${r.row_count > 0 ? `<span class="text-cyan-300">${r.row_count} แถว</span>` : ''}
+                  ${retryBtn}
+                </div>
+              </div>
+              <div class="text-slate-200">${waterEscape(r.summary || r.action)}</div>
+              ${errHtml}
+            </div>`;
+        }).join('');
+      } catch (e) {
+        feed.innerHTML = `<div class="p-4 text-rose-400">โหลด System Log ไม่สำเร็จ: ${waterEscape(e.message)}</div>`;
+      }
+    };
+
+    let cachedHeatmapSlots = [];
+    window.loadExecutionHeatmap = async function () {
+      const grid = document.getElementById('executionHeatmapGrid');
+      const dateInput = document.getElementById('heatmapDateInput');
+      if (!grid) return;
+      if (dateInput && !dateInput.value) {
+        dateInput.value = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' });
+      }
+      const dateVal = dateInput ? dateInput.value : '';
+      try {
+        const res = await fetch('/api/system-logs/heatmap' + (dateVal ? `?date=${encodeURIComponent(dateVal)}` : ''));
+        const data = await res.json();
+        if (!data.success) return;
+
+        cachedHeatmapSlots = data.slots || [];
+        const c = data.counts || {};
+        const summaryEl = document.getElementById('heatmapSummaryText');
+        if (summaryEl) {
+          summaryEl.textContent = `(สำเร็จ ${c.success || 0} | บางส่วน ${c.partial || 0} | ไม่สำเร็จ ${c.failed || 0} | ข้าม ${c.missed || 0})`;
+        }
+
+        const colorMap = {
+          success: 'bg-emerald-600/90 hover:bg-emerald-500 text-white border-emerald-400/50',
+          partial: 'bg-amber-500/90 hover:bg-amber-400 text-slate-950 border-amber-300/60',
+          failed:  'bg-rose-600/90 hover:bg-rose-500 text-white border-rose-400/60',
+          missed:  'bg-slate-700/80 hover:bg-slate-600 text-slate-300 border-slate-500/50',
+          pending: 'bg-slate-900 hover:bg-slate-800 text-slate-500 border-slate-800'
+        };
+
+        grid.innerHTML = cachedHeatmapSlots.map(sl => {
+          const cls = colorMap[sl.status] || colorMap.pending;
+          return `<button onclick="selectHeatmapSlot('${waterEscape(sl.slot)}')" title="${waterEscape(sl.slot + ' — ' + sl.summary)}" class="px-1 py-1 rounded border text-[10px] font-mono text-center transition-all ${cls}">${waterEscape(sl.slot)}</button>`;
+        }).join('');
+      } catch (e) {
+        console.error('Heatmap error', e);
+      }
+    };
+
+    window.selectHeatmapSlot = function (slotHm) {
+      const box = document.getElementById('heatmapSlotDetail');
+      const sl = cachedHeatmapSlots.find(s => s.slot === slotHm);
+      if (!box || !sl) return;
+      box.classList.remove('hidden');
+      const modsHtml = (sl.modules || []).map(m => {
+        const icon = m.status === 'success' ? '✅' : (m.status === 'failed' ? '❌' : '⚠️');
+        return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800 border border-slate-700 mr-1 mb-1">${icon} ${waterEscape(m.module)}: ${waterEscape(m.summary)}</span>`;
+      }).join('');
+      box.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+          <span class="font-bold text-slate-100">รอบเวลา ${waterEscape(sl.slot)} น. — สถานะ: ${waterEscape(sl.status)}</span>
+          <span class="text-slate-400 font-mono">เริ่ม: ${waterEscape(sl.startedAt || '-')} | เสร็จ: ${waterEscape(sl.finishedAt || '-')} | รวม ${sl.rowCount || 0} แถว</span>
+        </div>
+        <div class="text-slate-300 mb-1">${waterEscape(sl.summary || '')}</div>
+        ${modsHtml ? `<div class="flex flex-wrap pt-1">${modsHtml}</div>` : ''}
+      `;
+    };
+
+    window.retryFailedModule = async function (moduleName, slotHm, btn) {
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ กำลังดึงซ้ำ...';
+      }
+      try {
+        const res = await fetch('/api/system-logs/retry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ module: moduleName, slot: slotHm })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          alert(`ดึงซ้ำ [${moduleName}] ไม่สำเร็จ: ` + (data.error || 'Unknown error'));
+        } else {
+          alert(`✅ ${data.message}`);
+        }
+      } catch (e) {
+        alert('เกิดข้อผิดพลาดระหว่าง Retry: ' + e.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '🔄 ดึงซ้ำเฉพาะงานนี้';
+        }
+        window.loadSystemLogs();
+        window.loadExecutionHeatmap();
+      }
+    };
+
+    window.exportSystemLogsCsv = async function () {
+      try {
+        const res = await fetch('/api/system-logs/export?' + getSysLogFilterQuery());
+        if (!res.ok) throw new Error('Export failed');
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `System_Audit_Logs_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        setTimeout(() => { if (typeof window.loadSystemLogs === 'function') window.loadSystemLogs(); }, 600);
+      } catch (e) {
+        alert('ไม่สามารถส่งออก Audit CSV ได้: ' + e.message);
+      }
+    };
+
+    window.loadTraffySessionStatus = async function () {
+      const badge = document.getElementById('traffyAuthStatusBadge');
+      if (!badge) return;
+      try {
+        const res = await fetch('/api/traffy/session-status');
+        const data = await res.json();
+        if (!data.success) return;
+        const orgInput = document.getElementById('traffyOrgIdInput');
+        if (orgInput && !orgInput.value && data.orgId) orgInput.value = data.orgId;
+        const expBadge = (data.jwtInfo && data.jwtInfo.expAt)
+          ? (data.jwtInfo.isExpired
+              ? ` | ❌ Token หมดอายุแล้ว (${data.jwtInfo.expAt})`
+              : ` | ⏳ เหลืออายุ ~${data.jwtInfo.remainingDays} วัน (หมด ${data.jwtInfo.expAt})`)
+          : '';
+        const authTxt = data.configured
+          ? `✅ ตั้งค่า Traffy Token/Cookie แล้ว (${data.hasToken ? 'Bearer Token' : ''}${data.hasCookie ? (data.hasToken ? ' + Cookie' : 'Cookie ' + data.cookieLength + ' chars') : ''}${data.orgId ? ', Org: ' + data.orgId : ''}${expBadge})`
+          : 'ℹ️ ใช้ Direct Public API อยู่ — หากล็อกอิน LINE ใน citydata.traffy.in.th สามารถวาง local_login_data / fondue_token ด้านล่างได้';
+        badge.textContent = `${authTxt} | App Cookie: ${data.appSessionCookie} | ในฐานข้อมูล: ${data.dbCount || 0} เรื่อง`;
+      } catch (e) {
+        badge.textContent = 'ไม่สามารถตรวจสอบสถานะ Session ได้';
+      }
+    };
+
+    window.saveTraffySessionConfig = async function (clearFlag) {
+      const cookieVal = document.getElementById('traffyCookieInput')?.value.trim() || '';
+      const tokenVal  = document.getElementById('traffyTokenInput')?.value.trim() || '';
+      const orgVal    = document.getElementById('traffyOrgIdInput')?.value.trim() || '';
+      if (!clearFlag && !cookieVal && !tokenVal && !orgVal) {
+        alert('กรุณากรอก Bearer Token (fondue_token), Cookie หรือ Org ID ก่อนบันทึก');
+        return;
+      }
+      try {
+        const res = await fetch('/api/traffy/session-config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ clear: !!clearFlag, cookie: cookieVal, token: tokenVal, orgId: orgVal })
+        });
+        const data = await res.json();
+        alert(data.message || (data.success ? 'บันทึกสำเร็จ' : 'ไม่สำเร็จ'));
+        if (clearFlag) {
+          if (document.getElementById('traffyCookieInput')) document.getElementById('traffyCookieInput').value = '';
+          if (document.getElementById('traffyTokenInput')) document.getElementById('traffyTokenInput').value = '';
+          if (document.getElementById('traffyOrgIdInput')) document.getElementById('traffyOrgIdInput').value = '';
+        }
+        window.loadTraffySessionStatus();
+      } catch (e) {
+        alert('เกิดข้อผิดพลาด: ' + e.message);
+      }
+    };
+
+    window.testTraffyCookieAndSession = async function () {
+      const btn = document.getElementById('testTraffySessionBtn');
+      const box = document.getElementById('traffyDiagResult');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ กำลังทดสอบ...';
+      }
+      try {
+        const res = await fetch('/api/traffy/test-session', { method: 'POST' });
+        const d = await res.json();
+        if (box) {
+          box.classList.remove('hidden');
+          const appOk = d.appSession?.ok ? '✅ ผ่าน' : '❌ ไม่ผ่าน';
+          const tfAuth = d.traffyAuth?.statusLabel || 'ไม่ได้ตั้งค่า';
+          const geo = d.publicApi?.geojson || {};
+          const tl  = d.publicApi?.timeline || {};
+          box.innerHTML = `
+            <div class="font-bold text-slate-800 dark:text-slate-100">ผลการทดสอบเมื่อ ${waterEscape(d.testedAt || '')} (${((d.durationMs || 0)/1000).toFixed(2)} วิ)</div>
+            <div>• <b>1. Internal App Session (${waterEscape(d.appSession?.cookieName || 'water_session_7000')}):</b> ${appOk} — ${waterEscape(d.appSession?.message || '')}</div>
+            <div>• <b>2. Traffy Cookie / Token Session:</b> ${waterEscape(tfAuth)} ${d.traffyAuth?.jwtInfo?.expAt ? `(หมดอายุ ${waterEscape(d.traffyAuth.jwtInfo.expAt)})` : ''}</div>
+            <div>• <b>3. Traffy Public GeoJSON API:</b> ${geo.ok ? `✅ HTTP ${geo.httpCode} (${geo.lampangCount} เรื่อง, ${geo.durationMs}ms)` : `❌ HTTP ${geo.httpCode || 0} (${waterEscape(geo.error || 'Timeout/502')})`}</div>
+            <div>• <b>4. Traffy Timeline API &amp; Portal SPA:</b> Timeline ${tl.ok ? `✅ HTTP ${tl.httpCode}` : `⚠️ HTTP ${tl.httpCode || 0}`} | citydata.traffy.in.th ${d.publicApi?.citydataReachable ? '✅ เชื่อมต่อได้' : '⚠️ เข้าไม่ได้'}</div>
+            <div class="text-indigo-600 dark:text-indigo-300 font-medium pt-1">สรุป: ${waterEscape(d.summary || '')}</div>
+          `;
+        }
+        window.loadTraffySessionStatus();
+      } catch (e) {
+        if (box) {
+          box.classList.remove('hidden');
+          box.innerHTML = `<div class="text-rose-600">❌ ทดสอบไม่สำเร็จ: ${waterEscape(e.message)}</div>`;
+        }
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '🧪 ทดสอบ Cookie & Session + API';
+        }
+      }
     };

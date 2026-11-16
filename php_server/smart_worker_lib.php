@@ -76,9 +76,8 @@ function smart_worker_status(): array {
     ];
 }
 
-function smart_check_and_run_if_due(bool $allowStartupCatchup = false): array {
+function smart_check_and_run_if_due(bool $allowStartupCatchup = false, string $source = 'smart_sleep'): array {
     $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
-    $state = read_json_file($stateFile, []);
     $cfg = get_app_config();
     $active = $cfg['isScheduleActive'] ?? [];
     $anyActive = !empty($active['water']) || !empty($active['drought']) || !empty($active['pm25']) || !empty($active['complaints']);
@@ -92,46 +91,62 @@ function smart_check_and_run_if_due(bool $allowStartupCatchup = false): array {
         return ['ran' => false, 'reason' => 'no_tasks_configured'];
     }
 
-    $now = time();
-    $hm = date('H:i', $now);
-    $currentSlot = date('Y-m-d H:i', $now);
+    // Atomic check-and-mark inside mutex so concurrent callers never double-fire the same HH:mm slot
+    $claim = with_file_lock('smart_slot_state', function () use ($stateFile, $tasks, $allowStartupCatchup) {
+        $state = read_json_file($stateFile, []);
+        $now = time();
+        $hm = date('H:i', $now);
+        $currentSlot = date('Y-m-d H:i', $now);
 
-    $isDue = false;
-    $dueSlot = $currentSlot;
+        $isDue = false;
+        $dueSlot = $currentSlot;
 
-    if (in_array($hm, $tasks, true) && (($state['lastScheduledSlot'] ?? '') !== $currentSlot)) {
-        $isDue = true;
-    } elseif ($allowStartupCatchup) {
-        // Check if we missed a slot in the last 3 minutes while sleeping/starting
-        foreach ($tasks as $slotHm) {
-            $slotTs = strtotime(date('Y-m-d', $now) . " {$slotHm}:00");
-            if ($slotTs !== false && $now >= $slotTs && ($now - $slotTs) <= 180) {
-                $slotKey = date('Y-m-d H:i', $slotTs);
-                if (($state['lastScheduledSlot'] ?? '') !== $slotKey) {
-                    $isDue = true;
-                    $dueSlot = $slotKey;
-                    break;
+        if (in_array($hm, $tasks, true) && (($state['lastScheduledSlot'] ?? '') !== $currentSlot)) {
+            $isDue = true;
+        } elseif ($allowStartupCatchup) {
+            foreach ($tasks as $slotHm) {
+                $slotTs = strtotime(date('Y-m-d', $now) . " {$slotHm}:00");
+                if ($slotTs !== false && $now >= $slotTs && ($now - $slotTs) <= 180) {
+                    $slotKey = date('Y-m-d H:i', $slotTs);
+                    if (($state['lastScheduledSlot'] ?? '') !== $slotKey) {
+                        $isDue = true;
+                        $dueSlot = $slotKey;
+                        break;
+                    }
                 }
             }
         }
-    }
 
-    if (!$isDue) {
+        if (!$isDue) {
+            return ['due' => false, 'hm' => $hm, 'dueSlot' => null];
+        }
+
+        $state['lastScheduledSlot'] = $dueSlot;
+        $state['lastAutoDirectCollect'] = $now;
+        write_json_file($stateFile, $state);
+        return ['due' => true, 'hm' => $hm, 'dueSlot' => $dueSlot];
+    }, false);
+
+    if (empty($claim['due'])) {
         return ['ran' => false, 'reason' => 'sleeping_until_next_slot'];
     }
 
-    // Mark slot BEFORE running to prevent duplicate triggers
-    $state['lastScheduledSlot'] = $dueSlot;
-    $state['lastAutoDirectCollect'] = $now;
-    write_json_file($stateFile, $state);
+    $hm = $claim['hm'];
+    $dueSlot = $claim['dueSlot'];
 
     @ignore_user_abort(true);
     if (PHP_SAPI !== 'cli') {
         @set_time_limit(120);
     }
 
+    $slotHm = substr($dueSlot, 11, 5);
     add_server_log('SmartSleep', "⏰ ถึงเวลาตามตาราง ({$hm}) — ตื่นขึ้นมาดึง 5 API พร้อมกัน (curl_multi)...");
-    $res = collect_all_parallel_direct($active);
+    $res = collect_all_parallel_direct($active, $source, $slotHm);
+
+    // Retry any queued failed tasks right after scheduled cycle
+    if (function_exists('retry_queue_process_due')) {
+        retry_queue_process_due();
+    }
 
     // Also update smart worker state
     $wState = read_json_file(smart_worker_state_file(), []);
@@ -140,6 +155,16 @@ function smart_check_and_run_if_due(bool $allowStartupCatchup = false): array {
     write_json_file(smart_worker_state_file(), $wState);
 
     return ['ran' => true, 'slot' => $dueSlot, 'parallelResult' => $res];
+}
+
+function smart_build_self_url(string $scriptName = 'worker.php', string $query = ''): string {
+    $proto = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '';
+    $isHttps = (stripos($proto, 'https') !== false) || (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+    $scheme = $isHttps ? 'https' : 'http';
+    $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? ($_SERVER['HTTP_HOST'] ?? '127.0.0.1:7000');
+    $scriptDir = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/' . $scriptName)), '/');
+    $base = "{$scheme}://{$host}{$scriptDir}/{$scriptName}";
+    return $query !== '' ? "{$base}?{$query}" : $base;
 }
 
 function smart_fire_self_chain(string $url): void {
@@ -159,21 +184,27 @@ function smart_fire_self_chain(string $url): void {
             $req .= "Host: {$host}" . (isset($parts['port']) ? ":{$port}" : '') . "\r\n";
             $req .= "Connection: Close\r\n\r\n";
             @fwrite($fp, $req);
-            @usleep(50000); // 50ms to ensure request leaves buffer
+            @usleep(50000);
             @fclose($fp);
             return;
         }
     }
 
-    // Fallback: ultra-short timeout curl trigger
+    // Fallback: ultra-short timeout curl trigger (supports self-signed / reverse proxy)
     $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT_MS => 300,
-        CURLOPT_CONNECTTIMEOUT_MS => 300,
+        CURLOPT_TIMEOUT_MS => 500,
+        CURLOPT_CONNECTTIMEOUT_MS => 500,
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_SSL_VERIFYHOST => 0
     ]);
-    @curl_exec($ch);
+    $ok = @curl_exec($ch);
+    $errno = curl_errno($ch);
+    $err = curl_error($ch);
     curl_close($ch);
+    // CURLE_OPERATION_TIMEDOUT (28) after connect is normal for fire-and-forget self-chain
+    if ($ok === false && $errno !== 0 && $errno !== 28) {
+        add_server_log('SmartSleep', "⚠️ Web self-chain ไม่สามารถเรียกตัวเองได้ ({$url}): {$err}");
+    }
 }

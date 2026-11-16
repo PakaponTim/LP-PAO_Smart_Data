@@ -38,8 +38,18 @@ $rootFiles = [
     'operations.html', 'accounts.html', 'login.html', 'setup.html', 'guide.html',
     'endpoint.php', 'cron.php', 'worker.php', 'server_setup.php',
     'auth-client.js', 'socketio_client.js', 'setup.js', 'accounts.js', 'operations.js',
-    'config.json', 'logo_pao.png', 'drought_standard.png', 'pm25_standard.png', 'complaints_standard.png'
+    'config.json', 'logo_pao.png', 'drought_standard.png', 'pm25_standard.png', 'complaints_standard.png',
+    '.htaccess'
 ];
+
+// Ensure runtime/.htaccess exists cleanly inside deploy package with zero secret files
+$deployRuntimeDir = $targetDir . DIRECTORY_SEPARATOR . 'runtime';
+if (!is_dir($deployRuntimeDir)) @mkdir($deployRuntimeDir, 0777, true);
+$htRule = "<Files \"*\">\n  <IfModule mod_authz_core.c>\n    Require all denied\n  </IfModule>\n  <IfModule !mod_authz_core.c>\n    Order allow,deny\n    Deny from all\n  </IfModule>\n</Files>\n";
+file_put_contents($deployRuntimeDir . DIRECTORY_SEPARATOR . '.htaccess', $htRule);
+$deployPhpRuntimeDir = $deployRuntimeDir . DIRECTORY_SEPARATOR . 'php_7000';
+if (!is_dir($deployPhpRuntimeDir)) @mkdir($deployPhpRuntimeDir, 0777, true);
+file_put_contents($deployPhpRuntimeDir . DIRECTORY_SEPARATOR . '.htaccess', $htRule);
 
 foreach ($rootFiles as $f) {
     $src = $root . DIRECTORY_SEPARATOR . $f;

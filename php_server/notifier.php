@@ -9,6 +9,7 @@
 // =========================================================================
 
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/system_log.php';
 
 const PHP_ALERT_THRESHOLDS = [
     'rainfall' => ['critical' => 90.0, 'warning' => 35.0],
@@ -567,7 +568,10 @@ function php_line_send_push(array $alerts, array $lineCfg): array {
 // 6. Main Entry: Check & Notify + Save to tbl_alert_notifications
 // =========================================================================
 
-function php_check_and_notify(bool $forceSend = false): array {
+function php_check_and_notify(bool $forceSend = false, ?string $triggerSource = null, ?string $scheduledSlot = null): array {
+    $notifStart = microtime(true);
+    $notifStartedAt = date('Y-m-d H:i:s');
+    $effTrigger = $triggerSource ?: ($forceSend ? 'manual' : 'smart_sleep');
     $cfg = get_app_config();
     $notifCfg = $cfg['notifications'] ?? [];
     if (empty($notifCfg['enabled'])) {
@@ -583,6 +587,17 @@ function php_check_and_notify(bool $forceSend = false): array {
     $recipients = $pdo->query("SELECT * FROM tbl_alert_recipients WHERE is_active = 1")->fetchAll();
     if (empty($recipients)) {
         add_server_log('Notification', '⚠️ ไม่มีผู้รับการแจ้งเตือนที่เปิดใช้งาน');
+        sys_log_record([
+            'module'         => 'notification',
+            'action'         => 'Check & Send Alerts',
+            'status'         => 'warning',
+            'trigger_source' => $effTrigger,
+            'scheduled_slot' => $scheduledSlot,
+            'started_at'     => $notifStartedAt,
+            'duration_ms'    => (int)round((microtime(true) - $notifStart) * 1000),
+            'row_count'      => 0,
+            'summary'        => 'ไม่มีผู้รับการแจ้งเตือนที่เปิดใช้งาน (กรุณาเพิ่มอีเมลในระบบแจ้งเตือน)',
+        ]);
         return ['totalAlerts' => 0, 'sentEmails' => 0, 'skipped' => 0, 'errors' => 0];
     }
 
@@ -673,6 +688,18 @@ function php_check_and_notify(bool $forceSend = false): array {
 
     if (empty($allAlerts)) {
         add_server_log('Notification', '✅ ตรวจสอบแล้ว — ไม่มีค่าใดเกินเกณฑ์แจ้งเตือน');
+        if ($forceSend) {
+            sys_log_record([
+                'module'         => 'notification',
+                'action'         => 'Check Alert Thresholds',
+                'status'         => 'success',
+                'trigger_source' => 'manual',
+                'started_at'     => $notifStartedAt,
+                'duration_ms'    => (int)round((microtime(true) - $notifStart) * 1000),
+                'row_count'      => 0,
+                'summary'        => 'ตรวจสอบเกณฑ์แจ้งเตือนแล้ว — ไม่พบค่าวิกฤตหรือค่าเฝ้าระวังเกินเกณฑ์',
+            ]);
+        }
         return ['totalAlerts' => 0, 'sentEmails' => 0, 'skipped' => 0, 'errors' => 0];
     }
 
@@ -689,6 +716,18 @@ function php_check_and_notify(bool $forceSend = false): array {
 
     if (empty($validAlerts)) {
         add_server_log('Notification', "ℹ️ ตรวจพบ " . count($allAlerts) . " รายการ แต่ไม่มีการเปลี่ยนแปลงจากรอบก่อน (ข้ามทั้งหมด {$skipped} รายการ)");
+        if ($forceSend) {
+            sys_log_record([
+                'module'         => 'notification',
+                'action'         => 'Check Alert Thresholds',
+                'status'         => 'success',
+                'trigger_source' => 'manual',
+                'started_at'     => $notifStartedAt,
+                'duration_ms'    => (int)round((microtime(true) - $notifStart) * 1000),
+                'row_count'      => count($allAlerts),
+                'summary'        => "ตรวจพบ " . count($allAlerts) . " รายการ แต่อยู่ในช่วง Cooldown/ไม่มีการเปลี่ยนแปลง (ข้าม {$skipped} รายการ)",
+            ]);
+        }
         return ['totalAlerts' => count($allAlerts), 'sentEmails' => 0, 'skipped' => $skipped, 'errors' => 0];
     }
 
@@ -774,10 +813,36 @@ function php_check_and_notify(bool $forceSend = false): array {
         }
     }
 
+    $durMs = (int)round((microtime(true) - $notifStart) * 1000);
     if ($emailSentOk) {
         add_server_log('Notification', "📧 ส่งรายงานสรุป Digest Email สำเร็จ (" . count($validAlerts) . " รายการ) → " . count($sentRecipients) . " คน");
+        sys_log_record([
+            'module'         => 'notification',
+            'action'         => 'Send Digest Alert',
+            'status'         => 'success',
+            'trigger_source' => $effTrigger,
+            'scheduled_slot' => $scheduledSlot,
+            'started_at'     => $notifStartedAt,
+            'duration_ms'    => $durMs,
+            'row_count'      => count($validAlerts),
+            'summary'        => "ส่งแจ้งเตือน Digest Email สำเร็จ " . count($validAlerts) . " รายการ → ผู้รับ " . count($sentRecipients) . " คน" . ($lineSent ? ' (+LINE Push)' : ''),
+            'meta'           => ['totalAlerts' => count($allAlerts), 'validAlerts' => count($validAlerts), 'sentEmails' => count($sentRecipients), 'lineSent' => $lineSent, 'skipped' => $skipped],
+        ]);
     } else {
         add_server_log('Notification', "⚠️ ส่ง Email แจ้งเตือนไม่สำเร็จ: " . ($lastError ?: 'ตรวจสอบ SMTP หรือรายชื่อผู้รับ'));
+        sys_log_record([
+            'module'         => 'notification',
+            'action'         => 'Send Digest Alert',
+            'status'         => ($lineSent ? 'partial' : 'failed'),
+            'trigger_source' => $effTrigger,
+            'scheduled_slot' => $scheduledSlot,
+            'started_at'     => $notifStartedAt,
+            'duration_ms'    => $durMs,
+            'row_count'      => count($validAlerts),
+            'summary'        => ($lineSent ? 'ส่ง LINE สำเร็จ แต่ส่ง Email ไม่สำเร็จ' : 'ส่งแจ้งเตือน Email ไม่สำเร็จ'),
+            'error_detail'   => $lastError ?: 'ตรวจสอบ SMTP หรือรายชื่อผู้รับ',
+            'meta'           => ['totalAlerts' => count($allAlerts), 'validAlerts' => count($validAlerts), 'lineSent' => $lineSent, 'skipped' => $skipped],
+        ]);
     }
 
     return [
@@ -834,6 +899,8 @@ function php_send_test_email(?string $specificEmail = null): array {
         ]
     ];
 
+    $testStart = microtime(true);
+    $testStartedAt = date('Y-m-d H:i:s');
     $html = php_build_digest_email_html($testAlerts);
     $subject = '🚨 [แจ้งเตือนวิกฤต] ทดสอบระบบแจ้งเตือนอัตโนมัติ — อบจ.ลำปาง';
     $res = php_smtp_send_email($smtpCfg, $recipients, $subject, $html);
@@ -847,8 +914,99 @@ function php_send_test_email(?string $specificEmail = null): array {
         $lineSent = !empty($lRes['sent']);
     }
 
+    $durMs = (int)round((microtime(true) - $testStart) * 1000);
     if ($res['success']) {
+        sys_log_record([
+            'module'         => 'notification',
+            'action'         => 'Send Test Alert',
+            'status'         => 'success',
+            'trigger_source' => 'manual',
+            'started_at'     => $testStartedAt,
+            'duration_ms'    => $durMs,
+            'row_count'      => count($recipients),
+            'summary'        => "ส่งอีเมลทดสอบสำเร็จ → {$sentList}" . ($lineSent ? ' (+LINE Push)' : ''),
+        ]);
         return ['success' => true, 'sentTo' => $sentList, 'count' => count($recipients), 'lineSent' => $lineSent];
     }
-    return ['success' => false, 'error' => $res['error'] ?: 'ส่งไม่สำเร็จ'];
+    $errMsg = $res['error'] ?: 'ส่งไม่สำเร็จ';
+    sys_log_record([
+        'module'         => 'notification',
+        'action'         => 'Send Test Alert',
+        'status'         => 'failed',
+        'trigger_source' => 'manual',
+        'started_at'     => $testStartedAt,
+        'duration_ms'    => $durMs,
+        'row_count'      => 0,
+        'summary'        => 'ส่งอีเมลทดสอบไม่สำเร็จ',
+        'error_detail'   => $errMsg,
+    ]);
+    return ['success' => false, 'error' => $errMsg];
+}
+
+/**
+ * 24/7 Dead-Man's Switch / Admin Operational Alert with 6h anti-spam cooldown.
+ */
+function php_send_operational_alert(string $alertKey, string $title, string $detail, string $severity = 'critical'): array {
+    $cfg = get_app_config();
+    $notifCfg = $cfg['notifications'] ?? [];
+    if (empty($notifCfg['enabled'])) {
+        return ['sent' => false, 'reason' => 'notifications_disabled'];
+    }
+
+    $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'operational_alert_state.json';
+    $now = time();
+    $shouldSend = false;
+
+    update_json_file_atomic($stateFile, [], function (array $state) use ($alertKey, $now, &$shouldSend) {
+        $lastSent = (int)($state[$alertKey] ?? 0);
+        if (($now - $lastSent) >= (6 * 3600)) {
+            $shouldSend = true;
+            $state[$alertKey] = $now;
+        }
+        return $state;
+    });
+
+    if (!$shouldSend) {
+        return ['sent' => false, 'reason' => 'cooldown_6h'];
+    }
+
+    $smtpCfg = $notifCfg['smtp'] ?? [];
+    $lineCfg = $notifCfg['line'] ?? [];
+    $pdo = get_db();
+    $recipients = $pdo->query("SELECT * FROM tbl_alert_recipients WHERE is_active = 1")->fetchAll();
+    if (empty($recipients)) {
+        return ['sent' => false, 'reason' => 'no_active_recipients'];
+    }
+
+    $alertsPayload = [[
+        'type'           => 'system',
+        'level'          => $severity,
+        'title'          => "🛡️ แจ้งเตือนสุขภาพระบบ 24 ชม.: {$title}",
+        'message'        => $detail,
+        'triggerValue'   => '⚠️ ต้องการการตรวจสอบจากผู้ดูแลระบบ',
+        'thresholdValue' => 'อัตโนมัติ (Dead-Man Switch)',
+        'stationName'    => 'Water_System2 Server Monitor',
+    ]];
+
+    $subject = "🛡️ [Water_System2 Monitor] {$title}";
+    $html = php_build_digest_email_html($alertsPayload);
+    $res = php_smtp_send_email($smtpCfg, $recipients, $subject, $html);
+
+    $lineSent = false;
+    if (!empty($lineCfg['channelToken']) && !empty($lineCfg['targetId'])) {
+        $lRes = php_line_send_push($alertsPayload, $lineCfg);
+        $lineSent = !empty($lRes['sent']);
+    }
+
+    sys_log_record([
+        'module'         => 'notification',
+        'action'         => "Operational Alert ({$alertKey})",
+        'status'         => !empty($res['success']) ? 'success' : 'failed',
+        'trigger_source' => 'system',
+        'row_count'      => count($recipients),
+        'summary'        => (!empty($res['success']) ? "ส่งแจ้งเตือนเหตุขัดข้องระบบ ({$title}) สำเร็จ" : "ส่งแจ้งเตือนเหตุขัดข้อง ({$title}) ไม่สำเร็จ"),
+        'error_detail'   => !empty($res['success']) ? null : ($res['error'] ?? null),
+    ]);
+
+    return ['sent' => !empty($res['success']), 'lineSent' => $lineSent];
 }

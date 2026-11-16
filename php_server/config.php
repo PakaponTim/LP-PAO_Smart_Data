@@ -11,9 +11,16 @@ define('WATER_SYSTEM2_ROOT', dirname(__DIR__));
 define('WATER_SYSTEM2_UI_DIR', WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'backend_ui');
 define('WATER_SYSTEM2_RUNTIME_DIR', WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'php_7000');
 
-if (!is_dir(WATER_SYSTEM2_RUNTIME_DIR)) {
-    @mkdir(WATER_SYSTEM2_RUNTIME_DIR, 0777, true);
+function ensure_runtime_htaccess(string $dir): void {
+    if (!is_dir($dir)) @mkdir($dir, 0777, true);
+    $ht = $dir . DIRECTORY_SEPARATOR . '.htaccess';
+    if (!file_exists($ht)) {
+        @file_put_contents($ht, "<Files \"*\">\n  <IfModule mod_authz_core.c>\n    Require all denied\n  </IfModule>\n  <IfModule !mod_authz_core.c>\n    Order allow,deny\n    Deny from all\n  </IfModule>\n</Files>\n");
+    }
 }
+
+ensure_runtime_htaccess(dirname(WATER_SYSTEM2_RUNTIME_DIR));
+ensure_runtime_htaccess(WATER_SYSTEM2_RUNTIME_DIR);
 
 // Load .env if present
 $envFile = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . '.env';
@@ -98,7 +105,7 @@ function ensure_all_tables(PDO $pdo, string $dbName = 'water_system2'): void {
     static $checked = false;
     if ($checked) return;
 
-    $flagFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'schema_ready_' . preg_replace('/[^a-zA-Z0-9_]/', '', $dbName) . '.flag';
+    $flagFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'schema_ready_v2_' . preg_replace('/[^a-zA-Z0-9_]/', '', $dbName) . '.flag';
     if (file_exists($flagFile)) {
         $checked = true;
         return;
@@ -237,8 +244,38 @@ function ensure_all_tables(PDO $pdo, string $dbName = 'water_system2'): void {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
     ensure_ingest_tables($pdo);
+    ensure_system_logs_table($pdo);
     @file_put_contents($flagFile, date('c'));
     $checked = true;
+}
+
+function ensure_system_logs_table(PDO $pdo) {
+    static $ensured = false;
+    if ($ensured) return;
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `tbl_system_logs` (
+        `id` bigint(20) NOT NULL AUTO_INCREMENT,
+        `run_group_id` varchar(64) DEFAULT NULL,
+        `module` varchar(32) NOT NULL,
+        `action` varchar(120) NOT NULL,
+        `status` enum('running','success','partial','warning','failed') NOT NULL DEFAULT 'success',
+        `trigger_source` varchar(32) NOT NULL DEFAULT 'system',
+        `scheduled_slot` varchar(16) DEFAULT NULL,
+        `started_at` datetime NOT NULL,
+        `finished_at` datetime DEFAULT NULL,
+        `duration_ms` int(11) NOT NULL DEFAULT 0,
+        `row_count` int(11) NOT NULL DEFAULT 0,
+        `summary` varchar(500) NOT NULL,
+        `error_detail` text,
+        `meta_json` longtext,
+        `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`),
+        KEY `idx_syslog_module_time` (`module`, `started_at`),
+        KEY `idx_syslog_status_time` (`status`, `started_at`),
+        KEY `idx_syslog_slot_time` (`scheduled_slot`, `started_at`),
+        KEY `idx_syslog_group` (`run_group_id`),
+        KEY `idx_syslog_started` (`started_at`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    $ensured = true;
 }
 
 function ensure_ingest_tables(PDO $pdo) {
@@ -309,35 +346,94 @@ function write_json_file(string $path, array $data): bool {
     return @file_put_contents($path, $json, LOCK_EX) !== false;
 }
 
+function with_file_lock(string $lockName, callable $callback, bool $nonBlocking = false) {
+    $lockDir = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'locks';
+    if (!is_dir($lockDir)) @mkdir($lockDir, 0777, true);
+    $safeName = preg_replace('/[^a-zA-Z0-9_.-]/', '_', $lockName);
+    $lockFile = $lockDir . DIRECTORY_SEPARATOR . $safeName . '.lock';
+    $fp = @fopen($lockFile, 'c+');
+    if (!$fp) {
+        return $nonBlocking ? null : $callback();
+    }
+    $flags = $nonBlocking ? (LOCK_EX | LOCK_NB) : LOCK_EX;
+    if (!@flock($fp, $flags)) {
+        @fclose($fp);
+        return null;
+    }
+    try {
+        return $callback();
+    } finally {
+        @flock($fp, LOCK_UN);
+        @fclose($fp);
+    }
+}
+
+function update_json_file_atomic(string $path, array $default, callable $mutator) {
+    return with_file_lock('json_' . md5($path), function () use ($path, $default, $mutator) {
+        $data = read_json_file($path, $default);
+        $updated = $mutator($data);
+        if (is_array($updated)) {
+            write_json_file($path, $updated);
+            return $updated;
+        }
+        return $data;
+    }, false);
+}
+
+function rotate_log_if_needed(string $logPath, int $maxBytes = 5242880, int $maxArchives = 3): void {
+    clearstatcache(true, $logPath);
+    if (!file_exists($logPath)) return;
+    $size = @filesize($logPath);
+    if ($size === false || $size < $maxBytes) return;
+
+    with_file_lock('rotate_' . md5($logPath), function () use ($logPath, $maxBytes, $maxArchives) {
+        clearstatcache(true, $logPath);
+        if (!file_exists($logPath) || (@filesize($logPath) ?: 0) < $maxBytes) return;
+        for ($i = $maxArchives; $i >= 1; $i--) {
+            $old = "{$logPath}.{$i}";
+            if ($i === $maxArchives) {
+                @unlink($old);
+            } else {
+                $next = "{$logPath}." . ($i + 1);
+                if (file_exists($old)) @rename($old, $next);
+            }
+        }
+        @rename($logPath, "{$logPath}.1");
+    }, false);
+}
+
 function add_server_log(string $source, string $message): string {
     $datetimeStr = format_iso_datetime();
     $logStr = "[{$datetimeStr}] [{$source}] {$message}";
 
     $eventsFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'socketio_events.json';
-    $eventsData = read_json_file($eventsFile, ['seq' => 0, 'events' => []]);
-    $seq = (int)($eventsData['seq'] ?? 0) + 1;
-    $events = $eventsData['events'] ?? [];
-    $events[] = [
-        'seq' => $seq,
-        'event' => 'server_log',
-        'data' => $logStr,
-        'ts' => microtime(true)
-    ];
-    if (count($events) > 120) {
-        $events = array_slice($events, -120);
-    }
-    write_json_file($eventsFile, ['seq' => $seq, 'events' => $events]);
+    update_json_file_atomic($eventsFile, ['seq' => 0, 'events' => []], function (array $eventsData) use ($logStr) {
+        $seq = (int)($eventsData['seq'] ?? 0) + 1;
+        $events = $eventsData['events'] ?? [];
+        $events[] = [
+            'seq' => $seq,
+            'event' => 'server_log',
+            'data' => $logStr,
+            'ts' => microtime(true)
+        ];
+        if (count($events) > 120) {
+            $events = array_slice($events, -120);
+        }
+        return ['seq' => $seq, 'events' => $events];
+    });
 
     $logsFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'recent_logs.json';
-    $logs = read_json_file($logsFile, []);
-    array_unshift($logs, $logStr);
-    if (count($logs) > 50) {
-        $logs = array_slice($logs, 0, 50);
-    }
-    write_json_file($logsFile, $logs);
+    update_json_file_atomic($logsFile, [], function (array $logs) use ($logStr) {
+        array_unshift($logs, $logStr);
+        if (count($logs) > 50) {
+            $logs = array_slice($logs, 0, 50);
+        }
+        return $logs;
+    });
 
     $fetchLogPath = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'fetch_history.log';
-    @file_put_contents($fetchLogPath, $logStr . PHP_EOL, FILE_APPEND);
+    rotate_log_if_needed($fetchLogPath, 5242880, 3);
+    @file_put_contents($fetchLogPath, $logStr . PHP_EOL, FILE_APPEND | LOCK_EX);
 
     return $logStr;
 }
@@ -396,7 +492,6 @@ function get_task_history(): array {
 
 function log_task_run(string $projectName, string $mode, string $status, int $count, string $message) {
     $histPath = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'task_history.json';
-    $hist = get_task_history();
     $timeStr = format_iso_datetime();
 
     $key = '';
@@ -410,43 +505,48 @@ function log_task_run(string $projectName, string $mode, string $status, int $co
         $key = 'complaints';
     }
 
-    if ($key !== '') {
-        $hist['projectStats'][$key]['lastFetchStatus'] = ($status === 'success') ? 'Success' : 'Failed';
-        $hist['projectStats'][$key]['lastFetchMessage'] = $message;
-        $hist['projectStats'][$key]['lastFetchMode'] = ($mode === 'db') ? 'Database' : 'Excel';
-        if ($status === 'success') {
-            $hist['projectStats'][$key]['lastFetchSuccess'] = $timeStr;
-            $hist['projectStats'][$key]['rowCountSaved'] = (int)($hist['projectStats'][$key]['rowCountSaved'] ?? 0) + $count;
+    update_json_file_atomic($histPath, ['completedTasks' => [], 'projectStats' => get_task_history()['projectStats']], function (array $hist) use ($projectName, $mode, $status, $count, $message, $timeStr, $key) {
+        if (!isset($hist['completedTasks']) || !is_array($hist['completedTasks'])) $hist['completedTasks'] = [];
+        if (!isset($hist['projectStats']) || !is_array($hist['projectStats'])) $hist['projectStats'] = get_task_history()['projectStats'];
+
+        if ($key !== '' && isset($hist['projectStats'][$key])) {
+            $hist['projectStats'][$key]['lastFetchStatus'] = ($status === 'success') ? 'Success' : 'Failed';
+            $hist['projectStats'][$key]['lastFetchMessage'] = $message;
+            $hist['projectStats'][$key]['lastFetchMode'] = ($mode === 'db') ? 'Database' : 'Excel';
+            if ($status === 'success') {
+                $hist['projectStats'][$key]['lastFetchSuccess'] = $timeStr;
+                $hist['projectStats'][$key]['rowCountSaved'] = (int)($hist['projectStats'][$key]['rowCountSaved'] ?? 0) + $count;
+            }
         }
-    }
 
-    $newTask = [
-        'id' => 'T-' . round(microtime(true) * 1000) . '-' . mt_rand(100, 999),
-        'projectName' => $projectName,
-        'taskType' => 'เก็บข้อมูลลง ' . ($mode === 'db' ? 'Database (Direct API)' : 'Excel (Direct API)'),
-        'status' => $status,
-        'timestamp' => $timeStr,
-        'count' => $count,
-        'details' => $message
-    ];
+        $newTask = [
+            'id' => 'T-' . round(microtime(true) * 1000) . '-' . mt_rand(100, 999),
+            'projectName' => $projectName,
+            'taskType' => 'เก็บข้อมูลลง ' . ($mode === 'db' ? 'Database (Direct API)' : 'Excel (Direct API)'),
+            'status' => $status,
+            'timestamp' => $timeStr,
+            'count' => $count,
+            'details' => $message
+        ];
 
-    array_unshift($hist['completedTasks'], $newTask);
-    if (count($hist['completedTasks']) > 50) {
-        $hist['completedTasks'] = array_slice($hist['completedTasks'], 0, 50);
-    }
-
-    write_json_file($histPath, $hist);
+        array_unshift($hist['completedTasks'], $newTask);
+        if (count($hist['completedTasks']) > 50) {
+            $hist['completedTasks'] = array_slice($hist['completedTasks'], 0, 50);
+        }
+        return $hist;
+    });
 
     $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
-    $state = read_json_file($stateFile, []);
-    if ($status === 'success') {
-        $state['lastDataReceived'] = time();
-        if ($key === 'waterLevel') $state['lastWLDataReceived'] = time();
-        if ($key === 'drought') $state['lastDroughtDataReceived'] = time();
-        if ($key === 'pm25') $state['lastPM25DataReceived'] = time();
-        if ($key === 'complaints') $state['lastComplaintsDataReceived'] = time();
-    }
-    write_json_file($stateFile, $state);
+    update_json_file_atomic($stateFile, [], function (array $state) use ($status, $key) {
+        if ($status === 'success') {
+            $state['lastDataReceived'] = time();
+            if ($key === 'waterLevel') $state['lastWLDataReceived'] = time();
+            if ($key === 'drought') $state['lastDroughtDataReceived'] = time();
+            if ($key === 'pm25') $state['lastPM25DataReceived'] = time();
+            if ($key === 'complaints') $state['lastComplaintsDataReceived'] = time();
+        }
+        return $state;
+    });
 }
 
 function get_app_config(): array {
@@ -483,7 +583,7 @@ function get_app_config(): array {
         $default['notifications'] = array_replace_recursive($default['notifications'], $loaded['notifications']);
     }
 
-    // Load SMTP/LINE secrets saved via Web UI (stored outside config.json inside runtime/)
+    // Load SMTP/LINE/Traffy secrets saved via Web UI (stored outside config.json inside runtime/)
     $secretsPath = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'notification_secrets.json';
     $secrets = read_json_file($secretsPath, []);
     if (!empty($secrets['smtp_user'])) $default['notifications']['smtp']['user'] = $secrets['smtp_user'];
@@ -494,6 +594,12 @@ function get_app_config(): array {
             'targetId'     => !empty($secrets['line_target_id']) ? $secrets['line_target_id'] : env_val('LINE_TARGET_ID', '')
         ];
     }
+    $default['traffyAuth'] = [
+        'cookie' => (string)($secrets['traffy_cookie'] ?? env_val('TRAFFY_COOKIE', '')),
+        'token'  => (string)($secrets['traffy_token'] ?? env_val('TRAFFY_TOKEN', '')),
+        'orgId'  => (string)($secrets['traffy_org_id'] ?? env_val('TRAFFY_ORG_ID', '')),
+        'updatedAt' => (string)($secrets['traffy_updated_at'] ?? '')
+    ];
 
     if (empty($default['notifications']['smtp']['pass']) && env_val('SMTP_PASS') !== '') {
         $default['notifications']['smtp']['pass'] = env_val('SMTP_PASS');
@@ -519,6 +625,18 @@ function save_app_config(array $cfg) {
     if (isset($cfg['notifications']['line']['targetId']) && $cfg['notifications']['line']['targetId'] !== '') {
         $secrets['line_target_id'] = $cfg['notifications']['line']['targetId'];
     }
+    if (isset($cfg['traffyAuth']) && is_array($cfg['traffyAuth'])) {
+        if (array_key_exists('cookie', $cfg['traffyAuth'])) {
+            $secrets['traffy_cookie'] = trim((string)$cfg['traffyAuth']['cookie']);
+        }
+        if (array_key_exists('token', $cfg['traffyAuth'])) {
+            $secrets['traffy_token'] = trim((string)$cfg['traffyAuth']['token']);
+        }
+        if (array_key_exists('orgId', $cfg['traffyAuth'])) {
+            $secrets['traffy_org_id'] = trim((string)$cfg['traffyAuth']['orgId']);
+        }
+        $secrets['traffy_updated_at'] = format_iso_datetime();
+    }
     write_json_file($secretsPath, $secrets);
 
     $configPath = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'config.json';
@@ -526,7 +644,7 @@ function save_app_config(array $cfg) {
     if (isset($toSave['notifications']['smtp']['pass'])) {
         $toSave['notifications']['smtp']['pass'] = '';
     }
-    unset($toSave['notifications']['line']);
+    unset($toSave['notifications']['line'], $toSave['traffyAuth']);
     write_json_file($configPath, $toSave);
 }
 

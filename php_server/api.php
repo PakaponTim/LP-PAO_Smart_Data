@@ -6,6 +6,7 @@
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/system_log.php';
 require_once __DIR__ . '/collectors.php';
 require_once __DIR__ . '/notifier.php';
 require_once __DIR__ . '/github_sync_to_mysql.php';
@@ -215,21 +216,30 @@ function recent_dates(int $days): array {
 
 function run_auto_server_collection_if_due(): void {
     $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
-    $state = read_json_file($stateFile, []);
     $now = time();
+    $shouldSyncGh = false;
 
-    // 1. Sync any backup snapshots collected by GitHub Actions (checked at most once every 60s)
-    if ($now - (int)($state['lastGitHubSyncCheck'] ?? 0) >= 60) {
-        $state['lastGitHubSyncCheck'] = $now;
-        write_json_file($stateFile, $state);
+    update_json_file_atomic($stateFile, [], function (array $state) use ($now, &$shouldSyncGh) {
+        if ($now - (int)($state['lastGitHubSyncCheck'] ?? 0) >= 60) {
+            $state['lastGitHubSyncCheck'] = $now;
+            $shouldSyncGh = true;
+        }
+        return $state;
+    });
+
+    // 1. Sync backup snapshots (capped to 5 per web request so dashboard never hits 30s HTTP timeout)
+    if ($shouldSyncGh) {
         try {
-            sync_github_snapshots_to_mysql();
+            sync_github_snapshots_to_mysql(5);
         } catch (Throwable $e) {}
     }
 
-    // 2. Smart Sleep Check: run curl_multi parallel fetch ONLY when current HH:mm
-    // matches a configured scheduledTasks slot (0 idle API bandwidth between slots!)
-    smart_check_and_run_if_due(true);
+    // 2. Fallback Web Check: run only if dedicated Daemon / Worker is NOT actively running
+    $wStatus = smart_worker_status();
+    if (empty($wStatus['running'])) {
+        smart_check_and_run_if_due(true, 'web_cron');
+        retry_queue_process_due();
+    }
 }
 
 function handle_api_request(string $method, string $path): void {
@@ -299,6 +309,8 @@ function handle_api_request(string $method, string $path): void {
             $lastFetchStr = $lastFetchTs ? format_iso_datetime($lastFetchTs) : ($storageStats['waterLevel']['dbMtime'] ?? 'ยังไม่เคยบันทึก');
         }
 
+        $slToday = sys_log_query(['limit' => 1, 'startDate' => date('Y-m-d'), 'endDate' => date('Y-m-d')]);
+
         // Report extensionConnected = true and extensionPaired = true because Direct API Collector is built-in and always online!
         send_json([
             'extensionConnected' => true,
@@ -311,7 +323,10 @@ function handle_api_request(string $method, string $path): void {
             'logs'               => get_recent_logs(),
             'projectStats'       => $hist['projectStats'],
             'completedTasks'     => $hist['completedTasks'],
-            'storageStats'       => $storageStats
+            'storageStats'       => $storageStats,
+            'systemLogsStats'    => $slToday['stats'] ?? null,
+            'retryQueue'         => $slToday['retryQueue'] ?? [],
+            'freshness'          => $slToday['freshness'] ?? []
         ]);
     }
 
@@ -328,12 +343,17 @@ function handle_api_request(string $method, string $path): void {
     }
     if ($path === '/api/worker/start' && $method === 'POST') {
         @unlink(smart_worker_stop_flag_file());
-        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'] ?? '127.0.0.1:7000';
-        $scriptDir = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/');
-        smart_fire_self_chain("{$scheme}://{$host}{$scriptDir}/worker.php?action=chain");
+        smart_fire_self_chain(smart_build_self_url('worker.php', 'action=chain'));
         add_server_log('SmartSleep', '🚀 เริ่มระบบ Smart Sleep Worker แล้ว');
         send_json(['success' => true, 'worker' => smart_worker_status()]);
+    }
+
+    // =====================================================================
+    // GET /api/health (Lightweight 24/7 Uptime Monitor Endpoint — HTTP 200/503)
+    // =====================================================================
+    if ($path === '/api/health' && $method === 'GET') {
+        $health = get_system_health_report();
+        send_json($health, (int)($health['httpCode'] ?? 200));
     }
 
     // =====================================================================
@@ -420,8 +440,18 @@ function handle_api_request(string $method, string $path): void {
     if ($path === '/api/force-fetch-all' && $method === 'POST') {
         try {
             $cfg = get_app_config();
-            $res = collect_all_parallel_direct($cfg['isScheduleActive'] ?? []);
-            send_json(['success' => true, 'message' => "ดึงข้อมูลทุกโปรเจคพร้อมกันสำเร็จ ({$res['elapsedSec']} วินาที)", 'result' => $res]);
+            $res = collect_all_parallel_direct($cfg['isScheduleActive'] ?? [], 'manual', date('H:i'));
+            $okCnt = (int)($res['okCount'] ?? 0);
+            $failCnt = (int)($res['failCount'] ?? 0);
+            $msg = ($failCnt === 0)
+                ? "ดึงข้อมูลทุกโปรเจคพร้อมกันสำเร็จ ({$okCnt} ด้าน, {$res['elapsedSec']} วินาที)"
+                : "ดึงข้อมูลเสร็จสิ้น: สำเร็จ {$okCnt} ด้าน, ไม่สำเร็จ {$failCnt} ด้าน ({$res['elapsedSec']} วินาที) — จัดคิว Auto-Retry แล้ว";
+            send_json([
+                'success' => ($okCnt > 0),
+                'status'  => $res['status'] ?? ($failCnt === 0 ? 'success' : 'partial'),
+                'message' => $msg,
+                'result'  => $res
+            ]);
         } catch (Throwable $e) {
             add_server_log('ParallelAPI', '❌ เกิดข้อผิดพลาด: ' . $e->getMessage());
             send_json(['success' => false, 'error' => $e->getMessage()], 500);
@@ -1656,20 +1686,219 @@ function handle_api_request(string $method, string $path): void {
     }
 
     // =====================================================================
+    // System Log Center, 48-Slot Heatmap, Auto-Retry, Data Freshness,
+    // Traffy Cookie/Session Tester & Chrome Extension Bridge
+    // =====================================================================
+    if ($path === '/api/system-logs' && $method === 'GET') {
+        send_json(array_merge(['success' => true], sys_log_query($_GET)));
+    }
+
+    if ($path === '/api/system-logs/heatmap' && $method === 'GET') {
+        $dateYmd = $_GET['date'] ?? date('Y-m-d');
+        send_json(array_merge(['success' => true], sys_log_daily_heatmap($dateYmd)));
+    }
+
+    if ($path === '/api/system-logs/export' && $method === 'GET') {
+        $tExp = microtime(true);
+        $csv = sys_log_export_csv($_GET);
+        $lineCount = max(0, substr_count($csv, "\n") - 1);
+        sys_log_record([
+            'module'         => 'report',
+            'action'         => 'ส่งออกรายงานประวัติการทำงานระบบ (Audit Log CSV)',
+            'status'         => 'success',
+            'trigger_source' => 'user',
+            'duration_ms'    => (int)round((microtime(true) - $tExp) * 1000),
+            'row_count'      => $lineCount,
+            'summary'        => "ส่งออก Audit Log CSV ({$lineCount} รายการ)",
+        ]);
+        $fname = 'System_Audit_Logs_' . ($_GET['startDate'] ?? date('Y-m-d')) . '.csv';
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . rawurlencode($fname) . '"');
+        echo $csv;
+        exit;
+    }
+
+    if ($path === '/api/system-logs/retry' && $method === 'POST') {
+        $module = trim((string)($body['module'] ?? ''));
+        $slot   = isset($body['slot']) && $body['slot'] !== '' ? trim((string)$body['slot']) : date('H:i');
+        if ($module === '') {
+            send_json(['success' => false, 'error' => 'กรุณาระบุ module ที่ต้องการดึงซ้ำ'], 400);
+        }
+        try {
+            $res = run_single_module_collector($module, 'manual', $slot);
+            retry_queue_clear($module);
+            send_json([
+                'success' => true,
+                'module'  => $module,
+                'message' => "ดึงซ้ำงาน [{$module}] สำเร็จ",
+                'result'  => $res
+            ]);
+        } catch (Throwable $e) {
+            send_json([
+                'success' => false,
+                'module'  => $module,
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    if ($path === '/api/data-freshness' && $method === 'GET') {
+        send_json([
+            'success'       => true,
+            'thresholdsSec' => SYSTEM_LOG_STALE_THRESHOLDS_SEC,
+            'modules'       => get_latest_freshness_summary($pdo)
+        ]);
+    }
+
+    if ($path === '/api/traffy/session-status' && $method === 'GET') {
+        $cfg = get_app_config();
+        $ta = $cfg['traffyAuth'] ?? [];
+        $cookie = trim((string)($ta['cookie'] ?? ''));
+        $token  = trim((string)($ta['token'] ?? ''));
+        $jwtInfo = function_exists('decode_traffy_jwt_info') ? decode_traffy_jwt_info($token) : null;
+        $dbCount = (int)$pdo->query("SELECT COUNT(*) FROM tbl_complaints_monitoring WHERE (is_in_scope = 1 OR is_in_scope IS NULL)")->fetchColumn();
+        $latestComp = $pdo->query("SELECT MAX(recorded_at) FROM tbl_complaints_monitoring")->fetchColumn();
+        send_json([
+            'success'             => true,
+            'configured'          => ($cookie !== '' || $token !== ''),
+            'hasCookie'           => ($cookie !== ''),
+            'cookieLength'        => strlen($cookie),
+            'hasToken'            => ($token !== ''),
+            'tokenPreview'        => $token !== '' ? (substr($token, 0, 14) . '...' . substr($token, -6)) : '',
+            'jwtInfo'             => $jwtInfo,
+            'orgId'               => $ta['orgId'] ?? '',
+            'updatedAt'           => $ta['updatedAt'] ?? null,
+            'appSessionCookie'    => SESSION_COOKIE_NAME,
+            'authEnforce'         => AUTH_ENFORCE,
+            'dbCount'             => $dbCount,
+            'lastRecordedAt'      => $latestComp ? format_iso_datetime($latestComp) : null,
+        ]);
+    }
+
+    if ($path === '/api/traffy/session-config' && $method === 'POST') {
+        $cfg = get_app_config();
+        $clear = !empty($body['clear']);
+        if ($clear) {
+            $cfg['traffyAuth'] = ['cookie' => '', 'token' => '', 'orgId' => '', 'updatedAt' => date('c')];
+            $msg = 'ล้างค่า Traffy Cookie / Token เรียบร้อยแล้ว';
+        } else {
+            $cookie = trim((string)($body['cookie'] ?? ($cfg['traffyAuth']['cookie'] ?? '')));
+            $rawTok = trim((string)($body['token'] ?? ($cfg['traffyAuth']['token'] ?? '')));
+            // Handle JSON-wrapped token if pasted directly from local_login_data LocalStorage key
+            if ($rawTok !== '' && ($rawTok[0] === '{' || $rawTok[0] === '"')) {
+                $parsedTok = json_decode($rawTok, true);
+                if (is_string($parsedTok)) $rawTok = $parsedTok;
+                elseif (is_array($parsedTok) && !empty($parsedTok['fondue_token'])) $rawTok = (string)$parsedTok['fondue_token'];
+            }
+            $token  = trim(preg_replace('/^Bearer\s+/i', '', $rawTok), " \t\n\r\"'");
+            $orgId  = trim((string)($body['orgId'] ?? ($cfg['traffyAuth']['orgId'] ?? '')));
+            $cfg['traffyAuth'] = [
+                'cookie'    => $cookie,
+                'token'     => $token,
+                'orgId'     => $orgId,
+                'updatedAt' => date('c'),
+            ];
+            $msg = 'บันทึก Traffy Cookie / Session Token สำเร็จ';
+        }
+        save_app_config($cfg);
+        sys_log_record([
+            'module'         => 'traffy_auth',
+            'action'         => $clear ? 'Clear Traffy Cookie/Token' : 'Save Traffy Cookie/Token',
+            'status'         => 'success',
+            'trigger_source' => 'user',
+            'summary'        => $msg,
+        ]);
+        send_json(['success' => true, 'message' => $msg]);
+    }
+
+    if ($path === '/api/traffy/test-session' && $method === 'POST') {
+        $diag = test_traffy_connection_and_session(true);
+        send_json($diag);
+    }
+
+    if ($path === '/api/append-complaints-db' && $method === 'POST') {
+        $tExt = microtime(true);
+        $extStartedAt = date('Y-m-d H:i:s');
+        $deviceAuth = verify_bearer_device_token();
+        if ($deviceAuth === false) {
+            send_json(['success' => false, 'error' => 'Unauthorized: device token invalid or revoked'], 401);
+        }
+        if (AUTH_ENFORCE) {
+            $user = get_current_user_session();
+            if (empty($user['user']) && !is_array($deviceAuth)) {
+                send_json(['success' => false, 'error' => 'Unauthorized: valid user session or device token required'], 401);
+            }
+        }
+
+        $rawRows = $body['rows'] ?? ($body['complaints'] ?? (isset($body[0]) ? $body : []));
+        if (!is_array($rawRows) || empty($rawRows)) {
+            send_json(['success' => false, 'error' => 'ไม่พบข้อมูล rows สำหรับบันทึก'], 400);
+        }
+        try {
+            $prepared = normalize_traffy_extension_rows($rawRows);
+            $res = save_complaints_rows_to_db($prepared, 'db', [
+                'trigger_source'   => 'extension',
+                'started_at'       => $extStartedAt,
+                'duration_ms'      => (int)round((microtime(true) - $tExt) * 1000),
+                'custom_batch_key' => $_SERVER['HTTP_X_INGEST_KEY'] ?? null,
+            ]);
+            send_json([
+                'success' => true,
+                'message' => "บันทึกข้อมูลจาก Extension สำเร็จ ({$res['count']} รายการ)",
+                'result'  => $res
+            ]);
+        } catch (Throwable $e) {
+            sys_log_record([
+                'module'         => 'complaints',
+                'action'         => 'บันทึกเรื่องร้องเรียนจาก Chrome Extension',
+                'status'         => 'failed',
+                'trigger_source' => 'extension',
+                'started_at'     => $extStartedAt,
+                'duration_ms'    => (int)round((microtime(true) - $tExt) * 1000),
+                'summary'        => 'บันทึกข้อมูลจาก Chrome Extension ไม่สำเร็จ',
+                'error_detail'   => $e->getMessage(),
+            ]);
+            send_json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    if ($path === '/api/reports/log-client-export' && $method === 'POST') {
+        $proj = trim((string)($body['project'] ?? 'all'));
+        $period = trim((string)($body['period'] ?? 'daily'));
+        $rowCount = max(0, (int)($body['rowCount'] ?? 0));
+        $format = strtoupper(trim((string)($body['format'] ?? 'CSV')));
+        $filename = trim((string)($body['filename'] ?? 'report.csv'));
+        sys_log_record([
+            'module'         => 'report',
+            'action'         => "Export {$format} ({$proj})",
+            'status'         => 'success',
+            'trigger_source' => 'user',
+            'row_count'      => $rowCount,
+            'summary'        => "ดาวน์โหลดไฟล์ {$filename} ({$rowCount} รายการ, รอบ {$period})",
+            'meta'           => ['project' => $proj, 'period' => $period, 'format' => $format, 'filename' => $filename],
+        ]);
+        send_json(['success' => true]);
+    }
+
+    // =====================================================================
     // Raw Data Export (/api/reports/export-raw-data)
     // =====================================================================
     if ($path === '/api/reports/export-raw-data' && $method === 'GET') {
+        $tExp = microtime(true);
+        $expStartedAt = date('Y-m-d H:i:s');
         $project = $_GET['project'] ?? 'all';
         $sDate = ($startDate ?: date('Y-m-01')) . ' 00:00:00';
         $eDate = ($endDate ?: date('Y-m-d')) . ' 23:59:59';
         $sStr = substr($sDate, 0, 10);
         $eStr = substr($eDate, 0, 10);
 
+        $exportedRows = 0;
         $csv = "\xEF\xBB\xBF";
         if ($project === 'all' || $project === 'water') {
             $stmt = $pdo->prepare("SELECT station_name, river, amphoe, province, current_water_level_m, left_bank_level_m, bank_difference_m, trend, status, current_rain_mm, forecast_rain_24h_mm, risk_level, recorded_at FROM tbl_water_disaster_monitoring WHERE recorded_at BETWEEN ? AND ? ORDER BY recorded_at DESC");
             $stmt->execute([$sDate, $eDate]);
             $rows = $stmt->fetchAll();
+            $exportedRows += count($rows);
             $csv .= "=== ข้อมูลระดับน้ำและปริมาณน้ำฝน ({$sStr} ถึง {$eStr}) ===\n";
             $csv .= "ชื่อสถานี,ลุ่มน้ำ,อำเภอ,จังหวัด,ระดับน้ำปัจจุบัน(ม.),ระดับตลิ่ง(ม.),ระยะห่างตลิ่ง(ม.),แนวโน้ม,สถานะ,ฝนปัจจุบัน(มม.),ฝนสะสม3วัน(มม.),ระดับความเสี่ยง,วันเวลาที่บันทึก\n";
             foreach ($rows as $r) {
@@ -1686,6 +1915,7 @@ function handle_api_request(string $method, string $path): void {
             $stmt = $pdo->prepare("SELECT dam_name, dam_type, capacity_m_cum, inflow_m_cum, water_volume_m_cum, water_percent, usable_water_m_cum, discharge_m_cum, recorded_at FROM tbl_drought_monitoring WHERE recorded_at BETWEEN ? AND ? ORDER BY recorded_at DESC");
             $stmt->execute([$sDate, $eDate]);
             $rows = $stmt->fetchAll();
+            $exportedRows += count($rows);
             $csv .= "=== ข้อมูลอ่างเก็บน้ำและสถานการณ์ภัยแล้ง ({$sStr} ถึง {$eStr}) ===\n";
             $csv .= "ชื่ออ่างเก็บน้ำ,ประเภท,ความจุ(ล้าน ลบ.ม.),ปริมาณน้ำไหลเข้า,ปริมาณน้ำกักเก็บ,% ปริมาณน้ำ,น้ำใช้การได้,ปริมาณน้ำระบาย,วันเวลาที่บันทึก\n";
             foreach ($rows as $r) {
@@ -1697,8 +1927,50 @@ function handle_api_request(string $method, string $path): void {
             }
             $csv .= "\n";
         }
+        if ($project === 'all' || $project === 'pm25') {
+            $stmt = $pdo->prepare("SELECT station_name, tambon, amphoe, time_label, pm25_value, pm25_avg_24h, air_quality_status, recorded_at FROM tbl_pm25_monitoring WHERE recorded_at BETWEEN ? AND ? ORDER BY recorded_at DESC");
+            $stmt->execute([$sDate, $eDate]);
+            $rows = $stmt->fetchAll();
+            $exportedRows += count($rows);
+            $csv .= "=== ข้อมูลคุณภาพอากาศและฝุ่น PM 2.5 ({$sStr} ถึง {$eStr}) ===\n";
+            $csv .= "สถานี,ตำบล,อำเภอ,เวลาตรวจวัด,PM 2.5 รายชั่วโมง,PM 2.5 เฉลี่ย 24 ชม.,คุณภาพอากาศ,วันเวลาที่บันทึก\n";
+            foreach ($rows as $r) {
+                $csv .= sprintf("\"%s\",\"%s\",\"%s\",\"%s\",%s,%s,\"%s\",\"%s\"\n",
+                    $r['station_name'], $r['tambon'], $r['amphoe'], $r['time_label'],
+                    $r['pm25_value'] ?? '', $r['pm25_avg_24h'] ?? '', $r['air_quality_status'], $r['recorded_at']
+                );
+            }
+            $csv .= "\n";
+        }
+        if ($project === 'all' || $project === 'complaints') {
+            $stmt = $pdo->prepare("SELECT ticket_id, state_name, agency_status, problem_type, location, org_name, ticket_datetime, recorded_at FROM tbl_complaints_monitoring WHERE recorded_at BETWEEN ? AND ? AND (is_in_scope = 1 OR is_in_scope IS NULL) ORDER BY recorded_at DESC");
+            $stmt->execute([$sDate, $eDate]);
+            $rows = $stmt->fetchAll();
+            $exportedRows += count($rows);
+            $csv .= "=== ข้อมูลเรื่องร้องเรียน Traffy Fondue ({$sStr} ถึง {$eStr}) ===\n";
+            $csv .= "รหัสเรื่อง,สถานะ,หมวดหน่วยงาน,ประเภทปัญหา,พื้นที่,หน่วยงานรับผิดชอบ,วันที่แจ้ง,วันเวลาที่บันทึก\n";
+            foreach ($rows as $r) {
+                $csv .= sprintf("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"\n",
+                    $r['ticket_id'], $r['state_name'], $r['agency_status'], $r['problem_type'],
+                    str_replace('"', '""', (string)$r['location']), str_replace('"', '""', (string)$r['org_name']),
+                    $r['ticket_datetime'], $r['recorded_at']
+                );
+            }
+            $csv .= "\n";
+        }
 
         $filename = "RawData_{$project}_{$sStr}_to_{$eStr}.csv";
+        sys_log_record([
+            'module'         => 'report',
+            'action'         => "Export Raw Data CSV ({$project})",
+            'status'         => 'success',
+            'trigger_source' => 'user',
+            'started_at'     => $expStartedAt,
+            'duration_ms'    => (int)round((microtime(true) - $tExp) * 1000),
+            'row_count'      => $exportedRows,
+            'summary'        => "ดาวน์โหลด Raw Data CSV [{$project}] ({$sStr} ถึง {$eStr}) จำนวน {$exportedRows} แถว",
+            'meta'           => ['project' => $project, 'startDate' => $sStr, 'endDate' => $eStr, 'filename' => $filename],
+        ]);
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename="' . rawurlencode($filename) . '"');
         echo $csv;
@@ -1706,7 +1978,25 @@ function handle_api_request(string $method, string $path): void {
     }
 
     if ($path === '/api/ping' && $method === 'POST') {
-        send_json(['ok' => true, 'timestamp' => round(microtime(true) * 1000), 'activeSockets' => 1]);
+        $deviceAuth = verify_bearer_device_token();
+        if ($deviceAuth === false) {
+            send_json(['ok' => false, 'error' => 'Unauthorized: device token invalid or revoked'], 401);
+        }
+        $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
+        update_json_file_atomic($stateFile, [], function (array $s) use ($deviceAuth) {
+            $s['lastExtensionPing'] = time();
+            if (is_array($deviceAuth)) {
+                $s['lastExtensionDevice'] = $deviceAuth['name'] ?? ($deviceAuth['id'] ?? 'extension');
+            }
+            return $s;
+        });
+        send_json([
+            'ok'            => true,
+            'authenticated' => is_array($deviceAuth),
+            'deviceId'      => is_array($deviceAuth) ? ($deviceAuth['id'] ?? null) : null,
+            'timestamp'     => round(microtime(true) * 1000),
+            'activeSockets' => 1,
+        ]);
     }
 
     send_json(['error' => 'API Endpoint Not Found: ' . $path], 404);

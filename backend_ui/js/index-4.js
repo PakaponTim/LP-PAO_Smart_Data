@@ -422,11 +422,26 @@
       const projectNames = { water: 'water', drought: 'drought', pm25: 'pm25', complaints: 'complaints' };
       const projName = projectNames[projectKey] || 'data';
       
-      link.setAttribute('download', `report_${projName}_${reportPeriod}_${dateVal}.csv`);
+      const filename = `report_${projName}_${reportPeriod}_${dateVal}.csv`;
+      link.setAttribute('download', filename);
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+
+      try {
+        fetch('/api/reports/log-client-export', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            project: projName,
+            period: reportPeriod,
+            rowCount: reportAllRows.length,
+            format: 'CSV',
+            filename
+          })
+        });
+      } catch (e) {}
     };
 
     

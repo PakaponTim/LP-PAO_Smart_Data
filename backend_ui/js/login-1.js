@@ -27,14 +27,23 @@ const form = document.getElementById('loginForm');
       errorMessage.classList.add('hidden'); submitBtn.disabled = true;
       btnText.textContent = 'กำลังตรวจสอบ...'; btnLoader.style.display = 'block';
       try {
-        const response = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: document.getElementById('username').value, password: passwordInput.value }) });
+        const rememberEl = document.getElementById('remember');
+        const response = await fetch('./endpoint.php?r=/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: document.getElementById('username').value,
+            password: passwordInput.value,
+            remember: rememberEl ? !!rememberEl.checked : true
+          })
+        });
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || 'เข้าสู่ระบบไม่สำเร็จ');
-        location.replace('/index.html');
+        location.replace('./index.html');
       } catch (error) {
         errorMessage.textContent = error.message; errorMessage.classList.remove('hidden');
       } finally { submitBtn.disabled = false; btnText.textContent = 'เข้าสู่ระบบ'; btnLoader.style.display = 'none'; }
     });
-    fetch('/api/auth/bootstrap-status').then(r => r.json()).then(data => {
+    fetch('./endpoint.php?r=/api/auth/bootstrap-status').then(r => r.json()).then(data => {
       if (data.required) { errorMessage.textContent = 'ยังไม่มีบัญชีผู้ดูแล กรุณาเปิดลิงก์ตั้งค่าที่แสดงในหน้าต่างเซิร์ฟเวอร์'; errorMessage.classList.remove('hidden'); }
     });

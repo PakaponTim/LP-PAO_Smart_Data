@@ -2,42 +2,66 @@
 // =========================================================================
 // Water_System2 — Web Setup Wizard for Server Deployment (Zero-Admin)
 // Open: http://ชื่อเซิร์ฟเวอร์/Water_System2/server_setup.php
-// Lets you configure the Server's MySQL credentials, auto-create all 9 tables,
+// Lets you configure the Server's MySQL credentials, auto-create all 10 tables,
 // and run an initial data collection directly from the browser!
 // =========================================================================
 
 $phpServerDir = is_dir(__DIR__ . '/php_server') ? __DIR__ . '/php_server' : dirname(__DIR__) . '/php_server';
 require_once $phpServerDir . '/config.php';
+require_once $phpServerDir . '/auth.php';
+require_once $phpServerDir . '/smart_worker_lib.php';
 
 $message = '';
 $statusType = '';
 $dbOverrideFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'db_config.json';
 
+$isLocalRequest = in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'], true);
+$alreadyConfigured = file_exists($dbOverrideFile) || file_exists(WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . '.env');
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? 'save_db';
     if ($action === 'save_db') {
-        $newCfg = [
-            'DB_HOST' => trim($_POST['DB_HOST'] ?? 'localhost'),
-            'DB_PORT' => trim($_POST['DB_PORT'] ?? '3306'),
-            'DB_NAME' => trim($_POST['DB_NAME'] ?? 'water_system2'),
-            'DB_USER' => trim($_POST['DB_USER'] ?? 'root'),
-            'DB_PASS' => $_POST['DB_PASS'] ?? '',
-            'GITHUB_SYNC_REPO' => trim($_POST['GITHUB_SYNC_REPO'] ?? 'PakaponTim/Water_System2')
-        ];
-        write_json_file($dbOverrideFile, $newCfg);
-        foreach ($newCfg as $k => $v) {
-            $ENV_VARS[$k] = $v;
-        }
-        try {
-            // Clear schema cache flag to force table verification
-            $flagFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'schema_ready_' . preg_replace('/[^a-zA-Z0-9_]/', '', $newCfg['DB_NAME']) . '.flag';
-            @unlink($flagFile);
-            $pdo = get_db();
-            $statusType = 'success';
-            $message = "✅ เชื่อมต่อฐานข้อมูล MySQL ({$newCfg['DB_NAME']}) และสร้างตารางครบทั้ง 9 ตารางบน Server สำเร็จแล้ว!";
-        } catch (Throwable $e) {
+        $existingPass = env_val('DB_PASS', '');
+        $submittedCurrent = (string)($_POST['CURRENT_DB_PASS'] ?? '');
+        $sess = get_current_user_session();
+        $isAdminAuthed = AUTH_ENFORCE && !empty($sess['user']) && (($sess['user']['role'] ?? '') === 'admin');
+
+        // On public subdomain/remote IP, require verifying current DB password once DB is configured
+        if ($alreadyConfigured && !$isLocalRequest && !$isAdminAuthed && $existingPass !== '' && !hash_equals($existingPass, $submittedCurrent)) {
             $statusType = 'error';
-            $message = "❌ เชื่อมต่อฐานข้อมูลไม่สำเร็จ: " . $e->getMessage();
+            $message = "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันให้ถูกต้องเพื่อยืนยันสิทธิ์ก่อนแก้ไขค่า Server";
+        } else {
+            $postedPass = (string)($_POST['DB_PASS'] ?? '');
+            $finalPass = ($postedPass !== '') ? $postedPass : $existingPass;
+            $newCfg = [
+                'DB_HOST'          => trim($_POST['DB_HOST'] ?? 'localhost'),
+                'DB_PORT'          => trim($_POST['DB_PORT'] ?? '3306'),
+                'DB_NAME'          => trim($_POST['DB_NAME'] ?? 'water_system2'),
+                'DB_USER'          => trim($_POST['DB_USER'] ?? 'root'),
+                'DB_PASS'          => $finalPass,
+                'GITHUB_SYNC_REPO' => trim($_POST['GITHUB_SYNC_REPO'] ?? 'PakaponTim/Water_System2')
+            ];
+            write_json_file($dbOverrideFile, $newCfg);
+            foreach ($newCfg as $k => $v) {
+                $ENV_VARS[$k] = $v;
+            }
+            try {
+                $flagFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'schema_ready_v2_' . preg_replace('/[^a-zA-Z0-9_]/', '', $newCfg['DB_NAME']) . '.flag';
+                @unlink($flagFile);
+                $pdo = get_db();
+                $statusType = 'success';
+                $message = "✅ เชื่อมต่อฐานข้อมูล MySQL ({$newCfg['DB_NAME']}) และสร้าง/ตรวจสอบตารางครบทุกตารางบน Server สำเร็จแล้ว!";
+                sys_log_record([
+                    'module'         => 'system',
+                    'action'         => 'Update Server DB Config',
+                    'status'         => 'success',
+                    'trigger_source' => 'user',
+                    'summary'        => "บันทึกการตั้งค่า MySQL ({$newCfg['DB_HOST']}:{$newCfg['DB_PORT']}/{$newCfg['DB_NAME']}) เรียบร้อย",
+                ]);
+            } catch (Throwable $e) {
+                $statusType = 'error';
+                $message = "❌ เชื่อมต่อฐานข้อมูลไม่สำเร็จ: " . $e->getMessage();
+            }
         }
     }
 }
@@ -136,7 +160,7 @@ try {
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">ชื่อฐานข้อมูล (Database Name)</label>
           <input type="text" name="DB_NAME" value="<?= htmlspecialchars($curName) ?>" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" required>
-          <p class="text-[11px] text-slate-400 mt-1">ระบบจะสร้างตารางทั้ง 9 ตารางให้อัตโนมัติทันทีที่กดบันทึก</p>
+          <p class="text-[11px] text-slate-400 mt-1">ระบบจะสร้างตารางทั้ง 10 ตาราง (รวม <code>tbl_system_logs</code>) ให้อัตโนมัติทันทีที่กดบันทึก</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -145,10 +169,17 @@ try {
             <input type="text" name="DB_USER" value="<?= htmlspecialchars($curUser) ?>" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" required>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">MySQL Password</label>
-            <input type="password" name="DB_PASS" value="<?= htmlspecialchars($curPass) ?>" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            <label class="block text-xs font-semibold text-slate-600 mb-1">MySQL Password (ใหม่ / หรือเว้นว่างเพื่อใช้ค่าเดิม)</label>
+            <input type="password" name="DB_PASS" value="" placeholder="<?= $curPass !== '' ? 'ตั้งค่าไว้แล้ว — เว้นว่างเพื่อคงค่าเดิม' : 'ระบุรหัสผ่าน MySQL' ?>" autocomplete="new-password" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
           </div>
         </div>
+
+        <?php if ($alreadyConfigured && !$isLocalRequest): ?>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3">
+            <label class="block text-xs font-semibold text-amber-800 mb-1">🔒 รหัสผ่าน MySQL ปัจจุบัน (ยืนยันสิทธิ์การเปลี่ยนแปลงค่าบน Server สาธารณะ)</label>
+            <input type="password" name="CURRENT_DB_PASS" value="" required placeholder="กรอกรหัสผ่าน DB เดิมก่อนบันทึก" class="w-full border border-amber-300 rounded-lg px-3 py-2 text-sm bg-white">
+          </div>
+        <?php endif; ?>
 
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">GitHub Repository สำหรับซิงค์ข้อมูลสำรอง 24 ชม.</label>
@@ -157,13 +188,28 @@ try {
 
         <div class="flex flex-wrap gap-3 pt-2">
           <button type="submit" class="bg-emerald-700 hover:bg-emerald-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition">
-            💾 บันทึกค่าและสร้างตารางฐานข้อมูลอัตโนมัติ
+            💾 บันทึกค่าและตรวจสอบตารางฐานข้อมูลอัตโนมัติ
           </button>
           <a href="./cron.php" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition">
-            🚀 ทดสอบดึงข้อมูลทุกโปรเจคเข้า Server ทันที (cron.php)
+            🚀 ทดสอบดึงข้อมูลเข้า Server (cron.php)
+          </a>
+          <a href="./endpoint.php?r=/api/health" target="_blank" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition">
+            🩺 ตรวจ Health 24 ชม.
           </a>
         </div>
       </form>
+
+      <?php
+        $health = get_system_health_report();
+        $baseSubUrl = preg_replace('/\/server_setup\.php$/i', '', smart_build_self_url('server_setup.php'));
+      ?>
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs space-y-2">
+        <div class="font-bold text-slate-800 text-sm">🛡️ คู่มือเชื่อมต่อ Subdomain Server 24 ชั่วโมง (Zero-Admin Checklist)</div>
+        <div>• <b>สิทธิ์ความปลอดภัย `.htaccess`:</b> Root <?= !empty($health['security']['hasRootHtaccess']) ? '✅ ป้องกันแล้ว' : '⚠️ ยังไม่มี' ?> | Runtime <?= !empty($health['security']['hasRuntimeHtaccess']) ? '✅ ป้องกันแล้ว' : '⚠️ ยังไม่มี' ?></div>
+        <div>• <b>1. ตั้ง GitHub Actions Secret (<code>WATER_SERVER_CRON_URL</code>):</b> <code class="bg-white px-1.5 py-0.5 border rounded select-all"><?= htmlspecialchars($baseSubUrl . '/cron.php') ?></code> (เพื่อให้ GitHub ช่วยปลุก Server ดึงข้อมูลทุก 30 นาทีตลอด 24 ชม.)</div>
+        <div>• <b>2. ตั้ง Uptime Monitor ฟรี (เช็กทุก 5 นาที):</b> <code class="bg-white px-1.5 py-0.5 border rounded select-all"><?= htmlspecialchars($baseSubUrl . '/endpoint.php?r=/api/health') ?></code></div>
+        <div>• <b>3. สั่งเปิด Web Smart Sleep Worker (ถ้าโฮสต์รองรับ Self-Chain):</b> <code class="bg-white px-1.5 py-0.5 border rounded select-all"><?= htmlspecialchars($baseSubUrl . '/worker.php?action=start') ?></code></div>
+      </div>
     </div>
   </div>
 </body>

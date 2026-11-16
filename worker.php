@@ -41,11 +41,8 @@ if ($action === 'start') {
         exit;
     }
 
-    // Build self-URL for non-blocking background chain
-    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'] ?? '127.0.0.1:7000';
-    $script = $_SERVER['SCRIPT_NAME'] ?? '/worker.php';
-    $selfUrl = "{$scheme}://{$host}{$script}?action=chain";
+    // Build self-URL safely across HTTPS reverse proxies / subdomains
+    $selfUrl = smart_build_self_url('worker.php', 'action=chain');
 
     smart_fire_self_chain($selfUrl);
     add_server_log('SmartSleep', '🚀 เริ่มระบบ Smart Sleep Worker บน Server แล้ว (พักรอ 0 Byte จนกว่าจะถึงเวลาในตาราง)');
@@ -81,7 +78,10 @@ $wState['lastHeartbeat'] = time();
 write_json_file(smart_worker_state_file(), $wState);
 
 // Check if a scheduled HH:mm slot is due right now
-smart_check_and_run_if_due(true);
+smart_check_and_run_if_due(true, 'web_cron');
+if (function_exists('retry_queue_process_due')) {
+    retry_queue_process_due();
+}
 
 // Calculate Smart Sleep duration (sleep up to 20s per HTTP hop so shared hosting never hits 30s timeout)
 $cfg = get_app_config();
@@ -99,9 +99,5 @@ $shouldChain = !file_exists(smart_worker_stop_flag_file());
 @fclose($lockFp);
 
 if ($shouldChain) {
-    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'] ?? '127.0.0.1:7000';
-    $script = $_SERVER['SCRIPT_NAME'] ?? '/worker.php';
-    $selfUrl = "{$scheme}://{$host}{$script}?action=chain";
-    smart_fire_self_chain($selfUrl);
+    smart_fire_self_chain(smart_build_self_url('worker.php', 'action=chain'));
 }

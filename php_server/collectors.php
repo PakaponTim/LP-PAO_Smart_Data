@@ -1,15 +1,19 @@
 <?php
 // =========================================================================
 // Water_System2 — Direct API Collectors (Sequential & Parallel curl_multi)
+// Uses shared transformers in collectors_transform.php + unified logging in system_log.php.
 // Pulls directly from:
 //   1. https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/rain24?province_code=52
-//   2. https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/waterlevel?province_code=52
-//   3. https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/dam?province_code=52
-//   4. https://api-v3.thaiwater.net/api/v1/thaiwater30/public/thaiwater/weather
-//   5. https://publicapi.traffy.in.th/teamchadchart-stat-api/geojson/v1?text=%E0%B8%A5%E0%B8%B3%E0%B8%9B%E0%B8%B2%E0%B8%87
+//   2. https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/rain3d?province_code=52
+//   3. https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/waterlevel?province_code=52
+//   4. https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/dam?province_code=52
+//   5. https://api-v3.thaiwater.net/api/v1/thaiwater30/public/thaiwater/weather
+//   6. https://publicapi.traffy.in.th/teamchadchart-stat-api/geojson/v1?text=%E0%B8%A5%E0%B8%B3%E0%B8%9B%E0%B8%B2%E0%B8%87
 // =========================================================================
 
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/collectors_transform.php';
+require_once __DIR__ . '/system_log.php';
 require_once __DIR__ . '/notifier.php';
 
 function build_curl_handle(string $url, array $extraHeaders = [], int $timeoutSec = 25) {
@@ -23,12 +27,12 @@ function build_curl_handle(string $url, array $extraHeaders = [], int $timeoutSe
 
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT => $timeoutSec,
-        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_TIMEOUT        => $timeoutSec,
+        CURLOPT_CONNECTTIMEOUT => min(10, $timeoutSec),
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_SSL_VERIFYHOST => 0,
         CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTPHEADER => $headers
+        CURLOPT_HTTPHEADER     => $headers
     ]);
     return $ch;
 }
@@ -41,7 +45,7 @@ function http_get_json(string $url, array $extraHeaders = [], int $timeoutSec = 
     curl_close($ch);
 
     if ($body === false || $httpCode < 200 || $httpCode >= 300) {
-        throw new RuntimeException("HTTP GET failed ({$httpCode}): " . ($err ?: $url));
+        throw new RuntimeException("HTTP ({$httpCode}): " . ($err ?: $url));
     }
 
     $decoded = json_decode($body, true);
@@ -53,19 +57,22 @@ function http_get_json(string $url, array $extraHeaders = [], int $timeoutSec = 
 
 /**
  * Parallel HTTP JSON fetcher using curl_multi_init().
- * Fetches all requested APIs simultaneously (~1.5 - 2.5 seconds total).
+ * Supports per-request timeout, headers, and accurate per-handle duration metrics.
  *
- * @param array<string, array{url:string, headers?:array}> $requests
- * @return array<string, array{ok:bool, data:?array, error:?string}>
+ * @param array<string, array{url:string, headers?:array, timeout?:int}> $requests
+ * @return array<string, array{ok:bool, data:?array, error:?string, httpCode:int, durationMs:int}>
  */
-function http_get_json_multi(array $requests, int $timeoutSec = 25): array {
+function http_get_json_multi(array $requests, int $defaultTimeoutSec = 25): array {
     $mh = curl_multi_init();
     $handles = [];
     $results = [];
+    $startTimes = [];
 
     foreach ($requests as $key => $cfg) {
-        $ch = build_curl_handle($cfg['url'], $cfg['headers'] ?? [], $timeoutSec);
+        $to = (int)($cfg['timeout'] ?? $defaultTimeoutSec);
+        $ch = build_curl_handle($cfg['url'], $cfg['headers'] ?? [], $to);
         $handles[$key] = $ch;
+        $startTimes[$key] = microtime(true);
         curl_multi_add_handle($mh, $ch);
     }
 
@@ -80,27 +87,34 @@ function http_get_json_multi(array $requests, int $timeoutSec = 25): array {
     foreach ($handles as $key => $ch) {
         $body = curl_multi_getcontent($ch);
         $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $totalTimeMs = (int)round(((float)curl_getinfo($ch, CURLINFO_TOTAL_TIME) ?: (microtime(true) - $startTimes[$key])) * 1000);
         $err = curl_error($ch);
 
         if ($body === false || $httpCode < 200 || $httpCode >= 300) {
             $results[$key] = [
-                'ok' => false,
-                'data' => null,
-                'error' => "HTTP ({$httpCode}): " . ($err ?: $requests[$key]['url'])
+                'ok'         => false,
+                'data'       => null,
+                'error'      => "HTTP ({$httpCode}): " . ($err ?: $requests[$key]['url']),
+                'httpCode'   => $httpCode,
+                'durationMs' => $totalTimeMs
             ];
         } else {
             $decoded = json_decode($body, true);
             if (!is_array($decoded)) {
                 $results[$key] = [
-                    'ok' => false,
-                    'data' => null,
-                    'error' => "Invalid JSON from {$requests[$key]['url']}"
+                    'ok'         => false,
+                    'data'       => null,
+                    'error'      => "Invalid JSON from {$requests[$key]['url']}",
+                    'httpCode'   => $httpCode,
+                    'durationMs' => $totalTimeMs
                 ];
             } else {
                 $results[$key] = [
-                    'ok' => true,
-                    'data' => $decoded,
-                    'error' => null
+                    'ok'         => true,
+                    'data'       => $decoded,
+                    'error'      => null,
+                    'httpCode'   => $httpCode,
+                    'durationMs' => $totalTimeMs
                 ];
             }
         }
@@ -113,17 +127,22 @@ function http_get_json_multi(array $requests, int $timeoutSec = 25): array {
     return $results;
 }
 
-function parse_float_or_null($val): ?float {
-    if ($val === null || $val === '' || $val === '-') return null;
-    $clean = str_replace(',', '', trim((string)$val));
-    if (!is_numeric($clean)) return null;
-    return (float)$clean;
-}
-
-function record_ingest_batch(PDO $pdo, string $kind, array $payload): string {
+function record_ingest_batch(PDO $pdo, string $kind, array $payload, ?string $customKey = null): string {
     ensure_ingest_tables($pdo);
-    $batchId = $kind . ':php7000-' . date('YmdHis') . '-' . substr(bin2hex(random_bytes(4)), 0, 8);
+    $batchId = $kind . ':' . ($customKey ?: ('php7000-' . date('YmdHis') . '-' . substr(bin2hex(random_bytes(4)), 0, 8)));
+    $batchId = substr($batchId, 0, 128);
     $fingerprint = hash('sha256', json_encode($payload, JSON_UNESCAPED_UNICODE));
+
+    $chk = $pdo->prepare("SELECT fingerprint, row_count FROM app_ingest_batches WHERE batch_id = ? LIMIT 1");
+    $chk->execute([$batchId]);
+    $existing = $chk->fetch();
+    if ($existing) {
+        if ($existing['fingerprint'] === $fingerprint) {
+            return $batchId;
+        }
+        throw new RuntimeException("Duplicate batch_id conflict ({$batchId})");
+    }
+
     $stmt = $pdo->prepare("INSERT INTO app_ingest_batches (batch_id, kind, fingerprint, row_count) VALUES (?, ?, ?, ?)");
     $stmt->execute([$batchId, $kind, $fingerprint, count($payload)]);
     return $batchId;
@@ -132,59 +151,12 @@ function record_ingest_batch(PDO $pdo, string $kind, array $payload): string {
 // =========================================================================
 // 1. Direct Collector: Rainfall (197+ Stations in Lampang)
 // =========================================================================
-function save_rainfall_from_json(array $json, bool $standaloneLog = true): array {
+function save_rainfall_from_json(array $json, bool $standaloneLog = true, array $logCtx = []): array {
     $pdo = get_db();
-    $items = $json['data'] ?? [];
-    if (empty($items)) {
+    $transformed = transform_rainfall_items($json);
+    $rowsToInsert = $transformed['rows'];
+    if (empty($rowsToInsert)) {
         throw new RuntimeException('ไม่พบข้อมูลสถานีน้ำฝนจาก ThaiWater30 API');
-    }
-
-    $subdistrictRain = [];
-    $districtRain = [];
-    $rowsToInsert = [];
-    $seenStations = [];
-    $thaiDate = format_thai_date();
-
-    foreach ($items as $item) {
-        $stationName = trim((string)($item['station']['tele_station_name']['th'] ?? ''));
-        if ($stationName === '' || isset($seenStations[$stationName])) continue;
-        $seenStations[$stationName] = true;
-
-        $tumbon = trim((string)($item['geocode']['tumbon_name']['th'] ?? ''));
-        $amphoeRaw = trim((string)($item['geocode']['amphoe_name']['th'] ?? ''));
-        $province = trim((string)($item['geocode']['province_name']['th'] ?? 'ลำปาง'));
-        $basin = trim((string)($item['basin']['basin_name']['th'] ?? ''));
-
-        $location = "ต.{$tumbon}อ.{$amphoeRaw} {$province}";
-        $rainVal = parse_float_or_null($item['rain_24h'] ?? 0);
-        if ($rainVal === null) $rainVal = 0.0;
-
-        $rainStatus = 'ไม่มีฝน';
-        if ($rainVal > 90) $rainStatus = 'ฝนตกหนักมาก';
-        elseif ($rainVal > 35) $rainStatus = 'ฝนตกหนัก';
-        elseif ($rainVal > 10) $rainStatus = 'ฝนปานกลาง';
-        elseif ($rainVal > 0) $rainStatus = 'ฝนเล็กน้อย';
-
-        $dtRaw = trim((string)($item['rainfall_datetime'] ?? ''));
-        $measuredTime = $dtRaw !== '' ? substr($dtRaw, 11, 5) . ' น.' : date('H:i') . ' น.';
-
-        $rowsToInsert[] = [
-            'station_name'  => mb_substr($stationName, 0, 150),
-            'location'      => mb_substr($location, 0, 150),
-            'river_basin'   => mb_substr($basin, 0, 100),
-            'rain_mm'       => $rainVal,
-            'rain_status'   => $rainStatus,
-            'measured_time' => $measuredTime,
-            'record_date'   => $thaiDate
-        ];
-
-        $amphoeKey = 'อำเภอ' . $amphoeRaw;
-        if ($amphoeRaw !== '') {
-            $districtRain[$amphoeKey][] = $rainVal;
-            if ($tumbon !== '') {
-                $subdistrictRain["{$tumbon}_{$amphoeKey}"][] = $rainVal;
-            }
-        }
     }
 
     $pdo->beginTransaction();
@@ -210,123 +182,80 @@ function save_rainfall_from_json(array $json, bool $standaloneLog = true): array
         throw $e;
     }
 
-    $subAvg = [];
-    foreach ($subdistrictRain as $k => $arr) {
-        $subAvg[$k] = array_sum($arr) / count($arr);
-    }
-    $distAvg = [];
-    foreach ($districtRain as $k => $arr) {
-        $distAvg[$k] = array_sum($arr) / count($arr);
-    }
-
     $count = count($rowsToInsert);
-    add_server_log('DirectAPI', "✅ บันทึกข้อมูลน้ำฝน จ.ลำปาง สำเร็จ {$count} สถานี ลง MySQL (Batch: {$batchId})");
+    retry_queue_clear('rainfall');
+    $freshness = check_upstream_freshness('rainfall', $transformed['observations']);
+
     if ($standaloneLog) {
         log_task_run('ดึงข้อมูลน้ำฝน', 'db', 'success', $count, "Direct API บันทึกลง MySQL สำเร็จ {$count} สถานี; batch: {$batchId}");
     }
+    sys_log_record([
+        'run_group_id'   => $logCtx['run_group_id'] ?? null,
+        'module'         => 'rainfall',
+        'action'         => 'ดึงข้อมูลปริมาณน้ำฝน 24 ชม.',
+        'status'         => 'success',
+        'trigger_source' => $logCtx['trigger_source'] ?? ($standaloneLog ? 'manual' : 'system'),
+        'scheduled_slot' => $logCtx['scheduled_slot'] ?? null,
+        'started_at'     => $logCtx['started_at'] ?? date('Y-m-d H:i:s'),
+        'finished_at'    => date('Y-m-d H:i:s'),
+        'duration_ms'    => (int)($logCtx['duration_ms'] ?? 0),
+        'row_count'      => $count,
+        'summary'        => "บันทึกข้อมูลน้ำฝน จ.ลำปาง {$count} สถานี ลง MySQL (Batch: {$batchId})",
+        'meta'           => ['batchId' => $batchId, 'staleStations' => $freshness['staleCount'] ?? 0]
+    ]);
 
     return [
-        'success' => true,
-        'count' => $count,
-        'batchId' => $batchId,
-        'subdistrictRainAvg' => $subAvg,
-        'districtRainAvg' => $distAvg
+        'success'            => true,
+        'count'              => $count,
+        'batchId'            => $batchId,
+        'subdistrictRainAvg' => $transformed['subdistrictRainAvg'],
+        'districtRainAvg'    => $transformed['districtRainAvg'],
+        'freshness'          => $freshness,
     ];
 }
 
-function collect_rainfall_direct(bool $standaloneLog = true): array {
-    if ($standaloneLog) {
-        add_server_log('DirectAPI', '⏳ เริ่มดึงข้อมูลปริมาณน้ำฝน จ.ลำปาง โดยตรงจาก ThaiWater30 API...');
+function collect_rainfall_direct(bool $standaloneLog = true, string $triggerSource = 'manual', ?string $scheduledSlot = null): array {
+    $startedAt = date('Y-m-d H:i:s');
+    $t0 = microtime(true);
+    try {
+        $json = http_get_json('https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/rain24?province_code=52');
+        return save_rainfall_from_json($json, $standaloneLog, [
+            'trigger_source' => $triggerSource,
+            'scheduled_slot' => $scheduledSlot,
+            'started_at'     => $startedAt,
+            'duration_ms'    => (int)round((microtime(true) - $t0) * 1000)
+        ]);
+    } catch (Throwable $e) {
+        $dur = (int)round((microtime(true) - $t0) * 1000);
+        if ($standaloneLog) {
+            log_task_run('ดึงข้อมูลน้ำฝน', 'db', 'failed', 0, 'ล้มเหลว: ' . $e->getMessage());
+        }
+        sys_log_record([
+            'module'         => 'rainfall',
+            'action'         => 'ดึงข้อมูลปริมาณน้ำฝน 24 ชม.',
+            'status'         => 'failed',
+            'trigger_source' => $triggerSource,
+            'scheduled_slot' => $scheduledSlot,
+            'started_at'     => $startedAt,
+            'finished_at'    => date('Y-m-d H:i:s'),
+            'duration_ms'    => $dur,
+            'row_count'      => 0,
+            'summary'        => 'ดึงข้อมูลน้ำฝนไม่สำเร็จ',
+            'error_detail'   => $e->getMessage(),
+        ]);
+        throw $e;
     }
-    $json = http_get_json('https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/rain24?province_code=52');
-    return save_rainfall_from_json($json, $standaloneLog);
 }
 
 // =========================================================================
-// 2. Direct Collector: Water Level + Rainfall Mapping (25 Stations in Lampang)
+// 2. Direct Collector: Water Level + Rainfall 24h & 3d Mapping (25 Stations)
 // =========================================================================
-function save_water_level_from_json(array $json, array $rainResult, string $mode = 'db'): array {
+function save_water_level_from_json(array $json, array $rainResult, string $mode = 'db', array $rain3dResult = [], array $logCtx = []): array {
     $pdo = get_db();
-    $items = $json['data'] ?? [];
-    if (empty($items)) {
+    $transformed = transform_water_level_items($json, $rainResult, $rain3dResult);
+    $rowsToInsert = $transformed['rows'];
+    if (empty($rowsToInsert)) {
         throw new RuntimeException('ไม่พบข้อมูลระดับน้ำจาก ThaiWater30 API');
-    }
-
-    $rowsToInsert = [];
-    $seenStations = [];
-
-    foreach ($items as $item) {
-        $stationName = trim((string)($item['station']['tele_station_name']['th'] ?? ''));
-        if ($stationName === '' || isset($seenStations[$stationName])) continue;
-        $seenStations[$stationName] = true;
-
-        $river = trim((string)($item['river_name'] ?? ($item['basin']['basin_name']['th'] ?? '-')));
-        $tumbon = trim((string)($item['geocode']['tumbon_name']['th'] ?? ''));
-        $amphoeRaw = trim((string)($item['geocode']['amphoe_name']['th'] ?? ''));
-        $province = trim((string)($item['geocode']['province_name']['th'] ?? 'ลำปาง'));
-        $amphoeFull = $amphoeRaw !== '' ? "อำเภอ{$amphoeRaw} {$province}" : $province;
-        $amphoeKey = $amphoeRaw !== '' ? "อำเภอ{$amphoeRaw}" : '';
-
-        $wlCurrent = parse_float_or_null($item['waterlevel_msl'] ?? null);
-        $wlPrev = parse_float_or_null($item['waterlevel_msl_previous'] ?? null);
-        $minBank = parse_float_or_null($item['station']['min_bank'] ?? ($item['station']['left_bank'] ?? null));
-
-        $bankDiff = null;
-        if ($minBank !== null && $wlCurrent !== null) {
-            $bankDiff = round($minBank - $wlCurrent, 2);
-        }
-
-        $trend = 'คงที่';
-        if ($wlCurrent !== null && $wlPrev !== null) {
-            $delta = $wlCurrent - $wlPrev;
-            if ($delta > 0.01) $trend = 'เพิ่มขึ้น';
-            elseif ($delta < -0.01) $trend = 'ลดลง';
-        }
-
-        $sitLevel = (int)($item['situation_level'] ?? 0);
-        $storagePct = parse_float_or_null($item['storage_percent'] ?? null);
-        $status = 'ปกติ';
-        if ($bankDiff !== null && $bankDiff <= 0) {
-            $status = 'น้ำล้นตลิ่ง';
-        } elseif ($sitLevel === 5 || ($storagePct !== null && $storagePct > 100)) {
-            $status = 'น้ำล้นตลิ่ง';
-        } elseif ($sitLevel === 4 || ($storagePct !== null && $storagePct >= 70)) {
-            $status = 'น้ำมาก';
-        } elseif ($sitLevel === 1 || ($storagePct !== null && $storagePct <= 10)) {
-            $status = 'น้ำน้อยวิกฤต';
-        } elseif ($sitLevel === 2 || ($storagePct !== null && $storagePct < 30)) {
-            $status = 'น้ำน้อย';
-        }
-
-        $currentRain = null;
-        $subKey = "{$tumbon}_{$amphoeKey}";
-        if (isset($rainResult['subdistrictRainAvg'][$subKey])) {
-            $currentRain = round($rainResult['subdistrictRainAvg'][$subKey], 2);
-        } elseif ($amphoeKey !== '' && isset($rainResult['districtRainAvg'][$amphoeKey])) {
-            $currentRain = round($rainResult['districtRainAvg'][$amphoeKey], 2);
-        }
-
-        $forecastRain = null;
-        $riskLevel = $currentRain === null ? 'ไม่มีข้อมูลฝน' : 'ปกติ';
-        if ($currentRain !== null) {
-            if ($currentRain > 90) $riskLevel = 'วิกฤตสีแดง';
-            elseif ($currentRain > 35) $riskLevel = 'เฝ้าระวัง';
-        }
-
-        $rowsToInsert[] = [
-            'station_name'          => mb_substr($stationName, 0, 150),
-            'river'                 => mb_substr($river, 0, 100),
-            'amphoe'                => mb_substr($amphoeFull, 0, 100),
-            'province'              => mb_substr($province, 0, 50),
-            'current_water_level_m' => $wlCurrent,
-            'left_bank_level_m'     => $minBank,
-            'bank_difference_m'     => $bankDiff,
-            'trend'                 => $trend,
-            'status'                => $status,
-            'current_rain_mm'       => $currentRain,
-            'forecast_rain_24h_mm'  => $forecastRain,
-            'risk_level'            => $riskLevel
-        ];
     }
 
     $pdo->beginTransaction();
@@ -359,132 +288,106 @@ function save_water_level_from_json(array $json, array $rainResult, string $mode
 
     $count = count($rowsToInsert);
     $rainCount = (int)($rainResult['count'] ?? 0);
-    $msg = "DB: committed ({$count} สถานีน้ำ + {$rainCount} สถานีฝน); Direct API; batch: {$batchId}";
-    add_server_log('DirectAPI', "✅ ดึงข้อมูลระดับน้ำ จ.ลำปาง สำเร็จ {$count} สถานี บันทึกลง MySQL เรียบร้อยแล้ว");
+    $rain3dCount = (int)($rain3dResult['count'] ?? 0);
+    $msg = "DB: committed ({$count} สถานีน้ำ + {$rainCount} สถานีฝน24ชม." . ($rain3dCount > 0 ? " + {$rain3dCount} สถานีฝน3วัน" : '') . "); Direct API; batch: {$batchId}";
     log_task_run('ดึงข้อมูลระดับน้ำ', $mode, 'success', $count, $msg);
 
+    retry_queue_clear('water');
+    $freshness = check_upstream_freshness('water', $transformed['observations']);
+
+    sys_log_record([
+        'run_group_id'   => $logCtx['run_group_id'] ?? null,
+        'module'         => 'water',
+        'action'         => 'ดึงข้อมูลระดับน้ำรายสถานี',
+        'status'         => 'success',
+        'trigger_source' => $logCtx['trigger_source'] ?? 'manual',
+        'scheduled_slot' => $logCtx['scheduled_slot'] ?? null,
+        'started_at'     => $logCtx['started_at'] ?? date('Y-m-d H:i:s'),
+        'finished_at'    => date('Y-m-d H:i:s'),
+        'duration_ms'    => (int)($logCtx['duration_ms'] ?? 0),
+        'row_count'      => $count,
+        'summary'        => "บันทึกข้อมูลระดับน้ำ จ.ลำปาง {$count} สถานี ลง MySQL (ฝน3วัน " . ($rain3dCount > 0 ? "{$rain3dCount} จุด" : 'ไม่มีข้อมูล') . ")",
+        'meta'           => ['batchId' => $batchId, 'staleStations' => $freshness['staleCount'] ?? 0]
+    ]);
+
     return [
-        'success' => true,
-        'count' => $count,
+        'success'       => true,
+        'count'         => $count,
         'rainfallCount' => $rainCount,
-        'batchId' => $batchId
+        'rain3dCount'   => $rain3dCount,
+        'batchId'       => $batchId,
+        'freshness'     => $freshness,
     ];
 }
 
-function collect_water_level_direct(string $mode = 'db'): array {
-    add_server_log('DirectAPI', "⏳ เริ่มดึงข้อมูลระดับน้ำและปริมาณน้ำฝน จ.ลำปาง พร้อมกัน (curl_multi)...");
-    $res = http_get_json_multi([
-        'rain'  => ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/rain24?province_code=52'],
-        'water' => ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/waterlevel?province_code=52'],
-    ]);
+function collect_water_level_direct(string $mode = 'db', string $triggerSource = 'manual', ?string $scheduledSlot = null): array {
+    $startedAt = date('Y-m-d H:i:s');
+    $t0 = microtime(true);
+    try {
+        $res = http_get_json_multi([
+            'rain'   => ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/rain24?province_code=52'],
+            'rain3d' => ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/rain3d?province_code=52', 'timeout' => 20],
+            'water'  => ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/waterlevel?province_code=52'],
+        ]);
 
-    $rainResult = ['subdistrictRainAvg' => [], 'districtRainAvg' => [], 'count' => 0];
-    if (!empty($res['rain']['ok'])) {
-        try {
-            $rainResult = save_rainfall_from_json($res['rain']['data'], false);
-        } catch (Throwable $rainErr) {
-            add_server_log('DirectAPI', '⚠️ ดึงข้อมูลน้ำฝนไม่สำเร็จ ใช้ค่าเริ่มต้น: ' . $rainErr->getMessage());
+        $rainResult = ['subdistrictRainAvg' => [], 'districtRainAvg' => [], 'count' => 0];
+        if (!empty($res['rain']['ok'])) {
+            try {
+                $rainResult = save_rainfall_from_json($res['rain']['data'], false, [
+                    'trigger_source' => $triggerSource,
+                    'scheduled_slot' => $scheduledSlot,
+                    'started_at'     => $startedAt,
+                    'duration_ms'    => $res['rain']['durationMs'] ?? 0
+                ]);
+            } catch (Throwable $rainErr) {
+                sys_log_record([
+                    'module' => 'rainfall', 'action' => 'ดึงข้อมูลปริมาณน้ำฝน 24 ชม.', 'status' => 'failed',
+                    'trigger_source' => $triggerSource, 'scheduled_slot' => $scheduledSlot,
+                    'started_at' => $startedAt, 'duration_ms' => $res['rain']['durationMs'] ?? 0,
+                    'summary' => 'ดึงน้ำฝนประกอบระดับน้ำไม่สำเร็จ', 'error_detail' => $rainErr->getMessage()
+                ]);
+            }
         }
-    }
 
-    if (empty($res['water']['ok'])) {
-        throw new RuntimeException($res['water']['error'] ?? 'ดึงข้อมูลระดับน้ำไม่สำเร็จ');
-    }
+        $rain3dResult = (!empty($res['rain3d']['ok'])) ? transform_rain3d_maps($res['rain3d']['data']) : ['subdistrictRain3dAvg' => [], 'districtRain3dAvg' => [], 'count' => 0];
 
-    return save_water_level_from_json($res['water']['data'], $rainResult, $mode);
+        if (empty($res['water']['ok'])) {
+            throw new RuntimeException($res['water']['error'] ?? 'ดึงข้อมูลระดับน้ำไม่สำเร็จ');
+        }
+
+        return save_water_level_from_json($res['water']['data'], $rainResult, $mode, $rain3dResult, [
+            'trigger_source' => $triggerSource,
+            'scheduled_slot' => $scheduledSlot,
+            'started_at'     => $startedAt,
+            'duration_ms'    => (int)round((microtime(true) - $t0) * 1000)
+        ]);
+    } catch (Throwable $e) {
+        $dur = (int)round((microtime(true) - $t0) * 1000);
+        log_task_run('ดึงข้อมูลระดับน้ำ', $mode, 'failed', 0, 'ล้มเหลว: ' . $e->getMessage());
+        sys_log_record([
+            'module'         => 'water',
+            'action'         => 'ดึงข้อมูลระดับน้ำรายสถานี',
+            'status'         => 'failed',
+            'trigger_source' => $triggerSource,
+            'scheduled_slot' => $scheduledSlot,
+            'started_at'     => $startedAt,
+            'finished_at'    => date('Y-m-d H:i:s'),
+            'duration_ms'    => $dur,
+            'row_count'      => 0,
+            'summary'        => 'ดึงข้อมูลระดับน้ำไม่สำเร็จ',
+            'error_detail'   => $e->getMessage(),
+        ]);
+        throw $e;
+    }
 }
 
 // =========================================================================
 // 3. Direct Collector: Drought / Dam Storage (36 Dams in Lampang)
 // =========================================================================
-function save_drought_from_json(array $json, string $mode = 'db'): array {
+function save_drought_from_json(array $json, string $mode = 'db', array $logCtx = []): array {
     $pdo = get_db();
-    $data = $json['data'] ?? [];
-    if (empty($data)) {
-        throw new RuntimeException('ไม่พบข้อมูลอ่างเก็บน้ำจาก ThaiWater30 API');
-    }
-
-    $thaiDate = format_thai_date();
-    $rowsToInsert = [];
-    $seenDams = [];
-
-    foreach (($data['dam_daily'] ?? []) as $item) {
-        $pc = (string)($item['geocode']['province_code'] ?? '');
-        $pn = (string)($item['geocode']['province_name']['th'] ?? '');
-        if ($pc !== '52' && mb_strpos($pn, 'ลำปาง') === false) continue;
-
-        $rawName = trim((string)($item['dam']['dam_name']['th'] ?? ''));
-        if ($rawName === '') continue;
-        $damName = (mb_strpos($rawName, 'อ่าง') === 0) ? $rawName : 'อ่าง' . $rawName;
-        if (isset($seenDams[$damName])) continue;
-        $seenDams[$damName] = true;
-
-        $pctVal = parse_float_or_null($item['dam_storage_percent'] ?? null);
-        $rowsToInsert[] = [
-            'record_date'        => $thaiDate,
-            'dam_type'           => 'อ่างขนาดใหญ่',
-            'dam_name'           => mb_substr($damName, 0, 100),
-            'capacity_m_cum'     => parse_float_or_null($item['dam']['normal_storage'] ?? ($item['dam_storage_cap'] ?? null)),
-            'inflow_m_cum'       => parse_float_or_null($item['dam_inflow'] ?? null),
-            'water_volume_m_cum' => parse_float_or_null($item['dam_storage'] ?? null),
-            'water_percent'      => $pctVal !== null ? round($pctVal) . '%' : '-',
-            'usable_water_m_cum' => parse_float_or_null($item['dam_uses_water'] ?? null),
-            'discharge_m_cum'    => parse_float_or_null($item['dam_released'] ?? null)
-        ];
-    }
-
-    foreach (($data['dam_medium'] ?? []) as $item) {
-        $pc = (string)($item['geocode']['province_code'] ?? '');
-        $pn = (string)($item['geocode']['province_name']['th'] ?? '');
-        if ($pc !== '52' && mb_strpos($pn, 'ลำปาง') === false) continue;
-
-        $damName = trim((string)($item['dam']['dam_name']['th'] ?? ''));
-        if ($damName === '' || $damName === 'แม่มอก' || isset($seenDams[$damName])) continue;
-
-        $vol = parse_float_or_null($item['dam_storage'] ?? null);
-        $pctVal = parse_float_or_null($item['dam_storage_percent'] ?? null);
-        if ($vol === null && $pctVal === null) continue;
-
-        $seenDams[$damName] = true;
-        $rowsToInsert[] = [
-            'record_date'        => $thaiDate,
-            'dam_type'           => 'อ่างขนาดกลาง',
-            'dam_name'           => mb_substr($damName, 0, 100),
-            'capacity_m_cum'     => parse_float_or_null($item['dam']['normal_storage'] ?? null),
-            'inflow_m_cum'       => parse_float_or_null($item['dam_inflow'] ?? null),
-            'water_volume_m_cum' => $vol,
-            'water_percent'      => $pctVal !== null ? round($pctVal) . '%' : '-',
-            'usable_water_m_cum' => parse_float_or_null($item['dam_uses_water'] ?? null),
-            'discharge_m_cum'    => parse_float_or_null($item['dam_released'] ?? null)
-        ];
-    }
-
-    foreach (($data['dam_small_tele'] ?? []) as $item) {
-        $pc = (string)($item['geocode']['province_code'] ?? '');
-        $pn = (string)($item['geocode']['province_name']['th'] ?? '');
-        if ($pc !== '52' && mb_strpos($pn, 'ลำปาง') === false) continue;
-
-        $damName = trim((string)($item['dam']['smalldam_name']['th'] ?? ($item['dam']['dam_name']['th'] ?? '')));
-        if ($damName === '' || isset($seenDams[$damName])) continue;
-
-        $vol = parse_float_or_null($item['volume'] ?? ($item['dam_storage'] ?? null));
-        $pctVal = parse_float_or_null($item['percent_storage'] ?? ($item['dam_storage_percent'] ?? null));
-        if ($vol === null && $pctVal === null) continue;
-
-        $seenDams[$damName] = true;
-        $rowsToInsert[] = [
-            'record_date'        => $thaiDate,
-            'dam_type'           => 'อ่างขนาดเล็ก',
-            'dam_name'           => mb_substr($damName, 0, 100),
-            'capacity_m_cum'     => parse_float_or_null($item['dam']['normal_storage'] ?? ($item['dam_storage_cap'] ?? null)),
-            'inflow_m_cum'       => null,
-            'water_volume_m_cum' => $vol,
-            'water_percent'      => $pctVal !== null ? round($pctVal) . '%' : '-',
-            'usable_water_m_cum' => null,
-            'discharge_m_cum'    => null
-        ];
-    }
-
+    $transformed = transform_drought_items($json);
+    $rowsToInsert = $transformed['rows'];
     if (empty($rowsToInsert)) {
         throw new RuntimeException('ไม่พบรายการอ่างเก็บน้ำในจังหวัดลำปางที่มีข้อมูล');
     }
@@ -516,76 +419,72 @@ function save_drought_from_json(array $json, string $mode = 'db'): array {
 
     $count = count($rowsToInsert);
     $msg = "DB: committed ({$count} อ่างเก็บน้ำ); Direct API; batch: {$batchId}";
-    add_server_log('DirectAPI', "✅ ดึงข้อมูลอ่างเก็บน้ำ/ภัยแล้ง จ.ลำปาง สำเร็จ {$count} แห่ง บันทึกลง MySQL เรียบร้อยแล้ว");
     log_task_run('ดึงข้อมูลภัยแล้ง', $mode, 'success', $count, $msg);
 
+    retry_queue_clear('drought');
+    $freshness = check_upstream_freshness('drought', $transformed['observations']);
+
+    sys_log_record([
+        'run_group_id'   => $logCtx['run_group_id'] ?? null,
+        'module'         => 'drought',
+        'action'         => 'ดึงข้อมูลอ่างเก็บน้ำ/ภัยแล้ง',
+        'status'         => 'success',
+        'trigger_source' => $logCtx['trigger_source'] ?? 'manual',
+        'scheduled_slot' => $logCtx['scheduled_slot'] ?? null,
+        'started_at'     => $logCtx['started_at'] ?? date('Y-m-d H:i:s'),
+        'finished_at'    => date('Y-m-d H:i:s'),
+        'duration_ms'    => (int)($logCtx['duration_ms'] ?? 0),
+        'row_count'      => $count,
+        'summary'        => "บันทึกข้อมูลอ่างเก็บน้ำ จ.ลำปาง {$count} แห่ง ลง MySQL เรียบร้อย",
+        'meta'           => ['batchId' => $batchId, 'staleStations' => $freshness['staleCount'] ?? 0]
+    ]);
+
     return [
-        'success' => true,
-        'count' => $count,
-        'batchId' => $batchId
+        'success'   => true,
+        'count'     => $count,
+        'batchId'   => $batchId,
+        'freshness' => $freshness,
     ];
 }
 
-function collect_drought_direct(string $mode = 'db'): array {
-    add_server_log('DirectAPI', "⏳ เริ่มดึงข้อมูลอ่างเก็บน้ำ/ภัยแล้ง จ.ลำปาง ผ่าน Direct API ({$mode})...");
-    $json = http_get_json('https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/dam?province_code=52');
-    return save_drought_from_json($json, $mode);
+function collect_drought_direct(string $mode = 'db', string $triggerSource = 'manual', ?string $scheduledSlot = null): array {
+    $startedAt = date('Y-m-d H:i:s');
+    $t0 = microtime(true);
+    try {
+        $json = http_get_json('https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/dam?province_code=52');
+        return save_drought_from_json($json, $mode, [
+            'trigger_source' => $triggerSource,
+            'scheduled_slot' => $scheduledSlot,
+            'started_at'     => $startedAt,
+            'duration_ms'    => (int)round((microtime(true) - $t0) * 1000)
+        ]);
+    } catch (Throwable $e) {
+        $dur = (int)round((microtime(true) - $t0) * 1000);
+        log_task_run('ดึงข้อมูลภัยแล้ง', $mode, 'failed', 0, 'ล้มเหลว: ' . $e->getMessage());
+        sys_log_record([
+            'module'         => 'drought',
+            'action'         => 'ดึงข้อมูลอ่างเก็บน้ำ/ภัยแล้ง',
+            'status'         => 'failed',
+            'trigger_source' => $triggerSource,
+            'scheduled_slot' => $scheduledSlot,
+            'started_at'     => $startedAt,
+            'finished_at'    => date('Y-m-d H:i:s'),
+            'duration_ms'    => $dur,
+            'row_count'      => 0,
+            'summary'        => 'ดึงข้อมูลอ่างเก็บน้ำ/ภัยแล้งไม่สำเร็จ',
+            'error_detail'   => $e->getMessage(),
+        ]);
+        throw $e;
+    }
 }
 
 // =========================================================================
 // 4. Direct Collector: PM 2.5 Air Quality (~33 Stations in Lampang)
 // =========================================================================
-function save_pm25_from_json(array $json, string $mode = 'db'): array {
+function save_pm25_from_json(array $json, string $mode = 'db', array $logCtx = []): array {
     $pdo = get_db();
-    $items = $json['pm25']['data'] ?? [];
-    if (empty($items)) {
-        throw new RuntimeException('ไม่พบข้อมูล PM 2.5 จาก ThaiWater30 Weather API');
-    }
-
-    $thaiDate = format_thai_date();
-    $rowsToInsert = [];
-    $seenStations = [];
-
-    foreach ($items as $item) {
-        $pc = (string)($item['geocode']['province_code'] ?? '');
-        $pn = (string)($item['geocode']['province_name']['th'] ?? '');
-        if ($pc !== '52' && mb_strpos($pn, 'ลำปาง') === false) continue;
-
-        $stationName = trim((string)($item['station']['tele_station_name']['th'] ?? ''));
-        if ($stationName === '' || isset($seenStations[$stationName])) continue;
-        $seenStations[$stationName] = true;
-
-        $tambon = trim((string)($item['geocode']['tumbon_name']['th'] ?? ''));
-        $amphoeRaw = trim((string)($item['geocode']['amphoe_name']['th'] ?? ''));
-        $amphoe = $amphoeRaw !== '' ? (mb_strpos($amphoeRaw, 'อำเภอ') === 0 ? $amphoeRaw : 'อำเภอ' . $amphoeRaw) : 'อำเภอเมืองลำปาง';
-
-        $dtRaw = trim((string)($item['pm25_datetime'] ?? ''));
-        $timeLabel = $dtRaw !== '' ? substr($dtRaw, 11, 5) . ' น.' : date('H:i') . ' น.';
-
-        $pmVal = parse_float_or_null($item['pm25_value'] ?? null);
-        $pmAvg = parse_float_or_null($item['pm25_avg_24h'] ?? ($item['pm25_value'] ?? null));
-        if ($pmVal === null) continue;
-
-        $status = 'ไม่ทราบค่า';
-        if ($pmVal <= 15.0) $status = 'ดีมาก';
-        elseif ($pmVal <= 25.0) $status = 'ดี';
-        elseif ($pmVal <= 37.5) $status = 'ปานกลาง';
-        elseif ($pmVal <= 75.0) $status = 'เริ่มมีผลต่อสุขภาพ';
-        else $status = 'มีผลกระทบต่อสุขภาพ';
-
-        $rowsToInsert[] = [
-            'record_date'        => $thaiDate,
-            'station_name'       => mb_substr($stationName, 0, 150),
-            'tambon'             => mb_substr($tambon, 0, 100),
-            'amphoe'             => mb_substr($amphoe, 0, 100),
-            'province'           => 'ลำปาง',
-            'time_label'         => mb_substr($timeLabel, 0, 50),
-            'pm25_value'         => $pmVal,
-            'pm25_avg_24h'       => $pmAvg,
-            'air_quality_status' => $status
-        ];
-    }
-
+    $transformed = transform_pm25_items($json);
+    $rowsToInsert = $transformed['rows'];
     if (empty($rowsToInsert)) {
         throw new RuntimeException('ไม่พบสถานีตรวจวัด PM 2.5 ในจังหวัดลำปาง');
     }
@@ -617,124 +516,160 @@ function save_pm25_from_json(array $json, string $mode = 'db'): array {
 
     $count = count($rowsToInsert);
     $msg = "DB: committed ({$count} สถานี PM 2.5); Direct API; batch: {$batchId}";
-    add_server_log('DirectAPI', "✅ ดึงข้อมูล PM 2.5 จ.ลำปาง สำเร็จ {$count} สถานี บันทึกลง MySQL เรียบร้อยแล้ว");
     log_task_run('ดึงข้อมูล PM 2.5', $mode, 'success', $count, $msg);
 
+    retry_queue_clear('pm25');
+    $freshness = check_upstream_freshness('pm25', $transformed['observations']);
+
+    sys_log_record([
+        'run_group_id'   => $logCtx['run_group_id'] ?? null,
+        'module'         => 'pm25',
+        'action'         => 'ดึงข้อมูลคุณภาพอากาศ PM 2.5',
+        'status'         => 'success',
+        'trigger_source' => $logCtx['trigger_source'] ?? 'manual',
+        'scheduled_slot' => $logCtx['scheduled_slot'] ?? null,
+        'started_at'     => $logCtx['started_at'] ?? date('Y-m-d H:i:s'),
+        'finished_at'    => date('Y-m-d H:i:s'),
+        'duration_ms'    => (int)($logCtx['duration_ms'] ?? 0),
+        'row_count'      => $count,
+        'summary'        => "บันทึกข้อมูลฝุ่น PM 2.5 จ.ลำปาง {$count} สถานี ลง MySQL เรียบร้อย",
+        'meta'           => ['batchId' => $batchId, 'staleStations' => $freshness['staleCount'] ?? 0]
+    ]);
+
     return [
-        'success' => true,
-        'count' => $count,
-        'batchId' => $batchId
+        'success'   => true,
+        'count'     => $count,
+        'batchId'   => $batchId,
+        'freshness' => $freshness,
     ];
 }
 
-function collect_pm25_direct(string $mode = 'db'): array {
-    add_server_log('DirectAPI', "⏳ เริ่มดึงข้อมูลคุณภาพอากาศ PM 2.5 จ.ลำปาง ผ่าน Direct API ({$mode})...");
-    $json = http_get_json('https://api-v3.thaiwater.net/api/v1/thaiwater30/public/thaiwater/weather');
-    return save_pm25_from_json($json, $mode);
+function collect_pm25_direct(string $mode = 'db', string $triggerSource = 'manual', ?string $scheduledSlot = null): array {
+    $startedAt = date('Y-m-d H:i:s');
+    $t0 = microtime(true);
+    try {
+        $json = http_get_json('https://api-v3.thaiwater.net/api/v1/thaiwater30/public/thaiwater/weather', [], 30);
+        return save_pm25_from_json($json, $mode, [
+            'trigger_source' => $triggerSource,
+            'scheduled_slot' => $scheduledSlot,
+            'started_at'     => $startedAt,
+            'duration_ms'    => (int)round((microtime(true) - $t0) * 1000)
+        ]);
+    } catch (Throwable $e) {
+        $dur = (int)round((microtime(true) - $t0) * 1000);
+        log_task_run('ดึงข้อมูล PM 2.5', $mode, 'failed', 0, 'ล้มเหลว: ' . $e->getMessage());
+        sys_log_record([
+            'module'         => 'pm25',
+            'action'         => 'ดึงข้อมูลคุณภาพอากาศ PM 2.5',
+            'status'         => 'failed',
+            'trigger_source' => $triggerSource,
+            'scheduled_slot' => $scheduledSlot,
+            'started_at'     => $startedAt,
+            'finished_at'    => date('Y-m-d H:i:s'),
+            'duration_ms'    => $dur,
+            'row_count'      => 0,
+            'summary'        => 'ดึงข้อมูล PM 2.5 ไม่สำเร็จ',
+            'error_detail'   => $e->getMessage(),
+        ]);
+        throw $e;
+    }
 }
 
 // =========================================================================
-// 5. Direct Collector: Traffy Fondue Complaints (Lampang Public GeoJSON API)
+// 5. Direct Collector & Bridge: Traffy Fondue Complaints + Cookie/Session Test
 // =========================================================================
+function decode_traffy_jwt_info(string $token): ?array {
+    $token = trim(preg_replace('/^Bearer\s+/i', '', trim($token)), " \t\n\r\"'");
+    if ($token === '' || substr_count($token, '.') !== 2) {
+        return null;
+    }
+    $parts = explode('.', $token);
+    $payloadRaw = base64_decode(strtr($parts[1], '-_', '+/'));
+    $decoded = json_decode((string)$payloadRaw, true);
+    if (!is_array($decoded)) {
+        return null;
+    }
+    $exp = isset($decoded['exp']) ? (int)$decoded['exp'] : null;
+    $now = time();
+    $remSec = $exp !== null ? ($exp - $now) : null;
+    return [
+        'exp'            => $exp,
+        'expAt'          => $exp ? date('Y-m-d H:i:s', $exp) : null,
+        'isExpired'      => $exp ? ($exp <= $now) : false,
+        'remainingHours' => $remSec !== null ? round($remSec / 3600, 1) : null,
+        'remainingDays'  => $remSec !== null ? round($remSec / 86400, 1) : null,
+        'role'           => $decoded['role'] ?? null,
+        'email'          => $decoded['email'] ?? ($decoded['username'] ?? null),
+    ];
+}
+
+function build_traffy_headers(): array {
+    $cfg = get_app_config();
+    $ta = $cfg['traffyAuth'] ?? [];
+    $headers = [
+        'Origin: https://citydata.traffy.in.th',
+        'Referer: https://citydata.traffy.in.th/'
+    ];
+    if (!empty($ta['cookie'])) {
+        $headers[] = 'Cookie: ' . $ta['cookie'];
+    }
+    if (!empty($ta['token'])) {
+        $headers[] = 'Authorization: Bearer ' . $ta['token'];
+    }
+    return $headers;
+}
+
 function fetch_traffy_timeline_direct(string $ticketId): ?array {
     $url = 'https://publicapi.traffy.in.th/teamchadchart-stat-api/detail-timeline/v1?ticket_id=' . rawurlencode($ticketId);
     try {
-        return http_get_json($url, [
-            'Origin: https://bangkok.traffy.in.th',
-            'Referer: https://bangkok.traffy.in.th/'
-        ], 12);
+        return http_get_json($url, build_traffy_headers(), 10);
     } catch (Throwable $e) {
         return null;
     }
 }
 
-function save_complaints_from_json(array $json, string $mode = 'db'): array {
-    $pdo = get_db();
-    $features = $json['features'] ?? [];
-    if (empty($features)) {
-        throw new RuntimeException('ไม่พบข้อมูลเรื่องร้องเรียนจาก Traffy Public API');
-    }
-
-    $prepared = [];
-    $seenTickets = [];
-
-    foreach ($features as $f) {
-        $props = $f['properties'] ?? [];
-        $province = trim((string)($props['province'] ?? ''));
-        $address = trim((string)($props['address'] ?? ''));
-        if ($province !== 'ลำปาง' && mb_strpos($province, 'ลำปาง') === false && mb_strpos($address, 'ลำปาง') === false) {
-            continue;
-        }
-
-        $ticketId = trim((string)($props['ticket_id'] ?? ''));
-        if ($ticketId === '' || isset($seenTickets[$ticketId])) continue;
-        $seenTickets[$ticketId] = true;
-
-        $stateName = trim((string)($props['state'] ?? ($props['state_type_latest'] ?? 'รอรับเรื่อง')));
-
-        $problemType = 'ทั่วไป';
-        if (!empty($props['problem_type_abdul']) && is_array($props['problem_type_abdul'])) {
-            $firstType = trim((string)($props['problem_type_abdul'][0] ?? ''));
-            if ($firstType !== '') $problemType = $firstType;
-        } elseif (!empty($props['type']) && is_string($props['type'])) {
-            $cleanType = trim($props['type'], "{} \t\n\r");
-            if ($cleanType !== '') $problemType = explode(',', $cleanType)[0];
-        }
-
-        $orgName = 'อบจ.ลำปาง';
-        if (!empty($props['org']) && is_array($props['org'])) {
-            $orgName = implode(', ', array_filter(array_map('trim', $props['org'])));
-        } elseif (!empty($props['org_action']) && is_array($props['org_action'])) {
-            $orgName = implode(', ', array_filter(array_map('trim', $props['org_action'])));
-        }
-        if ($orgName === '') $orgName = 'อบจ.ลำปาง';
-
-        $desc = trim((string)($props['description'] ?? ''));
-        $photoUrl = trim((string)($props['photo_url'] ?? ($props['after_photo'] ?? '')));
-        $timestampStr = trim((string)($props['timestamp'] ?? ''));
-        $stars = isset($props['star']) && $props['star'] !== null && $props['star'] !== '' ? '⭐ ' . $props['star'] : '';
-
-        $prepared[] = [
-            'ticket_id'          => mb_substr($ticketId, 0, 50),
-            'state_name'         => mb_substr($stateName, 0, 100),
-            'problem_type'       => mb_substr($problemType, 0, 150),
-            'description'        => $desc,
-            'photo_url'          => $photoUrl,
-            'location'           => $address,
-            'org_name'           => $orgName,
-            'ticket_datetime'    => mb_substr($timestampStr, 0, 100),
-            'satisfaction_stars' => mb_substr($stars, 0, 50),
-            'is_in_scope'        => 1
-        ];
-
-        if (count($prepared) >= 60) break;
-    }
-
+/**
+ * Persist normalized complaint rows (shared by Direct Public API and Extension 04ext_TraffyLP).
+ */
+function save_complaints_rows_to_db(array $prepared, string $mode = 'db', array $logCtx = []): array {
     if (empty($prepared)) {
-        throw new RuntimeException('ไม่พบเรื่องร้องเรียนในเขตจังหวัดลำปางจาก Traffy API');
+        throw new RuntimeException('ไม่พบรายการเรื่องร้องเรียนที่จะบันทึก');
     }
 
-    // Fetch timeline for up to 5 new/changed tickets
-    $timelineFetches = 0;
+    $pdo = get_db();
+    // Fetch timeline for up to 5 new/changed tickets in PARALLEL (5s cap so slow upstream never stalls web requests)
+    $tlRequests = [];
+    $tlHeaders = build_traffy_headers();
     $checkStmt = $pdo->prepare("SELECT state_name, raw_timeline FROM tbl_complaints_monitoring WHERE ticket_id = ? LIMIT 1");
     foreach ($prepared as &$row) {
         $checkStmt->execute([$row['ticket_id']]);
         $existing = $checkStmt->fetch();
-        $timeline = $existing['raw_timeline'] ?? null;
-        if ((!$existing || ($existing['state_name'] !== $row['state_name'] && $row['state_name'] !== 'เสร็จสิ้น')) && $timelineFetches < 5) {
-            $tlData = fetch_traffy_timeline_direct($row['ticket_id']);
-            if ($tlData !== null) {
-                $timeline = json_encode($tlData, JSON_UNESCAPED_UNICODE);
-            }
-            $timelineFetches++;
+        $row['raw_timeline'] = $existing['raw_timeline'] ?? null;
+        if ((!$existing || ($existing['state_name'] !== $row['state_name'] && $row['state_name'] !== 'เสร็จสิ้น')) && count($tlRequests) < 5) {
+            $tid = $row['ticket_id'];
+            $tlRequests[$tid] = [
+                'url'     => 'https://publicapi.traffy.in.th/teamchadchart-stat-api/detail-timeline/v1?ticket_id=' . urlencode($tid),
+                'headers' => $tlHeaders,
+                'timeout' => 5,
+            ];
         }
-        $row['raw_timeline'] = $timeline;
     }
     unset($row);
 
+    if (!empty($tlRequests)) {
+        $tlResponses = http_get_json_multi($tlRequests, 5);
+        foreach ($prepared as &$row) {
+            $tid = $row['ticket_id'];
+            if (!empty($tlResponses[$tid]['ok']) && is_array($tlResponses[$tid]['data'])) {
+                $row['raw_timeline'] = json_encode($tlResponses[$tid]['data'], JSON_UNESCAPED_UNICODE);
+            }
+        }
+        unset($row);
+    }
+
     $pdo->beginTransaction();
     try {
-        $batchId = record_ingest_batch($pdo, 'complaints', $prepared);
+        $batchId = record_ingest_batch($pdo, 'complaints', $prepared, $logCtx['custom_batch_key'] ?? null);
         $selectExisting = $pdo->prepare("SELECT state_name, org_name FROM tbl_complaints_monitoring WHERE ticket_id = ? LIMIT 1");
         $upsertStmt = $pdo->prepare("INSERT INTO tbl_complaints_monitoring
             (ticket_id, state_name, problem_type, description, photo_url, location, org_name, ticket_datetime, satisfaction_stars, raw_timeline, is_in_scope, agency_status, recorded_at)
@@ -758,14 +693,7 @@ function save_complaints_from_json(array $json, string $mode = 'db'): array {
             $selectExisting->execute([$r['ticket_id']]);
             $old = $selectExisting->fetch();
 
-            $isPao = (mb_strpos($r['org_name'], 'อบจ.ลำปาง') !== false || mb_strpos($r['org_name'], 'องค์การบริหารส่วนจังหวัดลำปาง') !== false);
-            $st = $r['state_name'];
-            $agency = $isPao ? 'งานที่เป็นสถานะอื่นๆ' : 'สถานะอื่นๆ ของหน่วยงาน';
-            if (mb_strpos($st, 'รอรับเรื่อง') !== false) $agency = $isPao ? 'งานที่รับเรื่องร้องเรียน' : 'อบจ.รับมอบหมายงาน';
-            elseif (mb_strpos($st, 'ส่งต่อ') !== false) $agency = $isPao ? 'งานส่งต่อ' : 'ส่งต่อให้หน่วยงานอื่นดำเนินการ';
-            elseif (mb_strpos($st, 'เสร็จสิ้น') !== false) $agency = $isPao ? 'งานที่ อบจ.ดำเนินการเสร็จ' : 'หน่วยงานอื่นดำเนินการเสร็จ';
-            elseif (mb_strpos($st, 'กำลังดำเนินการ') !== false || mb_strpos($st, 'ถูกติดตาม') !== false) $agency = $isPao ? 'งานที่ อบจ.กำลังดำเนินการ' : 'หน่วยงานอื่นกำลังดำเนินการ';
-            elseif (mb_strpos($st, 'รับมอบ') !== false) $agency = $isPao ? 'สถานะรับมอบจากหน่วยงานอื่นๆ' : 'สถานะที่หน่วยงานรับมอบจาก อบจ.ลำปาง';
+            $agency = compute_traffy_agency_status((string)$r['org_name'], (string)$r['state_name']);
 
             $upsertStmt->execute([
                 $r['ticket_id'],
@@ -793,57 +721,449 @@ function save_complaints_from_json(array $json, string $mode = 'db'): array {
     }
 
     $count = count($prepared);
-    $msg = "DB: committed ({$count} เรื่องร้องเรียน); Direct API; batch: {$batchId}";
-    add_server_log('DirectAPI', "✅ ดึงข้อมูลเรื่องร้องเรียน Traffy Fondue จ.ลำปาง สำเร็จ {$count} รายการ บันทึกลง MySQL เรียบร้อยแล้ว");
+    $sourceLabel = $logCtx['trigger_source'] ?? 'direct_api';
+    $msg = "DB: committed ({$count} เรื่องร้องเรียน); {$sourceLabel}; batch: {$batchId}";
     log_task_run('ดึงข้อมูลเรื่องร้องเรียน', $mode, 'success', $count, $msg);
+
+    retry_queue_clear('complaints');
+
+    sys_log_record([
+        'run_group_id'   => $logCtx['run_group_id'] ?? null,
+        'module'         => 'complaints',
+        'action'         => 'ดึงข้อมูลเรื่องร้องเรียน Traffy Fondue',
+        'status'         => 'success',
+        'trigger_source' => $logCtx['trigger_source'] ?? 'manual',
+        'scheduled_slot' => $logCtx['scheduled_slot'] ?? null,
+        'started_at'     => $logCtx['started_at'] ?? date('Y-m-d H:i:s'),
+        'finished_at'    => date('Y-m-d H:i:s'),
+        'duration_ms'    => (int)($logCtx['duration_ms'] ?? 0),
+        'row_count'      => $count,
+        'summary'        => "บันทึกเรื่องร้องเรียน จ.ลำปาง {$count} รายการ ลง MySQL สำเร็จ",
+        'meta'           => ['batchId' => $batchId]
+    ]);
 
     return [
         'success' => true,
-        'count' => $count,
+        'count'   => $count,
         'batchId' => $batchId
     ];
 }
 
-function collect_complaints_direct(string $mode = 'db'): array {
-    add_server_log('DirectAPI', "⏳ เริ่มดึงข้อมูลเรื่องร้องเรียน Traffy Fondue จ.ลำปาง ผ่าน Direct Public API...");
-    $url = 'https://publicapi.traffy.in.th/teamchadchart-stat-api/geojson/v1?text=%E0%B8%A5%E0%B8%B3%E0%B8%9B%E0%B8%B2%E0%B8%87';
-    $json = http_get_json($url, [
-        'Origin: https://bangkok.traffy.in.th',
-        'Referer: https://bangkok.traffy.in.th/'
-    ], 30);
-    return save_complaints_from_json($json, $mode);
+function save_complaints_from_json(array $json, string $mode = 'db', array $logCtx = []): array {
+    $prepared = transform_traffy_complaints($json, 60);
+    if (empty($prepared)) {
+        throw new RuntimeException('ไม่พบเรื่องร้องเรียนในเขตจังหวัดลำปางจาก Traffy API');
+    }
+    return save_complaints_rows_to_db($prepared, $mode, $logCtx);
+}
+
+/**
+ * Resolve direct Server-to-Server Traffy endpoint plan (no Chrome Extension required).
+ */
+function get_traffy_request_plan(): array {
+    $cfg = get_app_config();
+    $ta = $cfg['traffyAuth'] ?? [];
+    $hasAuth = (!empty($ta['token']) || !empty($ta['cookie']));
+    $orgId = trim((string)($ta['orgId'] ?? ''));
+    $headers = build_traffy_headers();
+    $plan = [];
+
+    if ($hasAuth) {
+        // Primary authenticated feed matching citydata.traffy.in.th/recent-post after LINE login
+        $plan[] = [
+            'label'   => 'Authenticated PostgREST Feed (api.traffy.in.th)',
+            'url'     => 'https://api.traffy.in.th/postgrest/rpc/get_user_all_orgs_feed?p_province=' . rawurlencode('ลำปาง') . '&p_limit=60&p_offset=0',
+            'headers' => $headers,
+            'timeout' => 12,
+        ];
+        if ($orgId !== '' && ctype_digit($orgId)) {
+            $plan[] = [
+                'label'   => 'Authenticated Org Feed (view_private_post_info)',
+                'url'     => 'https://api.traffy.in.th/postgrest/view_private_post_info?limit=60&offset=0&org_id=eq.' . rawurlencode($orgId),
+                'headers' => $headers,
+                'timeout' => 12,
+            ];
+        }
+    }
+
+    if ($orgId !== '') {
+        $isUuid = (bool)preg_match('/^[0-9a-f-]{16,}$/i', $orgId);
+        $qs = $isUuid ? ('uuid=' . rawurlencode($orgId)) : ('org_id=' . rawurlencode($orgId));
+        $plan[] = [
+            'label'   => 'Public RPC GeoJSON (api.traffy.in.th)',
+            'url'     => 'https://api.traffy.in.th/public/rpc/geojson?' . $qs,
+            'headers' => $headers,
+            'timeout' => 10,
+        ];
+    }
+
+    // Standard open fallback (publicapi.traffy.in.th)
+    $plan[] = [
+        'label'   => 'Public Stat GeoJSON (publicapi.traffy.in.th)',
+        'url'     => 'https://publicapi.traffy.in.th/teamchadchart-stat-api/geojson/v1?text=' . rawurlencode('ลำปาง'),
+        'headers' => $headers,
+        'timeout' => 14,
+    ];
+
+    return $plan;
+}
+
+function collect_complaints_direct(string $mode = 'db', string $triggerSource = 'manual', ?string $scheduledSlot = null): array {
+    $startedAt = date('Y-m-d H:i:s');
+    $t0 = microtime(true);
+    $plan = get_traffy_request_plan();
+    $lastErr = null;
+
+    foreach ($plan as $step) {
+        try {
+            $json = http_get_json($step['url'], $step['headers'], (int)$step['timeout']);
+            return save_complaints_from_json($json, $mode, [
+                'trigger_source' => $triggerSource,
+                'scheduled_slot' => $scheduledSlot,
+                'started_at'     => $startedAt,
+                'duration_ms'    => (int)round((microtime(true) - $t0) * 1000)
+            ]);
+        } catch (Throwable $e) {
+            $lastErr = $e;
+        }
+    }
+
+    $dur = (int)round((microtime(true) - $t0) * 1000);
+    $errMsg = $lastErr ? $lastErr->getMessage() : 'ไม่สามารถดึงข้อมูล Traffy API ได้';
+    log_task_run('ดึงข้อมูลเรื่องร้องเรียน', $mode, 'failed', 0, 'ล้มเหลว: ' . $errMsg);
+    sys_log_record([
+        'module'         => 'complaints',
+        'action'         => 'ดึงข้อมูลเรื่องร้องเรียน Traffy Fondue',
+        'status'         => 'failed',
+        'trigger_source' => $triggerSource,
+        'scheduled_slot' => $scheduledSlot,
+        'started_at'     => $startedAt,
+        'finished_at'    => date('Y-m-d H:i:s'),
+        'duration_ms'    => $dur,
+        'row_count'      => 0,
+        'summary'        => 'ดึงข้อมูลเรื่องร้องเรียน Traffy Fondue ไม่สำเร็จ',
+        'error_detail'   => $errMsg,
+    ]);
+    throw ($lastErr ?: new RuntimeException($errMsg));
+}
+
+/**
+ * Comprehensive live Cookie, Session, JWT & API test for both Water_System2 Auth
+ * and Traffy Fondue (citydata.traffy.in.th + publicapi.traffy.in.th + Extension bridge).
+ */
+function test_traffy_connection_and_session(bool $logResult = true): array {
+    $startedAt = date('Y-m-d H:i:s');
+    $tStart = microtime(true);
+    $cfg = get_app_config();
+    $ta = $cfg['traffyAuth'] ?? [];
+
+    // 1. Internal Water_System2 Session & Cookie Check (water_session_7000)
+    $sessionsPath = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'sessions.json';
+    $sessionWritable = is_dir(dirname($sessionsPath)) && is_writable(dirname($sessionsPath));
+    $curCookie = $_COOKIE[SESSION_COOKIE_NAME] ?? '';
+    $appSessionCheck = [
+        'cookieName'          => SESSION_COOKIE_NAME,
+        'authEnforce'         => AUTH_ENFORCE,
+        'browserCookieSent'   => $curCookie !== '',
+        'sessionsFileReady'   => $sessionWritable,
+        'loopbackAuthRoundtrip' => null,
+        'ok'                  => false,
+    ];
+
+    // Perform an actual non-destructive session store roundtrip test in runtime storage + loopback check if running over HTTP
+    try {
+        $testTok = bin2hex(random_bytes(12));
+        $testHash = hash('sha256', $testTok);
+        $sessions = read_json_file($sessionsPath, []);
+        $sessions[$testHash] = ['user' => ['id' => 'diag', 'username' => 'diag', 'role' => 'viewer'], 'csrfToken' => 'diag', 'expires' => time() + 30];
+        $writeOk = write_json_file($sessionsPath, $sessions);
+        $reloaded = read_json_file($sessionsPath, []);
+        $readOk = isset($reloaded[$testHash]);
+        unset($sessions[$testHash]);
+        write_json_file($sessionsPath, $sessions);
+        $appSessionCheck['ok'] = $writeOk && $readOk;
+        $appSessionCheck['message'] = $appSessionCheck['ok']
+            ? 'ระบบ Session & Cookie (' . SESSION_COOKIE_NAME . ') อ่าน-เขียน-ตรวจสอบ Hash ได้สมบูรณ์'
+            : 'ไม่สามารถเขียนไฟล์ sessions.json ได้';
+    } catch (Throwable $e) {
+        $appSessionCheck['message'] = 'Session error: ' . $e->getMessage();
+    }
+
+    // 2. Check User-Configured Traffy Cookie / Token Session
+    $traffyCookie = trim((string)($ta['cookie'] ?? ''));
+    $traffyToken  = trim((string)($ta['token'] ?? ''));
+    $jwtInfo = decode_traffy_jwt_info($traffyToken);
+    if ($jwtInfo && $jwtInfo['remainingHours'] !== null) {
+        if ($jwtInfo['remainingHours'] <= 0 && function_exists('php_send_operational_alert')) {
+            php_send_operational_alert('traffy_token_expired', 'Traffy LINE Token (local_login_data) หมดอายุแล้ว', "Token หมดอายุเมื่อ {$jwtInfo['expAt']} กรุณาเข้าสู่ระบบ LINE ใน citydata.traffy.in.th เพื่อวาง Token ใหม่");
+        } elseif ($jwtInfo['remainingHours'] <= 48 && function_exists('php_send_operational_alert')) {
+            php_send_operational_alert('traffy_token_expiring', "Traffy LINE Token ใกล้หมดอายุ (เหลือ {$jwtInfo['remainingHours']} ชม.)", "หมดอายุวันที่ {$jwtInfo['expAt']} กรุณาเตรียมต่ออายุ Token");
+        }
+    }
+
+    $traffyAuthTest = [
+        'configured'  => ($traffyCookie !== '' || $traffyToken !== ''),
+        'hasCookie'   => ($traffyCookie !== ''),
+        'hasToken'    => ($traffyToken !== ''),
+        'jwtInfo'     => $jwtInfo,
+        'httpCode'    => null,
+        'durationMs'  => 0,
+        'ok'          => false,
+        'statusLabel' => 'ไม่ได้ตั้งค่า Traffy Cookie/Token',
+    ];
+
+    if ($traffyAuthTest['configured']) {
+        $tAuth = microtime(true);
+        $probeHeaders = [
+            'Accept: application/json, text/plain, */*',
+            'Origin: https://citydata.traffy.in.th',
+            'Referer: https://citydata.traffy.in.th/',
+            'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/122.0.0.0'
+        ];
+        if ($traffyCookie !== '') $probeHeaders[] = 'Cookie: ' . $traffyCookie;
+        if ($traffyToken !== '')  $probeHeaders[] = 'Authorization: Bearer ' . $traffyToken;
+
+        $probeUrl = 'https://api.traffy.in.th/postgrest/rpc/get_user_all_orgs_feed?p_province=' . rawurlencode('ลำปาง') . '&p_limit=5&p_offset=0';
+        $ch = curl_init($probeUrl);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 10,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_HTTPHEADER     => $probeHeaders
+        ]);
+        $respBody = curl_exec($ch);
+        $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlErr  = curl_error($ch);
+        curl_close($ch);
+
+        $traffyAuthTest['httpCode'] = $httpCode;
+        $traffyAuthTest['durationMs'] = (int)round((microtime(true) - $tAuth) * 1000);
+        if ($httpCode >= 200 && $httpCode < 300) {
+            $decodedFeed = json_decode((string)$respBody, true);
+            $feedCount = is_array($decodedFeed) ? count(transform_traffy_complaints($decodedFeed, 60)) : 0;
+            $traffyAuthTest['ok'] = true;
+            $traffyAuthTest['feedCount'] = $feedCount;
+            $traffyAuthTest['statusLabel'] = '✅ Cookie/Session ของ Traffy ใช้งานได้จริง (HTTP ' . $httpCode . ($feedCount > 0 ? ", ดึงลำปางได้ {$feedCount} เรื่อง" : '') . ')';
+        } elseif ($httpCode === 401 || $httpCode === 403 || ($jwtInfo && !empty($jwtInfo['isExpired']))) {
+            $traffyAuthTest['statusLabel'] = '❌ Cookie/Token หมดอายุหรือไม่ถูกต้อง (HTTP ' . $httpCode . ') — กรุณาคัดลอก Token ใหม่หลังล็อกอิน LINE ใน citydata.traffy.in.th';
+        } else {
+            $traffyAuthTest['statusLabel'] = '⚠️ ตรวจสอบไม่สำเร็จ (HTTP ' . $httpCode . ($curlErr ? ": {$curlErr}" : '') . ')';
+        }
+    }
+
+    // 3. Test Traffy Public APIs (geojson/v1 + detail-timeline/v1) in parallel
+    $pubRes = http_get_json_multi([
+        'geojson' => [
+            'url'     => 'https://publicapi.traffy.in.th/teamchadchart-stat-api/geojson/v1?text=%E0%B8%A5%E0%B8%B3%E0%B8%9B%E0%B8%B2%E0%B8%87',
+            'headers' => build_traffy_headers(),
+            'timeout' => 12
+        ],
+        'timeline' => [
+            'url'     => 'https://publicapi.traffy.in.th/teamchadchart-stat-api/detail-timeline/v1?ticket_id=2026-NVU2MU',
+            'headers' => build_traffy_headers(),
+            'timeout' => 10
+        ],
+        'citydata_spa' => [
+            'url'     => 'https://citydata.traffy.in.th/recent-post',
+            'headers' => ['Accept: text/html'],
+            'timeout' => 8
+        ]
+    ], 12);
+
+    $geoOk = !empty($pubRes['geojson']['ok']);
+    $lampangCount = $geoOk ? count(transform_traffy_complaints($pubRes['geojson']['data'], 100)) : 0;
+
+    $publicApiCheck = [
+        'geojson' => [
+            'ok'           => $geoOk,
+            'httpCode'     => $pubRes['geojson']['httpCode'] ?? 0,
+            'durationMs'   => $pubRes['geojson']['durationMs'] ?? 0,
+            'lampangCount' => $lampangCount,
+            'error'        => $pubRes['geojson']['error'] ?? null,
+        ],
+        'timeline' => [
+            'ok'         => !empty($pubRes['timeline']['ok']),
+            'httpCode'   => $pubRes['timeline']['httpCode'] ?? 0,
+            'durationMs' => $pubRes['timeline']['durationMs'] ?? 0,
+            'error'      => $pubRes['timeline']['error'] ?? null,
+        ],
+        'citydataReachable' => (($pubRes['citydata_spa']['httpCode'] ?? 0) === 200),
+    ];
+
+    $pdo = get_db();
+    $dbCount = (int)$pdo->query("SELECT COUNT(*) FROM tbl_complaints_monitoring WHERE (is_in_scope = 1 OR is_in_scope IS NULL)")->fetchColumn();
+    $latestComp = $pdo->query("SELECT MAX(recorded_at) FROM tbl_complaints_monitoring")->fetchColumn();
+
+    $overallOk = $appSessionCheck['ok'] && ($traffyAuthTest['ok'] || $geoOk);
+    $status = $overallOk ? (($traffyAuthTest['configured'] && !$traffyAuthTest['ok']) || !$geoOk ? 'partial' : 'success') : 'failed';
+
+    $summaryParts = [];
+    $summaryParts[] = 'App Cookie: ' . ($appSessionCheck['ok'] ? 'ผ่าน' : 'ล้มเหลว');
+    $summaryParts[] = 'Traffy Session: ' . ($traffyAuthTest['configured'] ? ($traffyAuthTest['ok'] ? 'ใช้งานได้' : 'หมดอายุ/ล้มเหลว') : 'ยังไม่ใส่ Cookie/Token');
+    $summaryParts[] = 'Public API: ' . ($geoOk ? "OK ({$lampangCount} เรื่อง)" : "HTTP " . ($publicApiCheck['geojson']['httpCode'] ?? 0) . " ({$publicApiCheck['geojson']['error']})");
+
+    $result = [
+        'success'     => $overallOk,
+        'status'      => $status,
+        'testedAt'    => date('Y-m-d H:i:s'),
+        'durationMs'  => (int)round((microtime(true) - $tStart) * 1000),
+        'appSession'  => $appSessionCheck,
+        'traffyAuth'  => $traffyAuthTest,
+        'publicApi'   => $publicApiCheck,
+        'database'    => ['totalInScope' => $dbCount, 'lastRecordedAt' => $latestComp],
+        'summary'     => implode(' | ', $summaryParts),
+    ];
+
+    if ($logResult) {
+        sys_log_record([
+            'module'         => 'traffy_auth',
+            'action'         => 'ทดสอบ Cookie & Session + Traffy API',
+            'status'         => $status,
+            'trigger_source' => 'test',
+            'started_at'     => $startedAt,
+            'finished_at'    => date('Y-m-d H:i:s'),
+            'duration_ms'    => $result['durationMs'],
+            'row_count'      => $lampangCount,
+            'summary'        => $result['summary'],
+            'error_detail'   => $geoOk ? null : ($publicApiCheck['geojson']['error'] ?? null),
+            'meta'           => $result,
+        ]);
+    }
+
+    return $result;
 }
 
 // =========================================================================
-// 6. Parallel Collector: Fetch ALL 5 APIs simultaneously using curl_multi!
+// 6. Single-Module Runner & Non-Blocking Auto-Retry Processor (Add-on 2)
 // =========================================================================
-function collect_all_parallel_direct(array $activeFlags = []): array {
+function run_single_module_collector(string $module, string $triggerSource = 'manual', ?string $scheduledSlot = null): array {
+    switch ($module) {
+        case 'rainfall':
+            return collect_rainfall_direct(true, $triggerSource, $scheduledSlot);
+        case 'water':
+            return collect_water_level_direct('db', $triggerSource, $scheduledSlot);
+        case 'drought':
+            return collect_drought_direct('db', $triggerSource, $scheduledSlot);
+        case 'pm25':
+            return collect_pm25_direct('db', $triggerSource, $scheduledSlot);
+        case 'complaints':
+            return collect_complaints_direct('db', $triggerSource, $scheduledSlot);
+        case 'github_sync':
+            require_once __DIR__ . '/github_sync_to_mysql.php';
+            return sync_github_snapshots_to_mysql();
+        case 'notification':
+            return php_check_and_notify(false);
+        default:
+            throw new InvalidArgumentException("Unknown module: {$module}");
+    }
+}
+
+function retry_queue_process_due(): array {
+    $q = retry_queue_get();
+    if (empty($q)) return ['processed' => 0, 'results' => []];
+
+    $now = time();
+    $processed = [];
+    foreach ($q as $module => $item) {
+        $nextAt = (int)($item['nextRetryAt'] ?? 0);
+        if ($now < $nextAt) continue;
+
+        $attempt = (int)($item['attempt'] ?? 1);
+        $maxAttempts = (int)($item['maxAttempts'] ?? 3);
+        $slot = $item['scheduledSlot'] ?? null;
+
+        try {
+            $res = run_single_module_collector($module, 'auto_retry', $slot);
+            retry_queue_clear($module);
+            $processed[$module] = ['success' => true, 'attempt' => $attempt, 'result' => $res];
+        } catch (Throwable $e) {
+            if ($attempt >= $maxAttempts) {
+                retry_queue_clear($module);
+                sys_log_record([
+                    'module'         => $module,
+                    'action'         => "ซ่อมงานอัตโนมัติครบ {$maxAttempts} ครั้งแล้ว (หยุดรอ)",
+                    'status'         => 'failed',
+                    'trigger_source' => 'auto_retry',
+                    'scheduled_slot' => $slot,
+                    'summary'        => "Auto-Retry ({$attempt}/{$maxAttempts}) ล้มเหลวถาวรสำหรับ {$module}",
+                    'error_detail'   => $e->getMessage(),
+                ]);
+                if (function_exists('php_send_operational_alert')) {
+                    php_send_operational_alert(
+                        "retry_perm_{$module}",
+                        "ระบบ Auto-Retry ล้มเหลวครบ {$maxAttempts} ครั้ง ({$module})",
+                        "รอบเวลา: " . ($slot ?: 'N/A') . " | สาเหตุล่าสุด: " . $e->getMessage()
+                    );
+                }
+            } else {
+                retry_queue_enqueue($module, $slot, $e->getMessage(), 120, $maxAttempts);
+            }
+            $processed[$module] = ['success' => false, 'attempt' => $attempt, 'error' => $e->getMessage()];
+        }
+    }
+
+    return ['processed' => count($processed), 'results' => $processed];
+}
+
+// =========================================================================
+// 7. Parallel Collector: Fetch ALL 6 APIs simultaneously (Isolated Traffy timeout!)
+// =========================================================================
+function collect_all_parallel_direct(array $activeFlags = [], string $triggerSource = 'manual', ?string $scheduledSlot = null): array {
+    $lockedResult = with_file_lock('collect_cycle', function () use ($activeFlags, $triggerSource, $scheduledSlot) {
+        return _collect_all_parallel_direct_locked($activeFlags, $triggerSource, $scheduledSlot);
+    }, true);
+
+    if ($lockedResult === null) {
+        return [
+            'success'       => false,
+            'skipped'       => true,
+            'reason'        => 'concurrent_cycle_locked',
+            'status'        => 'skipped',
+            'elapsedSec'    => 0,
+            'okCount'       => 0,
+            'failCount'     => 0,
+            'results'       => [],
+            'notifications' => null,
+        ];
+    }
+
+    return $lockedResult;
+}
+
+function _collect_all_parallel_direct_locked(array $activeFlags = [], string $triggerSource = 'manual', ?string $scheduledSlot = null): array {
     $tStart = microtime(true);
+    $batchStartedAt = date('Y-m-d H:i:s');
+    $runGroupId = ($scheduledSlot ? date('Ymd_') . str_replace(':', '', $scheduledSlot) : 'run_' . date('YmdHis')) . '_' . substr(bin2hex(random_bytes(2)), 0, 4);
+
     $active = array_merge([
-        'water' => true,
-        'drought' => true,
-        'pm25' => true,
+        'water'      => true,
+        'drought'    => true,
+        'pm25'       => true,
         'complaints' => true
     ], $activeFlags);
 
     $requests = [];
     if (!empty($active['water'])) {
-        $requests['rain'] = ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/rain24?province_code=52'];
-        $requests['water'] = ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/waterlevel?province_code=52'];
+        $requests['rain']   = ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/rain24?province_code=52', 'timeout' => 25];
+        $requests['rain3d'] = ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/rain3d?province_code=52', 'timeout' => 20];
+        $requests['water']  = ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/waterlevel?province_code=52', 'timeout' => 25];
     }
     if (!empty($active['drought'])) {
-        $requests['drought'] = ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/dam?province_code=52'];
+        $requests['drought'] = ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/provinces/dam?province_code=52', 'timeout' => 25];
     }
     if (!empty($active['pm25'])) {
-        $requests['pm25'] = ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/public/thaiwater/weather'];
+        $requests['pm25'] = ['url' => 'https://api-v3.thaiwater.net/api/v1/thaiwater30/public/thaiwater/weather', 'timeout' => 30];
     }
     if (!empty($active['complaints'])) {
+        // Use authenticated api.traffy.in.th feed when LINE Token/Cookie or Org UUID is configured,
+        // otherwise use open stat API with 14s timeout so Kong instability never stalls ThaiWater pipelines
+        $traffyPlan = get_traffy_request_plan();
+        $primary = $traffyPlan[0];
         $requests['complaints'] = [
-            'url' => 'https://publicapi.traffy.in.th/teamchadchart-stat-api/geojson/v1?text=%E0%B8%A5%E0%B8%B3%E0%B8%9B%E0%B8%B2%E0%B8%87',
-            'headers' => [
-                'Origin: https://bangkok.traffy.in.th',
-                'Referer: https://bangkok.traffy.in.th/'
-            ]
+            'url'     => $primary['url'],
+            'headers' => $primary['headers'],
+            'timeout' => (int)$primary['timeout'],
         ];
     }
 
@@ -851,83 +1171,284 @@ function collect_all_parallel_direct(array $activeFlags = []): array {
         return ['success' => true, 'elapsedSec' => 0, 'results' => []];
     }
 
-    add_server_log('ParallelAPI', '⚡ เริ่มดึงข้อมูลทั้ง ' . count($requests) . ' API พร้อมกันด้วย curl_multi...');
     $responses = http_get_json_multi($requests, 25);
 
     $results = [];
-    $rainResult = ['subdistrictRainAvg' => [], 'districtRainAvg' => [], 'count' => 0];
+    $okCount = 0;
+    $failCount = 0;
+    $totalRows = 0;
+    $failedModules = [];
 
+    $rainResult = ['subdistrictRainAvg' => [], 'districtRainAvg' => [], 'count' => 0];
     if (!empty($responses['rain']['ok'])) {
         try {
-            $rainResult = save_rainfall_from_json($responses['rain']['data'], false);
+            $rainResult = save_rainfall_from_json($responses['rain']['data'], false, [
+                'run_group_id'   => $runGroupId,
+                'trigger_source' => $triggerSource,
+                'scheduled_slot' => $scheduledSlot,
+                'started_at'     => $batchStartedAt,
+                'duration_ms'    => $responses['rain']['durationMs']
+            ]);
             $results['rainfall'] = ['success' => true, 'count' => $rainResult['count']];
+            $okCount++;
+            $totalRows += $rainResult['count'];
         } catch (Throwable $e) {
-            $results['rainfall'] = ['success' => false, 'error' => $e->getMessage()];
-            add_server_log('ParallelAPI', '❌ น้ำฝน: ' . $e->getMessage());
+            $err = $e->getMessage();
+            $results['rainfall'] = ['success' => false, 'error' => $err];
+            $failCount++;
+            $failedModules[] = 'น้ำฝน';
+            log_task_run('ดึงข้อมูลน้ำฝน', 'db', 'failed', 0, 'ล้มเหลว: ' . $err);
+            sys_log_record([
+                'run_group_id' => $runGroupId, 'module' => 'rainfall', 'action' => 'ดึงข้อมูลปริมาณน้ำฝน 24 ชม.',
+                'status' => 'failed', 'trigger_source' => $triggerSource, 'scheduled_slot' => $scheduledSlot,
+                'started_at' => $batchStartedAt, 'duration_ms' => $responses['rain']['durationMs'] ?? 0,
+                'summary' => 'ดึงข้อมูลน้ำฝนไม่สำเร็จ', 'error_detail' => $err
+            ]);
+            retry_queue_enqueue('rainfall', $scheduledSlot, $err);
         }
     } elseif (isset($requests['rain'])) {
-        $results['rainfall'] = ['success' => false, 'error' => $responses['rain']['error'] ?? 'Fetch failed'];
+        $err = $responses['rain']['error'] ?? 'Fetch failed';
+        $results['rainfall'] = ['success' => false, 'error' => $err];
+        $failCount++;
+        $failedModules[] = 'น้ำฝน';
+        log_task_run('ดึงข้อมูลน้ำฝน', 'db', 'failed', 0, 'ล้มเหลว: ' . $err);
+        sys_log_record([
+            'run_group_id' => $runGroupId, 'module' => 'rainfall', 'action' => 'ดึงข้อมูลปริมาณน้ำฝน 24 ชม.',
+            'status' => 'failed', 'trigger_source' => $triggerSource, 'scheduled_slot' => $scheduledSlot,
+            'started_at' => $batchStartedAt, 'duration_ms' => $responses['rain']['durationMs'] ?? 0,
+            'summary' => 'เชื่อมต่อ API น้ำฝนไม่สำเร็จ', 'error_detail' => $err
+        ]);
+        retry_queue_enqueue('rainfall', $scheduledSlot, $err);
     }
+
+    $rain3dResult = (!empty($responses['rain3d']['ok'])) ? transform_rain3d_maps($responses['rain3d']['data']) : ['subdistrictRain3dAvg' => [], 'districtRain3dAvg' => [], 'count' => 0];
 
     if (!empty($responses['water']['ok'])) {
         try {
-            $results['water'] = save_water_level_from_json($responses['water']['data'], $rainResult, 'db');
+            $results['water'] = save_water_level_from_json($responses['water']['data'], $rainResult, 'db', $rain3dResult, [
+                'run_group_id'   => $runGroupId,
+                'trigger_source' => $triggerSource,
+                'scheduled_slot' => $scheduledSlot,
+                'started_at'     => $batchStartedAt,
+                'duration_ms'    => $responses['water']['durationMs']
+            ]);
+            $okCount++;
+            $totalRows += (int)($results['water']['count'] ?? 0);
         } catch (Throwable $e) {
-            $results['water'] = ['success' => false, 'error' => $e->getMessage()];
-            add_server_log('ParallelAPI', '❌ ระดับน้ำ: ' . $e->getMessage());
+            $err = $e->getMessage();
+            $results['water'] = ['success' => false, 'error' => $err];
+            $failCount++;
+            $failedModules[] = 'ระดับน้ำ';
+            log_task_run('ดึงข้อมูลระดับน้ำ', 'db', 'failed', 0, 'ล้มเหลว: ' . $err);
+            sys_log_record([
+                'run_group_id' => $runGroupId, 'module' => 'water', 'action' => 'ดึงข้อมูลระดับน้ำรายสถานี',
+                'status' => 'failed', 'trigger_source' => $triggerSource, 'scheduled_slot' => $scheduledSlot,
+                'started_at' => $batchStartedAt, 'duration_ms' => $responses['water']['durationMs'] ?? 0,
+                'summary' => 'บันทึกระดับน้ำไม่สำเร็จ', 'error_detail' => $err
+            ]);
+            retry_queue_enqueue('water', $scheduledSlot, $err);
         }
     } elseif (isset($requests['water'])) {
-        $results['water'] = ['success' => false, 'error' => $responses['water']['error'] ?? 'Fetch failed'];
+        $err = $responses['water']['error'] ?? 'Fetch failed';
+        $results['water'] = ['success' => false, 'error' => $err];
+        $failCount++;
+        $failedModules[] = 'ระดับน้ำ';
+        log_task_run('ดึงข้อมูลระดับน้ำ', 'db', 'failed', 0, 'ล้มเหลว: ' . $err);
+        sys_log_record([
+            'run_group_id' => $runGroupId, 'module' => 'water', 'action' => 'ดึงข้อมูลระดับน้ำรายสถานี',
+            'status' => 'failed', 'trigger_source' => $triggerSource, 'scheduled_slot' => $scheduledSlot,
+            'started_at' => $batchStartedAt, 'duration_ms' => $responses['water']['durationMs'] ?? 0,
+            'summary' => 'เชื่อมต่อ API ระดับน้ำไม่สำเร็จ', 'error_detail' => $err
+        ]);
+        retry_queue_enqueue('water', $scheduledSlot, $err);
     }
 
     if (!empty($responses['drought']['ok'])) {
         try {
-            $results['drought'] = save_drought_from_json($responses['drought']['data'], 'db');
+            $results['drought'] = save_drought_from_json($responses['drought']['data'], 'db', [
+                'run_group_id'   => $runGroupId,
+                'trigger_source' => $triggerSource,
+                'scheduled_slot' => $scheduledSlot,
+                'started_at'     => $batchStartedAt,
+                'duration_ms'    => $responses['drought']['durationMs']
+            ]);
+            $okCount++;
+            $totalRows += (int)($results['drought']['count'] ?? 0);
         } catch (Throwable $e) {
-            $results['drought'] = ['success' => false, 'error' => $e->getMessage()];
-            add_server_log('ParallelAPI', '❌ ภัยแล้ง: ' . $e->getMessage());
+            $err = $e->getMessage();
+            $results['drought'] = ['success' => false, 'error' => $err];
+            $failCount++;
+            $failedModules[] = 'ภัยแล้ง/อ่างเก็บน้ำ';
+            log_task_run('ดึงข้อมูลภัยแล้ง', 'db', 'failed', 0, 'ล้มเหลว: ' . $err);
+            sys_log_record([
+                'run_group_id' => $runGroupId, 'module' => 'drought', 'action' => 'ดึงข้อมูลอ่างเก็บน้ำ/ภัยแล้ง',
+                'status' => 'failed', 'trigger_source' => $triggerSource, 'scheduled_slot' => $scheduledSlot,
+                'started_at' => $batchStartedAt, 'duration_ms' => $responses['drought']['durationMs'] ?? 0,
+                'summary' => 'บันทึกข้อมูลอ่างเก็บน้ำไม่สำเร็จ', 'error_detail' => $err
+            ]);
+            retry_queue_enqueue('drought', $scheduledSlot, $err);
         }
     } elseif (isset($requests['drought'])) {
-        $results['drought'] = ['success' => false, 'error' => $responses['drought']['error'] ?? 'Fetch failed'];
+        $err = $responses['drought']['error'] ?? 'Fetch failed';
+        $results['drought'] = ['success' => false, 'error' => $err];
+        $failCount++;
+        $failedModules[] = 'ภัยแล้ง/อ่างเก็บน้ำ';
+        log_task_run('ดึงข้อมูลภัยแล้ง', 'db', 'failed', 0, 'ล้มเหลว: ' . $err);
+        sys_log_record([
+            'run_group_id' => $runGroupId, 'module' => 'drought', 'action' => 'ดึงข้อมูลอ่างเก็บน้ำ/ภัยแล้ง',
+            'status' => 'failed', 'trigger_source' => $triggerSource, 'scheduled_slot' => $scheduledSlot,
+            'started_at' => $batchStartedAt, 'duration_ms' => $responses['drought']['durationMs'] ?? 0,
+            'summary' => 'เชื่อมต่อ API อ่างเก็บน้ำไม่สำเร็จ', 'error_detail' => $err
+        ]);
+        retry_queue_enqueue('drought', $scheduledSlot, $err);
     }
 
     if (!empty($responses['pm25']['ok'])) {
         try {
-            $results['pm25'] = save_pm25_from_json($responses['pm25']['data'], 'db');
+            $results['pm25'] = save_pm25_from_json($responses['pm25']['data'], 'db', [
+                'run_group_id'   => $runGroupId,
+                'trigger_source' => $triggerSource,
+                'scheduled_slot' => $scheduledSlot,
+                'started_at'     => $batchStartedAt,
+                'duration_ms'    => $responses['pm25']['durationMs']
+            ]);
+            $okCount++;
+            $totalRows += (int)($results['pm25']['count'] ?? 0);
         } catch (Throwable $e) {
-            $results['pm25'] = ['success' => false, 'error' => $e->getMessage()];
-            add_server_log('ParallelAPI', '❌ PM 2.5: ' . $e->getMessage());
+            $err = $e->getMessage();
+            $results['pm25'] = ['success' => false, 'error' => $err];
+            $failCount++;
+            $failedModules[] = 'PM 2.5';
+            log_task_run('ดึงข้อมูล PM 2.5', 'db', 'failed', 0, 'ล้มเหลว: ' . $err);
+            sys_log_record([
+                'run_group_id' => $runGroupId, 'module' => 'pm25', 'action' => 'ดึงข้อมูลคุณภาพอากาศ PM 2.5',
+                'status' => 'failed', 'trigger_source' => $triggerSource, 'scheduled_slot' => $scheduledSlot,
+                'started_at' => $batchStartedAt, 'duration_ms' => $responses['pm25']['durationMs'] ?? 0,
+                'summary' => 'บันทึกข้อมูล PM 2.5 ไม่สำเร็จ', 'error_detail' => $err
+            ]);
+            retry_queue_enqueue('pm25', $scheduledSlot, $err);
         }
     } elseif (isset($requests['pm25'])) {
-        $results['pm25'] = ['success' => false, 'error' => $responses['pm25']['error'] ?? 'Fetch failed'];
+        $err = $responses['pm25']['error'] ?? 'Fetch failed';
+        $results['pm25'] = ['success' => false, 'error' => $err];
+        $failCount++;
+        $failedModules[] = 'PM 2.5';
+        log_task_run('ดึงข้อมูล PM 2.5', 'db', 'failed', 0, 'ล้มเหลว: ' . $err);
+        sys_log_record([
+            'run_group_id' => $runGroupId, 'module' => 'pm25', 'action' => 'ดึงข้อมูลคุณภาพอากาศ PM 2.5',
+            'status' => 'failed', 'trigger_source' => $triggerSource, 'scheduled_slot' => $scheduledSlot,
+            'started_at' => $batchStartedAt, 'duration_ms' => $responses['pm25']['durationMs'] ?? 0,
+            'summary' => 'เชื่อมต่อ API PM 2.5 ไม่สำเร็จ', 'error_detail' => $err
+        ]);
+        retry_queue_enqueue('pm25', $scheduledSlot, $err);
     }
 
     if (!empty($responses['complaints']['ok'])) {
         try {
-            $results['complaints'] = save_complaints_from_json($responses['complaints']['data'], 'db');
+            $results['complaints'] = save_complaints_from_json($responses['complaints']['data'], 'db', [
+                'run_group_id'   => $runGroupId,
+                'trigger_source' => $triggerSource,
+                'scheduled_slot' => $scheduledSlot,
+                'started_at'     => $batchStartedAt,
+                'duration_ms'    => $responses['complaints']['durationMs']
+            ]);
+            $okCount++;
+            $totalRows += (int)($results['complaints']['count'] ?? 0);
         } catch (Throwable $e) {
-            $results['complaints'] = ['success' => false, 'error' => $e->getMessage()];
-            add_server_log('ParallelAPI', '❌ ร้องเรียน: ' . $e->getMessage());
+            $err = $e->getMessage();
+            $results['complaints'] = ['success' => false, 'error' => $err];
+            $failCount++;
+            $failedModules[] = 'ร้องเรียน Traffy';
+            log_task_run('ดึงข้อมูลเรื่องร้องเรียน', 'db', 'failed', 0, 'ล้มเหลว: ' . $err);
+            sys_log_record([
+                'run_group_id' => $runGroupId, 'module' => 'complaints', 'action' => 'ดึงข้อมูลเรื่องร้องเรียน Traffy Fondue',
+                'status' => 'failed', 'trigger_source' => $triggerSource, 'scheduled_slot' => $scheduledSlot,
+                'started_at' => $batchStartedAt, 'duration_ms' => $responses['complaints']['durationMs'] ?? 0,
+                'summary' => 'บันทึกเรื่องร้องเรียน Traffy ไม่สำเร็จ', 'error_detail' => $err
+            ]);
+            retry_queue_enqueue('complaints', $scheduledSlot, $err);
         }
     } elseif (isset($requests['complaints'])) {
-        $results['complaints'] = ['success' => false, 'error' => $responses['complaints']['error'] ?? 'Fetch failed'];
+        $err = $responses['complaints']['error'] ?? 'Fetch failed';
+        $results['complaints'] = ['success' => false, 'error' => $err];
+        $failCount++;
+        $failedModules[] = 'ร้องเรียน Traffy';
+        log_task_run('ดึงข้อมูลเรื่องร้องเรียน', 'db', 'failed', 0, 'ล้มเหลว: ' . $err);
+        sys_log_record([
+            'run_group_id' => $runGroupId, 'module' => 'complaints', 'action' => 'ดึงข้อมูลเรื่องร้องเรียน Traffy Fondue',
+            'status' => 'failed', 'trigger_source' => $triggerSource, 'scheduled_slot' => $scheduledSlot,
+            'started_at' => $batchStartedAt, 'duration_ms' => $responses['complaints']['durationMs'] ?? 0,
+            'summary' => 'เชื่อมต่อ Traffy API ไม่สำเร็จ (ตั้งคิว Auto-Retry ใน 2 นาที)', 'error_detail' => $err
+        ]);
+        retry_queue_enqueue('complaints', $scheduledSlot, $err);
     }
 
-    $elapsed = round(microtime(true) - $tStart, 2);
-    add_server_log('ParallelAPI', "🎉 ดึงข้อมูลและบันทึกลง MySQL ครบทุก API เสร็จสมบูรณ์ภายใน {$elapsed} วินาที");
+    $elapsedMs = (int)round((microtime(true) - $tStart) * 1000);
+    $elapsedSec = round($elapsedMs / 1000, 2);
+
+    $overallStatus = ($failCount === 0) ? 'success' : ($okCount > 0 ? 'partial' : 'failed');
+    $slotInfo = $scheduledSlot ? "รอบ {$scheduledSlot} น." : 'สั่งดึงข้อมูลทันที';
+    $overallSummary = ($failCount === 0)
+        ? "ดึงข้อมูลครบทุกด้าน ({$okCount} ด้าน, {$totalRows} รายการ) {$slotInfo} สำเร็จภายใน {$elapsedSec} วินาที"
+        : "ดึงข้อมูล {$slotInfo}: สำเร็จ {$okCount} ด้าน, ไม่สำเร็จ {$failCount} ด้าน (" . implode(', ', $failedModules) . ") ใช้เวลา {$elapsedSec} วินาที";
+
+    sys_log_record([
+        'run_group_id'   => $runGroupId,
+        'module'         => 'system',
+        'action'         => 'รอบดึงข้อมูลบูรณาการรวม (Parallel Fetch)',
+        'status'         => $overallStatus,
+        'trigger_source' => $triggerSource,
+        'scheduled_slot' => $scheduledSlot,
+        'started_at'     => $batchStartedAt,
+        'finished_at'    => date('Y-m-d H:i:s'),
+        'duration_ms'    => $elapsedMs,
+        'row_count'      => $totalRows,
+        'summary'        => $overallSummary,
+        'error_detail'   => !empty($failedModules) ? 'ด้านที่ไม่สำเร็จ: ' . implode(', ', $failedModules) : null,
+        'meta'           => ['okCount' => $okCount, 'failCount' => $failCount, 'results' => $results]
+    ]);
 
     // Automatically evaluate crisis thresholds and send Gmail SMTP + LINE alerts
     $notifResult = null;
     try {
-        $notifResult = php_check_and_notify(false);
+        if ($okCount === 0 && $failCount > 0 && function_exists('php_send_operational_alert')) {
+            php_send_operational_alert(
+                'total_collector_failure',
+                'การดึงข้อมูลทุกระบบล้มเหลวพร้อมกัน',
+                "รอบ: {$slotInfo} ({$triggerSource}) | ด้านที่ไม่สำเร็จ: " . implode(', ', $failedModules)
+            );
+        }
+        $notifResult = php_check_and_notify(false, $triggerSource, $scheduledSlot);
     } catch (Throwable $e) {
-        add_server_log('Notification', '⚠️ ระบบแจ้งเตือนอัตโนมัติล้มเหลว: ' . $e->getMessage());
+        sys_log_record([
+            'run_group_id'   => $runGroupId,
+            'module'         => 'notification',
+            'action'         => 'ตรวจสอบและส่งแจ้งเตือนวิกฤต',
+            'status'         => 'failed',
+            'trigger_source' => $triggerSource,
+            'scheduled_slot' => $scheduledSlot,
+            'summary'        => 'ระบบแจ้งเตือนอัตโนมัติเกิดข้อผิดพลาด',
+            'error_detail'   => $e->getMessage()
+        ]);
+    }
+
+    // Daily 24h maintenance (log rotation, session pruning, old snapshot/log cleanup)
+    try {
+        if (function_exists('run_system_housekeeping')) {
+            run_system_housekeeping(false);
+        }
+    } catch (Throwable $e) {
+        // non-fatal
     }
 
     return [
-        'success' => true,
-        'elapsedSec' => $elapsed,
-        'results' => $results,
+        'success'       => ($okCount > 0 && $failCount === 0),
+        'status'        => $overallStatus,
+        'runGroupId'    => $runGroupId,
+        'elapsedSec'    => $elapsedSec,
+        'okCount'       => $okCount,
+        'failCount'     => $failCount,
+        'results'       => $results,
         'notifications' => $notifResult
     ];
 }

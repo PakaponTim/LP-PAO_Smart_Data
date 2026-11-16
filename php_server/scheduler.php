@@ -16,7 +16,7 @@ $runOnce = in_array('--once', $argv ?? [], true);
 if ($runOnce) {
     add_server_log('Scheduler-7000', '🚀 เริ่มดึงข้อมูลครบทุกโปรเจคพร้อมกัน (One-shot curl_multi)...');
     $cfg = get_app_config();
-    $res = collect_all_parallel_direct($cfg['isScheduleActive'] ?? []);
+    $res = collect_all_parallel_direct($cfg['isScheduleActive'] ?? [], 'cli_once', date('H:i'));
     add_server_log('Scheduler-7000', "✅ ดึงข้อมูลครบทุกโปรเจคเสร็จสมบูรณ์ ({$res['elapsedSec']} วินาที)");
     exit(0);
 }
@@ -42,7 +42,12 @@ while (!file_exists(smart_worker_stop_flag_file())) {
         write_json_file(smart_worker_state_file(), $wState);
 
         // Run only when current HH:mm matches a configured scheduled slot
-        smart_check_and_run_if_due(true);
+        smart_check_and_run_if_due(true, 'smart_sleep');
+
+        // Process any queued non-blocking auto-retries whose backoff elapsed
+        if (function_exists('retry_queue_process_due')) {
+            retry_queue_process_due();
+        }
 
         // Calculate Smart Sleep duration until the next slot (capped at 25s so UI edits to config.json take effect promptly)
         $cfg = get_app_config();

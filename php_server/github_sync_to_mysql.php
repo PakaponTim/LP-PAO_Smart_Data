@@ -199,23 +199,29 @@ function sync_github_snapshots_to_mysql(): array {
         @mkdir($baseDir, 0777, true);
     }
 
-    // Step 1: If git is available and remote origin is configured, try a fast git pull on cloud_snapshots
-    $gitExe = 'C:\laragon\bin\git\bin\git.exe';
-    if (file_exists($gitExe) && is_dir(WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . '.git')) {
-        $cmd = '"' . $gitExe . '" -C "' . WATER_SYSTEM2_ROOT . '" pull --rebase --autostash origin main 2>&1';
-        @exec($cmd, $outLines, $retCode);
-    }
-
-    // Step 2: Optional remote GitHub repo fetch via GITHUB_SYNC_REPO (e.g. "username/Water_System2")
-    $ghRepo = env_val('GITHUB_SYNC_REPO', '');
+    // Fetch latest manifest & missing snapshots directly from GitHub (no Git CLI login prompts!)
+    // Default to PakaponTim/Water_System2 if not explicitly set
+    $ghRepo = env_val('GITHUB_SYNC_REPO', 'PakaponTim/Water_System2');
     $ghBranch = env_val('GITHUB_SYNC_BRANCH', 'main');
     $ghToken = env_val('GITHUB_SYNC_TOKEN', '');
     if ($ghRepo !== '') {
         try {
-            $headers = [];
-            if ($ghToken !== '') $headers[] = "Authorization: token {$ghToken}";
+            $apiHeaders = ['Accept: application/vnd.github.raw+json'];
+            $rawHeaders = [];
+            if ($ghToken !== '') {
+                $apiHeaders[] = "Authorization: token {$ghToken}";
+                $rawHeaders[] = "Authorization: token {$ghToken}";
+            }
+
+            // Use GitHub Contents API (uncached real-time) with fallback to raw.githubusercontent.com
+            $manifestUrl = "https://api.github.com/repos/{$ghRepo}/contents/cloud_snapshots/manifest.json?ref=" . rawurlencode($ghBranch);
             $rawBase = "https://raw.githubusercontent.com/{$ghRepo}/{$ghBranch}/cloud_snapshots";
-            $remoteManifest = http_get_json("{$rawBase}/manifest.json", $headers, 15);
+            try {
+                $remoteManifest = http_get_json($manifestUrl, $apiHeaders, 15);
+            } catch (Throwable $e) {
+                $remoteManifest = http_get_json("{$rawBase}/manifest.json?ts=" . time(), $rawHeaders, 15);
+            }
+
             if (!empty($remoteManifest['snapshots']) && is_array($remoteManifest['snapshots'])) {
                 foreach ($remoteManifest['snapshots'] as $sid => $meta) {
                     $relPath = $meta['path'] ?? '';
@@ -224,7 +230,11 @@ function sync_github_snapshots_to_mysql(): array {
                     if (!file_exists($localFile)) {
                         $dir = dirname($localFile);
                         if (!is_dir($dir)) @mkdir($dir, 0777, true);
-                        $snapData = http_get_json("{$rawBase}/{$relPath}", $headers, 20);
+                        try {
+                            $snapData = http_get_json("https://api.github.com/repos/{$ghRepo}/contents/cloud_snapshots/{$relPath}?ref=" . rawurlencode($ghBranch), $apiHeaders, 20);
+                        } catch (Throwable $e) {
+                            $snapData = http_get_json("{$rawBase}/{$relPath}", $rawHeaders, 20);
+                        }
                         if (is_array($snapData)) {
                             file_put_contents($localFile, json_encode($snapData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
                         }
@@ -232,7 +242,7 @@ function sync_github_snapshots_to_mysql(): array {
                 }
             }
         } catch (Throwable $e) {
-            // Ignore remote fetch errors if offline or not yet pushed
+            // Ignore remote fetch errors if offline
         }
     }
 

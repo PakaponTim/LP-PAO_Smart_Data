@@ -126,7 +126,9 @@ function smart_check_and_run_if_due(bool $allowStartupCatchup = false): array {
     write_json_file($stateFile, $state);
 
     @ignore_user_abort(true);
-    @set_time_limit(120);
+    if (PHP_SAPI !== 'cli') {
+        @set_time_limit(120);
+    }
 
     add_server_log('SmartSleep', "⏰ ถึงเวลาตามตาราง ({$hm}) — ตื่นขึ้นมาดึง 5 API พร้อมกัน (curl_multi)...");
     $res = collect_all_parallel_direct($active);

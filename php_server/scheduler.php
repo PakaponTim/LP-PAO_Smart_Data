@@ -8,6 +8,9 @@
 
 require_once __DIR__ . '/smart_worker_lib.php';
 
+@set_time_limit(0);
+@ini_set('max_execution_time', '0');
+
 $runOnce = in_array('--once', $argv ?? [], true);
 
 if ($runOnce) {

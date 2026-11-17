@@ -245,6 +245,93 @@ function run_auto_server_collection_if_due(): void {
     }
 }
 
+/**
+ * Central Smart Production Auth, CSRF & Role Policy Gatekeeper.
+ * In strict mode (AUTH_ENFORCE=1 or external/proxied IP), non-public routes require valid
+ * session cookie + matching X-CSRF-Token on state changes, and admin routes require role='admin'.
+ */
+function api_enforce_strict_security(string $method, string $path): void {
+    if (!is_strict_auth_required()) {
+        return;
+    }
+
+    // 1. Public Open Data API (/api/public/* except /api/public/admin/*) uses its own Rate Limit + X-API-Key
+    if (strpos($path, '/api/public/') === 0 && strpos($path, '/api/public/admin/') !== 0) {
+        return;
+    }
+
+    // 2. Pre-auth & health/failover discovery allowlist
+    $publicAllowlist = [
+        '/api/health',
+        '/api/cloud-fallback',
+        '/api/data-definitions',
+        '/api/auth/me',
+        '/api/auth/bootstrap-status',
+        '/api/auth/bootstrap',
+        '/api/auth/login',
+        '/api/auth/logout',
+        '/api/auth/refresh',
+        '/api/auth/pair-device',
+    ];
+    if (in_array($path, $publicAllowlist, true)) {
+        return;
+    }
+
+    // 3. Chrome Extension Bearer token routes validate device token or user session directly
+    if (in_array($path, ['/api/append-complaints-db', '/api/ping'], true)) {
+        $dev = verify_bearer_device_token();
+        if (is_array($dev)) {
+            return;
+        }
+        if ($dev === false) {
+            send_json(['success' => false, 'error' => 'Unauthorized: device token invalid or revoked'], 401);
+        }
+    }
+
+    $sess = get_current_user_session();
+    if (empty($sess['fromCookie']) || empty($sess['user'])) {
+        send_json(['success' => false, 'error' => 'Unauthorized: กรุณาเข้าสู่ระบบก่อนใช้งาน'], 401);
+    }
+
+    // Enforce X-CSRF-Token on all state-changing browser API requests
+    if (in_array($method, ['POST', 'PUT', 'DELETE', 'PATCH'], true)) {
+        $hdrCsrf = trim((string)($_SERVER['HTTP_X_CSRF_TOKEN'] ?? ''));
+        $expectedCsrf = (string)($sess['csrfToken'] ?? '');
+        if ($expectedCsrf === '' || $hdrCsrf === '' || !hash_equals($expectedCsrf, $hdrCsrf)) {
+            send_json(['success' => false, 'error' => 'Forbidden: Invalid or missing X-CSRF-Token'], 403);
+        }
+    }
+
+    $adminPrefixes = [
+        '/api/backup/',
+        '/api/worker/',
+        '/api/traffy/',
+        '/api/notifications/',
+        '/api/public/admin/',
+        '/api/auth/users',
+        '/api/auth/devices',
+        '/api/force-fetch',
+        '/api/schedule',
+        '/api/system-logs/export',
+        '/api/system-logs/retry',
+        '/api/reports/export-raw-data',
+        '/api/db-compare/export',
+        '/api/operations/retry-backups',
+    ];
+    $isAdminOnly = ($path === '/api/domain-config' && $method !== 'GET');
+    if (!$isAdminOnly) {
+        foreach ($adminPrefixes as $pfx) {
+            if (strpos($path, $pfx) === 0) {
+                $isAdminOnly = true;
+                break;
+            }
+        }
+    }
+    if ($isAdminOnly && (($sess['user']['role'] ?? '') !== 'admin')) {
+        send_json(['success' => false, 'error' => 'Forbidden: ต้องใช้สิทธิ์ผู้ดูแลระบบ (admin)'], 403);
+    }
+}
+
 function handle_api_request(string $method, string $path): void {
     $rawBody = file_get_contents('php://input');
     $body = [];
@@ -252,6 +339,8 @@ function handle_api_request(string $method, string $path): void {
         $decoded = json_decode($rawBody, true);
         if (is_array($decoded)) $body = $decoded;
     }
+
+    api_enforce_strict_security($method, $path);
 
     // 1. Auth routes
     if (strpos($path, '/api/auth/') === 0) {
@@ -277,6 +366,21 @@ function handle_api_request(string $method, string $path): void {
     // =====================================================================
     if ($path === '/api/health' && $method === 'GET') {
         $health = get_system_health_report();
+        if (is_strict_auth_required()) {
+            $sess = get_current_user_session();
+            $isAdmin = !empty($sess['fromCookie']) && (($sess['user']['role'] ?? '') === 'admin');
+            if (!$isAdmin) {
+                $health['database']['error'] = null;
+                if (!empty($health['backup']['latestFile'])) {
+                    $health['backup']['latestFile'] = '[protected]';
+                }
+                if (!empty($health['issues']) && is_array($health['issues'])) {
+                    $health['issues'] = array_map(function ($iss) {
+                        return (strpos((string)$iss, 'MySQL disconnected:') === 0) ? 'Database connection unavailable' : $iss;
+                    }, $health['issues']);
+                }
+            }
+        }
         send_json($health, (int)($health['httpCode'] ?? 200));
     }
 
@@ -1993,9 +2097,9 @@ function handle_api_request(string $method, string $path): void {
         if ($deviceAuth === false) {
             send_json(['success' => false, 'error' => 'Unauthorized: device token invalid or revoked'], 401);
         }
-        if (AUTH_ENFORCE) {
+        if (is_strict_auth_required()) {
             $user = get_current_user_session();
-            if (empty($user['user']) && !is_array($deviceAuth)) {
+            if ((empty($user['fromCookie']) || empty($user['user'])) && !is_array($deviceAuth)) {
                 send_json(['success' => false, 'error' => 'Unauthorized: valid user session or device token required'], 401);
             }
         }
@@ -2151,6 +2255,12 @@ function handle_api_request(string $method, string $path): void {
         $deviceAuth = verify_bearer_device_token();
         if ($deviceAuth === false) {
             send_json(['ok' => false, 'error' => 'Unauthorized: device token invalid or revoked'], 401);
+        }
+        if (is_strict_auth_required() && !is_array($deviceAuth)) {
+            $u = get_current_user_session();
+            if (empty($u['fromCookie']) || empty($u['user'])) {
+                send_json(['ok' => false, 'error' => 'Unauthorized: session or device token required'], 401);
+            }
         }
         $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
         update_json_file_atomic($stateFile, [], function (array $s) use ($deviceAuth) {

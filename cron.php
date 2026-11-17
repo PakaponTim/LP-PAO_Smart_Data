@@ -9,26 +9,30 @@
 
 $phpServerDir = is_dir(__DIR__ . '/php_server') ? __DIR__ . '/php_server' : dirname(__DIR__) . '/php_server';
 require_once $phpServerDir . '/smart_worker_lib.php';
+require_once $phpServerDir . '/auth.php';
 require_once $phpServerDir . '/backup_manager.php';
 
 @ignore_user_abort(true);
 @set_time_limit(180);
 
+security_apply_http_headers(true);
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
-// Optional shared secret when CRON_SECRET is set in .env
+$forceRun = !empty($_GET['force']);
 $cronSecret = env_val('CRON_SECRET', '');
 if ($cronSecret !== '') {
-    $provided = (string)($_GET['key'] ?? ($_SERVER['HTTP_X_CRON_SECRET'] ?? ''));
-    if ($provided === '' || !hash_equals($cronSecret, $provided)) {
+    if (!security_verify_cron_or_admin(false)) {
         http_response_code(403);
-        echo json_encode(['success' => false, 'error' => 'Forbidden: invalid CRON_SECRET'], JSON_UNESCAPED_UNICODE);
+        echo json_encode(['success' => false, 'error' => 'Forbidden: invalid CRON_SECRET or HMAC signature'], JSON_UNESCAPED_UNICODE);
         exit;
     }
+} elseif ($forceRun && !security_verify_cron_or_admin(true)) {
+    // Even if CRON_SECRET is unset, external callers cannot bypass 90s cooldown via ?force=1 without admin session
+    http_response_code(403);
+    echo json_encode(['success' => false, 'error' => 'Forbidden: external force-cron requires admin session or CRON_SECRET'], JSON_UNESCAPED_UNICODE);
+    exit;
 }
-
-$forceRun = !empty($_GET['force']);
 $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
 $now = time();
 

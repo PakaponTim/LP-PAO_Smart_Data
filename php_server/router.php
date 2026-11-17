@@ -24,10 +24,8 @@ if ((basename($uri) === 'endpoint.php' || isset($_GET['r'])) && !empty($_GET['r'
 }
 
 // Security & Isolation Headers
-header('X-Content-Type-Options: nosniff');
-header('X-Frame-Options: SAMEORIGIN');
-header('Referrer-Policy: same-origin');
-header('X-Water-System2-Port: 7000');
+$isApiRequest = (strpos($uri, '/api/') === 0);
+security_apply_http_headers($isApiRequest);
 
 // CORS for Port 7000 + Open Data Public API (/api/public/* read-only, non-admin)
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
@@ -37,15 +35,7 @@ if ($isPublicOpenApi) {
     header('Access-Control-Allow-Methods: GET, OPTIONS');
     header('Access-Control-Allow-Headers: Content-Type, X-API-Key, Authorization');
 } elseif ($origin !== '') {
-    $allowed = function_exists('get_allowed_cors_origins') ? get_allowed_cors_origins() : [
-        'http://localhost:7000',
-        'http://127.0.0.1:7000',
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-        'https://lampang.thaiwater.net',
-        'https://citydata.traffy.in.th'
-    ];
-    if (in_array(strtolower($origin), $allowed, true) || in_array($origin, $allowed, true) || preg_match('/^chrome-extension:\/\/[a-p]{32}$/', $origin)) {
+    if (security_is_allowed_origin($origin)) {
         header("Access-Control-Allow-Origin: {$origin}");
         header('Access-Control-Allow-Credentials: true');
         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');

@@ -1,8 +1,8 @@
 # Water_System2 — Apache Security Hardening for Subdomain / Folder Hosting
 Options -Indexes
 
-# Block direct HTTP access to hidden files (.env, .git, etc.) and sensitive configs/logs
-<FilesMatch "(^\.|\.(log(\.[0-9]+)?|sql|sqlite|bak|flag)$|^(config|task_history|package|package-lock|tsconfig)\.json$)">
+# Block direct HTTP access to hidden files (.env, .git, etc.) and sensitive configs/scripts/docs
+<FilesMatch "(^\.|\.(log(\.[0-9]+)?|sql(\.gz)?(\.enc)?|sqlite|bak|flag|bat|ps1|sh|md|ya?ml|lock|ini)$|^(config|task_history|package|package-lock|tsconfig|composer)\.(json|lock)$)">
   <IfModule mod_authz_core.c>
     Require all denied
   </IfModule>
@@ -12,7 +12,14 @@ Options -Indexes
   </IfModule>
 </FilesMatch>
 
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  RewriteRule ^(runtime|php_server|cloud_snapshots|tests|archive_scratch|scripts|\.git|\.github|\.work-backups)(/|$) - [F,L,NC]
+  RewriteRule ^(runtime|php_server|cloud_snapshots|tests|archive_scratch|scripts|deploy_server|docs|04ext_TraffyLP|\.git|\.github|\.work-backups)(/|$) - [F,L,NC]
 </IfModule>

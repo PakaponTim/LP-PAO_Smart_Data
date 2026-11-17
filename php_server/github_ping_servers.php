@@ -34,21 +34,27 @@ if (empty($targets)) {
     $statusOut = 'skipped';
     $results = [];
 } else {
+    $cronSecret = trim((string)(getenv('WATER_CRON_SECRET') ?: env_val('CRON_SECRET', '')));
     $results = [];
     foreach ($targets as $role => $url) {
         $t0 = microtime(true);
         $httpCode = 0;
         $err = '';
+        $signedHeaders = ($cronSecret !== '') ? security_sign_cron_headers($url, $cronSecret) : [];
         for ($attempt = 1; $attempt <= 2; $attempt++) {
             $ch = curl_init($url);
-            curl_setopt_array($ch, [
+            $opts = [
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_TIMEOUT        => 22,
                 CURLOPT_CONNECTTIMEOUT => 10,
                 CURLOPT_FOLLOWLOCATION => true,
                 CURLOPT_SSL_VERIFYPEER => false,
                 CURLOPT_SSL_VERIFYHOST => 0,
-            ]);
+            ];
+            if (!empty($signedHeaders)) {
+                $opts[CURLOPT_HTTPHEADER] = $signedHeaders;
+            }
+            curl_setopt_array($ch, $opts);
             @curl_exec($ch);
             $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $err = curl_error($ch);

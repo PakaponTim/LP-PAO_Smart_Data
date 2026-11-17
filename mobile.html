@@ -604,14 +604,36 @@
       }).join('');
     }
 
+    let cachedCsrfToken = '';
+    async function postJsonWithCsrf(route, payload = null) {
+      if (!cachedCsrfToken) {
+        try {
+          const meR = await fetch(ep('/api/auth/me'), { cache: 'no-store' });
+          if (meR.ok) {
+            const meJ = await meR.json();
+            cachedCsrfToken = meJ.csrfToken || '';
+          }
+        } catch (e) {}
+      }
+      const headers = {};
+      if (payload !== null) headers['Content-Type'] = 'application/json';
+      if (cachedCsrfToken) headers['X-CSRF-Token'] = cachedCsrfToken;
+      return fetch(ep(route), {
+        method: 'POST',
+        headers,
+        cache: 'no-store',
+        body: payload !== null ? JSON.stringify(payload) : undefined
+      });
+    }
+
     async function triggerForceFetchAll() {
       const btn = document.getElementById('btnFetchNow');
       btn.disabled = true;
       btn.textContent = '⏳ กำลังดึง 5 API พร้อมกัน...';
       try {
-        const res = await fetch(ep('/api/force-fetch-all'), { method: 'POST', cache: 'no-store' });
+        const res = await postJsonWithCsrf('/api/force-fetch-all');
         const d = await res.json();
-        showToast((d.success ? '✅ ' : '⚠️ ') + (d.message || 'เสร็จสิ้น'), Boolean(d.success));
+        showToast((d.success ? '✅ ' : '⚠️ ') + (d.message || d.error || 'เสร็จสิ้น'), Boolean(d.success));
         await refreshAll(false);
       } catch (e) {
         showToast('❌ ดึงข้อมูลไม่สำเร็จ: ' + e.message, false);
@@ -624,11 +646,7 @@
     async function retryModule(mod) {
       showToast(`⏳ กำลังลองดึงซ้ำ [${mod}]...`);
       try {
-        const res = await fetch(ep('/api/system-logs/retry'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ module: mod })
-        });
+        const res = await postJsonWithCsrf('/api/system-logs/retry', { module: mod });
         const d = await res.json();
         showToast(d.success ? `✅ ${d.message}` : `⚠️ ${d.error}`, Boolean(d.success));
         await refreshAll(false);

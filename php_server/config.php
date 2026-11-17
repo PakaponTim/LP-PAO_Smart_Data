@@ -700,6 +700,7 @@ function get_domain_config(): array {
         'backup_domain'             => 'https://backup-water.your-domain.com/Water_System2',
         'local_dev_url'             => 'http://127.0.0.1:7000',
         'extra_allowed_origins'     => [],
+        'allowed_extension_ids'     => [],
         'failover_auto_ping_backup' => true,
         'notes'                     => 'เปลี่ยน primary_domain เมื่อย้ายโดเมนหลัก และใส่ backup_domain เพื่อใช้เป็นโดเมนสำรองตัวที่ 2'
     ];
@@ -718,6 +719,10 @@ function get_domain_config(): array {
     if (env_val('EXTRA_ALLOWED_ORIGINS') !== '') {
         $extras = array_values(array_filter(array_map('trim', explode(',', env_val('EXTRA_ALLOWED_ORIGINS')))));
         $default['extra_allowed_origins'] = $extras;
+    }
+    if (env_val('ALLOWED_EXTENSION_IDS') !== '') {
+        $extIds = array_values(array_filter(array_map('trim', explode(',', strtolower(env_val('ALLOWED_EXTENSION_IDS'))))));
+        $default['allowed_extension_ids'] = $extIds;
     }
 
     $primary = normalize_domain_base_url((string)($default['primary_domain'] ?? ''));
@@ -769,11 +774,23 @@ function save_domain_config(array $input): array {
         }
     }
 
+    $extIds = $current['allowed_extension_ids'] ?? [];
+    if (array_key_exists('allowed_extension_ids', $input)) {
+        $rawList = is_string($input['allowed_extension_ids'])
+            ? explode(',', $input['allowed_extension_ids'])
+            : (is_array($input['allowed_extension_ids']) ? array_map('strval', $input['allowed_extension_ids']) : []);
+        $extIds = array_values(array_filter(array_map(function ($v) {
+            $id = strtolower(trim($v));
+            return preg_match('/^[a-p]{32}$/', $id) ? $id : '';
+        }, $rawList)));
+    }
+
     $toSave = [
         'primary_domain'            => $primary,
         'backup_domain'             => $backup,
         'local_dev_url'             => $local,
         'extra_allowed_origins'     => $extras,
+        'allowed_extension_ids'     => $extIds,
         'failover_auto_ping_backup' => array_key_exists('failover_auto_ping_backup', $input) ? !empty($input['failover_auto_ping_backup']) : !empty($current['failover_auto_ping_backup']),
         'notes'                     => (string)($current['notes'] ?? 'แก้ไขไฟล์นี้หรือผ่าน server_setup.php เมื่อเปลี่ยนโดเมนหรือเพิ่มโดเมนสำรอง'),
     ];
@@ -810,3 +827,5 @@ function get_allowed_cors_origins(): array {
     }
     return array_values(array_unique($origins));
 }
+
+require_once __DIR__ . '/security.php';

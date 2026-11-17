@@ -13,41 +13,77 @@ require_once $phpServerDir . '/smart_worker_lib.php';
 require_once $phpServerDir . '/backup_manager.php';
 require_once $phpServerDir . '/public_api.php';
 
+security_apply_http_headers(false);
+$setupCsrfToken = security_get_or_issue_setup_csrf();
+
 $message = '';
 $statusType = '';
 $newlyIssuedKey = null;
 $dbOverrideFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'db_config.json';
 
-$isLocalRequest = in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'], true);
+$isLocalRequest = is_local_loopback_request();
 $alreadyConfigured = file_exists($dbOverrideFile) || file_exists(WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . '.env');
 
-function server_setup_passes_guard(bool $alreadyConfigured, bool $isLocalRequest): bool {
+function server_setup_passes_guard(bool $alreadyConfigured, bool $isLocalRequest, ?string &$reason = null): bool {
+    $reason = '';
     $existingPass = env_val('DB_PASS', '');
     $submittedCurrent = (string)($_POST['CURRENT_DB_PASS'] ?? '');
     $sess = get_current_user_session();
-    $isAdminAuthed = AUTH_ENFORCE && !empty($sess['user']) && (($sess['user']['role'] ?? '') === 'admin');
-    return !($alreadyConfigured && !$isLocalRequest && !$isAdminAuthed && $existingPass !== '' && !hash_equals($existingPass, $submittedCurrent));
+    $isAdminAuthed = !empty($sess['fromCookie']) && !empty($sess['user']) && (($sess['user']['role'] ?? '') === 'admin');
+    if (!$alreadyConfigured || $isLocalRequest || $isAdminAuthed || $existingPass === '') {
+        return true;
+    }
+
+    $clientIp = security_client_ip();
+    $bf = security_bruteforce_check('server_setup', $clientIp, 5, 300);
+    if (!empty($bf['blocked'])) {
+        $reason = 'rate_limited';
+        return false;
+    }
+
+    if ($submittedCurrent !== '' && hash_equals($existingPass, $submittedCurrent)) {
+        security_bruteforce_clear('server_setup', $clientIp);
+        return true;
+    }
+
+    $rec = security_bruteforce_record_failure('server_setup', $clientIp, 5, 300);
+    $reason = !empty($rec['blocked']) ? 'rate_limited' : 'bad_password';
+    return false;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? 'save_db';
-    if ($action === 'save_db') {
+    if (!security_verify_setup_csrf()) {
+        http_response_code(403);
+        $statusType = 'error';
+        $message = "🔒 คำขอไม่ผ่านการตรวจสอบ CSRF Token กรุณารีเฟรชหน้าเว็บแล้วลองใหม่";
+    } elseif ($action === 'save_db') {
         $existingPass = env_val('DB_PASS', '');
+        $guardReason = '';
 
         // On public subdomain/remote IP, require verifying current DB password once DB is configured
-        if (!server_setup_passes_guard($alreadyConfigured, $isLocalRequest)) {
+        if (!server_setup_passes_guard($alreadyConfigured, $isLocalRequest, $guardReason)) {
             $statusType = 'error';
-            $message = "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันให้ถูกต้องเพื่อยืนยันสิทธิ์ก่อนแก้ไขค่า Server";
+            $message = ($guardReason === 'rate_limited')
+                ? "🛑 กรอกรหัสผ่านผิดเกินกำหนด กรุณารอ 5 นาทีแล้วลองใหม่"
+                : "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันให้ถูกต้องเพื่อยืนยันสิทธิ์ก่อนแก้ไขค่า Server";
         } else {
             $postedPass = (string)($_POST['DB_PASS'] ?? '');
             $finalPass = ($postedPass !== '') ? $postedPass : $existingPass;
+            $postedCronSecret = trim((string)($_POST['CRON_SECRET'] ?? ''));
+            $finalCronSecret  = ($postedCronSecret !== '') ? $postedCronSecret : (string)env_val('CRON_SECRET', '');
+            $postedBkKey      = trim((string)($_POST['DB_BACKUP_ENCRYPTION_KEY'] ?? ''));
+            $finalBkKey       = ($postedBkKey !== '') ? $postedBkKey : (string)env_val('DB_BACKUP_ENCRYPTION_KEY', '');
+
             $newCfg = [
-                'DB_HOST'          => trim($_POST['DB_HOST'] ?? 'localhost'),
-                'DB_PORT'          => trim($_POST['DB_PORT'] ?? '3306'),
-                'DB_NAME'          => trim($_POST['DB_NAME'] ?? 'water_system2'),
-                'DB_USER'          => trim($_POST['DB_USER'] ?? 'root'),
-                'DB_PASS'          => $finalPass,
-                'GITHUB_SYNC_REPO' => trim($_POST['GITHUB_SYNC_REPO'] ?? 'PakaponTim/Water_System2')
+                'DB_HOST'                  => trim($_POST['DB_HOST'] ?? 'localhost'),
+                'DB_PORT'                  => trim($_POST['DB_PORT'] ?? '3306'),
+                'DB_NAME'                  => trim($_POST['DB_NAME'] ?? 'water_system2'),
+                'DB_USER'                  => trim($_POST['DB_USER'] ?? 'root'),
+                'DB_PASS'                  => $finalPass,
+                'GITHUB_SYNC_REPO'         => trim($_POST['GITHUB_SYNC_REPO'] ?? 'PakaponTim/Water_System2'),
+                'CRON_SECRET'              => $finalCronSecret,
+                'DB_BACKUP_ENCRYPTION_KEY' => $finalBkKey,
             ];
             write_json_file($dbOverrideFile, $newCfg);
             foreach ($newCfg as $k => $v) {
@@ -72,9 +108,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     } elseif ($action === 'run_backup' || $action === 'run_backup_email') {
-        if (!server_setup_passes_guard($alreadyConfigured, $isLocalRequest)) {
+        if (!server_setup_passes_guard($alreadyConfigured, $isLocalRequest, $guardReason)) {
             $statusType = 'error';
-            $message = "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันก่อนสั่งสำรองข้อมูลจากภายนอก";
+            $message = ($guardReason === 'rate_limited')
+                ? "🛑 กรอกรหัสผ่านผิดเกินกำหนด กรุณารอ 5 นาทีแล้วลองใหม่"
+                : "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันก่อนสั่งสำรองข้อมูลจากภายนอก";
         } else {
             try {
                 $bk = run_full_mysql_backup($action === 'run_backup_email', 'setup_ui');
@@ -93,24 +131,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message = "❌ สำรองฐานข้อมูลไม่สำเร็จ: " . $e->getMessage();
             }
         }
-    } elseif ($action === 'save_domains') {
-        if (!server_setup_passes_guard($alreadyConfigured, $isLocalRequest)) {
+    } elseif ($action === 'decrypt_backup') {
+        $guardReason = '';
+        if (!server_setup_passes_guard($alreadyConfigured, $isLocalRequest, $guardReason)) {
             $statusType = 'error';
-            $message = "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันก่อนแก้ไขการตั้งค่า Domain บน Server สาธารณะ";
+            $message = ($guardReason === 'rate_limited')
+                ? "🛑 กรอกรหัสผ่านผิดเกินกำหนด กรุณารอ 5 นาทีแล้วลองใหม่"
+                : "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันก่อนถอดรหัสไฟล์สำรอง";
+        } else {
+            $decPass = trim((string)($_POST['decrypt_passphrase'] ?? '')) ?: backup_encryption_passphrase();
+            $tmpFile = $_FILES['enc_backup_file']['tmp_name'] ?? '';
+            $origName = basename((string)($_FILES['enc_backup_file']['name'] ?? 'backup.sql.gz.enc'));
+            if ($tmpFile === '' || !is_uploaded_file($tmpFile)) {
+                $statusType = 'error';
+                $message = "❌ กรุณาเลือกไฟล์ .sql.gz.enc ที่ต้องการถอดรหัส";
+            } elseif ($decPass === '') {
+                $statusType = 'error';
+                $message = "❌ กรุณาระบุรหัสผ่านสำหรับถอดรหัส (DB_BACKUP_ENCRYPTION_KEY)";
+            } else {
+                $plain = backup_decrypt_bytes((string)file_get_contents($tmpFile), $decPass);
+                if ($plain === null) {
+                    $statusType = 'error';
+                    $message = "❌ ถอดรหัสไม่สำเร็จ: รหัสผ่านไม่ถูกต้องหรือไฟล์ถูกดัดแปลง (HMAC mismatch)";
+                } else {
+                    $outName = preg_replace('/\.enc$/i', '', $origName) ?: 'decrypted_backup.sql.gz';
+                    header('Content-Type: application/octet-stream');
+                    header('Content-Disposition: attachment; filename="' . rawurlencode($outName) . '"');
+                    header('Content-Length: ' . strlen($plain));
+                    echo $plain;
+                    exit;
+                }
+            }
+        }
+    } elseif ($action === 'save_domains') {
+        $guardReason = '';
+        if (!server_setup_passes_guard($alreadyConfigured, $isLocalRequest, $guardReason)) {
+            $statusType = 'error';
+            $message = ($guardReason === 'rate_limited')
+                ? "🛑 กรอกรหัสผ่านผิดเกินกำหนด กรุณารอ 5 นาทีแล้วลองใหม่"
+                : "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันก่อนแก้ไขการตั้งค่า Domain บน Server สาธารณะ";
         } else {
             $savedDom = save_domain_config([
                 'primary_domain'            => trim((string)($_POST['primary_domain'] ?? '')),
                 'backup_domain'             => trim((string)($_POST['backup_domain'] ?? '')),
                 'extra_allowed_origins'     => trim((string)($_POST['extra_allowed_origins'] ?? '')),
+                'allowed_extension_ids'     => trim((string)($_POST['allowed_extension_ids'] ?? '')),
                 'failover_auto_ping_backup' => !empty($_POST['failover_auto_ping_backup']),
             ]);
             $statusType = 'success';
             $message = "🌐 บันทึกไฟล์ domain_config.json สำเร็จ (Primary: {$savedDom['primary_domain']} | Backup: {$savedDom['backup_domain']})";
         }
     } elseif ($action === 'issue_agency_key') {
-        if (!server_setup_passes_guard($alreadyConfigured, $isLocalRequest)) {
+        $guardReason = '';
+        if (!server_setup_passes_guard($alreadyConfigured, $isLocalRequest, $guardReason)) {
             $statusType = 'error';
-            $message = "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันก่อนออก Inter-Agency API Key";
+            $message = ($guardReason === 'rate_limited')
+                ? "🛑 กรอกรหัสผ่านผิดเกินกำหนด กรุณารอ 5 นาทีแล้วลองใหม่"
+                : "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันก่อนออก Inter-Agency API Key";
         } else {
             try {
                 $agencyName = trim((string)($_POST['agencyName'] ?? ''));
@@ -124,9 +201,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     } elseif ($action === 'revoke_agency_key') {
-        if (!server_setup_passes_guard($alreadyConfigured, $isLocalRequest)) {
+        $guardReason = '';
+        if (!server_setup_passes_guard($alreadyConfigured, $isLocalRequest, $guardReason)) {
             $statusType = 'error';
-            $message = "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันก่อนเพิกถอน API Key";
+            $message = ($guardReason === 'rate_limited')
+                ? "🛑 กรอกรหัสผ่านผิดเกินกำหนด กรุณารอ 5 นาทีแล้วลองใหม่"
+                : "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันก่อนเพิกถอน API Key";
         } else {
             $keyId = trim((string)($_POST['keyId'] ?? ''));
             if ($keyId !== '' && public_revoke_api_key($keyId)) {
@@ -223,6 +303,7 @@ try {
 
       <form method="POST" class="space-y-4">
         <input type="hidden" name="action" value="save_db">
+        <input type="hidden" name="_csrf" value="<?= htmlspecialchars($setupCsrfToken) ?>">
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div class="sm:col-span-2">
             <label class="block text-xs font-semibold text-slate-600 mb-1">MySQL Host บน Server</label>
@@ -263,6 +344,17 @@ try {
           <input type="text" name="GITHUB_SYNC_REPO" value="<?= htmlspecialchars($curRepo) ?>" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
         </div>
 
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 border border-slate-200 rounded-xl p-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">🔐 Backup Encryption Key (AES-256 สำหรับส่ง Email)</label>
+            <input type="password" name="DB_BACKUP_ENCRYPTION_KEY" value="" placeholder="<?= backup_encryption_passphrase() !== '' ? 'ตั้งค่าไว้แล้ว — เว้นว่างเพื่อคงค่าเดิม' : 'กำหนดรหัสลับเพื่อเข้ารหัส .sql.gz.enc' ?>" autocomplete="new-password" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs bg-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">🛡️ Cron HMAC Secret (<code>CRON_SECRET</code>)</label>
+            <input type="password" name="CRON_SECRET" value="" placeholder="<?= env_val('CRON_SECRET', '') !== '' ? 'ตั้งค่าไว้แล้ว — เว้นว่างเพื่อคงค่าเดิม' : 'รหัสลับยืนยันตัวตน cron.php & worker.php' ?>" autocomplete="new-password" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs bg-white">
+          </div>
+        </div>
+
         <div class="flex flex-wrap gap-3 pt-2">
           <button type="submit" class="bg-emerald-700 hover:bg-emerald-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition">
             💾 บันทึกค่าและตรวจสอบตารางฐานข้อมูลอัตโนมัติ
@@ -300,6 +392,7 @@ try {
           <br>• <b>Local DB Spool (คิวพักข้อมูลหาก DB ดับ):</b> <?= (int)$spoolCnt ?> ไฟล์
         </div>
         <form method="POST" class="flex flex-wrap gap-2 items-center">
+          <input type="hidden" name="_csrf" value="<?= htmlspecialchars($setupCsrfToken) ?>">
           <?php if ($alreadyConfigured && !$isLocalRequest): ?>
             <input type="password" name="CURRENT_DB_PASS" value="" required placeholder="รหัสผ่าน DB เดิม" class="border border-amber-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
           <?php endif; ?>
@@ -309,12 +402,23 @@ try {
             <a href="./endpoint.php?r=/api/backup/download" class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-semibold transition">📥 ดาวน์โหลดไฟล์ล่าสุด</a>
           <?php endif; ?>
         </form>
+        <form method="POST" enctype="multipart/form-data" class="flex flex-wrap gap-2 items-center pt-2 border-t border-emerald-200/70">
+          <input type="hidden" name="_csrf" value="<?= htmlspecialchars($setupCsrfToken) ?>">
+          <span class="font-semibold text-emerald-900">🔓 ถอดรหัสไฟล์ Email Backup (.sql.gz.enc):</span>
+          <input type="file" name="enc_backup_file" accept=".enc" required class="text-[11px] bg-white border border-slate-300 rounded px-2 py-1">
+          <input type="password" name="decrypt_passphrase" placeholder="Encryption Key (เว้นว่างใช้ค่าที่ตั้งไว้)" class="border border-slate-300 rounded px-2 py-1 text-[11px] bg-white">
+          <?php if ($alreadyConfigured && !$isLocalRequest): ?>
+            <input type="password" name="CURRENT_DB_PASS" value="" required placeholder="รหัส DB เดิม" class="border border-amber-300 rounded px-2 py-1 text-[11px] bg-white">
+          <?php endif; ?>
+          <button type="submit" name="action" value="decrypt_backup" class="px-3 py-1 rounded bg-emerald-800 hover:bg-emerald-900 text-white font-semibold transition">ถอดรหัส &amp; ดาวน์โหลด</button>
+        </form>
       </div>
 
       <div class="bg-sky-50/70 border border-sky-200 rounded-xl p-4 text-xs space-y-3">
         <div class="font-bold text-sky-950 text-sm">🌐 ตั้งค่าโดเมนหลัก &amp; โดเมนสำรอง (<code>domain_config.json</code>)</div>
         <p class="text-slate-600">รองรับการย้ายโดเมนหรือมีโดเมนสำรองตัวที่ 2 — ระบบ CORS และ GitHub Actions Failover จะอ่านค่าจาก <code>domain_config.json</code> นี้โดยอัตโนมัติ (เมื่อแก้แล้วให้ Push <code>domain_config.json</code> ขึ้น GitHub ด้วย)</p>
         <form method="POST" class="space-y-3">
+          <input type="hidden" name="_csrf" value="<?= htmlspecialchars($setupCsrfToken) ?>">
           <?php if ($alreadyConfigured && !$isLocalRequest): ?>
             <input type="password" name="CURRENT_DB_PASS" value="" required placeholder="รหัสผ่าน DB เดิมก่อนบันทึก" class="w-full border border-amber-300 rounded-lg px-3 py-1.5 text-xs bg-white">
           <?php endif; ?>
@@ -331,6 +435,10 @@ try {
           <div>
             <label class="block font-semibold text-slate-700 mb-1">Allowed CORS Origins เพิ่มเติม (คั่นด้วยลูกน้ำ ,)</label>
             <input type="text" name="extra_allowed_origins" value="<?= htmlspecialchars(implode(', ', $domainCfg['extra_allowed_origins'] ?? [])) ?>" placeholder="https://portal.lampangpao.go.th" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Allowed Chrome Extension IDs (คั่นด้วยลูกน้ำ — ล็อก Extension เฉพาะเครื่องที่ระบุ)</label>
+            <input type="text" name="allowed_extension_ids" value="<?= htmlspecialchars(implode(', ', $domainCfg['allowed_extension_ids'] ?? [])) ?>" placeholder="เช่น abcdefghijklmnopabcdefghijklmnop (เว้นว่างอนุญาตเฉพาะ Localhost)" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
           </div>
           <label class="inline-flex items-center gap-2 text-slate-700 cursor-pointer">
             <input type="checkbox" name="failover_auto_ping_backup" value="1" <?= !empty($domainCfg['failover_auto_ping_backup']) ? 'checked' : '' ?> class="rounded">
@@ -365,6 +473,7 @@ try {
         <?php endif; ?>
 
         <form method="POST" class="flex flex-wrap gap-2 items-end">
+          <input type="hidden" name="_csrf" value="<?= htmlspecialchars($setupCsrfToken) ?>">
           <?php if ($alreadyConfigured && !$isLocalRequest): ?>
             <div class="w-full">
               <input type="password" name="CURRENT_DB_PASS" value="" required placeholder="รหัสผ่าน DB เดิมก่อนออก Key" class="w-full border border-amber-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
@@ -414,6 +523,7 @@ try {
                       <td class="px-3 py-2 text-right">
                         <?php if (!empty($ak['active'])): ?>
                           <form method="POST" class="inline-flex items-center gap-1">
+                            <input type="hidden" name="_csrf" value="<?= htmlspecialchars($setupCsrfToken) ?>">
                             <?php if ($alreadyConfigured && !$isLocalRequest): ?>
                               <input type="password" name="CURRENT_DB_PASS" value="" required placeholder="รหัส DB" class="w-24 border border-amber-300 rounded px-1.5 py-0.5 text-[11px]">
                             <?php endif; ?>

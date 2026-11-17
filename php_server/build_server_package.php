@@ -61,7 +61,7 @@ foreach ($rootFiles as $f) {
 
 // Create clean starter .env.example inside deploy package (without local passwords)
 file_put_contents($targetDir . DIRECTORY_SEPARATOR . '.env.example',
-    "DB_HOST=localhost\nDB_PORT=3306\nDB_USER=your_mysql_user\nDB_PASS=your_mysql_password\nDB_NAME=water_system2\nGITHUB_SYNC_REPO=PakaponTim/Water_System2\nGITHUB_SYNC_BRANCH=main\nPRIMARY_DOMAIN=\nBACKUP_DOMAIN=\n"
+    "DB_HOST=localhost\nDB_PORT=3306\nDB_USER=your_mysql_user\nDB_PASS=your_mysql_password\nDB_NAME=water_system2\nWATER_PHP_AUTH_ENFORCE=1\nCRON_SECRET=replace_with_random_hex_secret\nDB_BACKUP_ENCRYPTION_KEY=replace_with_backup_aes_passphrase\nGITHUB_SYNC_REPO=PakaponTim/Water_System2\nGITHUB_SYNC_BRANCH=main\nPRIMARY_DOMAIN=\nBACKUP_DOMAIN=\nALLOWED_EXTENSION_IDS=\n"
 );
 
 // Build ZIP if ZipArchive is available

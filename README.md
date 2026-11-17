@@ -116,9 +116,11 @@ node --check js\index-3.js
 node --check js\index-4.js
 node --check js\control-2.js
 
-# 2. รัน Automated Test Suites (System v2 + Traffy & Session E2E)
+# 2. รัน Automated Test Suites (System v2, Public API & Security Hardening E2E)
 C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe tests\verify_system_v2.php
-C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe tests\verify_traffy_session_e2e.php
+C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe tests\verify_backup_failover_e2e.php
+C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe tests\verify_public_api_e2e.php
+C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe tests\verify_security_hardening_e2e.php
 
 # 3. สร้างและตรวจความปลอดภัยแพ็กเกจ Deploy (ยืนยัน 0 Secrets)
 C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe php_server\build_server_package.php
@@ -131,10 +133,13 @@ C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe php_server\build_server_pac
 ```text
 php_server/
   config.php                 การตั้งค่า, .env/db_config, Schema 10 ตาราง, File Lock & Rotation
-  auth.php                   Sliding Session 30 วัน, Cookies, Device Pairing
+  security.php               Smart Auth Guard, Rate Limit, Brute-Force Lock, HMAC Cron, Headers & CSRF
+  auth.php                   Sliding Session 30 วัน, Cookies, Device Pairing, Login Brute-Force Guard
+  public_api.php             Public Dashboard & Secure Inter-Agency API (Zero-PII + SHA-256 Key)
   collectors.php             curl_multi 5 APIs + Traffy Session/JWT Tester
-  collectors_transform.php   ตัวแปลงมาตรฐานข้อมูล (ใช้ร่วมกันทั้ง Direct & GitHub Sync)
+  collectors_transform.php   ตัวแปลงมาตรฐานข้อมูล + Zero-PII Sanitizer (ใช้ร่วมกันทั้ง Direct & GitHub Sync)
   system_log.php             System Log Center v2, Heatmap 48 ช่อง, Retry Queue, Freshness, Health
+  backup_manager.php         Local Spool + Auto MySQL Backup + AES-256/HMAC Off-site Email Encryption
   notifier.php               Gmail SMTP + LINE Messaging API + Operational Alerts
   scheduler.php              Smart Sleep CLI Daemon
   api.php                    REST API หลักทุกเส้นทาง + CSV Export

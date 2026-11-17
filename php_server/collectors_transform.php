@@ -634,3 +634,40 @@ function normalize_traffy_extension_rows(array $rows): array {
     }
     return $prepared;
 }
+
+/**
+ * Scrub Thai Citizen IDs, phone numbers, email addresses, LINE IDs, and HTML tags.
+ */
+function transform_scrub_pii_text(string $text, int $maxLen = 200): string {
+    $clean = strip_tags($text);
+    $clean = preg_replace('/\s+/u', ' ', trim($clean));
+    if ($clean === '') return '';
+
+    $clean = preg_replace('/(?<!\d)\d{1}[-\s]?\d{4}[-\s]?\d{5}[-\s]?\d{2}[-\s]?\d(?!\d)/u', '[สงวนเลขบัตร]', $clean);
+    $clean = preg_replace('/(?<!\d)\d{13}(?!\d)/u', '[สงวนเลขบัตร]', $clean);
+    $clean = preg_replace('/(?<!\d)(?:\+66|0)[2689](?:[-.\s]?\d){7,8}(?!\d)/u', '[สงวนเบอร์โทร]', $clean);
+    $clean = preg_replace('/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}/i', '[สงวนอีเมล]', $clean);
+    $clean = preg_replace('/https?:\/\/line\.me\/\S+/i', '[สงวนลิงก์ไลน์]', $clean);
+    $clean = preg_replace('/(?:line\s*(?:id)?|ไอดีไลน์|ไลน์)\s*[:=@]?\s*[a-zA-Z0-9._\-]{3,}/iu', '[สงวนไอดีไลน์]', $clean);
+
+    if (mb_strlen($clean, 'UTF-8') > $maxLen) {
+        return mb_substr($clean, 0, $maxLen - 3, 'UTF-8') . '...';
+    }
+    return $clean;
+}
+
+/**
+ * Redact PII inside Traffy complaint arrays before storing into public cloud_snapshots or serving fallback JSON.
+ */
+function sanitize_traffy_rows_zero_pii(array $rows): array {
+    $out = [];
+    foreach ($rows as $r) {
+        if (!is_array($r)) continue;
+        $copy = $r;
+        $copy['description'] = transform_scrub_pii_text((string)($r['description'] ?? ''), 240);
+        $copy['location']    = transform_scrub_pii_text((string)($r['location'] ?? ''), 150);
+        unset($copy['raw_timeline'], $copy['reporter_phone'], $copy['reporter_email'], $copy['reporter_name']);
+        $out[] = $copy;
+    }
+    return $out;
+}

@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: water-system2-collector
+  cancel-in-progress: false
+
 jobs:
   collect-lampang-data:
     runs-on: ubuntu-latest
@@ -36,6 +40,7 @@ jobs:
         env:
           WATER_SERVER_CRON_URL: ${{ secrets.WATER_SERVER_CRON_URL }}
           WATER_SERVER_BACKUP_CRON_URL: ${{ secrets.WATER_SERVER_BACKUP_CRON_URL }}
+          WATER_CRON_SECRET: ${{ secrets.WATER_CRON_SECRET }}
         run: |
           php php_server/github_ping_servers.php
 

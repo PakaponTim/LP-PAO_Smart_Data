@@ -232,9 +232,10 @@ if (!empty($responses['pm25']['ok'])) {
     echo "  ⚠️ PM 2.5 error: {$snapshot['module_status']['pm25']['error']}\n";
 }
 
-// 5. Complaints (Traffy Fondue)
+// 5. Complaints (Traffy Fondue — Zero-PII scrubbed before committing snapshot to GitHub)
 if (!empty($responses['complaints']['ok'])) {
-    $snapshot['complaints'] = transform_traffy_complaints($responses['complaints']['data'], 60);
+    $rawTickets = transform_traffy_complaints($responses['complaints']['data'], 60);
+    $snapshot['complaints'] = sanitize_traffy_rows_zero_pii($rawTickets);
     $snapshot['module_status']['complaints'] = [
         'ok'         => true,
         'count'      => count($snapshot['complaints']),

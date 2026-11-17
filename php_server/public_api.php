@@ -10,33 +10,13 @@
 // =========================================================================
 
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/collectors_transform.php';
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/backup_manager.php';
 require_once __DIR__ . '/system_log.php';
 
 function public_scrub_text(string $text, int $maxLen = 200): string {
-    $clean = strip_tags($text);
-    $clean = preg_replace('/\s+/u', ' ', trim($clean));
-    if ($clean === '') return '';
-
-    // 1. Redact 13-digit Thai National IDs
-    $clean = preg_replace('/(?<!\d)\d{1}[-\s]?\d{4}[-\s]?\d{5}[-\s]?\d{2}[-\s]?\d(?!\d)/u', '[สงวนเลขบัตร]', $clean);
-    $clean = preg_replace('/(?<!\d)\d{13}(?!\d)/u', '[สงวนเลขบัตร]', $clean);
-
-    // 2. Redact Thai mobile/landline phone numbers & +66 numbers
-    $clean = preg_replace('/(?<!\d)(?:\+66|0)[2689](?:[-.\s]?\d){7,8}(?!\d)/u', '[สงวนเบอร์โทร]', $clean);
-
-    // 3. Redact Email addresses
-    $clean = preg_replace('/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}/i', '[สงวนอีเมล]', $clean);
-
-    // 4. Redact LINE IDs / personal invite links
-    $clean = preg_replace('/https?:\/\/line\.me\/\S+/i', '[สงวนลิงก์ไลน์]', $clean);
-    $clean = preg_replace('/(?:line\s*(?:id)?|ไอดีไลน์|ไลน์)\s*[:=@]?\s*[a-zA-Z0-9._\-]{3,}/iu', '[สงวนไอดีไลน์]', $clean);
-
-    if (mb_strlen($clean, 'UTF-8') > $maxLen) {
-        return mb_substr($clean, 0, $maxLen - 3, 'UTF-8') . '...';
-    }
-    return $clean;
+    return transform_scrub_pii_text($text, $maxLen);
 }
 
 function public_sanitize_complaint(array $r): array {
@@ -200,42 +180,15 @@ function public_verify_api_key_if_present() {
  */
 function public_rate_limit_check(string $bucketKey, int $limitPerMin): array {
     $rlFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'public_rate_limits.json';
-    $now = time();
-    $windowStart = $now - 60;
-    $allowed = true;
-    $remaining = $limitPerMin;
-
-    update_json_file_atomic($rlFile, [], function (array $buckets) use ($bucketKey, $limitPerMin, $now, $windowStart, &$allowed, &$remaining) {
-        // Prune stale buckets occasionally to keep file tiny
-        if (count($buckets) > 200) {
-            foreach ($buckets as $k => $hits) {
-                $recent = array_values(array_filter((array)$hits, function ($ts) use ($windowStart) { return $ts >= $windowStart; }));
-                if (empty($recent)) unset($buckets[$k]);
-                else $buckets[$k] = $recent;
-            }
-        }
-        $list = array_values(array_filter((array)($buckets[$bucketKey] ?? []), function ($ts) use ($windowStart) {
-            return $ts >= $windowStart;
-        }));
-
-        if (count($list) >= $limitPerMin) {
-            $allowed = false;
-            $remaining = 0;
-        } else {
-            $list[] = $now;
-            $remaining = max(0, $limitPerMin - count($list));
-        }
-        $buckets[$bucketKey] = $list;
-        return $buckets;
-    });
+    $res = security_sliding_window_hit($rlFile, $bucketKey, $limitPerMin, 60, true);
 
     if (!headers_sent()) {
-        header("X-RateLimit-Limit: {$limitPerMin}");
-        header("X-RateLimit-Remaining: {$remaining}");
+        header("X-RateLimit-Limit: {$res['limit']}");
+        header("X-RateLimit-Remaining: {$res['remaining']}");
         header('X-RateLimit-Window: 60');
     }
 
-    return ['allowed' => $allowed, 'limit' => $limitPerMin, 'remaining' => $remaining];
+    return ['allowed' => $res['allowed'], 'limit' => $res['limit'], 'remaining' => $res['remaining']];
 }
 
 function public_load_data_sources(?PDO $pdo): array {
@@ -360,10 +313,9 @@ function public_build_traffy_stats(array $rawComplaints): array {
 function handle_public_api_routes(string $method, string $path, ?PDO $pdo, array $body = []): bool {
     // 1. Admin API Key Management Routes (/api/public/admin/*)
     if (strpos($path, '/api/public/admin/') === 0) {
-        $isLocal = in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'], true);
-        if (AUTH_ENFORCE || !$isLocal) {
+        if (is_strict_auth_required()) {
             $u = get_current_user_session();
-            if (empty($u['user']) || (($u['user']['role'] ?? '') !== 'admin')) {
+            if (empty($u['fromCookie']) || empty($u['user']) || (($u['user']['role'] ?? '') !== 'admin')) {
                 send_json(['success' => false, 'error' => 'Admin permission required'], 403);
             }
         }

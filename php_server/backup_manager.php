@@ -164,6 +164,53 @@ function list_db_backups(): array {
     return $out;
 }
 
+function backup_encryption_passphrase(): string {
+    return trim((string)env_val('DB_BACKUP_ENCRYPTION_KEY', ''));
+}
+
+/**
+ * Encrypt bytes using Encrypt-then-MAC (AES-256-CBC + HMAC-SHA256) with portable ASCII envelope.
+ */
+function backup_encrypt_bytes(string $plainBytes, string $passphrase): string {
+    if ($passphrase === '') {
+        throw new InvalidArgumentException('ต้องระบุรหัสผ่านเข้ารหัส Backup');
+    }
+    $encKey = hash('sha256', 'ws2_bk_enc_v1|' . $passphrase, true);
+    $macKey = hash('sha256', 'ws2_bk_mac_v1|' . $passphrase, true);
+    $ivLen  = openssl_cipher_iv_length('aes-256-cbc');
+    $iv     = random_bytes($ivLen);
+    $cipher = openssl_encrypt($plainBytes, 'aes-256-cbc', $encKey, OPENSSL_RAW_DATA, $iv);
+    if ($cipher === false) {
+        throw new RuntimeException('ไม่สามารถเข้ารหัสไฟล์ Backup ด้วย AES-256-CBC ได้');
+    }
+    $hmac = hash_hmac('sha256', $iv . $cipher, $macKey, true);
+    return 'WS2ENC1|' . base64_encode($iv) . '|' . base64_encode($hmac) . '|' . base64_encode($cipher);
+}
+
+/**
+ * Verify HMAC-SHA256 tag and decrypt AES-256-CBC backup envelope. Returns null if key invalid or tampered.
+ */
+function backup_decrypt_bytes(string $envelope, string $passphrase): ?string {
+    $parts = explode('|', trim($envelope));
+    if (count($parts) !== 4 || $parts[0] !== 'WS2ENC1' || $passphrase === '') {
+        return null;
+    }
+    $iv     = base64_decode($parts[1], true);
+    $hmac   = base64_decode($parts[2], true);
+    $cipher = base64_decode($parts[3], true);
+    if ($iv === false || $hmac === false || $cipher === false || strlen($iv) !== openssl_cipher_iv_length('aes-256-cbc')) {
+        return null;
+    }
+    $encKey = hash('sha256', 'ws2_bk_enc_v1|' . $passphrase, true);
+    $macKey = hash('sha256', 'ws2_bk_mac_v1|' . $passphrase, true);
+    $expectedHmac = hash_hmac('sha256', $iv . $cipher, $macKey, true);
+    if (!hash_equals($expectedHmac, $hmac)) {
+        return null;
+    }
+    $plain = openssl_decrypt($cipher, 'aes-256-cbc', $encKey, OPENSSL_RAW_DATA, $iv);
+    return ($plain === false) ? null : $plain;
+}
+
 /**
  * Dump every table in water_system2 cleanly using pure PHP PDO unbuffered streaming + gzopen (O(1) RAM).
  */
@@ -311,19 +358,31 @@ function run_full_mysql_backup(bool $sendEmail = false, string $triggerSource = 
             if ($fileBytes > 18 * 1048576) {
                 $emailResult = ['success' => false, 'error' => 'ไฟล์ใหญ่เกิน 18 MB (เกินขีดจำกัดแนบ Gmail)'];
             } else {
-                $attContent = @file_get_contents($targetPath);
+                $attContent = (string)@file_get_contents($targetPath);
+                $attName = $filename;
+                $attMime = ($ext === 'sql.gz') ? 'application/gzip' : 'application/sql';
+                $encPass = backup_encryption_passphrase();
+                $isEncryptedEmail = false;
+                if ($encPass !== '') {
+                    $attContent = backup_encrypt_bytes($attContent, $encPass);
+                    $attName = $filename . '.enc';
+                    $attMime = 'application/octet-stream';
+                    $isEncryptedEmail = true;
+                }
+                $encBadge = $isEncryptedEmail
+                    ? "<li><b>🔐 การเข้ารหัส:</b> เข้ารหัส <code>AES-256-CBC + HMAC-SHA256</code> แล้ว (ถอดรหัสผ่านหน้า <code>server_setup.php</code>)</li>"
+                    : "<li><b>⚠️ คำแนะนำ:</b> สามารถตั้งค่า <code>DB_BACKUP_ENCRYPTION_KEY</code> ใน <code>server_setup.php</code> เพื่อเข้ารหัสไฟล์ก่อนส่งเข้า Email</li>";
                 $html = "<div style=\"font-family:sans-serif;line-height:1.6\">"
                     . "<h3>💾 Water_System2 Off-site Database Backup</h3>"
                     . "<p>แนบไฟล์สำรองฐานข้อมูล <b>{$dbName}</b> (ครบทั้ง " . count($tables) . " ตาราง / " . number_format($totalRows) . " แถว)</p>"
-                    . "<ul><li><b>ไฟล์:</b> {$filename} ({$fileKb} KB)</li><li><b>เวลาสร้าง:</b> {$startedAt} (ICT)</li></ul>"
+                    . "<ul><li><b>ไฟล์:</b> {$attName} ({$fileKb} KB)</li><li><b>เวลาสร้าง:</b> {$startedAt} (ICT)</li>{$encBadge}</ul>"
                     . "</div>";
-                $attMime = ($ext === 'sql.gz') ? 'application/gzip' : 'application/sql';
                 $emailResult = php_smtp_send_email(
                     $smtp,
                     $rcps,
-                    "💾 [Water_System2] Off-site MySQL Backup ({$filename})",
+                    "💾 [Water_System2] Off-site MySQL Backup ({$attName})",
                     $html,
-                    [['filename' => $filename, 'content' => (string)$attContent, 'mime' => $attMime]]
+                    [['filename' => $attName, 'content' => $attContent, 'mime' => $attMime]]
                 );
             }
         }
@@ -400,6 +459,9 @@ function get_latest_cloud_snapshot_bundle(): array {
         $raw = @file_get_contents($latest);
         $decoded = $raw ? json_decode($raw, true) : null;
         if (is_array($decoded)) {
+            if (!empty($decoded['complaints']) && is_array($decoded['complaints'])) {
+                $decoded['complaints'] = sanitize_traffy_rows_zero_pii($decoded['complaints']);
+            }
             $decoded['_source'] = 'local_cloud_snapshot';
             $decoded['_file'] = str_replace(WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR, '', $latest);
             return $decoded;
@@ -421,6 +483,9 @@ function get_latest_cloud_snapshot_bundle(): array {
                 if ($relPath !== '') {
                     $snap = http_get_json("{$rawBase}/{$relPath}", [], 12);
                     if (is_array($snap)) {
+                        if (!empty($snap['complaints']) && is_array($snap['complaints'])) {
+                            $snap['complaints'] = sanitize_traffy_rows_zero_pii($snap['complaints']);
+                        }
                         $snap['_source'] = 'remote_github_raw';
                         $snap['_file'] = $relPath;
                         return $snap;

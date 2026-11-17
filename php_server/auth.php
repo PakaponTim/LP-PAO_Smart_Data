@@ -42,12 +42,17 @@ function auth_send_session_cookie(string $token, int $maxAgeSec): void {
 }
 
 function verify_php_user_credentials(string $username, string $password): ?array {
+    $strict = function_exists('is_strict_auth_required') ? is_strict_auth_required() : AUTH_ENFORCE;
     $acc = get_accounts_data();
     $users = $acc['users'] ?? [];
     if (empty($users)) {
-        if (!AUTH_ENFORCE) {
+        if (!$strict) {
             return ['id' => 'admin-7000', 'username' => ($username ?: 'admin'), 'role' => 'admin'];
         }
+        return null;
+    }
+
+    if ($strict && $password === '') {
         return null;
     }
 
@@ -59,9 +64,9 @@ function verify_php_user_credentials(string $username, string $password): ?array
             if (!password_verify($password, (string)$u['password_hash'])) {
                 return null;
             }
-        } elseif (AUTH_ENFORCE || $password === '') {
+        } elseif ($strict || $password === '') {
             // Legacy Node scrypt record cannot be verified natively on PHP <7.4 without password_hash
-            if (AUTH_ENFORCE) return null;
+            if ($strict) return null;
             if ($password === '') return null;
         }
         return [
@@ -120,13 +125,15 @@ function get_current_user_session(): array {
                     auth_send_session_cookie($cookieToken, $ttl);
                 }
             }
+            $sess['fromCookie'] = true;
             return $sess;
         }
     }
 
-    // If AUTH_ENFORCE is false (current default per user instruction),
-    // automatically provide a ready admin session so all UI pages & APIs work seamlessly.
-    if (!AUTH_ENFORCE) {
+    // In local loopback dev without WATER_PHP_AUTH_ENFORCE=1, provide a ready local session
+    // so local tools/tests on 127.0.0.1:7000 work seamlessly; remote/public IPs stay fail-closed!
+    $strict = function_exists('is_strict_auth_required') ? is_strict_auth_required() : AUTH_ENFORCE;
+    if (!$strict) {
         return [
             'user' => [
                 'id' => 'admin-7000',
@@ -134,38 +141,101 @@ function get_current_user_session(): array {
                 'role' => 'admin'
             ],
             'csrfToken' => 'csrf-7000-ready-token',
-            'expires' => time() + 86400
+            'expires' => time() + 86400,
+            'fromCookie' => false,
         ];
     }
 
     return [];
 }
 
+function auth_require_admin_in_strict_mode(): void {
+    $strict = function_exists('is_strict_auth_required') ? is_strict_auth_required() : AUTH_ENFORCE;
+    if (!$strict) return;
+    $sess = get_current_user_session();
+    if (empty($sess['user']) || empty($sess['fromCookie'])) {
+        send_json(['error' => 'Unauthorized: กรุณาเข้าสู่ระบบผู้ดูแลระบบ'], 401);
+    }
+    if (($sess['user']['role'] ?? '') !== 'admin') {
+        send_json(['error' => 'Forbidden: ต้องใช้สิทธิ์ผู้ดูแลระบบ (admin)'], 403);
+    }
+}
+
 function handle_auth_routes(string $method, string $path, array $body): bool {
+    $strict = function_exists('is_strict_auth_required') ? is_strict_auth_required() : AUTH_ENFORCE;
+
     if ($path === '/api/auth/me' && $method === 'GET') {
         $session = get_current_user_session();
         if (empty($session['user'])) {
             send_json(['error' => 'กรุณาเข้าสู่ระบบ'], 401);
         }
         send_json([
-            'user' => $session['user'],
-            'csrfToken' => $session['csrfToken']
+            'user'       => $session['user'],
+            'csrfToken'  => $session['csrfToken'],
+            'strictAuth' => $strict,
         ]);
         return true;
     }
 
     if ($path === '/api/auth/bootstrap-status' && $method === 'GET') {
         $acc = get_accounts_data();
-        send_json(['required' => empty($acc['users']) && AUTH_ENFORCE]);
+        send_json(['required' => empty($acc['users']) && $strict]);
+        return true;
+    }
+
+    if ($path === '/api/auth/bootstrap' && $method === 'POST') {
+        $acc = get_accounts_data();
+        if (!empty($acc['users'])) {
+            send_json(['error' => 'ระบบมีบัญชีผู้ดูแลอยู่แล้ว กรุณาเข้าสู่ระบบตามปกติ'], 409);
+        }
+        $expectedBoot = trim((string)env_val('AUTH_BOOTSTRAP_TOKEN', ''));
+        $providedBoot = trim((string)($_SERVER['HTTP_X_BOOTSTRAP_TOKEN'] ?? ''));
+        $isLocal = function_exists('is_local_loopback_request') && is_local_loopback_request();
+        if (!$isLocal && ($expectedBoot === '' || !hash_equals($expectedBoot, $providedBoot))) {
+            send_json(['error' => 'Forbidden: ต้องยืนยัน AUTH_BOOTSTRAP_TOKEN ก่อนสร้างผู้ดูแลแรกบน Server'], 403);
+        }
+        $username = trim((string)($body['username'] ?? 'admin'));
+        $password = (string)($body['password'] ?? '');
+        if ($username === '' || strlen($password) < 6) {
+            send_json(['error' => 'ชื่อผู้ใช้ห้ามว่าง และรหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'], 400);
+        }
+        $newUser = [
+            'id'            => 'U-' . bin2hex(random_bytes(6)),
+            'username'      => $username,
+            'password_hash' => password_hash($password, PASSWORD_DEFAULT),
+            'role'          => 'admin',
+            'active'        => true,
+        ];
+        $acc['users'][] = $newUser;
+        save_accounts_data($acc);
+        send_json(['success' => true, 'user' => ['id' => $newUser['id'], 'username' => $username, 'role' => 'admin']], 201);
         return true;
     }
 
     if ($path === '/api/auth/login' && $method === 'POST') {
         $username = trim((string)($body['username'] ?? 'admin'));
         $password = (string)($body['password'] ?? '');
-        if (AUTH_ENFORCE || $password !== '') {
+        $clientIp = function_exists('security_client_ip') ? security_client_ip() : ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+        $bfIdent  = $clientIp . '|' . strtolower($username);
+
+        if (function_exists('security_bruteforce_check')) {
+            $bf = security_bruteforce_check('login', $bfIdent, 5, 300);
+            if (!empty($bf['blocked'])) {
+                if (!headers_sent()) header('Retry-After: ' . (int)$bf['retryAfter']);
+                send_json(['error' => 'พยายามเข้าสู่ระบบผิดพลาดหลายครั้ง กรุณารอสักครู่แล้วลองใหม่'], 429);
+            }
+        }
+
+        if ($strict || $password !== '') {
             $verified = verify_php_user_credentials($username, $password);
             if (!$verified) {
+                if (function_exists('security_bruteforce_record_failure')) {
+                    $rec = security_bruteforce_record_failure('login', $bfIdent, 5, 300);
+                    if (!empty($rec['blocked'])) {
+                        if (!headers_sent()) header('Retry-After: ' . (int)$rec['retryAfter']);
+                        send_json(['error' => 'พยายามเข้าสู่ระบบผิดพลาดเกินกำหนด กรุณารอ 5 นาทีแล้วลองใหม่'], 429);
+                    }
+                }
                 send_json(['error' => 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง'], 401);
             }
             $userObj = $verified;
@@ -175,6 +245,9 @@ function handle_auth_routes(string $method, string $path, array $body): bool {
                 'username' => $username !== '' ? $username : 'admin',
                 'role'     => 'admin'
             ];
+        }
+        if (function_exists('security_bruteforce_clear')) {
+            security_bruteforce_clear('login', $bfIdent);
         }
 
         $remember = !isset($body['remember']) || !empty($body['remember']);
@@ -248,9 +321,24 @@ function handle_auth_routes(string $method, string $path, array $body): bool {
         $password = (string)($body['password'] ?? '');
         $name = mb_substr(trim((string)($body['name'] ?? 'Chrome Extension Collector')), 0, 80);
 
+        $clientIp = function_exists('security_client_ip') ? security_client_ip() : ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+        if (function_exists('security_bruteforce_check')) {
+            $bf = security_bruteforce_check('pair_device', $clientIp, 5, 300);
+            if (!empty($bf['blocked'])) {
+                if (!headers_sent()) header('Retry-After: ' . (int)$bf['retryAfter']);
+                send_json(['error' => 'พยายามเชื่อมต่ออุปกรณ์ผิดพลาดเกินกำหนด กรุณารอสักครู่'], 429);
+            }
+        }
+
         $user = verify_php_user_credentials($username, $password);
         if (!$user || ($user['role'] ?? '') !== 'admin') {
+            if (function_exists('security_bruteforce_record_failure')) {
+                security_bruteforce_record_failure('pair_device', $clientIp, 5, 300);
+            }
             send_json(['error' => 'ต้องใช้บัญชีผู้ดูแลระบบเพื่อเชื่อมต่อ Extension'], 401);
+        }
+        if (function_exists('security_bruteforce_clear')) {
+            security_bruteforce_clear('pair_device', $clientIp);
         }
 
         $token = bin2hex(random_bytes(32));
@@ -286,6 +374,7 @@ function handle_auth_routes(string $method, string $path, array $body): bool {
     }
 
     if ($path === '/api/auth/users' && $method === 'GET') {
+        auth_require_admin_in_strict_mode();
         $acc = get_accounts_data();
         $users = array_map(function ($u) {
             return [
@@ -303,6 +392,7 @@ function handle_auth_routes(string $method, string $path, array $body): bool {
     }
 
     if ($path === '/api/auth/users' && $method === 'POST') {
+        auth_require_admin_in_strict_mode();
         $username = trim((string)($body['username'] ?? ''));
         $password = (string)($body['password'] ?? '');
         $role = trim((string)($body['role'] ?? 'viewer'));
@@ -330,6 +420,7 @@ function handle_auth_routes(string $method, string $path, array $body): bool {
     }
 
     if ($path === '/api/auth/devices' && $method === 'GET') {
+        auth_require_admin_in_strict_mode();
         $acc = get_accounts_data();
         $devices = array_map(function ($d) {
             unset($d['hash']);
@@ -348,6 +439,7 @@ function handle_auth_routes(string $method, string $path, array $body): bool {
     }
 
     if (preg_match('#^/api/auth/devices/([^/]+)$#', $path, $m) && $method === 'DELETE') {
+        auth_require_admin_in_strict_mode();
         $devId = $m[1];
         $acc = get_accounts_data();
         foreach ($acc['devices'] as &$d) {

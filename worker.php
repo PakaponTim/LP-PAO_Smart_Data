@@ -15,11 +15,24 @@
 
 $phpServerDir = is_dir(__DIR__ . '/php_server') ? __DIR__ . '/php_server' : dirname(__DIR__) . '/php_server';
 require_once $phpServerDir . '/smart_worker_lib.php';
+require_once $phpServerDir . '/auth.php';
 
+security_apply_http_headers(true);
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
 $action = $_GET['action'] ?? 'chain';
+
+if ($action === 'stop' || $action === 'start') {
+    if (!security_verify_cron_or_admin(true)) {
+        http_response_code(403);
+        echo json_encode([
+            'success' => false,
+            'error'   => 'Forbidden: external worker control requires Admin session or CRON_SECRET HMAC',
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+}
 
 if ($action === 'status') {
     echo json_encode(['success' => true, 'worker' => smart_worker_status()], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);

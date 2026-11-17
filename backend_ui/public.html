@@ -1639,41 +1639,70 @@
         };
 
         container.innerHTML = `
-          <div class="absolute inset-0 pointer-events-none opacity-25" style="background-image:radial-gradient(#34d399 1px, transparent 1px);background-size:20px 20px;"></div>
+          <div class="absolute inset-0 pointer-events-none opacity-20" style="background-image:radial-gradient(#34d399 1px, transparent 1px);background-size:20px 20px;"></div>
           <div class="relative z-10 flex items-center justify-between px-3.5 pt-3 text-[11px]">
-            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/80 border border-emerald-400/30 text-emerald-200 font-semibold">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/85 border border-emerald-400/35 text-emerald-200 font-semibold">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               แผนที่ 2 มิติ · เฉพาะจังหวัดลำปาง (13 อำเภอ)
             </div>
-            <div class="px-2 py-0.5 rounded-lg bg-slate-900/75 border border-white/10 text-slate-300 font-semibold">N ▲</div>
+            <div class="flex items-center gap-2">
+              <div class="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-900/75 border border-white/10 text-slate-300 text-[10px]">
+                <span class="inline-block w-6 h-0.5 bg-emerald-300"></span> 20 กม.
+              </div>
+              <div class="px-2 py-0.5 rounded-lg bg-slate-900/75 border border-white/10 text-slate-300 font-semibold">N ▲</div>
+            </div>
           </div>
           <svg id="lampangVectorSvg" viewBox="0 0 420 560" class="w-full h-[385px] drop-shadow-[0_8px_24px_rgba(16,185,129,0.22)]">
             <defs>
               <linearGradient id="lpLandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#065f46" stop-opacity="0.88" />
-                <stop offset="55%" stop-color="#047857" stop-opacity="0.72" />
-                <stop offset="100%" stop-color="#0f766e" stop-opacity="0.85" />
+                <stop offset="0%" stop-color="#065f46" stop-opacity="0.92" />
+                <stop offset="50%" stop-color="#047857" stop-opacity="0.78" />
+                <stop offset="100%" stop-color="#0f766e" stop-opacity="0.88" />
               </linearGradient>
               <linearGradient id="wangRiverGrad" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stop-color="#38bdf8" />
                 <stop offset="100%" stop-color="#22d3ee" />
               </linearGradient>
             </defs>
-            <!-- Accurate Lampang Province 2D Boundary -->
-            <path d="M 236 34 L 246 38 L 252 62 L 268 86 L 295 108 L 326 132 L 342 162 L 334 198 L 318 224 L 296 248 L 282 272 L 274 304 L 246 336 L 228 368 L 220 405 L 205 442 L 194 482 L 174 514 L 152 524 L 136 502 L 142 472 L 126 446 L 108 418 L 120 382 L 114 342 L 132 304 L 124 268 L 138 232 L 156 198 L 164 158 L 182 122 L 202 86 L 216 54 Z"
+            <!-- Accurate Lampang Province 2D Boundary (including Mae Phrik & Thoen lobes) -->
+            <path d="M 224 34 L 244 38 L 254 64 L 274 92 L 308 118 L 340 144 L 352 172 L 336 206 L 316 232 L 296 258 L 284 288 L 268 318 L 246 346 L 228 378 L 218 414 L 204 452 L 196 492 L 178 522 L 154 516 L 136 498 L 104 494 L 74 468 L 88 438 L 114 422 L 122 384 L 112 346 L 134 312 L 124 274 L 140 236 L 158 198 L 166 156 L 184 118 L 204 82 Z"
               fill="url(#lpLandGrad)" stroke="#34d399" stroke-width="2.5" stroke-linejoin="round" />
-            <path d="M 236 34 L 246 38 L 252 62 L 268 86 L 295 108 L 326 132 L 342 162 L 334 198 L 318 224 L 296 248 L 282 272 L 274 304 L 246 336 L 228 368 L 220 405 L 205 442 L 194 482 L 174 514 L 152 524 L 136 502 L 142 472 L 126 446 L 108 418 L 120 382 L 114 342 L 132 304 L 124 268 L 138 232 L 156 198 L 164 158 L 182 122 L 202 86 L 216 54 Z"
-              fill="none" stroke="#a7f3d0" stroke-width="0.8" stroke-dasharray="4 4" opacity="0.55" />
-            <!-- Wang River (แม่น้ำวัง) Animated Flow -->
-            <path d="M 248 64 C 242 125, 224 185, 204 248 C 188 298, 174 345, 165 398 C 158 442, 138 482, 122 518"
-              fill="none" stroke="url(#wangRiverGrad)" stroke-width="3.2" stroke-linecap="round" opacity="0.85" />
-            <path d="M 248 64 C 242 125, 224 185, 204 248 C 188 298, 174 345, 165 398 C 158 442, 138 482, 122 518"
-              fill="none" stroke="#e0f2fe" stroke-width="1.4" stroke-dasharray="6 10" stroke-linecap="round">
+            <!-- Internal 13 District Boundary Lines (ขอบเขตอำเภอ) -->
+            <g stroke="#a7f3d0" stroke-width="0.9" stroke-dasharray="3 3" opacity="0.48" fill="none">
+              <path d="M 190 112 L 236 122 L 276 96" />
+              <path d="M 164 168 L 210 176 L 228 122" />
+              <path d="M 210 176 L 262 182 L 318 158" />
+              <path d="M 262 182 L 284 248" />
+              <path d="M 142 234 L 194 242 L 242 228 L 296 256" />
+              <path d="M 194 242 L 202 288 L 256 296" />
+              <path d="M 134 308 L 188 304 L 226 332 L 266 318" />
+              <path d="M 124 352 L 176 356 L 216 376" />
+              <path d="M 122 396 L 172 398 L 214 412" />
+              <path d="M 114 426 L 154 446 L 198 456" />
+              <path d="M 126 446 L 138 496" />
+            </g>
+            <!-- Wang River (แม่น้ำวัง) & Tributaries Animated Flow -->
+            <path d="M 232 58 C 236 104, 232 146, 224 188 C 216 226, 206 252, 194 282 C 182 312, 174 344, 166 378 C 158 412, 150 446, 128 474"
+              fill="none" stroke="url(#wangRiverGrad)" stroke-width="3" stroke-linecap="round" opacity="0.88" />
+            <path d="M 232 58 C 236 104, 232 146, 224 188 C 216 226, 206 252, 194 282 C 182 312, 174 344, 166 378 C 158 412, 150 446, 128 474"
+              fill="none" stroke="#e0f2fe" stroke-width="1.3" stroke-dasharray="6 10" stroke-linecap="round">
               <animate attributeName="stroke-dashoffset" from="32" to="0" dur="2.2s" repeatCount="indefinite" />
             </path>
+            <path d="M 294 148 C 278 182, 256 218, 228 248 C 214 262, 204 272, 194 282"
+              fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round" opacity="0.55" />
+            <path d="M 152 252 C 166 266, 178 276, 194 282"
+              fill="none" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round" opacity="0.5" />
             ${districtSvg}
             ${markersSvg}
           </svg>
+          <div class="relative z-10 flex items-center justify-between px-3.5 pb-2 -mt-2 text-[10px] text-emerald-100/85">
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400 border border-white"></span> สถานีน้ำ</span>
+              <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-sm bg-sky-400 border border-white"></span> อ่างเก็บน้ำ</span>
+              <span class="inline-flex items-center gap-1"><span class="w-3 h-0.5 bg-sky-400"></span> แม่น้ำวัง</span>
+            </div>
+            <span class="text-emerald-200/70">คลิกชื่ออำเภอเพื่อกรองข้อมูล</span>
+          </div>
           <div id="svgMapTip" class="hidden absolute z-20 max-w-[220px] rounded-xl bg-slate-900/95 border border-emerald-400/40 px-3 py-2 text-[11px] shadow-xl pointer-events-none"></div>
         `;
       }

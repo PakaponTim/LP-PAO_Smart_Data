@@ -16,6 +16,9 @@ require_once __DIR__ . '/notifier.php';
 $options = getopt('', ['snapshot::', 'server-status::']);
 $snapPath = trim((string)($options['snapshot'] ?? ''));
 $serverStatus = strtolower(trim((string)($options['server-status'] ?? 'skipped')));
+$dCfg = function_exists('get_domain_config') ? get_domain_config() : [];
+$primaryDashUrl = !empty($dCfg['resolved']['primary']['active']) ? ($dCfg['resolved']['primary']['dashboard'] ?? '') : '';
+$backupDashUrl  = !empty($dCfg['resolved']['backup']['active']) ? ($dCfg['resolved']['backup']['dashboard'] ?? '') : '';
 
 if ($snapPath === '' || !file_exists($snapPath)) {
     $files = glob(dirname(__DIR__) . '/cloud_snapshots/*/snapshot_*.json') ?: [];
@@ -32,9 +35,19 @@ if ($snapPath !== '' && file_exists($snapPath)) {
 
 echo "[Failover-Check] ServerStatus={$serverStatus} | Snapshot=" . ($snapPath ? basename($snapPath) : 'none') . "\n";
 
-if ($serverStatus !== 'down') {
-    echo "[Failover-Check] Primary server is online (or WATER_SERVER_CRON_URL not configured); skipping failover alert.\n";
+$isFailoverState = in_array($serverStatus, ['down', 'all_down', 'primary_down_backup_ok', 'backup_down'], true);
+if (!$isFailoverState) {
+    echo "[Failover-Check] Primary server is online (or WATER_SERVER_CRON_URL / domain_config.json not configured); skipping failover alert.\n";
     exit(0);
+}
+
+$statusHeadline = 'Server หลักไม่ตอบสนอง (อาจเกิดไฟดับ/เน็ตหลุด/Host ล่ม)';
+if ($serverStatus === 'primary_down_backup_ok') {
+    $statusHeadline = 'Domain หลักไม่ตอบสนอง — สลับใช้ Domain สำรอง (Backup Domain ทำงานปกติ ✅)';
+} elseif ($serverStatus === 'backup_down') {
+    $statusHeadline = 'Domain สำรองไม่ตอบสนอง (Domain หลักยังทำงานปกติ)';
+} elseif ($serverStatus === 'all_down') {
+    $statusHeadline = 'ทั้ง Domain หลักและสำรองไม่ตอบสนอง — GitHub Cloud Failover กำลังรับช่วงแทน';
 }
 
 // Evaluate crisis alerts directly from collected cloud snapshot
@@ -104,10 +117,13 @@ $lineGroup = trim((string)getenv('LINE_GROUP_ID'));
 if ($lineToken !== '' && $lineGroup !== '') {
     $lines = [
         "⚠️ [Cloud Failover — Water_System2]",
-        "Server หลักไม่ตอบสนอง (อาจเกิดไฟดับ/เน็ตหลุด/Host ล่ม)",
+        $statusHeadline,
         "☁️ GitHub Actions สำรองข้อมูลแทนแล้ว เวลา {$snapTime} น.",
         "📊 เก็บสำรองได้: น้ำ {$counts['water']} | ฝน {$counts['rainfall']} | อ่างฯ {$counts['drought']} | PM2.5 {$counts['pm25']} | Traffy {$counts['complaints']}",
     ];
+    if ($backupDashUrl !== '') {
+        $lines[] = "🔁 ลิงก์ Domain สำรอง: {$backupDashUrl}";
+    }
     if (!empty($crisisAlerts)) {
         $lines[] = "🚨 พบเหตุวิกฤตระหว่าง Server ดับ (" . count($crisisAlerts) . " รายการ):";
         foreach (array_slice($crisisAlerts, 0, 8) as $ca) {
@@ -144,11 +160,13 @@ if ($smtpUser !== '' && $smtpPass !== '' && !empty($toList)) {
         }
         $crisisHtml .= '</ul>';
     }
+    $backupHtml = $backupDashUrl !== '' ? "<p>🔁 <b>ลิงก์ Domain สำรอง:</b> <a href=\"" . htmlspecialchars($backupDashUrl) . "\">" . htmlspecialchars($backupDashUrl) . "</a></p>" : '';
     $html = "<div style=\"font-family:sans-serif;line-height:1.6\">"
         . "<h3 style=\"color:#b45309\">⚠️ Water_System2 Cloud Failover Alert</h3>"
-        . "<p><b>GitHub Actions ตรวจพบว่า Server หลักไม่ตอบสนอง</b> (อาจเกิดไฟดับ อินเทอร์เน็ตขัดข้อง หรือ Host ล่ม)</p>"
+        . "<p><b>" . htmlspecialchars($statusHeadline) . "</b></p>"
         . "<p>ระบบคลาวด์ได้ดึงข้อมูลสำรองลง GitHub Snapshot เวลา <b>{$snapTime} น.</b> เรียบร้อยแล้ว "
         . "(น้ำ {$counts['water']}, ฝน {$counts['rainfall']}, อ่างฯ {$counts['drought']}, PM2.5 {$counts['pm25']}, Traffy {$counts['complaints']})</p>"
+        . $backupHtml
         . $crisisHtml
         . "<p style=\"color:#475569;font-size:12px\">ข้อมูลทั้งหมดจะถูกซิงก์กลับเข้า MySQL ทันทีเมื่อ Server หลักกลับมาออนไลน์ หรือสามารถเปิดดูฉุกเฉินผ่าน <code>emergency_cloud.html</code></p>"
         . "</div>";

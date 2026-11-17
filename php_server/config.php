@@ -661,3 +661,152 @@ function DATA_DEFINITIONS(): array {
         'missing_values' => 'null หมายถึงไม่มีข้อมูล; 0 หมายถึงตรวจได้ศูนย์'
     ];
 }
+
+// =========================================================================
+// Domain & Failover Domain Configuration (domain_config.json)
+// =========================================================================
+
+function normalize_domain_base_url(string $url): string {
+    $u = trim($url);
+    if ($u === '') return '';
+    if (!preg_match('#^https?://#i', $u)) {
+        $scheme = (stripos($u, 'localhost') === 0 || strpos($u, '127.0.0.1') === 0) ? 'http://' : 'https://';
+        $u = $scheme . ltrim($u, '/');
+    }
+    $u = rtrim($u, '/');
+    $u = preg_replace('#/(index\.html|index\.php|cron\.php|server_setup\.php|endpoint\.php)$#i', '', $u);
+    return rtrim((string)$u, '/');
+}
+
+function is_active_public_domain(string $url): bool {
+    $u = normalize_domain_base_url($url);
+    if ($u === '' || !filter_var($u, FILTER_VALIDATE_URL)) {
+        return false;
+    }
+    $host = strtolower((string)parse_url($u, PHP_URL_HOST));
+    if ($host === '' || in_array($host, ['localhost', '127.0.0.1', '::1', 'your-domain.com', 'backup-water.your-domain.com', 'water.your-domain.com', 'example.com'], true)) {
+        return false;
+    }
+    if (substr($host, -15) === 'your-domain.com' || substr($host, -11) === 'example.com') {
+        return false;
+    }
+    return true;
+}
+
+function get_domain_config(): array {
+    $cfgPath = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'domain_config.json';
+    $default = [
+        'primary_domain'            => 'https://water.your-domain.com/Water_System2',
+        'backup_domain'             => 'https://backup-water.your-domain.com/Water_System2',
+        'local_dev_url'             => 'http://127.0.0.1:7000',
+        'extra_allowed_origins'     => [],
+        'failover_auto_ping_backup' => true,
+        'notes'                     => 'เปลี่ยน primary_domain เมื่อย้ายโดเมนหลัก และใส่ backup_domain เพื่อใช้เป็นโดเมนสำรองตัวที่ 2'
+    ];
+    $loaded = read_json_file($cfgPath, []);
+    if (is_array($loaded)) {
+        $default = array_merge($default, $loaded);
+    }
+
+    // Optional .env overrides
+    if (env_val('PRIMARY_DOMAIN') !== '') {
+        $default['primary_domain'] = env_val('PRIMARY_DOMAIN');
+    }
+    if (env_val('BACKUP_DOMAIN') !== '') {
+        $default['backup_domain'] = env_val('BACKUP_DOMAIN');
+    }
+    if (env_val('EXTRA_ALLOWED_ORIGINS') !== '') {
+        $extras = array_values(array_filter(array_map('trim', explode(',', env_val('EXTRA_ALLOWED_ORIGINS')))));
+        $default['extra_allowed_origins'] = $extras;
+    }
+
+    $primary = normalize_domain_base_url((string)($default['primary_domain'] ?? ''));
+    $backup  = normalize_domain_base_url((string)($default['backup_domain'] ?? ''));
+    $local   = normalize_domain_base_url((string)($default['local_dev_url'] ?? 'http://127.0.0.1:7000')) ?: 'http://127.0.0.1:7000';
+
+    $buildSet = function (string $base): array {
+        $active = is_active_public_domain($base);
+        return [
+            'base'      => $base,
+            'active'    => $active,
+            'dashboard' => $base !== '' ? "{$base}/index.html" : '',
+            'cron'      => $base !== '' ? "{$base}/cron.php" : '',
+            'health'    => $base !== '' ? "{$base}/endpoint.php?r=/api/health" : '',
+            'setup'     => $base !== '' ? "{$base}/server_setup.php" : '',
+            'emergency' => $base !== '' ? "{$base}/emergency_cloud.html" : '',
+        ];
+    };
+
+    $default['primary_domain'] = $primary;
+    $default['backup_domain']  = $backup;
+    $default['local_dev_url']  = $local;
+    $default['failover_auto_ping_backup'] = !isset($default['failover_auto_ping_backup']) || !empty($default['failover_auto_ping_backup']);
+    $default['resolved'] = [
+        'primary' => $buildSet($primary),
+        'backup'  => $buildSet($backup),
+    ];
+    return $default;
+}
+
+function save_domain_config(array $input): array {
+    $current = get_domain_config();
+    $primary = array_key_exists('primary_domain', $input)
+        ? normalize_domain_base_url((string)$input['primary_domain'])
+        : ($current['primary_domain'] ?? '');
+    $backup = array_key_exists('backup_domain', $input)
+        ? normalize_domain_base_url((string)$input['backup_domain'])
+        : ($current['backup_domain'] ?? '');
+    $local = array_key_exists('local_dev_url', $input)
+        ? (normalize_domain_base_url((string)$input['local_dev_url']) ?: 'http://127.0.0.1:7000')
+        : ($current['local_dev_url'] ?? 'http://127.0.0.1:7000');
+
+    $extras = $current['extra_allowed_origins'] ?? [];
+    if (array_key_exists('extra_allowed_origins', $input)) {
+        if (is_string($input['extra_allowed_origins'])) {
+            $extras = array_values(array_filter(array_map('normalize_domain_base_url', explode(',', $input['extra_allowed_origins']))));
+        } elseif (is_array($input['extra_allowed_origins'])) {
+            $extras = array_values(array_filter(array_map('normalize_domain_base_url', array_map('strval', $input['extra_allowed_origins']))));
+        }
+    }
+
+    $toSave = [
+        'primary_domain'            => $primary,
+        'backup_domain'             => $backup,
+        'local_dev_url'             => $local,
+        'extra_allowed_origins'     => $extras,
+        'failover_auto_ping_backup' => array_key_exists('failover_auto_ping_backup', $input) ? !empty($input['failover_auto_ping_backup']) : !empty($current['failover_auto_ping_backup']),
+        'notes'                     => (string)($current['notes'] ?? 'แก้ไขไฟล์นี้หรือผ่าน server_setup.php เมื่อเปลี่ยนโดเมนหรือเพิ่มโดเมนสำรอง'),
+    ];
+    $cfgPath = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'domain_config.json';
+    write_json_file($cfgPath, $toSave);
+    return get_domain_config();
+}
+
+function extract_url_origin(string $url): string {
+    $u = normalize_domain_base_url($url);
+    if ($u === '') return '';
+    $p = parse_url($u);
+    if (empty($p['scheme']) || empty($p['host'])) return '';
+    return strtolower($p['scheme']) . '://' . strtolower($p['host']) . (isset($p['port']) ? ':' . $p['port'] : '');
+}
+
+function get_allowed_cors_origins(): array {
+    $origins = [
+        'http://localhost:7000',
+        'http://127.0.0.1:7000',
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'https://lampang.thaiwater.net',
+        'https://citydata.traffy.in.th',
+    ];
+    $dCfg = get_domain_config();
+    foreach ([$dCfg['primary_domain'] ?? '', $dCfg['backup_domain'] ?? '', $dCfg['local_dev_url'] ?? ''] as $u) {
+        $org = extract_url_origin((string)$u);
+        if ($org !== '') $origins[] = $org;
+    }
+    foreach (($dCfg['extra_allowed_origins'] ?? []) as $eu) {
+        $org = extract_url_origin((string)$eu);
+        if ($org !== '') $origins[] = $org;
+    }
+    return array_values(array_unique($origins));
+}

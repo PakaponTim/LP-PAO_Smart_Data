@@ -29,10 +29,10 @@ header('X-Frame-Options: SAMEORIGIN');
 header('Referrer-Policy: same-origin');
 header('X-Water-System2-Port: 7000');
 
-// CORS for Port 7000
+// CORS for Port 7000 + configured Primary/Backup domains (domain_config.json)
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 if ($origin !== '') {
-    $allowed = [
+    $allowed = function_exists('get_allowed_cors_origins') ? get_allowed_cors_origins() : [
         'http://localhost:7000',
         'http://127.0.0.1:7000',
         'http://localhost:5173',
@@ -40,7 +40,7 @@ if ($origin !== '') {
         'https://lampang.thaiwater.net',
         'https://citydata.traffy.in.th'
     ];
-    if (in_array($origin, $allowed, true) || preg_match('/^chrome-extension:\/\/[a-p]{32}$/', $origin)) {
+    if (in_array(strtolower($origin), $allowed, true) || in_array($origin, $allowed, true) || preg_match('/^chrome-extension:\/\/[a-p]{32}$/', $origin)) {
         header("Access-Control-Allow-Origin: {$origin}");
         header('Access-Control-Allow-Credentials: true');
         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');

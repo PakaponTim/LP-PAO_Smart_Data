@@ -605,7 +605,7 @@
               <li><strong>ตรวจให้แน่ใจว่า Push โค้ดล่าสุดขึ้น GitHub แล้ว:</strong> จากเครื่องคอมฯ กดรัน <code>push_to_github.bat</code> (หรือ <code>git push -u origin main</code>) เพื่อให้ Commit ใหม่ล่าสุดไปอยู่บน GitHub ก่อน</li>
               <li><strong>สั่งทดสอบรันบนหน้า Actions:</strong> คลิกชื่อ <strong><code>Water_System2 Cloud Collector (Every 30 Minutes)</code></strong> ที่เมนูซ้าย → กดปุ่ม <strong><code>Run workflow</code></strong> ด้านขวาบน → เลือก <code>Branch: main</code> แล้วกดปุ่มเขียว <strong>Run workflow</strong></li>
               <li><strong>รอประมาณ 1 นาที:</strong> รีเฟรชหน้าแล้วตรวจให้ขึ้นเครื่องหมาย <strong>✅ สีเขียว</strong> และมีการเก็บไฟล์ลง <code>cloud_snapshots/</code></li>
-              <li><strong>ตั้งค่าปลุก Subdomain Server อัตโนมัติ (เมื่อนำขึ้นโฮสต์แล้ว):</strong> คลิกแท็บ <strong>⚙️ Settings</strong> ด้านบน → เมนูซ้าย <strong>Secrets and variables → Actions</strong> → กด <strong>New repository secret</strong> ตั้งชื่อ <code>WATER_SERVER_CRON_URL</code> ใส่ค่า <code>https://ซับโดเมนของคุณ/Water_System2/cron.php</code> แล้วทำต่อ <strong>STEP 2</strong> ด้านล่างได้เลย</li>
+              <li><strong>ตั้งค่า Domain หลัก + สำรอง:</strong> แก้ไขไฟล์ <code>domain_config.json</code> (ตั้ง <code>primary_domain</code> และ <code>backup_domain</code> ได้ถึง 2 โดเมน) หรือกรอกผ่านหน้า <code>server_setup.php</code> เพื่อให้ GitHub Actions ปลุกทั้ง 2 โดเมนและแจ้ง Failover อัตโนมัติ (หรือตั้ง Secret <code>WATER_SERVER_CRON_URL</code> / <code>WATER_SERVER_BACKUP_CRON_URL</code>)</li>
             </ol>
           </div>
           <div class="lg:col-span-6 bg-white rounded-xl border border-emerald-200 p-3">

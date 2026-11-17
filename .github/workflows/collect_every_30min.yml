@@ -30,24 +30,14 @@ jobs:
         run: |
           php php_server/github_collect_snapshot.php
 
-      - name: Ping Live Server cron.php & Evaluate Failover Status
+      - name: Ping Primary & Backup Domains (from domain_config.json / Secrets)
         id: ping_server
         continue-on-error: true
         env:
           WATER_SERVER_CRON_URL: ${{ secrets.WATER_SERVER_CRON_URL }}
+          WATER_SERVER_BACKUP_CRON_URL: ${{ secrets.WATER_SERVER_BACKUP_CRON_URL }}
         run: |
-          if [ -n "$WATER_SERVER_CRON_URL" ]; then
-            HTTP_CODE=$(curl -sS -o /dev/null -w "%{http_code}" --retry 2 --max-time 25 "$WATER_SERVER_CRON_URL" || echo "000")
-            echo "Server ping HTTP code: $HTTP_CODE"
-            if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 400 ]; then
-              echo "server_status=ok" >> "$GITHUB_OUTPUT"
-            else
-              echo "server_status=down" >> "$GITHUB_OUTPUT"
-            fi
-          else
-            echo "WATER_SERVER_CRON_URL secret is not set; skipping live server ping."
-            echo "server_status=skipped" >> "$GITHUB_OUTPUT"
-          fi
+          php php_server/github_ping_servers.php
 
       - name: Cloud Failover Alert (When Primary Server is Unreachable)
         continue-on-error: true

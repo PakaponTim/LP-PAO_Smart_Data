@@ -107,10 +107,26 @@ exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__DIR__ . '/../php_server
 @unlink($tmpSnapPath);
 t_assert($cmdRc === 0 && strpos(implode("\n", $cmdOut), 'ServerStatus=down') !== false, 'Approach 3: github_failover_alert.php evaluates crisis thresholds cleanly on failover', implode(' | ', $cmdOut));
 
-// 4. Live HTTP Endpoints on 127.0.0.1:7000
+// 4. Live HTTP Endpoints + Domain Config Verification on 127.0.0.1:7000
+$domCfg = get_domain_config();
+$corsList = get_allowed_cors_origins();
+t_assert(
+    isset($domCfg['primary_domain'], $domCfg['backup_domain'], $domCfg['resolved']['primary'], $domCfg['resolved']['backup'])
+        && in_array('http://127.0.0.1:7000', $corsList, true)
+        && is_active_public_domain('https://water.your-domain.com/Water_System2') === false
+        && is_active_public_domain('https://water.lampangpao.go.th/Water_System2') === true,
+    'Domain Config: primary/backup domain normalization, placeholder guard & CORS origins work accurately'
+);
+
+$pingOut = [];
+$pingRc = 0;
+exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__DIR__ . '/../php_server/github_ping_servers.php') . ' 2>&1', $pingOut, $pingRc);
+t_assert($pingRc === 0 && strpos(implode("\n", $pingOut), 'Overall status: skipped') !== false, 'Domain Ping: github_ping_servers.php safely skips placeholder domains cleanly', implode(' | ', $pingOut));
+
 $base = 'http://127.0.0.1:7000';
 $httpChecks = [
     '/endpoint.php?r=/api/backup/status',
+    '/endpoint.php?r=/api/domain-config',
     '/endpoint.php?r=/api/cloud-fallback',
     '/endpoint.php?r=/api/health',
     '/endpoint.php?r=/api/analytics/risk-index',
@@ -132,11 +148,14 @@ foreach ($httpChecks as $p) {
     } elseif ($p === '/endpoint.php?r=/api/backup/status') {
         $j = json_decode((string)$body, true);
         $ok = $ok && !empty($j['success']) && !empty($j['backups']);
+    } elseif ($p === '/endpoint.php?r=/api/domain-config') {
+        $j = json_decode((string)$body, true);
+        $ok = $ok && !empty($j['success']) && isset($j['config']['primary_domain'], $j['config']['backup_domain']);
     } elseif ($p === '/endpoint.php?r=/api/cloud-fallback') {
         $j = json_decode((string)$body, true);
         $ok = $ok && !empty($j['success']) && !empty($j['snapshot']);
     } elseif ($p === '/server_setup.php') {
-        $ok = $ok && strpos($body, 'emergency_cloud.html') !== false && strpos($body, 'DB_PASS') !== false;
+        $ok = $ok && strpos($body, 'emergency_cloud.html') !== false && strpos($body, 'domain_config.json') !== false && strpos($body, 'DB_PASS') !== false;
     }
     t_assert($ok, "HTTP 200 Check: {$p}", "code={$code}, bytes=" . strlen((string)$body));
 }

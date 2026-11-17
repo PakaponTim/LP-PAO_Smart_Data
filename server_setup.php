@@ -90,8 +90,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message = "❌ สำรองฐานข้อมูลไม่สำเร็จ: " . $e->getMessage();
             }
         }
+    } elseif ($action === 'save_domains') {
+        $existingPass = env_val('DB_PASS', '');
+        $submittedCurrent = (string)($_POST['CURRENT_DB_PASS'] ?? '');
+        $sess = get_current_user_session();
+        $isAdminAuthed = AUTH_ENFORCE && !empty($sess['user']) && (($sess['user']['role'] ?? '') === 'admin');
+        if ($alreadyConfigured && !$isLocalRequest && !$isAdminAuthed && $existingPass !== '' && !hash_equals($existingPass, $submittedCurrent)) {
+            $statusType = 'error';
+            $message = "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันก่อนแก้ไขการตั้งค่า Domain บน Server สาธารณะ";
+        } else {
+            $savedDom = save_domain_config([
+                'primary_domain'            => trim((string)($_POST['primary_domain'] ?? '')),
+                'backup_domain'             => trim((string)($_POST['backup_domain'] ?? '')),
+                'extra_allowed_origins'     => trim((string)($_POST['extra_allowed_origins'] ?? '')),
+                'failover_auto_ping_backup' => !empty($_POST['failover_auto_ping_backup']),
+            ]);
+            $statusType = 'success';
+            $message = "🌐 บันทึกไฟล์ domain_config.json สำเร็จ (Primary: {$savedDom['primary_domain']} | Backup: {$savedDom['backup_domain']})";
+        }
     }
 }
+
+$domainCfg = get_domain_config();
 
 $curHost = env_val('DB_HOST', 'localhost');
 $curPort = env_val('DB_PORT', '3306');
@@ -256,6 +276,41 @@ try {
             <a href="./endpoint.php?r=/api/backup/download" class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-semibold transition">📥 ดาวน์โหลดไฟล์ล่าสุด</a>
           <?php endif; ?>
         </form>
+      </div>
+
+      <div class="bg-sky-50/70 border border-sky-200 rounded-xl p-4 text-xs space-y-3">
+        <div class="font-bold text-sky-950 text-sm">🌐 ตั้งค่าโดเมนหลัก &amp; โดเมนสำรอง (<code>domain_config.json</code>)</div>
+        <p class="text-slate-600">รองรับการย้ายโดเมนหรือมีโดเมนสำรองตัวที่ 2 — ระบบ CORS และ GitHub Actions Failover จะอ่านค่าจาก <code>domain_config.json</code> นี้โดยอัตโนมัติ (เมื่อแก้แล้วให้ Push <code>domain_config.json</code> ขึ้น GitHub ด้วย)</p>
+        <form method="POST" class="space-y-3">
+          <?php if ($alreadyConfigured && !$isLocalRequest): ?>
+            <input type="password" name="CURRENT_DB_PASS" value="" required placeholder="รหัสผ่าน DB เดิมก่อนบันทึก" class="w-full border border-amber-300 rounded-lg px-3 py-1.5 text-xs bg-white">
+          <?php endif; ?>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">โดเมนหลัก (Primary Domain URL)</label>
+              <input type="text" name="primary_domain" value="<?= htmlspecialchars($domainCfg['primary_domain'] ?? '') ?>" placeholder="https://water.domain.go.th/Water_System2" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">โดเมนสำรองที่ 2 (Backup Domain URL)</label>
+              <input type="text" name="backup_domain" value="<?= htmlspecialchars($domainCfg['backup_domain'] ?? '') ?>" placeholder="https://backup-water.domain.com/Water_System2" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
+            </div>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Allowed CORS Origins เพิ่มเติม (คั่นด้วยลูกน้ำ ,)</label>
+            <input type="text" name="extra_allowed_origins" value="<?= htmlspecialchars(implode(', ', $domainCfg['extra_allowed_origins'] ?? [])) ?>" placeholder="https://portal.lampangpao.go.th" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
+          </div>
+          <label class="inline-flex items-center gap-2 text-slate-700 cursor-pointer">
+            <input type="checkbox" name="failover_auto_ping_backup" value="1" <?= !empty($domainCfg['failover_auto_ping_backup']) ? 'checked' : '' ?> class="rounded">
+            <span>ให้ GitHub Actions ช่วยปลุก Domain สำรอง (<code>cron.php</code>) ทุก 30 นาทีควบคู่กับ Domain หลัก</span>
+          </label>
+          <div class="flex flex-wrap gap-2">
+            <button type="submit" name="action" value="save_domains" class="px-4 py-2 rounded-lg bg-sky-700 hover:bg-sky-800 text-white font-semibold transition">💾 บันทึกค่า Domain ลง domain_config.json</button>
+          </div>
+        </form>
+        <div class="bg-white border border-sky-200 rounded-lg p-2.5 space-y-1 text-[11px] text-slate-600">
+          <div><b>Primary Cron:</b> <code><?= htmlspecialchars($domainCfg['resolved']['primary']['cron'] ?? '-') ?></code> <?= !empty($domainCfg['resolved']['primary']['active']) ? '✅ (ใช้งานจริง)' : '⚪ (ตัวอย่าง/ยังไม่ตั้ง)' ?></div>
+          <div><b>Backup Cron:</b> <code><?= htmlspecialchars($domainCfg['resolved']['backup']['cron'] ?? '-') ?></code> <?= !empty($domainCfg['resolved']['backup']['active']) ? '✅ (ใช้งานจริง)' : '⚪ (ตัวอย่าง/ยังไม่ตั้ง)' ?></div>
+        </div>
       </div>
 
       <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs space-y-2">

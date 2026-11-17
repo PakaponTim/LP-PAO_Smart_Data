@@ -1,0 +1,8 @@
+{
+    "primary_domain": "https://water.your-domain.com/Water_System2",
+    "backup_domain": "https://backup-water.your-domain.com/Water_System2",
+    "local_dev_url": "http://127.0.0.1:7000",
+    "extra_allowed_origins": [],
+    "failover_auto_ping_backup": true,
+    "notes": "เปลี่ยน primary_domain เมื่อย้ายโดเมนหลัก และใส่ backup_domain เพื่อใช้เป็นโดเมนสำรองตัวที่ 2 (แก้ไขไฟล์นี้โดยตรง หรือตั้งผ่านหน้า server_setup.php ก็ได้)"
+}

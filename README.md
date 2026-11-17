@@ -90,7 +90,7 @@ C:\laragon\bin\git\bin\git.exe push -u origin main
 
 ### ขั้นตอนที่ 4: ยืนยันผลบน GitHub & Subdomain Server
 1. เปิดแท็บ **Actions** บน GitHub → เลือก **Water_System2 Cloud Collector (Every 30 Minutes)** → กด **Run workflow** เพื่อทดสอบให้ขึ้นเครื่องหมายถูกสีเขียว
-2. (กรณีมี Subdomain Server แล้ว) เข้า **Settings → Secrets and variables → Actions** เพิ่ม Secret ชื่อ `WATER_SERVER_CRON_URL` ชี้ไปยัง `https://your-subdomain/Water_System2/cron.php`
+2. **ตั้งค่าโดเมนหลัก & โดเมนสำรอง (`domain_config.json`):** แก้ไขไฟล์ [`domain_config.json`](domain_config.json) (หรือบันทึกผ่าน `server_setup.php`) เพื่อระบุ `primary_domain` และ `backup_domain` — ระบบ CORS และ GitHub Actions Failover จะสลับ/ปลุกทั้ง 2 โดเมนให้โดยอัตโนมัติ (หรือตั้งใน GitHub Secrets: `WATER_SERVER_CRON_URL` / `WATER_SERVER_BACKUP_CRON_URL`)
 3. สร้างแพ็กเกจปลอดความลับสำหรับนำไปแตกไฟล์วางบน Subdomain Server:
    ```powershell
    C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe php_server\build_server_package.php

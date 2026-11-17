@@ -294,6 +294,28 @@ function handle_api_request(string $method, string $path): void {
         ]);
     }
 
+    if ($path === '/api/domain-config' && $method === 'GET') {
+        send_json([
+            'success' => true,
+            'config'  => get_domain_config(),
+        ]);
+    }
+
+    if ($path === '/api/domain-config' && $method === 'POST') {
+        if (AUTH_ENFORCE) {
+            $u = get_current_user_session();
+            if (empty($u['user']) || (($u['user']['role'] ?? '') !== 'admin')) {
+                send_json(['success' => false, 'error' => 'Admin permission required'], 403);
+            }
+        }
+        $saved = save_domain_config($body);
+        send_json([
+            'success' => true,
+            'message' => 'บันทึกการตั้งค่า Domain หลักและ Domain สำรองเรียบร้อยแล้ว',
+            'config'  => $saved,
+        ]);
+    }
+
     if ($path === '/api/backup/download' && ($method === 'GET' || $method === 'HEAD')) {
         if (AUTH_ENFORCE) {
             $u = get_current_user_session();

@@ -38,7 +38,7 @@ $rootFiles = [
     'operations.html', 'accounts.html', 'login.html', 'setup.html', 'guide.html', 'emergency_cloud.html',
     'endpoint.php', 'cron.php', 'worker.php', 'server_setup.php',
     'auth-client.js', 'socketio_client.js', 'setup.js', 'accounts.js', 'operations.js',
-    'config.json', 'logo_pao.png', 'drought_standard.png', 'pm25_standard.png', 'complaints_standard.png',
+    'config.json', 'domain_config.json', 'logo_pao.png', 'drought_standard.png', 'pm25_standard.png', 'complaints_standard.png',
     '.htaccess'
 ];
 
@@ -61,7 +61,7 @@ foreach ($rootFiles as $f) {
 
 // Create clean starter .env.example inside deploy package (without local passwords)
 file_put_contents($targetDir . DIRECTORY_SEPARATOR . '.env.example',
-    "DB_HOST=localhost\nDB_PORT=3306\nDB_USER=your_mysql_user\nDB_PASS=your_mysql_password\nDB_NAME=water_system2\nGITHUB_SYNC_REPO=PakaponTim/Water_System2\nGITHUB_SYNC_BRANCH=main\n"
+    "DB_HOST=localhost\nDB_PORT=3306\nDB_USER=your_mysql_user\nDB_PASS=your_mysql_password\nDB_NAME=water_system2\nGITHUB_SYNC_REPO=PakaponTim/Water_System2\nGITHUB_SYNC_BRANCH=main\nPRIMARY_DOMAIN=\nBACKUP_DOMAIN=\n"
 );
 
 // Build ZIP if ZipArchive is available

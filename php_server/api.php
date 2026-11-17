@@ -437,7 +437,7 @@ function handle_api_request(string $method, string $path): void {
         if ($reqFile === '' && !empty($backups[0]['filename'])) {
             $reqFile = $backups[0]['filename'];
         }
-        if ($reqFile === '' || !preg_match('/^water_system2_backup_\d{8}_\d{6}\.sql(\.gz)?$/', $reqFile)) {
+        if ($reqFile === '' || !preg_match('/^(lp_pao_smart_data|water_system2)_backup_\d{8}_\d{6}\.sql(\.gz)?$/', $reqFile)) {
             send_json(['success' => false, 'error' => 'ไม่พบไฟล์สำรองฐานข้อมูลที่ระบุ'], 404);
         }
         $fullPath = db_backup_dir() . DIRECTORY_SEPARATOR . $reqFile;
@@ -526,14 +526,15 @@ function handle_api_request(string $method, string $path): void {
         $refDb = (string)($_GET['refDb'] ?? 'water_systems');
         $csv = export_db_compare_csv($refDb);
         $lineCount = max(0, substr_count($csv, "\n") - 2);
+        $newDbLabel = env_val('DB_NAME', 'lp_pao_smart_data');
         sys_log_record([
             'module'         => 'db_compare',
-            'action'         => "Export DB Comparison CSV ({$refDb} vs water_system2)",
+            'action'         => "Export DB Comparison CSV ({$refDb} vs {$newDbLabel})",
             'status'         => 'success',
             'trigger_source' => 'user',
             'duration_ms'    => (int)round((microtime(true) - $tCmp) * 1000),
             'row_count'      => $lineCount,
-            'summary'        => "ส่งออกรายงานเปรียบเทียบฐานข้อมูล {$refDb} vs water_system2 ({$lineCount} รายการ)",
+            'summary'        => "ส่งออกรายงานเปรียบเทียบฐานข้อมูล {$refDb} vs {$newDbLabel} ({$lineCount} รายการ)",
         ]);
         $fname = 'DB_Compare_' . preg_replace('/[^a-zA-Z0-9_]/', '', $refDb) . '_' . date('Ymd_His') . '.csv';
         header('Content-Type: text/csv; charset=utf-8');
@@ -633,7 +634,7 @@ function handle_api_request(string $method, string $path): void {
             $p0 = microtime(true);
             $pdo->query('SELECT 1');
             $dbLatency = (int)round((microtime(true) - $p0) * 1000);
-            $dbName = env_val('DB_NAME', 'water_system2');
+            $dbName = env_val('DB_NAME', 'lp_pao_smart_data');
             $stmt = $pdo->prepare("SELECT SUM(table_rows) as total FROM information_schema.tables WHERE table_schema = ?");
             $stmt->execute([$dbName]);
             $row = $stmt->fetch();
@@ -674,7 +675,7 @@ function handle_api_request(string $method, string $path): void {
                 'latencyMs' => $dbLatency,
                 'host' => env_val('DB_HOST', 'localhost'),
                 'port' => (int)env_val('DB_PORT', 3306),
-                'databaseName' => env_val('DB_NAME', 'water_system2'),
+                'databaseName' => env_val('DB_NAME', 'lp_pao_smart_data'),
                 'estimatedTotalRows' => $totalRows
             ],
             'dualWrite' => [

@@ -1,6 +1,6 @@
 <?php
 // =========================================================================
-// Water_System2 — End-to-End Traffy Fondue + Cookie & Session E2E Test Suite
+// LP-PAO Smart Data — End-to-End Traffy Fondue + Cookie & Session E2E Test Suite
 // Tests ALL 5 flows on live http://127.0.0.1:7000 + MySQL + Upstream Traffy:
 //   Stage 1: Internal App Session & Cookie (water_session_7000, HttpOnly, SameSite=Strict, CSRF, Rotation, Logout)
 //   Stage 2: Chrome Extension 04ext_TraffyLP Pairing -> Bearer Token -> /api/ping -> /api/append-complaints-db -> Revoke
@@ -86,7 +86,7 @@ echo "=================================================================\n\n";
 // -------------------------------------------------------------------------
 // STAGE 1: App Cookie & Session Security Lifecycle (with real password verification)
 // -------------------------------------------------------------------------
-echo "--- STAGE 1: Water_System2 Cookie & Session Lifecycle ---\n";
+echo "--- STAGE 1: LP-PAO Smart Data Cookie & Session Lifecycle ---\n";
 $testAdminUser = 'e2e_admin_' . mt_rand(1000, 9999);
 $testAdminPass = 'StrongVerifyPass_7000!';
 $createUserRes = call_http("{$baseUrl}/api/auth/users", 'POST', [

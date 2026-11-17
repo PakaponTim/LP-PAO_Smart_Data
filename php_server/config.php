@@ -1,7 +1,7 @@
 <?php
 // =========================================================================
-// Water_System2 — Server & Local Configuration (Zero-Admin Drop-in Ready)
-// Works both on Server Subfolder (http://server/Water_System2/) and Port 7000
+// LP-PAO Smart Data (LP-PAO_Smart_Data) — Server & Local Configuration
+// Works both on Server Subfolder (http://server/LP-PAO_Smart_Data/) and Port 7000
 // =========================================================================
 
 date_default_timezone_set('Asia/Bangkok');
@@ -70,7 +70,7 @@ function get_db(): PDO {
     }
     $host = env_val('DB_HOST', 'localhost');
     $port = (int)env_val('DB_PORT', 3306);
-    $db   = env_val('DB_NAME', 'water_system2');
+    $db   = env_val('DB_NAME', 'lp_pao_smart_data');
     $user = env_val('DB_USER', 'root');
     $pass = env_val('DB_PASS', 'root');
 
@@ -101,7 +101,7 @@ function get_db(): PDO {
     return $pdo;
 }
 
-function ensure_all_tables(PDO $pdo, string $dbName = 'water_system2'): void {
+function ensure_all_tables(PDO $pdo, string $dbName = 'lp_pao_smart_data'): void {
     static $checked = false;
     if ($checked) return;
 
@@ -443,8 +443,8 @@ function get_recent_logs(): array {
     $logs = read_json_file($logsFile, []);
     if (empty($logs)) {
         $logs = [
-            '[' . format_iso_datetime() . '] [Water_System2] 🚀 ระบบ PHP + Socket.IO + Direct API Collector พร้อมทำงานบน Server',
-            '[' . format_iso_datetime() . '] [Water_System2] 🛡️ เชื่อมต่อฐานข้อมูล MySQL (' . env_val('DB_NAME', 'water_system2') . ') และระบบซิงค์ข้อมูลอัตโนมัติเรียบร้อย'
+            '[' . format_iso_datetime() . '] [LP-PAO Smart Data] 🚀 ระบบ PHP + Socket.IO + Direct API Collector พร้อมทำงานบน Server',
+            '[' . format_iso_datetime() . '] [LP-PAO Smart Data] 🛡️ เชื่อมต่อฐานข้อมูล MySQL (' . env_val('DB_NAME', 'lp_pao_smart_data') . ') และระบบซิงค์ข้อมูลอัตโนมัติเรียบร้อย'
         ];
         write_json_file($logsFile, $logs);
     }

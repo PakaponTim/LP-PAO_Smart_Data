@@ -1,13 +1,13 @@
 @echo off
-title Push Water_System2 to GitHub
+title Push LP-PAO Smart Data to GitHub
 cd /d "%~dp0"
 
 set "GIT_BIN=C:\laragon\bin\git\bin\git.exe"
 if not exist "%GIT_BIN%" set "GIT_BIN=git"
 
 echo ============================================================================
-echo   Pushing Water_System2 to GitHub:
-echo   https://github.com/PakaponTim/Water_System2.git
+echo   Pushing LP-PAO Smart Data to GitHub:
+echo   https://github.com/PakaponTim/LP-PAO_Smart_Data.git
 echo   (Please complete GitHub login / Token prompt if a window appears)
 echo ============================================================================
 echo.

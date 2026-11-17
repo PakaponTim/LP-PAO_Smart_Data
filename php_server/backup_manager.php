@@ -144,7 +144,11 @@ function flush_db_spool(int $maxFiles = 20): array {
  * List existing full MySQL backup archives sorted newest-first.
  */
 function list_db_backups(): array {
-    $files = glob(db_backup_dir() . DIRECTORY_SEPARATOR . 'water_system2_backup_*.sql*') ?: [];
+    $dir = db_backup_dir() . DIRECTORY_SEPARATOR;
+    $files = array_merge(
+        glob($dir . 'lp_pao_smart_data_backup_*.sql*') ?: [],
+        glob($dir . 'water_system2_backup_*.sql*') ?: []
+    );
     usort($files, function ($a, $b) {
         return (@filemtime($b) ?: 0) - (@filemtime($a) ?: 0);
     });
@@ -212,7 +216,7 @@ function backup_decrypt_bytes(string $envelope, string $passphrase): ?string {
 }
 
 /**
- * Dump every table in water_system2 cleanly using pure PHP PDO unbuffered streaming + gzopen (O(1) RAM).
+ * Dump every table in lp_pao_smart_data cleanly using pure PHP PDO unbuffered streaming + gzopen (O(1) RAM).
  */
 function run_full_mysql_backup(bool $sendEmail = false, string $triggerSource = 'manual'): array {
     $res = with_file_lock('db_backup', function () use ($sendEmail, $triggerSource) {
@@ -222,7 +226,7 @@ function run_full_mysql_backup(bool $sendEmail = false, string $triggerSource = 
         $t0 = microtime(true);
         $startedAt = date('Y-m-d H:i:s');
         $pdo = get_db();
-        $dbName = env_val('DB_NAME', 'water_system2');
+        $dbName = env_val('DB_NAME', 'lp_pao_smart_data');
 
         $tables = $pdo->query('SHOW TABLES')->fetchAll(PDO::FETCH_COLUMN);
         if (empty($tables)) {
@@ -232,7 +236,7 @@ function run_full_mysql_backup(bool $sendEmail = false, string $triggerSource = 
         $stamp = date('Ymd_His');
         $useGzip = function_exists('gzopen');
         $ext = $useGzip ? 'sql.gz' : 'sql';
-        $filename = "water_system2_backup_{$stamp}.{$ext}";
+        $filename = "lp_pao_smart_data_backup_{$stamp}.{$ext}";
         $targetPath = db_backup_dir() . DIRECTORY_SEPARATOR . $filename;
         $tmpPath = $targetPath . '.tmp.' . getmypid();
 
@@ -334,7 +338,11 @@ function run_full_mysql_backup(bool $sendEmail = false, string $triggerSource = 
         // Enforce retention policy (default 14 days, always keep at least 3 newest files)
         $keepDays = max(3, (int)env_val('DB_BACKUP_RETENTION_DAYS', '14'));
         $cutoffTs = time() - ($keepDays * 86400);
-        $allBackups = glob(db_backup_dir() . DIRECTORY_SEPARATOR . 'water_system2_backup_*.sql*') ?: [];
+        $bkDir = db_backup_dir() . DIRECTORY_SEPARATOR;
+        $allBackups = array_merge(
+            glob($bkDir . 'lp_pao_smart_data_backup_*.sql*') ?: [],
+            glob($bkDir . 'water_system2_backup_*.sql*') ?: []
+        );
         usort($allBackups, function ($a, $b) {
             return (@filemtime($b) ?: 0) - (@filemtime($a) ?: 0);
         });

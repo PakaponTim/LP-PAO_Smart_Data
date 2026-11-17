@@ -1,6 +1,6 @@
 <?php
 // =========================================================================
-// Water_System2 — Public Dashboard & Inter-Agency Secure API E2E Tests
+// LP-PAO Smart Data — Public Dashboard & Inter-Agency Secure API E2E Tests
 // Usage: php tests/verify_public_api_e2e.php
 // =========================================================================
 
@@ -52,7 +52,7 @@ function http_req(string $url, string $method = 'GET', array $headers = [], ?str
 }
 
 echo "=================================================================\n";
-echo "Water_System2 Public Dashboard & Inter-Agency Security E2E Test\n";
+echo "LP-PAO Smart Data Public Dashboard & Inter-Agency Security E2E Test\n";
 echo "=================================================================\n\n";
 
 // 1. Unit Security: Zero-PII text scrubbing

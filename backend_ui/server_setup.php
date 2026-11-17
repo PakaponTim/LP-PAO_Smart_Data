@@ -1,7 +1,7 @@
 <?php
 // =========================================================================
-// Water_System2 — Web Setup Wizard for Server Deployment (Zero-Admin)
-// Open: http://ชื่อเซิร์ฟเวอร์/Water_System2/server_setup.php
+// LP-PAO Smart Data (LP-PAO_Smart_Data) — Web Setup Wizard for Server Deployment (Zero-Admin)
+// Open: http://ชื่อเซิร์ฟเวอร์/LP-PAO_Smart_Data/server_setup.php
 // Lets you configure the Server's MySQL credentials, auto-create all 10 tables,
 // and run an initial data collection directly from the browser!
 // =========================================================================
@@ -83,10 +83,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $newCfg = [
                 'DB_HOST'                  => trim($_POST['DB_HOST'] ?? 'localhost'),
                 'DB_PORT'                  => trim($_POST['DB_PORT'] ?? '3306'),
-                'DB_NAME'                  => trim($_POST['DB_NAME'] ?? 'water_system2'),
+                'DB_NAME'                  => trim($_POST['DB_NAME'] ?? 'lp_pao_smart_data'),
                 'DB_USER'                  => trim($_POST['DB_USER'] ?? 'root'),
                 'DB_PASS'                  => $finalPass,
-                'GITHUB_SYNC_REPO'         => trim($_POST['GITHUB_SYNC_REPO'] ?? 'PakaponTim/Water_System2'),
+                'GITHUB_SYNC_REPO'         => trim($_POST['GITHUB_SYNC_REPO'] ?? 'PakaponTim/LP-PAO_Smart_Data'),
                 'CRON_SECRET'              => $finalCronSecret,
                 'DB_BACKUP_ENCRYPTION_KEY' => $finalBkKey,
             ];
@@ -268,10 +268,10 @@ $agencyKeys = public_list_api_keys();
 
 $curHost = env_val('DB_HOST', 'localhost');
 $curPort = env_val('DB_PORT', '3306');
-$curName = env_val('DB_NAME', 'water_system2');
+$curName = env_val('DB_NAME', 'lp_pao_smart_data');
 $curUser = env_val('DB_USER', 'root');
 $curPass = env_val('DB_PASS', 'root');
-$curRepo = env_val('GITHUB_SYNC_REPO', 'PakaponTim/Water_System2');
+$curRepo = env_val('GITHUB_SYNC_REPO', 'PakaponTim/LP-PAO_Smart_Data');
 
 $dbConnected = false;
 $tableCounts = [];
@@ -297,7 +297,7 @@ try {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ตั้งค่าระบบบน Server — Water_System2</title>
+  <title>ตั้งค่าระบบบน Server — LP-PAO Smart Data</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>body { font-family: 'Prompt', sans-serif; }</style>
@@ -308,7 +308,7 @@ try {
   <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
     <div class="bg-emerald-800 text-white px-6 py-5 flex items-center justify-between">
       <div>
-        <h1 class="text-xl font-bold">⚙️ ตั้งค่าการเชื่อมต่อฐานข้อมูลบน Server (Water_System2)</h1>
+        <h1 class="text-xl font-bold">⚙️ ตั้งค่าการเชื่อมต่อฐานข้อมูลบน Server (LP-PAO Smart Data)</h1>
         <p class="text-xs text-emerald-100 mt-1">สำหรับวางโฟลเดอร์บน Server โดยไม่ต้องมีสิทธิ์ Admin ตั้งค่าเครื่อง</p>
       </div>
       <a href="./index.html" class="bg-white/20 hover:bg-white/30 text-white text-sm px-4 py-2 rounded-lg font-medium transition">
@@ -423,7 +423,7 @@ try {
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div class="font-bold text-emerald-950 text-sm">💾 ระบบสำรองฐานข้อมูล &amp; กู้คืนภัยพิบัติ (Backup + Local Spool + Cloud Viewer)</div>
           <a href="./emergency_cloud.html" target="_blank" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-semibold transition">☁️ เปิดโหมดฉุกเฉิน (Cloud Viewer)</a>
-          <a href="./db_compare.html" target="_blank" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition">⚖️ เทียบ DB water_systems vs water_system2</a>
+          <a href="./db_compare.html" target="_blank" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition">⚖️ เทียบ DB water_systems vs lp_pao_smart_data</a>
           <a href="./mobile.html" target="_blank" class="px-3 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-700 text-white font-semibold transition">📱 มุมมองมือถือ / iPad</a>
           <a href="./public.html" target="_blank" class="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-semibold transition">🌐 Public Dashboard</a>
         </div>
@@ -470,11 +470,11 @@ try {
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block font-semibold text-slate-700 mb-1">โดเมนหลัก (Primary Domain URL)</label>
-              <input type="text" name="primary_domain" value="<?= htmlspecialchars($domainCfg['primary_domain'] ?? '') ?>" placeholder="https://water.domain.go.th/Water_System2" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
+              <input type="text" name="primary_domain" value="<?= htmlspecialchars($domainCfg['primary_domain'] ?? '') ?>" placeholder="https://water.domain.go.th/LP-PAO_Smart_Data" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
             </div>
             <div>
               <label class="block font-semibold text-slate-700 mb-1">โดเมนสำรองที่ 2 (Backup Domain URL)</label>
-              <input type="text" name="backup_domain" value="<?= htmlspecialchars($domainCfg['backup_domain'] ?? '') ?>" placeholder="https://backup-water.domain.com/Water_System2" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
+              <input type="text" name="backup_domain" value="<?= htmlspecialchars($domainCfg['backup_domain'] ?? '') ?>" placeholder="https://backup-water.domain.com/LP-PAO_Smart_Data" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
             </div>
           </div>
           <div>

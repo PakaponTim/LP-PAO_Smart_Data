@@ -1,6 +1,6 @@
 <?php
 // =========================================================================
-// Water_System2 — 4-Layer Disaster Recovery & Failover E2E Verification
+// LP-PAO Smart Data — 4-Layer Disaster Recovery & Failover E2E Verification
 // Usage: php tests/verify_backup_failover_e2e.php
 // =========================================================================
 
@@ -26,7 +26,7 @@ function t_assert(bool $cond, string $label, string $detail = ''): void {
 }
 
 echo "=================================================================\n";
-echo "Water_System2 Backup, Local Spool & Cloud Failover E2E Test\n";
+echo "LP-PAO Smart Data Backup, Local Spool & Cloud Failover E2E Test\n";
 echo "=================================================================\n\n";
 
 // 1. Approach 1: Local Disk Spool enqueue + flush roundtrip (cleaned up cleanly afterward)
@@ -113,8 +113,8 @@ $corsList = get_allowed_cors_origins();
 t_assert(
     isset($domCfg['primary_domain'], $domCfg['backup_domain'], $domCfg['resolved']['primary'], $domCfg['resolved']['backup'])
         && in_array('http://127.0.0.1:7000', $corsList, true)
-        && is_active_public_domain('https://water.your-domain.com/Water_System2') === false
-        && is_active_public_domain('https://water.lampangpao.go.th/Water_System2') === true,
+        && is_active_public_domain('https://water.your-domain.com/LP-PAO_Smart_Data') === false
+        && is_active_public_domain('https://water.lampangpao.go.th/LP-PAO_Smart_Data') === true,
     'Domain Config: primary/backup domain normalization, placeholder guard & CORS origins work accurately'
 );
 

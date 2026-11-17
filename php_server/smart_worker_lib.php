@@ -1,6 +1,6 @@
 <?php
 // =========================================================================
-// Water_System2 — Smart Sleep Scheduler Library
+// LP-PAO Smart Data — Smart Sleep Scheduler Library
 // "หลับรอจนถึงเวลา (Smart Sleep ตามตารางเวลา)"
 //   - Zero Bandwidth & Zero DB queries while waiting for the next slot
 //   - Wakes up only at configured HH:mm slots in config.json

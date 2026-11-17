@@ -1,6 +1,6 @@
 <?php
 // =========================================================================
-// Water_System2 — Web Cron Endpoint (http://server/Water_System2/cron.php)
+// LP-PAO Smart Data — Web Cron Endpoint (http://server/LP-PAO_Smart_Data/cron.php)
 // Safe for 24/7 Subdomain / Shared Hosting:
 //   - Optional CRON_SECRET verification (if set in .env)
 //   - 90-second cooldown + exclusive collect_cycle mutex prevents duplicate runs
@@ -38,7 +38,7 @@ $now = time();
 
 $results = [
     'timestamp'   => date('Y-m-d H:i:s'),
-    'database'    => env_val('DB_NAME', 'water_system2'),
+    'database'    => env_val('DB_NAME', 'lp_pao_smart_data'),
     'db_spool'    => null,
     'github_sync' => null,
     'parallel'    => null,

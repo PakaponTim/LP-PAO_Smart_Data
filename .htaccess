@@ -1,4 +1,4 @@
-# Water_System2 — Apache Security Hardening for Subdomain / Folder Hosting
+# LP-PAO Smart Data (LP-PAO_Smart_Data) — Apache Security Hardening for Subdomain / Folder Hosting
 Options -Indexes
 
 # Block direct HTTP access to hidden files (.env, .git, etc.) and sensitive configs/scripts/docs

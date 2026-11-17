@@ -35,7 +35,7 @@
 
   <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
     <div id="sourceBanner" class="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-xs sm:text-sm text-amber-950 flex flex-wrap items-center justify-between gap-2">
-      <span>กำลังเชื่อมต่อ GitHub Cloud Snapshot (`PakaponTim/Water_System2`)...</span>
+      <span>กำลังเชื่อมต่อ GitHub Cloud Snapshot (`PakaponTim/LP-PAO_Smart_Data`)...</span>
     </div>
 
     <!-- 5 KPI Cards -->
@@ -96,7 +96,8 @@
   </main>
 
   <script>
-    const RAW_BASE = 'https://raw.githubusercontent.com/PakaponTim/Water_System2/main/cloud_snapshots';
+    const RAW_BASE = 'https://raw.githubusercontent.com/PakaponTim/LP-PAO_Smart_Data/main/cloud_snapshots';
+    const RAW_FALLBACK_BASE = 'https://raw.githubusercontent.com/PakaponTim/Water_System2/main/cloud_snapshots';
     const DISTRICT_COORDS = {
       'เมืองลำปาง': [18.2888, 99.4920], 'เกาะคา': [18.1963, 99.4005], 'แม่เมาะ': [18.2753, 99.6582],
       'ห้างฉัตร': [18.3228, 99.3414], 'แจ้ห่ม': [18.7139, 99.5539], 'งาว': [18.7758, 99.9769],
@@ -145,8 +146,13 @@
           manifestData = await fetchJsonSafe(`${RAW_BASE}/manifest.json?ts=${Date.now()}`);
           activeBaseUrl = RAW_BASE;
         } catch (e) {
-          manifestData = await fetchJsonSafe(`./cloud_snapshots/manifest.json?ts=${Date.now()}`);
-          activeBaseUrl = './cloud_snapshots';
+          try {
+            manifestData = await fetchJsonSafe(`${RAW_FALLBACK_BASE}/manifest.json?ts=${Date.now()}`);
+            activeBaseUrl = RAW_FALLBACK_BASE;
+          } catch (eFallback) {
+            manifestData = await fetchJsonSafe(`./cloud_snapshots/manifest.json?ts=${Date.now()}`);
+            activeBaseUrl = './cloud_snapshots';
+          }
         }
         const snaps = manifestData.snapshots || {};
         const keys = Object.keys(snaps).sort().reverse();
@@ -188,7 +194,7 @@
       const comp = s.complaints || [];
 
       document.getElementById('sourceBanner').innerHTML =
-        `<div>✅ แสดงข้อมูลสำรองรอบ <strong>${esc(s.recorded_at || '-')}</strong> (${esc(s.thai_date || '')}) จาก <code>${esc(activeBaseUrl === RAW_BASE ? 'GitHub Raw Cloud' : 'Local Cache')}</code></div>`
+        `<div>✅ แสดงข้อมูลสำรองรอบ <strong>${esc(s.recorded_at || '-')}</strong> (${esc(s.thai_date || '')}) จาก <code>${esc(activeBaseUrl === './cloud_snapshots' ? 'Local Cache' : 'GitHub Raw Cloud')}</code></div>`
         + `<div class="text-xs text-amber-800">โหมดอ่านข้อมูลฉุกเฉิน: ไม่ต้องใช้ MySQL</div>`;
 
       const critWater = water.filter(r => (r.risk_level === 'วิกฤต' || String(r.status || '').includes('ล้น'))).length;

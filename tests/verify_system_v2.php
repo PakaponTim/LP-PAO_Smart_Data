@@ -1,6 +1,6 @@
 <?php
 // =========================================================================
-// Water_System2 Comprehensive Live Verification Suite (PHP 7.2+)
+// LP-PAO Smart Data Comprehensive Live Verification Suite (PHP 7.2+)
 // Covers:
 //   1. Schema creation (tbl_system_logs)
 //   2. Source API Transform Unit Checks (all 5 domain fixes)
@@ -85,7 +85,7 @@ function http_test_request(string $url, string $method = 'GET', ?array $jsonBody
 }
 
 echo "=================================================================\n";
-echo "Water_System2 Live System Verification @ " . date('Y-m-d H:i:s') . "\n";
+echo "LP-PAO Smart Data Live System Verification @ " . date('Y-m-d H:i:s') . "\n";
 echo "=================================================================\n\n";
 
 // -------------------------------------------------------------------------

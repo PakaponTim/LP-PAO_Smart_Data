@@ -1,6 +1,6 @@
 {
-    "primary_domain": "https://water.your-domain.com/Water_System2",
-    "backup_domain": "https://backup-water.your-domain.com/Water_System2",
+    "primary_domain": "https://water.your-domain.com/LP-PAO_Smart_Data",
+    "backup_domain": "https://backup-water.your-domain.com/LP-PAO_Smart_Data",
     "local_dev_url": "http://127.0.0.1:7000",
     "extra_allowed_origins": [],
     "failover_auto_ping_backup": true,

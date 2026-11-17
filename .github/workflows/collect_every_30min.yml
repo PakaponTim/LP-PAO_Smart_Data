@@ -1,4 +1,4 @@
-name: Water_System2 Cloud Collector (Every 30 Minutes)
+name: LP-PAO Smart Data Cloud Collector (Every 30 Minutes)
 
 on:
   schedule:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: water-system2-collector
+  group: lp-pao-smart-data-collector
   cancel-in-progress: false
 
 jobs:

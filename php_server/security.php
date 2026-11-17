@@ -1,6 +1,6 @@
 <?php
 // =========================================================================
-// Water_System2 — Shared Zero-Dependency Security Hardening Module (PHP 7.2+)
+// LP-PAO Smart Data — Shared Zero-Dependency Security Hardening Module (PHP 7.2+)
 // Covers:
 //   1. Smart Loopback vs External Production Auth Detection
 //   2. Sliding-Window Rate Limiter & Brute-Force Guard
@@ -336,7 +336,7 @@ function security_verify_setup_csrf(): bool {
  */
 function security_is_admin_page_uri(string $uri): bool {
     $base = strtolower(basename((string)parse_url($uri, PHP_URL_PATH)));
-    if ($base === '' || $base === 'water_system2') {
+    if ($base === '' || in_array($base, ['water_system2', 'lp-pao_smart_data', 'lp_pao_smart_data'], true)) {
         $base = 'index.html';
     }
     $adminPages = [

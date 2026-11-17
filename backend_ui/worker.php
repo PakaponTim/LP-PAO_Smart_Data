@@ -1,10 +1,10 @@
 <?php
 // =========================================================================
-// Water_System2 — Web Self-Looping Smart Sleep Worker (Zero-Admin Servers)
+// LP-PAO Smart Data — Web Self-Looping Smart Sleep Worker (Zero-Admin Servers)
 // Drop this on any standard Apache/Nginx PHP host and trigger once:
-//   http://server/Water_System2/worker.php?action=start
-//   http://server/Water_System2/worker.php?action=status
-//   http://server/Water_System2/worker.php?action=stop
+//   http://server/LP-PAO_Smart_Data/worker.php?action=start
+//   http://server/LP-PAO_Smart_Data/worker.php?action=status
+//   http://server/LP-PAO_Smart_Data/worker.php?action=stop
 //
 // How it works with ZERO OS Cron & ZERO Idle Bandwidth:
 //   - Acquires an exclusive flock() so at most 1 worker runs at any time.
@@ -15,11 +15,24 @@
 
 $phpServerDir = is_dir(__DIR__ . '/php_server') ? __DIR__ . '/php_server' : dirname(__DIR__) . '/php_server';
 require_once $phpServerDir . '/smart_worker_lib.php';
+require_once $phpServerDir . '/auth.php';
 
+security_apply_http_headers(true);
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
 $action = $_GET['action'] ?? 'chain';
+
+if ($action === 'stop' || $action === 'start') {
+    if (!security_verify_cron_or_admin(true)) {
+        http_response_code(403);
+        echo json_encode([
+            'success' => false,
+            'error'   => 'Forbidden: external worker control requires Admin session or CRON_SECRET HMAC',
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+}
 
 if ($action === 'status') {
     echo json_encode(['success' => true, 'worker' => smart_worker_status()], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
@@ -41,11 +54,8 @@ if ($action === 'start') {
         exit;
     }
 
-    // Build self-URL for non-blocking background chain
-    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'] ?? '127.0.0.1:7000';
-    $script = $_SERVER['SCRIPT_NAME'] ?? '/worker.php';
-    $selfUrl = "{$scheme}://{$host}{$script}?action=chain";
+    // Build self-URL safely across HTTPS reverse proxies / subdomains
+    $selfUrl = smart_build_self_url('worker.php', 'action=chain');
 
     smart_fire_self_chain($selfUrl);
     add_server_log('SmartSleep', '🚀 เริ่มระบบ Smart Sleep Worker บน Server แล้ว (พักรอ 0 Byte จนกว่าจะถึงเวลาในตาราง)');
@@ -81,7 +91,10 @@ $wState['lastHeartbeat'] = time();
 write_json_file(smart_worker_state_file(), $wState);
 
 // Check if a scheduled HH:mm slot is due right now
-smart_check_and_run_if_due(true);
+smart_check_and_run_if_due(true, 'web_cron');
+if (function_exists('retry_queue_process_due')) {
+    retry_queue_process_due();
+}
 
 // Calculate Smart Sleep duration (sleep up to 20s per HTTP hop so shared hosting never hits 30s timeout)
 $cfg = get_app_config();
@@ -99,9 +112,5 @@ $shouldChain = !file_exists(smart_worker_stop_flag_file());
 @fclose($lockFp);
 
 if ($shouldChain) {
-    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'] ?? '127.0.0.1:7000';
-    $script = $_SERVER['SCRIPT_NAME'] ?? '/worker.php';
-    $selfUrl = "{$scheme}://{$host}{$script}?action=chain";
-    smart_fire_self_chain($selfUrl);
+    smart_fire_self_chain(smart_build_self_url('worker.php', 'action=chain'));
 }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>เปรียบเทียบฐานข้อมูล (water_systems vs water_system2) — อบจ.ลำปาง</title>
+  <title>เปรียบเทียบฐานข้อมูล (water_systems vs lp_pao_smart_data) — LP-PAO Smart Data อบจ.ลำปาง</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -18,7 +18,7 @@
       <div>
         <div class="flex items-center gap-2">
           <span class="px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 text-xs font-bold">DB VERIFIER</span>
-          <h1 class="text-base sm:text-lg font-bold">ระบบเปรียบเทียบฐานข้อมูล: <code class="text-amber-300">water_systems</code> vs <code class="text-emerald-300">water_system2</code></h1>
+          <h1 class="text-base sm:text-lg font-bold">ระบบเปรียบเทียบฐานข้อมูล: <code class="text-amber-300">water_systems</code> vs <code class="text-emerald-300">lp_pao_smart_data</code></h1>
         </div>
         <p class="text-xs text-emerald-200 mt-0.5">ตรวจ Schema, จำนวนแถว, เวลารอบล่าสุด และค่าข้อมูลรายสถานีทั้ง 5 ด้านพร้อมกัน (อ่านอย่างเดียว 100% — ไม่แก้ไขฐานข้อมูลตัวเดิม)</p>
       </div>
@@ -40,7 +40,7 @@
         </div>
         <div>
           <label class="block font-semibold text-slate-600 mb-1">ฐานข้อมูลใหม่ (ตัวพัฒนา)</label>
-          <input type="text" value="water_system2" disabled class="border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono bg-slate-100 text-slate-500 w-44">
+          <input type="text" value="lp_pao_smart_data" disabled class="border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono bg-slate-100 text-slate-500 w-44">
         </div>
         <button onclick="runComparison()" id="btnCompare" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm shadow transition">
           🔍 เปรียบเทียบทั้งหมดทันที
@@ -96,7 +96,7 @@
               <th class="p-2.5">ชื่อตาราง</th>
               <th class="p-2.5">โครงสร้าง Schema</th>
               <th class="p-2.5 text-right">แถวฝั่งเก่า (<code>water_systems</code>)</th>
-              <th class="p-2.5 text-right">แถวฝั่งใหม่ (<code>water_system2</code>)</th>
+              <th class="p-2.5 text-right">แถวฝั่งใหม่ (<code>lp_pao_smart_data</code>)</th>
               <th class="p-2.5">อัปเดตล่าสุดฝั่งเก่า</th>
               <th class="p-2.5">อัปเดตล่าสุดฝั่งใหม่</th>
             </tr>
@@ -278,10 +278,10 @@
 
         if (r.status === 'only_in_ref') {
           stBadge = '<span class="px-2 py-0.5 rounded bg-red-100 text-red-800 font-semibold">⚠️ มีเฉพาะในตัวเก่า</span>';
-          detailHtml = '<span class="text-red-700">ไม่พบใน water_system2</span>';
+          detailHtml = '<span class="text-red-700">ไม่พบใน lp_pao_smart_data</span>';
         } else if (r.status === 'only_in_new') {
           stBadge = '<span class="px-2 py-0.5 rounded bg-sky-100 text-sky-800 font-semibold">🆕 มีเฉพาะในตัวใหม่</span>';
-          detailHtml = '<span class="text-sky-700">รายการใหม่เพิ่มเติมใน water_system2</span>';
+          detailHtml = '<span class="text-sky-700">รายการใหม่เพิ่มเติมใน lp_pao_smart_data</span>';
         } else if (r.status === 'diff') {
           stBadge = r.hasCoreDiff
             ? '<span class="px-2 py-0.5 rounded bg-rose-100 text-rose-800 font-semibold">❌ ค่าหลักไม่ตรง</span>'

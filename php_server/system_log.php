@@ -1,6 +1,6 @@
 <?php
 // =========================================================================
-// Water_System2 — Unified System Log, 48-Slot Heatmap, Auto-Retry Queue,
+// LP-PAO Smart Data — Unified System Log, 48-Slot Heatmap, Auto-Retry Queue,
 // Upstream Data Freshness Monitor (6h/36h), & CSV Audit Exporter
 // =========================================================================
 

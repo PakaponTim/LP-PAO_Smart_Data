@@ -1,6 +1,6 @@
 <?php
 // =========================================================================
-// Water_System2 — 6-Layer Security Hardening E2E Verification Suite
+// LP-PAO Smart Data — 6-Layer Security Hardening E2E Verification Suite
 // Usage: php tests/verify_security_hardening_e2e.php
 // =========================================================================
 
@@ -62,7 +62,7 @@ function http_sec_req(string $url, string $method = 'GET', array $headers = [], 
 }
 
 echo "=================================================================\n";
-echo "Water_System2 6-Layer Security Hardening E2E Test\n";
+echo "LP-PAO Smart Data 6-Layer Security Hardening E2E Test\n";
 echo "=================================================================\n\n";
 
 $base = 'http://127.0.0.1:7000';
@@ -132,7 +132,7 @@ s_assert($rFallback['code'] === 200 && !$fbLeak, 'Approach 2 (Cloud Fallback): /
 // Approach 3: Cron HMAC Verification, Worker Lock & Extension Isolation
 // -------------------------------------------------------------------------
 $testCronSecret = 'ws2_unit_cron_secret_123456';
-$cronUrl = 'https://water.lampangpao.go.th/Water_System2/cron.php';
+$cronUrl = 'https://water.lampangpao.go.th/LP-PAO_Smart_Data/cron.php';
 $hmacHdrs = security_sign_cron_headers($cronUrl, $testCronSecret, time());
 $hdrMap = [];
 foreach ($hmacHdrs as $hLine) {
@@ -140,7 +140,7 @@ foreach ($hmacHdrs as $hLine) {
     $hdrMap['HTTP_' . strtoupper(str_replace('-', '_', $hk))] = $hv;
 }
 $origServer = $_SERVER;
-$_SERVER['REQUEST_URI'] = '/Water_System2/cron.php';
+$_SERVER['REQUEST_URI'] = '/LP-PAO_Smart_Data/cron.php';
 $_SERVER['REMOTE_ADDR'] = $extIp;
 $_SERVER['HTTP_X_CRON_TIMESTAMP'] = $hdrMap['HTTP_X_CRON_TIMESTAMP'] ?? '';
 $_SERVER['HTTP_X_CRON_SIGNATURE'] = $hdrMap['HTTP_X_CRON_SIGNATURE'] ?? '';

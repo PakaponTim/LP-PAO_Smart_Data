@@ -1,11 +1,11 @@
 <?php
-// Builds a clean, lightweight ready-to-upload Server package inside deploy_server/Water_System2/
-// plus Water_System2_Server_Deploy.zip (excludes node_modules, runtime, scratch, .git, secrets).
+// Builds a clean, lightweight ready-to-upload Server package inside deploy_server/LP-PAO_Smart_Data/
+// plus LP-PAO_Smart_Data_Server_Deploy.zip (excludes node_modules, runtime, scratch, .git, secrets).
 
 $root = dirname(__DIR__);
 $deployBase = $root . DIRECTORY_SEPARATOR . 'deploy_server';
-$targetDir = $deployBase . DIRECTORY_SEPARATOR . 'Water_System2';
-$zipPath = $deployBase . DIRECTORY_SEPARATOR . 'Water_System2_Server_Deploy.zip';
+$targetDir = $deployBase . DIRECTORY_SEPARATOR . 'LP-PAO_Smart_Data';
+$zipPath = $deployBase . DIRECTORY_SEPARATOR . 'LP-PAO_Smart_Data_Server_Deploy.zip';
 
 function copy_dir_recursive(string $src, string $dst): int {
     $count = 0;
@@ -61,7 +61,7 @@ foreach ($rootFiles as $f) {
 
 // Create clean starter .env.example inside deploy package (without local passwords)
 file_put_contents($targetDir . DIRECTORY_SEPARATOR . '.env.example',
-    "DB_HOST=localhost\nDB_PORT=3306\nDB_USER=your_mysql_user\nDB_PASS=your_mysql_password\nDB_NAME=water_system2\nWATER_PHP_AUTH_ENFORCE=1\nCRON_SECRET=replace_with_random_hex_secret\nDB_BACKUP_ENCRYPTION_KEY=replace_with_backup_aes_passphrase\nGITHUB_SYNC_REPO=PakaponTim/Water_System2\nGITHUB_SYNC_BRANCH=main\nPRIMARY_DOMAIN=\nBACKUP_DOMAIN=\n"
+    "DB_HOST=localhost\nDB_PORT=3306\nDB_USER=your_mysql_user\nDB_PASS=your_mysql_password\nDB_NAME=lp_pao_smart_data\nWATER_PHP_AUTH_ENFORCE=1\nCRON_SECRET=replace_with_random_hex_secret\nDB_BACKUP_ENCRYPTION_KEY=replace_with_backup_aes_passphrase\nGITHUB_SYNC_REPO=PakaponTim/LP-PAO_Smart_Data\nGITHUB_SYNC_BRANCH=main\nPRIMARY_DOMAIN=\nBACKUP_DOMAIN=\n"
 );
 
 // Build ZIP if ZipArchive is available
@@ -76,7 +76,7 @@ if (class_exists('ZipArchive')) {
         foreach ($it as $file) {
             if ($file->isDir()) continue;
             $full = $file->getPathname();
-            $rel = 'Water_System2/' . str_replace('\\', '/', substr($full, strlen($targetDir) + 1));
+            $rel = 'LP-PAO_Smart_Data/' . str_replace('\\', '/', substr($full, strlen($targetDir) + 1));
             $zip->addFile($full, $rel);
         }
         $zip->close();

@@ -1,10 +1,10 @@
 <?php
 // =========================================================================
-// Water_System2 — Web Self-Looping Smart Sleep Worker (Zero-Admin Servers)
+// LP-PAO Smart Data — Web Self-Looping Smart Sleep Worker (Zero-Admin Servers)
 // Drop this on any standard Apache/Nginx PHP host and trigger once:
-//   http://server/Water_System2/worker.php?action=start
-//   http://server/Water_System2/worker.php?action=status
-//   http://server/Water_System2/worker.php?action=stop
+//   http://server/LP-PAO_Smart_Data/worker.php?action=start
+//   http://server/LP-PAO_Smart_Data/worker.php?action=status
+//   http://server/LP-PAO_Smart_Data/worker.php?action=stop
 //
 // How it works with ZERO OS Cron & ZERO Idle Bandwidth:
 //   - Acquires an exclusive flock() so at most 1 worker runs at any time.

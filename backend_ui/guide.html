@@ -1,18 +1,33 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>คู่มือการใช้งานและทดสอบระบบ — Water_System2 (อบจ.ลำปาง)</title>
+  <title>คู่มือการใช้งานและทดสอบระบบ — LP-PAO Smart Data (อบจ.ลำปาง)</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <style>
-    body { font-family: 'Prompt', sans-serif; scroll-behavior: smooth; }
-    .shot-card img { transition: transform 0.25s ease; }
-    .shot-card:hover img { transform: scale(1.02); }
-    .code-box { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    body {
+      font-family: 'Prompt', sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    .shot-card img {
+      transition: transform 0.25s ease;
+    }
+
+    .shot-card:hover img {
+      transform: scale(1.02);
+    }
+
+    .code-box {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
   </style>
 </head>
+
 <body class="bg-slate-50 text-slate-800 antialiased">
 
   <!-- Top Navbar -->
@@ -21,17 +36,23 @@
       <div class="flex items-center gap-3">
         <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-10 h-10 object-contain bg-white/10 rounded-xl p-1" />
         <div>
-          <h1 class="text-base sm:text-lg font-bold leading-tight">คู่มือการใช้งานและทดสอบระบบ Water_System2</h1>
-          <p class="text-xs text-emerald-200">PHP + Socket.IO + curl_multi + Smart Sleep + แจ้งเตือนวิกฤต (Port 7000 / Drop-in Server)</p>
+          <h1 class="text-base sm:text-lg font-bold leading-tight">คู่มือการใช้งานและทดสอบระบบ LP-PAO Smart Data</h1>
+          <p class="text-xs text-emerald-200">PHP + Socket.IO + curl_multi + Smart Sleep + แจ้งเตือนวิกฤต (Port 7000 /
+            Drop-in Server)</p>
         </div>
       </div>
       <nav class="flex flex-wrap items-center gap-2 text-xs font-medium">
         <a href="#arch" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">📐 สถาปัตยกรรม</a>
-        <a href="#live-test" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold transition">🧪 ทดสอบระบบสด</a>
+        <a href="#live-test"
+          class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold transition">🧪
+          ทดสอบระบบสด</a>
         <a href="#screens" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">🖼️ ภาพหน้าจอ</a>
         <a href="#alerts" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">🔔 เกณฑ์แจ้งเตือน</a>
-        <a href="#deploy" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">🚀 ขึ้น Server จริง</a>
-        <a href="./index.html" class="px-3.5 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white font-semibold transition">← เปิด Dashboard</a>
+        <a href="#deploy" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">🚀 ขึ้น Server
+          จริง</a>
+        <a href="./index.html"
+          class="px-3.5 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white font-semibold transition">← เปิด
+          Dashboard</a>
       </nav>
     </div>
   </header>
@@ -39,20 +60,26 @@
   <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-10">
 
     <!-- Hero Summary -->
-    <section class="bg-gradient-to-br from-emerald-800 via-emerald-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+    <section
+      class="bg-gradient-to-br from-emerald-800 via-emerald-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
         <div class="lg:col-span-2 space-y-3">
-          <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs font-semibold">
-            ✅ แยกขาดจากตัวเก่า (Port 3000) · ฐานข้อมูล water_system2 (10 ตาราง) · Subdomain/Folder 24 ชม. · ไม่ใช้ Chrome Extension
+          <span
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs font-semibold">
+            ✅ แยกขาดจากตัวเก่า (Port 3000) · ฐานข้อมูล lp_pao_smart_data (10 ตาราง) · Subdomain/Folder 24 ชม. · ไม่ใช้
+            Chrome Extension
           </span>
           <h2 class="text-2xl sm:text-3xl font-extrabold leading-snug">
             ระบบบูรณาการข้อมูลภัยพิบัติและเรื่องร้องเรียน อบจ.ลำปาง (เวอร์ชัน 2)
           </h2>
           <p class="text-sm text-slate-200 leading-relaxed">
-            ออกแบบใหม่ให้ทำงานด้วย <strong>PHP 100%</strong> ดึงข้อมูลตรงจาก Server-to-Server API ทั้ง 5 ด้านพร้อมกันด้วย
+            ออกแบบใหม่ให้ทำงานด้วย <strong>PHP 100%</strong> ดึงข้อมูลตรงจาก Server-to-Server API ทั้ง 5
+            ด้านพร้อมกันด้วย
             <code class="bg-black/30 px-1.5 py-0.5 rounded text-amber-300">curl_multi</code> จบภายใน ~3 วินาที
-            ใช้ระบบ <strong>Smart Sleep (กิน Bandwidth 0 Byte ขณะรอเวลา)</strong>, ศูนย์บันทึก <strong>System Log Center v2</strong>
-            (Heatmap 48 ช่อง, คิว Retry อัตโนมัติ, แจ้งเตือนข้อมูลต้นทางค้าง 6 ชม./36 ชม.), ระบบป้องกันความเสี่ยง 24 ชม. (<code>.htaccess</code> 4 ชั้น + Lock + Log Rotation),
+            ใช้ระบบ <strong>Smart Sleep (กิน Bandwidth 0 Byte ขณะรอเวลา)</strong>, ศูนย์บันทึก <strong>System Log Center
+              v2</strong>
+            (Heatmap 48 ช่อง, คิว Retry อัตโนมัติ, แจ้งเตือนข้อมูลต้นทางค้าง 6 ชม./36 ชม.), ระบบป้องกันความเสี่ยง 24 ชม.
+            (<code>.htaccess</code> 4 ชั้น + Lock + Log Rotation),
             พร้อม <strong>GitHub Actions Cloud Collector</strong> ทุก 30 นาที
           </p>
           <div class="flex flex-wrap gap-2 pt-2 text-xs">
@@ -67,11 +94,16 @@
         </div>
         <div class="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-4 space-y-2 text-xs">
           <div class="font-bold text-amber-300 text-sm mb-2">📌 จุดเด่นของระบบใหม่ (v2)</div>
-          <div class="flex items-start gap-2"><span>⚡</span><span>ดึง 5 API พร้อมกันใน <strong>~1.5–3 วินาที</strong> ไม่ต้องเปิด Chrome</span></div>
-          <div class="flex items-start gap-2"><span>📋</span><span><strong>System Log Center v2:</strong> Heatmap 48 ช่อง + Auto-Retry + Export CSV</span></div>
-          <div class="flex items-start gap-2"><span>🛡️</span><span><strong>24/7 Safeguards:</strong> <code>.htaccess</code> กันโฟลเดอร์ลับ + Lock + Rotation 5MB</span></div>
-          <div class="flex items-start gap-2"><span>📧</span><span><strong>Gmail SMTP + LINE:</strong> เตือนเหตุวิกฤต + ข้อมูลต้นทางค้าง 6h/36h</span></div>
-          <div class="flex items-start gap-2"><span>☁️</span><span><strong>GitHub Actions + Drop-in Zip:</strong> อัปโหลดขึ้น Subdomain พร้อมใช้ทันที</span></div>
+          <div class="flex items-start gap-2"><span>⚡</span><span>ดึง 5 API พร้อมกันใน <strong>~1.5–3 วินาที</strong>
+              ไม่ต้องเปิด Chrome</span></div>
+          <div class="flex items-start gap-2"><span>📋</span><span><strong>System Log Center v2:</strong> Heatmap 48
+              ช่อง + Auto-Retry + Export CSV</span></div>
+          <div class="flex items-start gap-2"><span>🛡️</span><span><strong>24/7 Safeguards:</strong>
+              <code>.htaccess</code> กันโฟลเดอร์ลับ + Lock + Rotation 5MB</span></div>
+          <div class="flex items-start gap-2"><span>📧</span><span><strong>Gmail SMTP + LINE:</strong> เตือนเหตุวิกฤต +
+              ข้อมูลต้นทางค้าง 6h/36h</span></div>
+          <div class="flex items-start gap-2"><span>☁️</span><span><strong>GitHub Actions + Drop-in Zip:</strong>
+              อัปโหลดขึ้น Subdomain พร้อมใช้ทันที</span></div>
         </div>
       </div>
     </section>
@@ -81,136 +113,179 @@
       <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
         <div>
           <h2 class="text-xl font-bold text-slate-900">1. ภาพรวมสถาปัตยกรรมการทำงาน (System Architecture)</h2>
-          <p class="text-xs text-slate-500 mt-1">ผังการทำงานเชื่อมโยงระหว่าง API ต้นทาง, Server (Smart Sleep + curl_multi), ฐานข้อมูล water_system2 และระบบแจ้งเตือน</p>
+          <p class="text-xs text-slate-500 mt-1">ผังการทำงานเชื่อมโยงระหว่าง API ต้นทาง, Server (Smart Sleep +
+            curl_multi), ฐานข้อมูล lp_pao_smart_data และระบบแจ้งเตือน</p>
         </div>
       </div>
 
       <div class="overflow-x-auto bg-slate-50 border border-slate-200 rounded-2xl p-4">
         <svg viewBox="0 0 1120 380" class="w-full min-w-[880px] h-auto" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+              orient="auto-start-reverse">
               <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669" />
             </marker>
-            <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+              orient="auto-start-reverse">
               <path d="M 0 1 L 10 5 L 0 9 z" fill="#0284c7" />
             </marker>
-            <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+              orient="auto-start-reverse">
               <path d="M 0 1 L 10 5 L 0 9 z" fill="#dc2626" />
             </marker>
           </defs>
 
           <!-- Background Zones -->
           <rect x="10" y="15" width="240" height="350" rx="16" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2" />
-          <text x="130" y="42" text-anchor="middle" font-size="14" font-weight="700" fill="#1e40af">🌐 1. API ต้นทาง (สาธารณะ)</text>
+          <text x="130" y="42" text-anchor="middle" font-size="14" font-weight="700" fill="#1e40af">🌐 1. API ต้นทาง
+            (สาธารณะ)</text>
 
           <rect x="290" y="15" width="500" height="350" rx="16" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="2" />
-          <text x="540" y="42" text-anchor="middle" font-size="14" font-weight="700" fill="#065f46">🖥️ 2. PHP Server (Drop-in Folder / Port 7000)</text>
+          <text x="540" y="42" text-anchor="middle" font-size="14" font-weight="700" fill="#065f46">🖥️ 2. PHP Server
+            (Drop-in Folder / Port 7000)</text>
 
           <rect x="830" y="15" width="280" height="350" rx="16" fill="#fff1f2" stroke="#fecdd3" stroke-width="2" />
-          <text x="970" y="42" text-anchor="middle" font-size="14" font-weight="700" fill="#9f1239">🔔 3. แจ้งเตือน &amp; ผู้ใช้งาน</text>
+          <text x="970" y="42" text-anchor="middle" font-size="14" font-weight="700" fill="#9f1239">🔔 3. แจ้งเตือน
+            &amp; ผู้ใช้งาน</text>
 
           <!-- API Boxes -->
           <rect x="28" y="65" width="204" height="46" rx="10" fill="#ffffff" stroke="#93c5fd" />
-          <text x="130" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">🌊 ThaiWater30: ระดับน้ำ</text>
-          <text x="130" y="101" text-anchor="middle" font-size="10" fill="#64748b">provinces/waterlevel?province_code=52</text>
+          <text x="130" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">🌊 ThaiWater30:
+            ระดับน้ำ</text>
+          <text x="130" y="101" text-anchor="middle" font-size="10"
+            fill="#64748b">provinces/waterlevel?province_code=52</text>
 
           <rect x="28" y="123" width="204" height="46" rx="10" fill="#ffffff" stroke="#93c5fd" />
-          <text x="130" y="143" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">🌧️ ThaiWater30: ปริมาณฝน</text>
+          <text x="130" y="143" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">🌧️ ThaiWater30:
+            ปริมาณฝน</text>
           <text x="130" y="159" text-anchor="middle" font-size="10" fill="#64748b">provinces/rain24 (194+ สถานี)</text>
 
           <rect x="28" y="181" width="204" height="46" rx="10" fill="#ffffff" stroke="#93c5fd" />
-          <text x="130" y="201" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">🏜️ ThaiWater30: อ่างเก็บน้ำ</text>
-          <text x="130" y="217" text-anchor="middle" font-size="10" fill="#64748b">provinces/dam (36 อ่าง จ.ลำปาง)</text>
+          <text x="130" y="201" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">🏜️ ThaiWater30:
+            อ่างเก็บน้ำ</text>
+          <text x="130" y="217" text-anchor="middle" font-size="10" fill="#64748b">provinces/dam (36 อ่าง
+            จ.ลำปาง)</text>
 
           <rect x="28" y="239" width="204" height="46" rx="10" fill="#ffffff" stroke="#93c5fd" />
-          <text x="130" y="259" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">💨 ThaiWater30: ฝุ่น PM 2.5</text>
+          <text x="130" y="259" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">💨 ThaiWater30:
+            ฝุ่น PM 2.5</text>
           <text x="130" y="275" text-anchor="middle" font-size="10" fill="#64748b">thaiwater/weather (32+ สถานี)</text>
 
           <rect x="28" y="297" width="204" height="46" rx="10" fill="#ffffff" stroke="#93c5fd" />
-          <text x="130" y="317" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">📢 Traffy Fondue Public API</text>
+          <text x="130" y="317" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">📢 Traffy Fondue
+            Public API</text>
           <text x="130" y="333" text-anchor="middle" font-size="10" fill="#64748b">geojson/v1?text=ลำปาง</text>
 
           <!-- Server Boxes -->
           <rect x="315" y="68" width="210" height="82" rx="12" fill="#ffffff" stroke="#34d399" stroke-width="2" />
-          <text x="420" y="92" text-anchor="middle" font-size="13" font-weight="700" fill="#065f46">😴 Smart Sleep Scheduler</text>
+          <text x="420" y="92" text-anchor="middle" font-size="13" font-weight="700" fill="#065f46">😴 Smart Sleep
+            Scheduler</text>
           <text x="420" y="110" text-anchor="middle" font-size="11" fill="#475569">worker.php / scheduler.php</text>
-          <text x="420" y="128" text-anchor="middle" font-size="10" fill="#059669">พักรอ 0 Byte จนถึงเวลา config.json</text>
+          <text x="420" y="128" text-anchor="middle" font-size="10" fill="#059669">พักรอ 0 Byte จนถึงเวลา
+            config.json</text>
 
           <rect x="315" y="172" width="210" height="86" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2" />
-          <text x="420" y="198" text-anchor="middle" font-size="13" font-weight="700" fill="#92400e">⚡ curl_multi Parallel</text>
+          <text x="420" y="198" text-anchor="middle" font-size="13" font-weight="700" fill="#92400e">⚡ curl_multi
+            Parallel</text>
           <text x="420" y="216" text-anchor="middle" font-size="11" fill="#78350f">collect_all_parallel_direct()</text>
-          <text x="420" y="234" text-anchor="middle" font-size="10" fill="#b45309">ดึงครบ 5 API พร้อมกันใน ~3 วินาที</text>
+          <text x="420" y="234" text-anchor="middle" font-size="10" fill="#b45309">ดึงครบ 5 API พร้อมกันใน ~3
+            วินาที</text>
 
           <rect x="315" y="280" width="210" height="64" rx="12" fill="#e0f2fe" stroke="#38bdf8" stroke-width="2" />
-          <text x="420" y="305" text-anchor="middle" font-size="13" font-weight="700" fill="#0369a1">☁️ GitHub Actions Backup</text>
+          <text x="420" y="305" text-anchor="middle" font-size="13" font-weight="700" fill="#0369a1">☁️ GitHub Actions
+            Backup</text>
           <text x="420" y="323" text-anchor="middle" font-size="10" fill="#0c4a6e">รันทุก 30 นาที + ซิงค์ลง MySQL</text>
 
           <rect x="560" y="88" width="205" height="106" rx="12" fill="#ffffff" stroke="#0284c7" stroke-width="2" />
-          <text x="662" y="116" text-anchor="middle" font-size="14" font-weight="700" fill="#0c4a6e">🗄️ MySQL Database</text>
-          <text x="662" y="136" text-anchor="middle" font-size="12" font-weight="700" fill="#0284c7">water_system2</text>
+          <text x="662" y="116" text-anchor="middle" font-size="14" font-weight="700" fill="#0c4a6e">🗄️ MySQL
+            Database</text>
+          <text x="662" y="136" text-anchor="middle" font-size="12" font-weight="700"
+            fill="#0284c7">lp_pao_smart_data</text>
           <text x="662" y="156" text-anchor="middle" font-size="10" fill="#64748b">10 ตาราง (รวม tbl_system_logs)</text>
           <text x="662" y="174" text-anchor="middle" font-size="10" fill="#64748b">บันทึก Batch ป้องกันข้อมูลซ้ำ</text>
 
           <rect x="560" y="220" width="205" height="114" rx="12" fill="#ffffff" stroke="#10b981" stroke-width="2" />
-          <text x="662" y="246" text-anchor="middle" font-size="13" font-weight="700" fill="#065f46">📡 Socket.IO + REST API</text>
+          <text x="662" y="246" text-anchor="middle" font-size="13" font-weight="700" fill="#065f46">📡 Socket.IO + REST
+            API</text>
           <text x="662" y="266" text-anchor="middle" font-size="10" fill="#475569">endpoint.php?r=/api/*</text>
-          <text x="662" y="284" text-anchor="middle" font-size="10" fill="#475569">ส่ง server_log เรียลไทม์เข้า UI</text>
+          <text x="662" y="284" text-anchor="middle" font-size="10" fill="#475569">ส่ง server_log เรียลไทม์เข้า
+            UI</text>
           <text x="662" y="302" text-anchor="middle" font-size="10" fill="#059669">Risk Index + GIS Map + Reports</text>
 
           <!-- Output Boxes -->
           <rect x="852" y="70" width="236" height="82" rx="12" fill="#ffffff" stroke="#f43f5e" stroke-width="2" />
-          <text x="970" y="95" text-anchor="middle" font-size="13" font-weight="700" fill="#9f1239">📧 Gmail SMTP (STARTTLS)</text>
+          <text x="970" y="95" text-anchor="middle" font-size="13" font-weight="700" fill="#9f1239">📧 Gmail SMTP
+            (STARTTLS)</text>
           <text x="970" y="114" text-anchor="middle" font-size="10" fill="#475569">สรุปรายงานวิกฤต Digest HTML</text>
-          <text x="970" y="131" text-anchor="middle" font-size="10" fill="#dc2626">พร้อมลงประวัติ tbl_alert_notifications</text>
+          <text x="970" y="131" text-anchor="middle" font-size="10" fill="#dc2626">พร้อมลงประวัติ
+            tbl_alert_notifications</text>
 
           <rect x="852" y="170" width="236" height="76" rx="12" fill="#f0fdf4" stroke="#22c55e" stroke-width="2" />
-          <text x="970" y="196" text-anchor="middle" font-size="13" font-weight="700" fill="#166534">💬 LINE Messaging API</text>
-          <text x="970" y="215" text-anchor="middle" font-size="10" fill="#475569">Push แจ้งเหตุเข้ากลุ่ม LINE ผู้บริหาร</text>
-          <text x="970" y="231" text-anchor="middle" font-size="10" fill="#15803d">Real-time ทันทีหลังดึงข้อมูลเสร็จ</text>
+          <text x="970" y="196" text-anchor="middle" font-size="13" font-weight="700" fill="#166534">💬 LINE Messaging
+            API</text>
+          <text x="970" y="215" text-anchor="middle" font-size="10" fill="#475569">Push แจ้งเหตุเข้ากลุ่ม LINE
+            ผู้บริหาร</text>
+          <text x="970" y="231" text-anchor="middle" font-size="10" fill="#15803d">Real-time
+            ทันทีหลังดึงข้อมูลเสร็จ</text>
 
           <rect x="852" y="264" width="236" height="80" rx="12" fill="#ffffff" stroke="#64748b" stroke-width="2" />
-          <text x="970" y="290" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">💻 เบราว์เซอร์ / มือถือ</text>
+          <text x="970" y="290" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">💻 เบราว์เซอร์ /
+            มือถือ</text>
           <text x="970" y="309" text-anchor="middle" font-size="10" fill="#475569">Dashboard, GIS, Control Panel</text>
-          <text x="970" y="325" text-anchor="middle" font-size="10" fill="#475569">เข้าดูได้ 24 ชม. (ไม่ต้องเปิดคอม)</text>
+          <text x="970" y="325" text-anchor="middle" font-size="10" fill="#475569">เข้าดูได้ 24 ชม.
+            (ไม่ต้องเปิดคอม)</text>
 
           <!-- Arrows -->
           <line x1="232" y1="205" x2="310" y2="212" stroke="#0284c7" stroke-width="2.5" marker-end="url(#arrowBlue)" />
           <line x1="420" y1="150" x2="420" y2="167" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow)" />
           <line x1="525" y1="200" x2="555" y2="155" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow)" />
-          <line x1="525" y1="312" x2="555" y2="180" stroke="#0284c7" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#arrowBlue)" />
+          <line x1="525" y1="312" x2="555" y2="180" stroke="#0284c7" stroke-width="2" stroke-dasharray="4 3"
+            marker-end="url(#arrowBlue)" />
           <line x1="662" y1="194" x2="662" y2="215" stroke="#059669" stroke-width="2" marker-end="url(#arrow)" />
           <line x1="765" y1="128" x2="846" y2="112" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrowRed)" />
           <line x1="765" y1="155" x2="846" y2="205" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrowRed)" />
           <line x1="765" y1="285" x2="846" y2="300" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow)" />
         </svg>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5 text-xs">
-        <div class="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 space-y-1.5">
-          <div class="font-bold text-emerald-900 text-sm">📋 System Log Center v2</div>
-          <p class="text-slate-600">บันทึกผลสำเร็จ/ล้มเหลวของทุกด้าน + เวลารันจริงลง <code>tbl_system_logs</code>, แสดง <strong>Heatmap 48 ช่องรายวัน</strong>, คิว Retry อัตโนมัติแบบไม่บล็อกงานหลัก และ Export CSV Audit Log</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5 text-xs">
+          <div class="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 space-y-1.5">
+            <div class="font-bold text-emerald-900 text-sm">📋 System Log Center v2</div>
+            <p class="text-slate-600">บันทึกผลสำเร็จ/ล้มเหลวของทุกด้าน + เวลารันจริงลง <code>tbl_system_logs</code>,
+              แสดง <strong>Heatmap 48 ช่องรายวัน</strong>, คิว Retry อัตโนมัติแบบไม่บล็อกงานหลัก และ Export CSV Audit
+              Log</p>
+          </div>
+          <div class="rounded-2xl border border-sky-200 bg-sky-50/70 p-4 space-y-1.5">
+            <div class="font-bold text-sky-900 text-sm">🛡️ Subdomain 24/7 Safeguards</div>
+            <p class="text-slate-600">มี <code>.htaccess</code> ป้องกันไฟล์ลับ 4 จุด (Root, <code>runtime/</code>,
+              <code>php_server/</code>, <code>cloud_snapshots/</code>), Atomic File Lock, Log Rotation 5 MB +
+              Housekeeping 30 วัน และ <code>/api/health</code> สำหรับ Uptime Monitor
+            </p>
+          </div>
+          <div class="rounded-2xl border border-purple-200 bg-purple-50/70 p-4 space-y-1.5">
+            <div class="font-bold text-purple-900 text-sm">💾 Disaster Recovery (4 ชั้น)</div>
+            <p class="text-slate-600">มี <strong>Local DB Spool</strong> พักข้อมูลเมื่อ DB ดับ + <strong>Auto Backup
+                (.sql.gz)</strong> ทุกวัน + <strong>GitHub Cloud Failover Alert</strong> + <a
+                href="./emergency_cloud.html" class="underline font-bold text-amber-800">โหมดดูฉุกเฉิน
+                (emergency_cloud.html)</a></p>
+          </div>
         </div>
-        <div class="rounded-2xl border border-sky-200 bg-sky-50/70 p-4 space-y-1.5">
-          <div class="font-bold text-sky-900 text-sm">🛡️ Subdomain 24/7 Safeguards</div>
-          <p class="text-slate-600">มี <code>.htaccess</code> ป้องกันไฟล์ลับ 4 จุด (Root, <code>runtime/</code>, <code>php_server/</code>, <code>cloud_snapshots/</code>), Atomic File Lock, Log Rotation 5 MB + Housekeeping 30 วัน และ <code>/api/health</code> สำหรับ Uptime Monitor</p>
-        </div>
-        <div class="rounded-2xl border border-purple-200 bg-purple-50/70 p-4 space-y-1.5">
-          <div class="font-bold text-purple-900 text-sm">💾 Disaster Recovery (4 ชั้น)</div>
-          <p class="text-slate-600">มี <strong>Local DB Spool</strong> พักข้อมูลเมื่อ DB ดับ + <strong>Auto Backup (.sql.gz)</strong> ทุกวัน + <strong>GitHub Cloud Failover Alert</strong> + <a href="./emergency_cloud.html" class="underline font-bold text-amber-800">โหมดดูฉุกเฉิน (emergency_cloud.html)</a></p>
-        </div>
-      </div>
     </section>
 
     <!-- Section 2: Interactive Live Testing Checklist -->
     <section id="live-test" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200">
       <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-          <h2 class="text-xl font-bold text-slate-900">2. ชุดทดสอบระบบแบบโต้ตอบได้ทันที (Interactive Test Checklist)</h2>
-          <p class="text-xs text-slate-500 mt-1">กดปุ่มทดสอบแต่ละขั้นตอนจากหน้าคู่มือนี้ได้เลย ระบบจะยิงทดสอบจริงกับเซิร์ฟเวอร์ที่เปิดอยู่และแสดงผลลัพธ์ด้านขวา</p>
+          <h2 class="text-xl font-bold text-slate-900">2. ชุดทดสอบระบบแบบโต้ตอบได้ทันที (Interactive Test Checklist)
+          </h2>
+          <p class="text-xs text-slate-500 mt-1">กดปุ่มทดสอบแต่ละขั้นตอนจากหน้าคู่มือนี้ได้เลย
+            ระบบจะยิงทดสอบจริงกับเซิร์ฟเวอร์ที่เปิดอยู่และแสดงผลลัพธ์ด้านขวา</p>
         </div>
         <div class="flex flex-wrap gap-2">
-          <button onclick="runAllSmokeTests()" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold shadow transition">
+          <button onclick="runAllSmokeTests()"
+            class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold shadow transition">
             ▶ เช็กความพร้อมระบบทั้งหมด (ไม่กระทบข้อมูล)
           </button>
-          <button onclick="runTestParallel()" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs sm:text-sm font-bold shadow transition">
+          <button onclick="runTestParallel()"
+            class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs sm:text-sm font-bold shadow transition">
             ⚡ ทดสอบดึงจริง 5 API พร้อมกัน
           </button>
         </div>
@@ -219,80 +294,130 @@
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Steps Left -->
         <div class="lg:col-span-7 space-y-3">
-          <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
+          <div
+            class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 1: ตรวจสอบฐานข้อมูลและสถานะเซิร์ฟเวอร์ (<code class="text-xs text-emerald-700">system-health</code>)</div>
-              <div class="text-xs text-slate-500">ตรวจสอบว่าเชื่อมต่อ MySQL ชื่อ <strong>water_system2</strong> สำเร็จ และพร้อมใช้ <code>curl_multi</code></div>
+              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 1: ตรวจสอบฐานข้อมูลและสถานะเซิร์ฟเวอร์ (<code
+                  class="text-xs text-emerald-700">system-health</code>)</div>
+              <div class="text-xs text-slate-500">ตรวจสอบว่าเชื่อมต่อ MySQL ชื่อ <strong>lp_pao_smart_data</strong> สำเร็จ
+                และพร้อมใช้ <code>curl_multi</code></div>
             </div>
-            <button onclick="runTestHealth()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold">🔍 ทดสอบ Health</button>
+            <button onclick="runTestHealth()"
+              class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold">🔍
+              ทดสอบ Health</button>
           </div>
 
-          <div class="p-4 rounded-2xl border border-sky-200 bg-sky-50/60 flex flex-wrap items-center justify-between gap-3">
+          <div
+            class="p-4 rounded-2xl border border-sky-200 bg-sky-50/60 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div class="font-bold text-sm text-sky-950">ขั้นตอนที่ 2: ตรวจความพร้อม Subdomain &amp; Security 24 ชม. (<code class="text-xs text-sky-700">/api/health</code>)</div>
-              <div class="text-xs text-sky-800">เช็ก <code>.htaccess</code>, พื้นที่ดิสก์, อายุข้อมูลล่าสุด, Worker Alive และคิว Retry</div>
+              <div class="font-bold text-sm text-sky-950">ขั้นตอนที่ 2: ตรวจความพร้อม Subdomain &amp; Security 24 ชม.
+                (<code class="text-xs text-sky-700">/api/health</code>)</div>
+              <div class="text-xs text-sky-800">เช็ก <code>.htaccess</code>, พื้นที่ดิสก์, อายุข้อมูลล่าสุด, Worker
+                Alive และคิว Retry</div>
             </div>
-            <button onclick="runTestHealth247()" class="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold">🛡️ เช็ก /api/health</button>
+            <button onclick="runTestHealth247()"
+              class="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold">🛡️ เช็ก
+              /api/health</button>
           </div>
 
-          <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
+          <div
+            class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 3: ตรวจสอบนาฬิกา Smart Sleep (<code class="text-xs text-emerald-700">/api/worker/status</code>)</div>
+              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 3: ตรวจสอบนาฬิกา Smart Sleep (<code
+                  class="text-xs text-emerald-700">/api/worker/status</code>)</div>
               <div class="text-xs text-slate-500">เช็กเวลารอบถัดไป และยืนยันว่าระหว่างรอใช้ Bandwidth = 0 Byte</div>
             </div>
-            <button onclick="runTestWorker()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold">⏰ เช็ก Smart Sleep</button>
+            <button onclick="runTestWorker()"
+              class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-xs font-semibold">⏰
+              เช็ก Smart Sleep</button>
           </div>
 
-          <div class="p-4 rounded-2xl border border-indigo-200 bg-indigo-50/60 flex flex-wrap items-center justify-between gap-3">
+          <div
+            class="p-4 rounded-2xl border border-indigo-200 bg-indigo-50/60 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div class="font-bold text-sm text-indigo-950">ขั้นตอนที่ 4: ตรวจ System Log Center v2 &amp; ข้อมูลต้นทางค้าง (<code class="text-xs text-indigo-700">/api/system-logs</code>)</div>
-              <div class="text-xs text-indigo-800">ดูสถิติ Heatmap 48 ช่องวันนี้ คิว Retry และสถานะ Freshness (6 ชม./36 ชม.)</div>
+              <div class="font-bold text-sm text-indigo-950">ขั้นตอนที่ 4: ตรวจ System Log Center v2 &amp;
+                ข้อมูลต้นทางค้าง (<code class="text-xs text-indigo-700">/api/system-logs</code>)</div>
+              <div class="text-xs text-indigo-800">ดูสถิติ Heatmap 48 ช่องวันนี้ คิว Retry และสถานะ Freshness (6 ชม./36
+                ชม.)</div>
             </div>
             <div class="flex gap-2">
-              <button onclick="runTestSystemLogsV2()" class="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold">📋 เช็ก Log v2</button>
-              <a href="./endpoint.php?r=/api/system-logs/export" target="_blank" class="px-3 py-2 rounded-xl bg-white border border-indigo-300 hover:bg-indigo-100 text-indigo-800 text-xs font-semibold">📥 Export CSV</a>
+              <button onclick="runTestSystemLogsV2()"
+                class="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold">📋 เช็ก
+                Log v2</button>
+              <a href="./endpoint.php?r=/api/system-logs/export" target="_blank"
+                class="px-3 py-2 rounded-xl bg-white border border-indigo-300 hover:bg-indigo-100 text-indigo-800 text-xs font-semibold">📥
+                Export CSV</a>
             </div>
           </div>
 
-          <div class="p-4 rounded-2xl border border-teal-200 bg-teal-50/60 flex flex-wrap items-center justify-between gap-3">
+          <div
+            class="p-4 rounded-2xl border border-teal-200 bg-teal-50/60 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div class="font-bold text-sm text-teal-950">ขั้นตอนที่ 5: ตรวจ Traffy Session &amp; ระบบ Cookie (<code class="text-xs text-teal-700">/api/traffy/session-status</code>)</div>
-              <div class="text-xs text-teal-800">ตรวจสถานะ Traffy Direct API, Token Expiry (&lt;48 ชม.) และ Sliding Session ของระบบ</div>
+              <div class="font-bold text-sm text-teal-950">ขั้นตอนที่ 5: ตรวจ Traffy Session &amp; ระบบ Cookie (<code
+                  class="text-xs text-teal-700">/api/traffy/session-status</code>)</div>
+              <div class="text-xs text-teal-800">ตรวจสถานะ Traffy Direct API, Token Expiry (&lt;48 ชม.) และ Sliding
+                Session ของระบบ</div>
             </div>
             <div class="flex gap-2">
-              <button onclick="runTestTraffySession(false)" class="px-3 py-2 rounded-xl bg-white border border-teal-300 hover:bg-teal-100 text-teal-900 text-xs font-semibold">🔐 เช็กสถานะ</button>
-              <button onclick="runTestTraffySession(true)" class="px-3 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold">🧪 ทดสอบต่อ Traffy จริง</button>
+              <button onclick="runTestTraffySession(false)"
+                class="px-3 py-2 rounded-xl bg-white border border-teal-300 hover:bg-teal-100 text-teal-900 text-xs font-semibold">🔐
+                เช็กสถานะ</button>
+              <button onclick="runTestTraffySession(true)"
+                class="px-3 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold">🧪 ทดสอบต่อ
+                Traffy จริง</button>
             </div>
           </div>
 
-          <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
+          <div
+            class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 6: ทดสอบดึง 5 API พร้อมกัน (<code class="text-xs text-amber-700">curl_multi</code>)</div>
-              <div class="text-xs text-slate-500">ยิงดึงน้ำฝน + ระดับน้ำ + อ่างเก็บน้ำ + PM 2.5 + Traffy พร้อมกัน (~3 วินาที, แยก Timeout Traffy)</div>
+              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 6: ทดสอบดึง 5 API พร้อมกัน (<code
+                  class="text-xs text-amber-700">curl_multi</code>)</div>
+              <div class="text-xs text-slate-500">ยิงดึงน้ำฝน + ระดับน้ำ + อ่างเก็บน้ำ + PM 2.5 + Traffy พร้อมกัน (~3
+                วินาที, แยก Timeout Traffy)</div>
             </div>
-            <button onclick="runTestParallel()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold">⚡ ทดสอบ curl_multi</button>
+            <button onclick="runTestParallel()"
+              class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold">⚡ ทดสอบ
+              curl_multi</button>
           </div>
 
-          <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
+          <div
+            class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 7: ทดสอบแจ้งเตือน Gmail SMTP &amp; เกณฑ์วิกฤต + Socket Log</div>
-              <div class="text-xs text-slate-500">ตรวจเกณฑ์ล่าสุดและบันทึกลง <code>tbl_alert_notifications</code> / ส่ง Test Email / ยิง Log</div>
+              <div class="font-bold text-sm text-slate-900">ขั้นตอนที่ 7: ทดสอบแจ้งเตือน Gmail SMTP &amp; เกณฑ์วิกฤต +
+                Socket Log</div>
+              <div class="text-xs text-slate-500">ตรวจเกณฑ์ล่าสุดและบันทึกลง <code>tbl_alert_notifications</code> / ส่ง
+                Test Email / ยิง Log</div>
             </div>
             <div class="flex flex-wrap gap-2">
-              <button onclick="runTestCheckNotify()" class="px-3 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold">🔔 ตรวจเกณฑ์ทันที</button>
-              <button onclick="runTestEmail()" class="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold">📧 ส่ง Test Email</button>
-              <button onclick="runTestSocketLog()" class="px-3 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold">📡 ยิง Log</button>
+              <button onclick="runTestCheckNotify()"
+                class="px-3 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold">🔔
+                ตรวจเกณฑ์ทันที</button>
+              <button onclick="runTestEmail()"
+                class="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold">📧 ส่ง Test
+                Email</button>
+              <button onclick="runTestSocketLog()"
+                class="px-3 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold">📡 ยิง
+                Log</button>
             </div>
           </div>
 
-          <div class="p-4 rounded-2xl border border-amber-200 bg-amber-50/60 flex flex-wrap items-center justify-between gap-3">
+          <div
+            class="p-4 rounded-2xl border border-amber-200 bg-amber-50/60 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div class="font-bold text-sm text-amber-950">ขั้นตอนที่ 8: ตรวจระบบสำรองข้อมูล (.sql.gz), Local Spool &amp; Cloud Fallback</div>
-              <div class="text-xs text-amber-800">ตรวจคิว <code>db_spool</code>, ไฟล์ Backup 10 ตาราง และเปิดดู <code>emergency_cloud.html</code></div>
+              <div class="font-bold text-sm text-amber-950">ขั้นตอนที่ 8: ตรวจระบบสำรองข้อมูล (.sql.gz), Local Spool
+                &amp; Cloud Fallback</div>
+              <div class="text-xs text-amber-800">ตรวจคิว <code>db_spool</code>, ไฟล์ Backup 10 ตาราง และเปิดดู
+                <code>emergency_cloud.html</code>
+              </div>
             </div>
             <div class="flex flex-wrap gap-2">
-              <button onclick="runTestBackupStatus()" class="px-3 py-2 rounded-xl bg-white border border-amber-300 hover:bg-amber-100 text-amber-900 text-xs font-semibold">💾 เช็ก Backup/Spool</button>
-              <a href="./emergency_cloud.html" target="_blank" class="px-3 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold">☁️ เปิด Cloud Viewer</a>
+              <button onclick="runTestBackupStatus()"
+                class="px-3 py-2 rounded-xl bg-white border border-amber-300 hover:bg-amber-100 text-amber-900 text-xs font-semibold">💾
+                เช็ก Backup/Spool</button>
+              <a href="./emergency_cloud.html" target="_blank"
+                class="px-3 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold">☁️ เปิด
+                Cloud Viewer</a>
             </div>
           </div>
         </div>
@@ -303,7 +428,8 @@
             <span class="text-xs font-bold text-white">🖥️ ผลการทดสอบ (Live Output)</span>
             <button onclick="clearTestOutput()" class="text-[11px] text-slate-400 hover:text-white">ล้างหน้าจอ</button>
           </div>
-          <pre id="testOutput" class="code-box text-xs leading-relaxed overflow-y-auto flex-1 max-h-[540px] whitespace-pre-wrap">พร้อมทดสอบ... กดปุ่มด้านซ้ายเพื่อเริ่มตรวจสอบระบบได้เลยครับ</pre>
+          <pre id="testOutput"
+            class="code-box text-xs leading-relaxed overflow-y-auto flex-1 max-h-[540px] whitespace-pre-wrap">พร้อมทดสอบ... กดปุ่มด้านซ้ายเพื่อเริ่มตรวจสอบระบบได้เลยครับ</pre>
         </div>
       </div>
     </section>
@@ -312,69 +438,85 @@
     <section id="screens" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200">
       <div class="mb-6">
         <h2 class="text-xl font-bold text-slate-900">3. ภาพประกอบส่วนประกอบหลักของระบบ (Visual Walkthrough)</h2>
-        <p class="text-xs text-slate-500 mt-1">ภาพหน้าจอจริงของหน้า Dashboard, แผนที่วิเคราะห์ความเสี่ยง, ตัวดึงข้อมูล และระบบตั้งเวลา</p>
+        <p class="text-xs text-slate-500 mt-1">ภาพหน้าจอจริงของหน้า Dashboard, แผนที่วิเคราะห์ความเสี่ยง, ตัวดึงข้อมูล
+          และระบบตั้งเวลา</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div class="shot-card rounded-2xl border border-slate-200 overflow-hidden bg-slate-50">
           <div class="overflow-hidden bg-white h-48 border-b border-slate-200">
-            <img src="./report_images/01_dashboard_main.png" alt="Dashboard หลัก" class="w-full h-full object-cover object-top" />
+            <img src="./report_images/01_dashboard_main.png" alt="Dashboard หลัก"
+              class="w-full h-full object-cover object-top" />
           </div>
           <div class="p-4">
             <div class="font-bold text-sm text-slate-900">1) หน้า Dashboard ภาพรวมหลัก</div>
-            <p class="text-xs text-slate-500 mt-1">สรุปดัชนีความเสี่ยงทั้ง 13 อำเภอ จ.ลำปาง, แผนที่ GIS, สถานะระดับน้ำ, อ่างเก็บน้ำ, PM 2.5 และเรื่องร้องเรียน</p>
-            <a href="./index.html" class="inline-block mt-2 text-xs font-semibold text-emerald-700 hover:underline">เปิดหน้า Dashboard →</a>
+            <p class="text-xs text-slate-500 mt-1">สรุปดัชนีความเสี่ยงทั้ง 13 อำเภอ จ.ลำปาง, แผนที่ GIS, สถานะระดับน้ำ,
+              อ่างเก็บน้ำ, PM 2.5 และเรื่องร้องเรียน</p>
+            <a href="./index.html"
+              class="inline-block mt-2 text-xs font-semibold text-emerald-700 hover:underline">เปิดหน้า Dashboard →</a>
           </div>
         </div>
 
         <div class="shot-card rounded-2xl border border-slate-200 overflow-hidden bg-slate-50">
           <div class="overflow-hidden bg-white h-48 border-b border-slate-200">
-            <img src="./report_images/03_analysis_water.png" alt="วิเคราะห์ระดับน้ำและฝน" class="w-full h-full object-cover object-top" />
+            <img src="./report_images/03_analysis_water.png" alt="วิเคราะห์ระดับน้ำและฝน"
+              class="w-full h-full object-cover object-top" />
           </div>
           <div class="p-4">
             <div class="font-bold text-sm text-slate-900">2) วิเคราะห์ระดับน้ำและปริมาณฝน</div>
-            <p class="text-xs text-slate-500 mt-1">เปรียบเทียบระดับน้ำปัจจุบันกับระดับตลิ่งซ้าย แนวโน้มขึ้น-ลง และกราฟย้อนหลังรายสถานี</p>
+            <p class="text-xs text-slate-500 mt-1">เปรียบเทียบระดับน้ำปัจจุบันกับระดับตลิ่งซ้าย แนวโน้มขึ้น-ลง
+              และกราฟย้อนหลังรายสถานี</p>
           </div>
         </div>
 
         <div class="shot-card rounded-2xl border border-slate-200 overflow-hidden bg-slate-50">
           <div class="overflow-hidden bg-white h-48 border-b border-slate-200">
-            <img src="./report_images/04_analysis_drought.png" alt="วิเคราะห์ภัยแล้ง" class="w-full h-full object-cover object-top" />
+            <img src="./report_images/04_analysis_drought.png" alt="วิเคราะห์ภัยแล้ง"
+              class="w-full h-full object-cover object-top" />
           </div>
           <div class="p-4">
             <div class="font-bold text-sm text-slate-900">3) สถานการณ์อ่างเก็บน้ำ / ภัยแล้ง</div>
-            <p class="text-xs text-slate-500 mt-1">ติดตามปริมาณน้ำกักเก็บของอ่างขนาดใหญ่ (กิ่วลม, กิ่วคอหมา, แม่มอก) ขนาดกลาง และขนาดเล็กครบ 36 แห่ง</p>
+            <p class="text-xs text-slate-500 mt-1">ติดตามปริมาณน้ำกักเก็บของอ่างขนาดใหญ่ (กิ่วลม, กิ่วคอหมา, แม่มอก)
+              ขนาดกลาง และขนาดเล็กครบ 36 แห่ง</p>
           </div>
         </div>
 
         <div class="shot-card rounded-2xl border border-slate-200 overflow-hidden bg-slate-50">
           <div class="overflow-hidden bg-white h-48 border-b border-slate-200">
-            <img src="./report_images/05_analysis_pm25.png" alt="วิเคราะห์ฝุ่น PM 2.5" class="w-full h-full object-cover object-top" />
+            <img src="./report_images/05_analysis_pm25.png" alt="วิเคราะห์ฝุ่น PM 2.5"
+              class="w-full h-full object-cover object-top" />
           </div>
           <div class="p-4">
             <div class="font-bold text-sm text-slate-900">4) คุณภาพอากาศฝุ่น PM 2.5</div>
-            <p class="text-xs text-slate-500 mt-1">ดึงค่าฝุ่น PM 2.5 และค่าเฉลี่ย 24 ชม. ของสถานีในจังหวัดลำปางครบทุกอำเภอ</p>
+            <p class="text-xs text-slate-500 mt-1">ดึงค่าฝุ่น PM 2.5 และค่าเฉลี่ย 24 ชม.
+              ของสถานีในจังหวัดลำปางครบทุกอำเภอ</p>
           </div>
         </div>
 
         <div class="shot-card rounded-2xl border border-slate-200 overflow-hidden bg-slate-50">
           <div class="overflow-hidden bg-white h-48 border-b border-slate-200">
-            <img src="./report_images/06_analysis_complaints.png" alt="เรื่องร้องเรียน Traffy Fondue" class="w-full h-full object-cover object-top" />
+            <img src="./report_images/06_analysis_complaints.png" alt="เรื่องร้องเรียน Traffy Fondue"
+              class="w-full h-full object-cover object-top" />
           </div>
           <div class="p-4">
             <div class="font-bold text-sm text-slate-900">5) เรื่องร้องเรียน Traffy Fondue</div>
-            <p class="text-xs text-slate-500 mt-1">ดึงตรงจาก Traffy Public API ไม่ต้องล็อกอิน พร้อมแยกงาน อบจ.ลำปาง และบันทึกประวัติการเปลี่ยนสถานะ</p>
+            <p class="text-xs text-slate-500 mt-1">ดึงตรงจาก Traffy Public API ไม่ต้องล็อกอิน พร้อมแยกงาน อบจ.ลำปาง
+              และบันทึกประวัติการเปลี่ยนสถานะ</p>
           </div>
         </div>
 
         <div class="shot-card rounded-2xl border border-slate-200 overflow-hidden bg-slate-50">
           <div class="overflow-hidden bg-white h-48 border-b border-slate-200">
-            <img src="./report_images/10_schedule_settings.png" alt="ตั้งเวลาดึงข้อมูลอัตโนมัติ" class="w-full h-full object-cover object-top" />
+            <img src="./report_images/10_schedule_settings.png" alt="ตั้งเวลาดึงข้อมูลอัตโนมัติ"
+              class="w-full h-full object-cover object-top" />
           </div>
           <div class="p-4">
             <div class="font-bold text-sm text-slate-900">6) แผงควบคุมและตั้งเวลา (Smart Sleep)</div>
-            <p class="text-xs text-slate-500 mt-1">ตั้งเวลาดึงข้อมูลอัตโนมัติ ดู Terminal Log สดผ่าน Socket.IO และสั่งดึงข้อมูลรายโปรเจค</p>
-            <a href="./control.html" class="inline-block mt-2 text-xs font-semibold text-emerald-700 hover:underline">เปิดหน้า Control Panel →</a>
+            <p class="text-xs text-slate-500 mt-1">ตั้งเวลาดึงข้อมูลอัตโนมัติ ดู Terminal Log สดผ่าน Socket.IO
+              และสั่งดึงข้อมูลรายโปรเจค</p>
+            <a href="./control.html"
+              class="inline-block mt-2 text-xs font-semibold text-emerald-700 hover:underline">เปิดหน้า Control Panel
+              →</a>
           </div>
         </div>
       </div>
@@ -384,10 +526,14 @@
     <section id="alerts" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200">
       <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-          <h2 class="text-xl font-bold text-slate-900">4. เกณฑ์แจ้งเตือนวิกฤตอัตโนมัติ (Gmail SMTP &amp; LINE Messaging API)</h2>
-          <p class="text-xs text-slate-500 mt-1">ระบบจะตรวจสอบเกณฑ์เหล่านี้อัตโนมัติทันทีหลังดึงข้อมูลรอบใหม่เสร็จ และบันทึกลง <code class="text-rose-600">tbl_alert_notifications</code></p>
+          <h2 class="text-xl font-bold text-slate-900">4. เกณฑ์แจ้งเตือนวิกฤตอัตโนมัติ (Gmail SMTP &amp; LINE Messaging
+            API)</h2>
+          <p class="text-xs text-slate-500 mt-1">ระบบจะตรวจสอบเกณฑ์เหล่านี้อัตโนมัติทันทีหลังดึงข้อมูลรอบใหม่เสร็จ
+            และบันทึกลง <code class="text-rose-600">tbl_alert_notifications</code></p>
         </div>
-        <a href="./notification.html" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition">🔔 เปิดหน้าตั้งค่าผู้รับแจ้งเตือน &amp; LINE</a>
+        <a href="./notification.html"
+          class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition">🔔
+          เปิดหน้าตั้งค่าผู้รับแจ้งเตือน &amp; LINE</a>
       </div>
 
       <div class="overflow-x-auto">
@@ -439,15 +585,20 @@
         <div class="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 space-y-1">
           <div class="font-bold text-amber-900">⏱️ เกณฑ์เตือน "ข้อมูลต้นทางค้าง" (Upstream Data Freshness)</div>
           <ul class="list-disc pl-4 text-slate-700 space-y-1">
-            <li><strong>ระดับน้ำ / ปริมาณฝน / PM 2.5:</strong> แจ้งเตือนหากเวลาข้อมูลจาก API ต้นทางไม่อัปเดตเกิน <strong>6 ชั่วโมง</strong> (21,600 วินาที)</li>
-            <li><strong>อ่างเก็บน้ำรายวัน:</strong> แจ้งเตือนหากข้อมูลไม่อัปเดตเกิน <strong>36 ชั่วโมง</strong> (129,600 วินาที)</li>
+            <li><strong>ระดับน้ำ / ปริมาณฝน / PM 2.5:</strong> แจ้งเตือนหากเวลาข้อมูลจาก API ต้นทางไม่อัปเดตเกิน
+              <strong>6 ชั่วโมง</strong> (21,600 วินาที)
+            </li>
+            <li><strong>อ่างเก็บน้ำรายวัน:</strong> แจ้งเตือนหากข้อมูลไม่อัปเดตเกิน <strong>36 ชั่วโมง</strong> (129,600
+              วินาที)</li>
           </ul>
         </div>
         <div class="rounded-2xl border border-indigo-200 bg-indigo-50/70 p-4 space-y-1">
           <div class="font-bold text-indigo-900">🧾 บันทึกประวัติระบบ &amp; Audit Log Export</div>
           <ul class="list-disc pl-4 text-slate-700 space-y-1">
             <li>ทุกการเก็บข้อมูล, แจ้งเตือน Email/LINE, และ Export รายงาน ถูกบันทึกลง <code>tbl_system_logs</code></li>
-            <li>สามารถดาวน์โหลดเป็นไฟล์ <strong>CSV Audit Log</strong> จากปุ่มบน Dashboard หรือ <code>/api/system-logs/export</code> ได้ทันที</li>
+            <li>สามารถดาวน์โหลดเป็นไฟล์ <strong>CSV Audit Log</strong> จากปุ่มบน Dashboard หรือ
+              <code>/api/system-logs/export</code> ได้ทันที
+            </li>
           </ul>
         </div>
       </div>
@@ -456,325 +607,473 @@
     <!-- Section 5: Visual Step-by-Step Deployment & Usage Guide -->
     <section id="deploy" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-8">
       <div>
-        <span class="inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-2">📖 ภาพประกอบ Step-by-Step (ทำตามทีละขั้น)</span>
-        <h2 class="text-xl sm:text-2xl font-bold text-slate-900">5. ขั้นตอนนำขึ้น Server จริงและทดสอบใช้งาน (ปิดคอมพิวเตอร์ตัวเองได้ 100%)</h2>
-        <p class="text-xs sm:text-sm text-slate-500 mt-1">ทำตามลำดับ Step 1 → Step 4 ด้านล่างนี้ได้เลยครับ ดูตามภาพจำลองทีละขั้น ไม่ต้องมีสิทธิ์ Admin บน Server</p>
+        <span class="inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-2">📖
+          ภาพประกอบ Step-by-Step (ทำตามทีละขั้น)</span>
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900">5. ขั้นตอนนำขึ้น Server จริงและทดสอบใช้งาน
+          (ปิดคอมพิวเตอร์ตัวเองได้ 100%)</h2>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">ทำตามลำดับ Step 1 → Step 4 ด้านล่างนี้ได้เลยครับ
+          ดูตามภาพจำลองทีละขั้น ไม่ต้องมีสิทธิ์ Admin บน Server</p>
       </div>
 
       <!-- STEP 1 (Complete Step-by-Step Push GitHub) -->
       <div class="rounded-2xl border-2 border-slate-200 bg-slate-50/70 p-5 space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <div class="inline-flex items-center gap-2 bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-bold mb-1">STEP 1 — STEP-BY-STEP PUSH TO GITHUB</div>
+            <div
+              class="inline-flex items-center gap-2 bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-bold mb-1">
+              STEP 1 — STEP-BY-STEP PUSH TO GITHUB</div>
             <h3 class="text-lg font-bold text-slate-900">ขั้นตอน Push โค้ดขึ้น GitHub อย่างละเอียดและปลอดภัย 100%</h3>
           </div>
-          <a href="https://github.com/settings/tokens/new" target="_blank" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold">🔑 เปิดหน้าสร้าง GitHub Token →</a>
+          <a href="https://github.com/settings/tokens/new" target="_blank"
+            class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold">🔑
+            เปิดหน้าสร้าง GitHub Token →</a>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           <div class="bg-white rounded-xl border border-slate-200 p-3.5 space-y-1.5">
             <div class="font-bold text-slate-900">① เช็กไฟล์ลับ &amp; .gitignore</div>
-            <p class="text-slate-600">ตรวจด้วย <code>git status</code> ให้แน่ใจว่าไม่มีไฟล์ความลับ (<code>.env</code>, <code>runtime/</code>, <code>deploy_server/</code>, <code>*.zip</code>) ติดเข้าไป</p>
+            <p class="text-slate-600">ตรวจด้วย <code>git status</code> ให้แน่ใจว่าไม่มีไฟล์ความลับ (<code>.env</code>,
+              <code>runtime/</code>, <code>deploy_server/</code>, <code>*.zip</code>) ติดเข้าไป
+            </p>
             <code class="block bg-slate-100 p-1.5 rounded text-[10px] text-slate-800">git status --short</code>
           </div>
           <div class="bg-white rounded-xl border border-amber-200 p-3.5 space-y-1.5">
             <div class="font-bold text-amber-900">② ซิงก์ Snapshot จาก GitHub ก่อน</div>
-            <p class="text-slate-600">GitHub Actions คอมมิต <code>cloud_snapshots/</code> ทุก 30 นาที จึงต้องดึงมาต่อท้ายก่อนเสมอ เพื่อไม่ให้ Push ชนกัน (Non-fast-forward)</p>
-            <code class="block bg-amber-50 p-1.5 rounded text-[10px] text-amber-900">git pull --rebase --autostash origin main</code>
+            <p class="text-slate-600">GitHub Actions คอมมิต <code>cloud_snapshots/</code> ทุก 30 นาที
+              จึงต้องดึงมาต่อท้ายก่อนเสมอ เพื่อไม่ให้ Push ชนกัน (Non-fast-forward)</p>
+            <code
+              class="block bg-amber-50 p-1.5 rounded text-[10px] text-amber-900">git pull --rebase --autostash origin main</code>
           </div>
           <div class="bg-white rounded-xl border border-emerald-200 p-3.5 space-y-1.5">
             <div class="font-bold text-emerald-900">③ Commit เฉพาะโค้ดที่ทดสอบแล้ว</div>
-            <p class="text-slate-600">สเตจโค้ดและคู่มือแล้วสร้าง Commit (หรือรันทดสอบ <code>verify_system_v2.php</code> ก่อนคอมมิต)</p>
-            <code class="block bg-emerald-50 p-1.5 rounded text-[10px] text-emerald-900">git commit -m "docs &amp; v2 update"</code>
+            <p class="text-slate-600">สเตจโค้ดและคู่มือแล้วสร้าง Commit (หรือรันทดสอบ <code>verify_system_v2.php</code>
+              ก่อนคอมมิต)</p>
+            <code
+              class="block bg-emerald-50 p-1.5 rounded text-[10px] text-emerald-900">git commit -m "docs &amp; v2 update"</code>
           </div>
           <div class="bg-white rounded-xl border border-sky-200 p-3.5 space-y-1.5">
             <div class="font-bold text-sky-900">④ Push ขึ้น GitHub + เช็ก Actions</div>
-            <p class="text-slate-600">ใช้สคริปต์ <code>push_to_github.bat</code> หรือรันคำสั่งด้านล่าง แล้วเปิดแท็บ <strong>Actions</strong> ดูติ๊กเขียว</p>
+            <p class="text-slate-600">ใช้สคริปต์ <code>push_to_github.bat</code> หรือรันคำสั่งด้านล่าง แล้วเปิดแท็บ
+              <strong>Actions</strong> ดูติ๊กเขียว
+            </p>
             <code class="block bg-sky-50 p-1.5 rounded text-[10px] text-sky-900">git push -u origin main</code>
           </div>
         </div>
 
         <!-- Option 1A: PowerShell + Token -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-white rounded-2xl border border-slate-200 p-4">
+        <div
+          class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-white rounded-2xl border border-slate-200 p-4">
           <div class="lg:col-span-5 space-y-2">
-            <span class="inline-block px-2.5 py-0.5 rounded bg-sky-100 text-sky-800 text-[11px] font-bold">แบบที่ 1 (แนะนำ): ใช้ PowerShell + Token (1 ครั้งจบ)</span>
+            <span class="inline-block px-2.5 py-0.5 rounded bg-sky-100 text-sky-800 text-[11px] font-bold">แบบที่ 1
+              (แนะนำ): ใช้ PowerShell + Token (1 ครั้งจบ)</span>
             <ol class="text-xs sm:text-sm text-slate-600 space-y-1.5 list-decimal pl-5 leading-relaxed">
-              <li>เปิด <a href="https://github.com/settings/tokens/new" target="_blank" class="text-sky-700 underline font-semibold">github.com/settings/tokens/new</a></li>
-              <li>ติ๊กถูกช่อง <strong><code>repo</code></strong> และ <strong><code>workflow</code></strong> → กด <strong>Generate token</strong> แล้วก๊อปปี้รหัส <code>ghp_...</code></li>
-              <li>เปิด PowerShell พิมพ์ <code>cd D:\Water_System2</code> แล้วรัน:<br/>
-                <code class="text-[11px] bg-slate-100 px-2 py-0.5 rounded border border-slate-300 text-emerald-800">C:\laragon\bin\git\bin\git.exe push -u origin main</code></li>
-              <li>ใส่ Username = <code>PakaponTim</code> และ Password = <strong>วาง Token <code>ghp_...</code></strong></li>
+              <li>เปิด <a href="https://github.com/settings/tokens/new" target="_blank"
+                  class="text-sky-700 underline font-semibold">github.com/settings/tokens/new</a></li>
+              <li>ติ๊กถูกช่อง <strong><code>repo</code></strong> และ <strong><code>workflow</code></strong> → กด
+                <strong>Generate token</strong> แล้วก๊อปปี้รหัส <code>ghp_...</code>
+              </li>
+              <li>เปิด PowerShell พิมพ์ <code>cd D:\LP-PAO_Smart_Data</code> แล้วรัน:<br />
+                <code
+                  class="text-[11px] bg-slate-100 px-2 py-0.5 rounded border border-slate-300 text-emerald-800">C:\laragon\bin\git\bin\git.exe push -u origin main</code>
+              </li>
+              <li>ใส่ Username = <code>PakaponTim</code> และ Password = <strong>วาง Token <code>ghp_...</code></strong>
+              </li>
             </ol>
           </div>
           <div class="lg:col-span-7">
             <svg viewBox="0 0 640 215" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
               <!-- Box 1: Create Token -->
-              <rect x="6" y="8" width="205" height="198" rx="12" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
-              <text x="108" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">① สร้าง Token บนเว็บ GitHub</text>
-              <rect x="18" y="42" width="180" height="24" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
-              <text x="28" y="58" font-size="10" fill="#334155">Note: Water_System2</text>
-              <rect x="18" y="74" width="180" height="26" rx="6" fill="#ecfdf5" stroke="#34d399" stroke-width="1.5"/>
+              <rect x="6" y="8" width="205" height="198" rx="12" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" />
+              <text x="108" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">① สร้าง Token
+                บนเว็บ GitHub</text>
+              <rect x="18" y="42" width="180" height="24" rx="6" fill="#ffffff" stroke="#cbd5e1" />
+              <text x="28" y="58" font-size="10" fill="#334155">Note: LP-PAO_Smart_Data</text>
+              <rect x="18" y="74" width="180" height="26" rx="6" fill="#ecfdf5" stroke="#34d399" stroke-width="1.5" />
               <text x="28" y="91" font-size="11" font-weight="700" fill="#065f46">☑️ ติ๊กถูกช่อง repo</text>
-              <rect x="18" y="106" width="180" height="26" rx="6" fill="#ecfdf5" stroke="#34d399" stroke-width="1.5"/>
+              <rect x="18" y="106" width="180" height="26" rx="6" fill="#ecfdf5" stroke="#34d399" stroke-width="1.5" />
               <text x="28" y="123" font-size="11" font-weight="700" fill="#065f46">☑️ ติ๊กถูกช่อง workflow</text>
-              <rect x="18" y="140" width="180" height="26" rx="6" fill="#16a34a"/>
-              <text x="108" y="157" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">กด Generate token</text>
-              <rect x="18" y="172" width="180" height="24" rx="6" fill="#fef3c7" stroke="#f59e0b"/>
-              <text x="108" y="188" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e">📋 Copy: ghp_xxxxxxxx</text>
+              <rect x="18" y="140" width="180" height="26" rx="6" fill="#16a34a" />
+              <text x="108" y="157" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">กด Generate
+                token</text>
+              <rect x="18" y="172" width="180" height="24" rx="6" fill="#fef3c7" stroke="#f59e0b" />
+              <text x="108" y="188" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e">📋 Copy:
+                ghp_xxxxxxxx</text>
 
-              <path d="M 216 107 L 238 107" stroke="#0284c7" stroke-width="3" marker-end="url(#arrowBlue)"/>
+              <path d="M 216 107 L 238 107" stroke="#0284c7" stroke-width="3" marker-end="url(#arrowBlue)" />
 
               <!-- Box 2: PowerShell -->
-              <rect x="244" y="8" width="218" height="198" rx="12" fill="#0f172a"/>
-              <text x="353" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="#38bdf8">② เปิด PowerShell แล้ววางคำสั่ง</text>
-              <text x="256" y="54" font-size="9.5" fill="#e2e8f0" font-family="monospace">PS&gt; cd D:\Water_System2</text>
-              <text x="256" y="72" font-size="9.5" fill="#fbbf24" font-family="monospace">PS&gt; C:\laragon\bin\git\bin\</text>
-              <text x="278" y="86" font-size="9.5" fill="#fbbf24" font-family="monospace">git.exe push -u origin main</text>
-              <line x1="256" y1="98" x2="448" y2="98" stroke="#334155"/>
-              <text x="256" y="116" font-size="10" fill="#94a3b8" font-family="monospace">Username: <tspan fill="#ffffff" font-weight="700">PakaponTim</tspan></text>
-              <text x="256" y="136" font-size="10" fill="#94a3b8" font-family="monospace">Password: <tspan fill="#fcd34d" font-weight="700">[คลิกขวาวาง ghp_..]</tspan></text>
-              <rect x="256" y="154" width="194" height="36" rx="8" fill="#065f46"/>
-              <text x="353" y="176" text-anchor="middle" font-size="10.5" font-weight="700" fill="#6ee7b7">main -&gt; main (ขึ้น GitHub ครบ!)</text>
+              <rect x="244" y="8" width="218" height="198" rx="12" fill="#0f172a" />
+              <text x="353" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="#38bdf8">② เปิด
+                PowerShell แล้ววางคำสั่ง</text>
+              <text x="256" y="54" font-size="9.5" fill="#e2e8f0" font-family="monospace">PS&gt; cd
+                D:\LP-PAO_Smart_Data</text>
+              <text x="256" y="72" font-size="9.5" fill="#fbbf24" font-family="monospace">PS&gt;
+                C:\laragon\bin\git\bin\</text>
+              <text x="278" y="86" font-size="9.5" fill="#fbbf24" font-family="monospace">git.exe push -u origin
+                main</text>
+              <line x1="256" y1="98" x2="448" y2="98" stroke="#334155" />
+              <text x="256" y="116" font-size="10" fill="#94a3b8" font-family="monospace">Username: <tspan
+                  fill="#ffffff" font-weight="700">PakaponTim</tspan></text>
+              <text x="256" y="136" font-size="10" fill="#94a3b8" font-family="monospace">Password: <tspan
+                  fill="#fcd34d" font-weight="700">[คลิกขวาวาง ghp_..]</tspan></text>
+              <rect x="256" y="154" width="194" height="36" rx="8" fill="#065f46" />
+              <text x="353" y="176" text-anchor="middle" font-size="10.5" font-weight="700" fill="#6ee7b7">main -&gt;
+                main (ขึ้น GitHub ครบ!)</text>
 
-              <path d="M 467 107 L 489 107" stroke="#059669" stroke-width="3" marker-end="url(#arrow)"/>
+              <path d="M 467 107 L 489 107" stroke="#059669" stroke-width="3" marker-end="url(#arrow)" />
 
               <!-- Box 3: Actions -->
-              <rect x="495" y="8" width="139" height="198" rx="12" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.5"/>
-              <text x="564" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">③ แท็บ Actions</text>
-              <rect x="506" y="50" width="117" height="32" rx="8" fill="#16a34a"/>
-              <text x="564" y="70" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">▶ Run workflow</text>
-              <rect x="506" y="96" width="117" height="94" rx="8" fill="#ffffff" stroke="#bbf7d0"/>
+              <rect x="495" y="8" width="139" height="198" rx="12" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.5" />
+              <text x="564" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">③ แท็บ
+                Actions</text>
+              <rect x="506" y="50" width="117" height="32" rx="8" fill="#16a34a" />
+              <text x="564" y="70" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">▶ Run
+                workflow</text>
+              <rect x="506" y="96" width="117" height="94" rx="8" fill="#ffffff" stroke="#bbf7d0" />
               <text x="564" y="122" text-anchor="middle" font-size="22">✅</text>
-              <text x="564" y="146" text-anchor="middle" font-size="10" font-weight="700" fill="#15803d">บอทเริ่มทำงาน</text>
+              <text x="564" y="146" text-anchor="middle" font-size="10" font-weight="700"
+                fill="#15803d">บอทเริ่มทำงาน</text>
               <text x="564" y="164" text-anchor="middle" font-size="9.5" fill="#64748b">เก็บทุก 30 นาที</text>
             </svg>
           </div>
         </div>
 
         <!-- Option 1B: Web Upload only -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-white rounded-2xl border border-slate-200 p-4">
+        <div
+          class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-white rounded-2xl border border-slate-200 p-4">
           <div class="lg:col-span-5 space-y-2">
-            <span class="inline-block px-2.5 py-0.5 rounded bg-purple-100 text-purple-800 text-[11px] font-bold">แบบที่ 2 (ไม่ต้องใช้คำสั่ง): ลากไฟล์วางบนหน้าเว็บ GitHub</span>
+            <span class="inline-block px-2.5 py-0.5 rounded bg-purple-100 text-purple-800 text-[11px] font-bold">แบบที่
+              2 (ไม่ต้องใช้คำสั่ง): ลากไฟล์วางบนหน้าเว็บ GitHub</span>
             <ol class="text-xs sm:text-sm text-slate-600 space-y-1.5 list-decimal pl-5 leading-relaxed">
-              <li>เปิด Repo <code>PakaponTim/Water_System2</code> คลิก <strong>uploading an existing file</strong></li>
-              <li>เปิดโฟลเดอร์ <code>D:\Water_System2\deploy_server\Water_System2</code> กด <code>Ctrl+A</code> ลากวางทั้งหมดแล้วกด <strong>Commit changes</strong></li>
-              <li>กด <strong>Add file → Create new file</strong> พิมพ์ชื่อไฟล์:<br/>
-                <code class="text-[11px] bg-slate-100 px-1.5 py-0.5 rounded border text-purple-800">.github/workflows/collect_every_30min.yml</code></li>
+              <li>เปิด Repo <code>PakaponTim/LP-PAO_Smart_Data</code> คลิก <strong>uploading an existing file</strong></li>
+              <li>เปิดโฟลเดอร์ <code>D:\LP-PAO_Smart_Data\deploy_server\LP-PAO_Smart_Data</code> กด <code>Ctrl+A</code>
+                ลากวางทั้งหมดแล้วกด <strong>Commit changes</strong></li>
+              <li>กด <strong>Add file → Create new file</strong> พิมพ์ชื่อไฟล์:<br />
+                <code
+                  class="text-[11px] bg-slate-100 px-1.5 py-0.5 rounded border text-purple-800">.github/workflows/collect_every_30min.yml</code>
+              </li>
               <li>วางเนื้อหา Workflow แล้วกด <strong>Commit changes</strong> → เปิดแท็บ Actions</li>
             </ol>
           </div>
           <div class="lg:col-span-7">
             <svg viewBox="0 0 640 195" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
-              <rect x="6" y="10" width="195" height="175" rx="12" fill="#faf5ff" stroke="#d8b4fe" stroke-width="1.5"/>
-              <text x="103" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="#6b21a8">① ลากไฟล์จากโฟลเดอร์นี้</text>
-              <rect x="18" y="44" width="171" height="46" rx="8" fill="#ffffff" stroke="#c084fc"/>
-              <text x="103" y="64" text-anchor="middle" font-size="9.5" font-weight="700" fill="#334155">D:\Water_System2\</text>
-              <text x="103" y="79" text-anchor="middle" font-size="9.5" font-weight="700" fill="#7e22ce">deploy_server\Water_System2</text>
-              <rect x="18" y="100" width="171" height="40" rx="8" stroke-dasharray="4 3" fill="#f3e8ff" stroke="#a855f7"/>
-              <text x="103" y="124" text-anchor="middle" font-size="10" font-weight="700" fill="#6b21a8">🖱️ Ctrl+A ลากวางบน GitHub</text>
-              <rect x="34" y="148" width="138" height="26" rx="6" fill="#16a34a"/>
-              <text x="103" y="165" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">กด Commit changes</text>
+              <rect x="6" y="10" width="195" height="175" rx="12" fill="#faf5ff" stroke="#d8b4fe" stroke-width="1.5" />
+              <text x="103" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="#6b21a8">①
+                ลากไฟล์จากโฟลเดอร์นี้</text>
+              <rect x="18" y="44" width="171" height="46" rx="8" fill="#ffffff" stroke="#c084fc" />
+              <text x="103" y="64" text-anchor="middle" font-size="9.5" font-weight="700"
+                fill="#334155">D:\LP-PAO_Smart_Data\</text>
+              <text x="103" y="79" text-anchor="middle" font-size="9.5" font-weight="700"
+                fill="#7e22ce">deploy_server\LP-PAO_Smart_Data</text>
+              <rect x="18" y="100" width="171" height="40" rx="8" stroke-dasharray="4 3" fill="#f3e8ff"
+                stroke="#a855f7" />
+              <text x="103" y="124" text-anchor="middle" font-size="10" font-weight="700" fill="#6b21a8">🖱️ Ctrl+A
+                ลากวางบน GitHub</text>
+              <rect x="34" y="148" width="138" height="26" rx="6" fill="#16a34a" />
+              <text x="103" y="165" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">กด Commit
+                changes</text>
 
-              <path d="M 206 98 L 228 98" stroke="#7e22ce" stroke-width="3" marker-end="url(#arrow)"/>
+              <path d="M 206 98 L 228 98" stroke="#7e22ce" stroke-width="3" marker-end="url(#arrow)" />
 
-              <rect x="234" y="10" width="235" height="175" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
-              <text x="351" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">② กด Add file → Create new file</text>
-              <rect x="246" y="44" width="211" height="28" rx="6" fill="#eff6ff" stroke="#3b82f6"/>
-              <text x="351" y="62" text-anchor="middle" font-size="9" font-weight="700" fill="#1d4ed8">.github/workflows/collect_every_30min.yml</text>
-              <rect x="246" y="80" width="211" height="62" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
-              <text x="256" y="98" font-size="9.5" fill="#475569" font-family="monospace">name: Water_System2 Cloud...</text>
-              <text x="256" y="114" font-size="9.5" fill="#475569" font-family="monospace">on: schedule: - cron: '*/30 * * * *'</text>
-              <text x="256" y="130" font-size="9.5" fill="#475569" font-family="monospace">run: php php_server/github_collect...</text>
-              <rect x="276" y="150" width="150" height="26" rx="6" fill="#16a34a"/>
-              <text x="351" y="167" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">กด Commit changes</text>
+              <rect x="234" y="10" width="235" height="175" rx="12" fill="#ffffff" stroke="#94a3b8"
+                stroke-width="1.5" />
+              <text x="351" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">② กด Add file →
+                Create new file</text>
+              <rect x="246" y="44" width="211" height="28" rx="6" fill="#eff6ff" stroke="#3b82f6" />
+              <text x="351" y="62" text-anchor="middle" font-size="9" font-weight="700"
+                fill="#1d4ed8">.github/workflows/collect_every_30min.yml</text>
+              <rect x="246" y="80" width="211" height="62" rx="6" fill="#f8fafc" stroke="#cbd5e1" />
+              <text x="256" y="98" font-size="9.5" fill="#475569" font-family="monospace">name: LP-PAO Smart Data
+                Cloud...</text>
+              <text x="256" y="114" font-size="9.5" fill="#475569" font-family="monospace">on: schedule: - cron: '*/30 *
+                * * *'</text>
+              <text x="256" y="130" font-size="9.5" fill="#475569" font-family="monospace">run: php
+                php_server/github_collect...</text>
+              <rect x="276" y="150" width="150" height="26" rx="6" fill="#16a34a" />
+              <text x="351" y="167" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">กด Commit
+                changes</text>
 
-              <path d="M 474 98 L 494 98" stroke="#059669" stroke-width="3" marker-end="url(#arrow)"/>
+              <path d="M 474 98 L 494 98" stroke="#059669" stroke-width="3" marker-end="url(#arrow)" />
 
-              <rect x="500" y="10" width="134" height="175" rx="12" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.5"/>
-              <text x="567" y="34" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">③ แท็บ Actions</text>
+              <rect x="500" y="10" width="134" height="175" rx="12" fill="#f0fdf4" stroke="#4ade80"
+                stroke-width="1.5" />
+              <text x="567" y="34" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">③ แท็บ
+                Actions</text>
               <text x="567" y="96" text-anchor="middle" font-size="26">✅</text>
-              <text x="567" y="128" text-anchor="middle" font-size="10.5" font-weight="700" fill="#15803d">กด Run workflow</text>
+              <text x="567" y="128" text-anchor="middle" font-size="10.5" font-weight="700" fill="#15803d">กด Run
+                workflow</text>
               <text x="567" y="146" text-anchor="middle" font-size="9.5" fill="#64748b">ขึ้นติ๊กเขียวเสร็จ!</text>
             </svg>
           </div>
         </div>
 
         <!-- Option 1C: On GitHub Actions Page Follow-Up -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-emerald-50/70 rounded-2xl border-2 border-emerald-200 p-4">
+        <div
+          class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-emerald-50/70 rounded-2xl border-2 border-emerald-200 p-4">
           <div class="lg:col-span-6 space-y-2">
-            <span class="inline-block px-2.5 py-0.5 rounded bg-emerald-700 text-white text-[11px] font-bold">เมื่อเปิดหน้า GitHub Actions (/actions) อยู่ — ต้องคลิกอะไรต่อ?</span>
+            <span
+              class="inline-block px-2.5 py-0.5 rounded bg-emerald-700 text-white text-[11px] font-bold">เมื่อเปิดหน้า
+              GitHub Actions (/actions) อยู่ — ต้องคลิกอะไรต่อ?</span>
             <ol class="text-xs sm:text-sm text-slate-700 space-y-1.5 list-decimal pl-5 leading-relaxed">
-              <li><strong>ตรวจให้แน่ใจว่า Push โค้ดล่าสุดขึ้น GitHub แล้ว:</strong> จากเครื่องคอมฯ กดรัน <code>push_to_github.bat</code> (หรือ <code>git push -u origin main</code>) เพื่อให้ Commit ใหม่ล่าสุดไปอยู่บน GitHub ก่อน</li>
-              <li><strong>สั่งทดสอบรันบนหน้า Actions:</strong> คลิกชื่อ <strong><code>Water_System2 Cloud Collector (Every 30 Minutes)</code></strong> ที่เมนูซ้าย → กดปุ่ม <strong><code>Run workflow</code></strong> ด้านขวาบน → เลือก <code>Branch: main</code> แล้วกดปุ่มเขียว <strong>Run workflow</strong></li>
-              <li><strong>รอประมาณ 1 นาที:</strong> รีเฟรชหน้าแล้วตรวจให้ขึ้นเครื่องหมาย <strong>✅ สีเขียว</strong> และมีการเก็บไฟล์ลง <code>cloud_snapshots/</code></li>
-              <li><strong>ตั้งค่า Domain หลัก + สำรอง:</strong> แก้ไขไฟล์ <code>domain_config.json</code> (ตั้ง <code>primary_domain</code> และ <code>backup_domain</code> ได้ถึง 2 โดเมน) หรือกรอกผ่านหน้า <code>server_setup.php</code> เพื่อให้ GitHub Actions ปลุกทั้ง 2 โดเมนและแจ้ง Failover อัตโนมัติ (หรือตั้ง Secret <code>WATER_SERVER_CRON_URL</code> / <code>WATER_SERVER_BACKUP_CRON_URL</code>)</li>
+              <li><strong>ตรวจให้แน่ใจว่า Push โค้ดล่าสุดขึ้น GitHub แล้ว:</strong> จากเครื่องคอมฯ กดรัน
+                <code>push_to_github.bat</code> (หรือ <code>git push -u origin main</code>) เพื่อให้ Commit
+                ใหม่ล่าสุดไปอยู่บน GitHub ก่อน
+              </li>
+              <li><strong>สั่งทดสอบรันบนหน้า Actions:</strong> คลิกชื่อ
+                <strong><code>LP-PAO Smart Data Cloud Collector (Every 30 Minutes)</code></strong> ที่เมนูซ้าย → กดปุ่ม
+                <strong><code>Run workflow</code></strong> ด้านขวาบน → เลือก <code>Branch: main</code> แล้วกดปุ่มเขียว
+                <strong>Run workflow</strong>
+              </li>
+              <li><strong>รอประมาณ 1 นาที:</strong> รีเฟรชหน้าแล้วตรวจให้ขึ้นเครื่องหมาย <strong>✅ สีเขียว</strong>
+                และมีการเก็บไฟล์ลง <code>cloud_snapshots/</code></li>
+              <li><strong>ตั้งค่า Domain หลัก + สำรอง:</strong> แก้ไขไฟล์ <code>domain_config.json</code> (ตั้ง
+                <code>primary_domain</code> และ <code>backup_domain</code> ได้ถึง 2 โดเมน) หรือกรอกผ่านหน้า
+                <code>server_setup.php</code> เพื่อให้ GitHub Actions ปลุกทั้ง 2 โดเมนและแจ้ง Failover อัตโนมัติ
+                (หรือตั้ง Secret <code>WATER_SERVER_CRON_URL</code> / <code>WATER_SERVER_BACKUP_CRON_URL</code>)
+              </li>
             </ol>
           </div>
           <div class="lg:col-span-6 bg-white rounded-xl border border-emerald-200 p-3">
             <svg viewBox="0 0 600 185" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
-              <rect x="6" y="10" width="182" height="165" rx="10" fill="#0f172a"/>
-              <text x="97" y="34" text-anchor="middle" font-size="11" font-weight="700" fill="#38bdf8">① เครื่องคอมฯ (D:\Water_System2)</text>
-              <rect x="18" y="48" width="158" height="32" rx="6" fill="#065f46"/>
-              <text x="97" y="68" text-anchor="middle" font-size="10" font-weight="700" fill="#6ee7b7">▶ push_to_github.bat</text>
-              <text x="97" y="104" text-anchor="middle" font-size="9.5" fill="#cbd5e1">ส่ง Commit ล่าสุดขึ้น GitHub</text>
+              <rect x="6" y="10" width="182" height="165" rx="10" fill="#0f172a" />
+              <text x="97" y="34" text-anchor="middle" font-size="11" font-weight="700" fill="#38bdf8">① เครื่องคอมฯ
+                (D:\LP-PAO_Smart_Data)</text>
+              <rect x="18" y="48" width="158" height="32" rx="6" fill="#065f46" />
+              <text x="97" y="68" text-anchor="middle" font-size="10" font-weight="700" fill="#6ee7b7">▶
+                push_to_github.bat</text>
+              <text x="97" y="104" text-anchor="middle" font-size="9.5" fill="#cbd5e1">ส่ง Commit ล่าสุดขึ้น
+                GitHub</text>
               <text x="97" y="122" text-anchor="middle" font-size="9.5" fill="#94a3b8">(pull --rebase + push)</text>
-              <rect x="28" y="136" width="138" height="24" rx="6" fill="#1e293b" stroke="#334155"/>
+              <rect x="28" y="136" width="138" height="24" rx="6" fill="#1e293b" stroke="#334155" />
               <text x="97" y="152" text-anchor="middle" font-size="9.5" fill="#fbbf24">ทำขั้นนี้ก่อนเสมอ!</text>
 
-              <path d="M 192 92 L 210 92" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow)"/>
+              <path d="M 192 92 L 210 92" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow)" />
 
-              <rect x="216" y="10" width="182" height="165" rx="10" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.5"/>
-              <text x="307" y="34" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">② บนหน้า Actions</text>
-              <rect x="228" y="46" width="158" height="30" rx="6" fill="#ffffff" stroke="#86efac"/>
-              <text x="307" y="65" text-anchor="middle" font-size="9.5" font-weight="700" fill="#15803d">คลิก: Cloud Collector (ซ้าย)</text>
-              <rect x="228" y="84" width="158" height="28" rx="6" fill="#16a34a"/>
-              <text x="307" y="102" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">▶ กด Run workflow</text>
-              <rect x="228" y="122" width="158" height="40" rx="6" fill="#ffffff" stroke="#bbf7d0"/>
-              <text x="307" y="140" text-anchor="middle" font-size="10" font-weight="700" fill="#065f46">✅ รอขึ้นติ๊กสีเขียว</text>
+              <rect x="216" y="10" width="182" height="165" rx="10" fill="#f0fdf4" stroke="#4ade80"
+                stroke-width="1.5" />
+              <text x="307" y="34" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">② บนหน้า
+                Actions</text>
+              <rect x="228" y="46" width="158" height="30" rx="6" fill="#ffffff" stroke="#86efac" />
+              <text x="307" y="65" text-anchor="middle" font-size="9.5" font-weight="700" fill="#15803d">คลิก: Cloud
+                Collector (ซ้าย)</text>
+              <rect x="228" y="84" width="158" height="28" rx="6" fill="#16a34a" />
+              <text x="307" y="102" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">▶ กด Run
+                workflow</text>
+              <rect x="228" y="122" width="158" height="40" rx="6" fill="#ffffff" stroke="#bbf7d0" />
+              <text x="307" y="140" text-anchor="middle" font-size="10" font-weight="700" fill="#065f46">✅
+                รอขึ้นติ๊กสีเขียว</text>
               <text x="307" y="155" text-anchor="middle" font-size="8.5" fill="#64748b">อัปเดต cloud_snapshots/</text>
 
-              <path d="M 402 92 L 420 92" stroke="#0284c7" stroke-width="2.5" marker-end="url(#arrowBlue)"/>
+              <path d="M 402 92 L 420 92" stroke="#0284c7" stroke-width="2.5" marker-end="url(#arrowBlue)" />
 
-              <rect x="426" y="10" width="168" height="165" rx="10" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
-              <text x="510" y="34" text-anchor="middle" font-size="11" font-weight="700" fill="#1e40af">③ Settings → Secrets</text>
-              <rect x="436" y="48" width="148" height="36" rx="6" fill="#ffffff" stroke="#bfdbfe"/>
-              <text x="510" y="63" text-anchor="middle" font-size="8.5" font-weight="700" fill="#1d4ed8">Secrets &amp; variables → Actions</text>
+              <rect x="426" y="10" width="168" height="165" rx="10" fill="#eff6ff" stroke="#93c5fd"
+                stroke-width="1.5" />
+              <text x="510" y="34" text-anchor="middle" font-size="11" font-weight="700" fill="#1e40af">③ Settings →
+                Secrets</text>
+              <rect x="436" y="48" width="148" height="36" rx="6" fill="#ffffff" stroke="#bfdbfe" />
+              <text x="510" y="63" text-anchor="middle" font-size="8.5" font-weight="700" fill="#1d4ed8">Secrets &amp;
+                variables → Actions</text>
               <text x="510" y="77" text-anchor="middle" font-size="8.5" fill="#475569">WATER_SERVER_CRON_URL</text>
-              <rect x="436" y="92" width="148" height="34" rx="6" fill="#fef3c7" stroke="#f59e0b"/>
-              <text x="510" y="107" text-anchor="middle" font-size="8.5" font-weight="700" fill="#92400e">ใส่ URL .../cron.php</text>
+              <rect x="436" y="92" width="148" height="34" rx="6" fill="#fef3c7" stroke="#f59e0b" />
+              <text x="510" y="107" text-anchor="middle" font-size="8.5" font-weight="700" fill="#92400e">ใส่ URL
+                .../cron.php</text>
               <text x="510" y="120" text-anchor="middle" font-size="8" fill="#78350f">(ทำเมื่อมี Subdomain แล้ว)</text>
-              <rect x="436" y="134" width="148" height="28" rx="6" fill="#0284c7"/>
-              <text x="510" y="152" text-anchor="middle" font-size="9.5" font-weight="700" fill="#ffffff">ไปต่อ STEP 2 ด้านล่าง ↓</text>
+              <rect x="436" y="134" width="148" height="28" rx="6" fill="#0284c7" />
+              <text x="510" y="152" text-anchor="middle" font-size="9.5" font-weight="700" fill="#ffffff">ไปต่อ STEP 2
+                ด้านล่าง ↓</text>
             </svg>
           </div>
         </div>
       </div>
 
       <!-- STEP 2 -->
-      <div class="rounded-2xl border-2 border-slate-200 bg-slate-50/70 p-5 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+      <div
+        class="rounded-2xl border-2 border-slate-200 bg-slate-50/70 p-5 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
         <div class="lg:col-span-5 space-y-3">
-          <div class="inline-flex items-center gap-2 bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-bold">STEP 2</div>
+          <div
+            class="inline-flex items-center gap-2 bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-bold">
+            STEP 2</div>
           <h3 class="text-lg font-bold text-slate-900">ก๊อปปี้โฟลเดอร์ไปวางบน Server (คัดเฉพาะไฟล์ใช้งาน)</h3>
           <ol class="text-xs sm:text-sm text-slate-600 space-y-2 list-decimal pl-5 leading-relaxed">
-            <li>รัน <code>php php_server/build_server_package.php</code> เพื่อสร้างแพ็กเกจปลอดความลับ (0 Secrets) ที่ <code>deploy_server/Water_System2_Server_Deploy.zip</code> (~4.5 MB)</li>
-            <li>นำโฟลเดอร์ <strong><code>Water_System2</code></strong> ไปวางบน Subdomain / Folder ของ Server (พร้อมไฟล์ป้องกัน <code>.htaccess</code> ทั้ง 4 ชั้น)</li>
-            <li><strong>ไม่ต้องอัปโหลด</strong> โฟลเดอร์ <code>node_modules/</code>, <code>runtime/</code>, <code>scratch/</code> หรือ <code>.env</code> จากเครื่องพัฒนา</li>
+            <li>รัน <code>php php_server/build_server_package.php</code> เพื่อสร้างแพ็กเกจปลอดความลับ (0 Secrets) ที่
+              <code>deploy_server/LP-PAO_Smart_Data_Server_Deploy.zip</code> (~4.5 MB)
+            </li>
+            <li>นำโฟลเดอร์ <strong><code>LP-PAO_Smart_Data</code></strong> ไปวางบน Subdomain / Folder ของ Server
+              (พร้อมไฟล์ป้องกัน <code>.htaccess</code> ทั้ง 4 ชั้น)</li>
+            <li><strong>ไม่ต้องอัปโหลด</strong> โฟลเดอร์ <code>node_modules/</code>, <code>runtime/</code>,
+              <code>scratch/</code> หรือ <code>.env</code> จากเครื่องพัฒนา
+            </li>
           </ol>
         </div>
         <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 p-3 shadow-sm">
           <svg viewBox="0 0 640 220" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
-            <rect x="8" y="10" width="300" height="200" rx="12" fill="#f0fdf4" stroke="#4ade80" stroke-width="2"/>
-            <text x="158" y="34" text-anchor="middle" font-size="12" font-weight="700" fill="#166534">✅ ก๊อปปี้ไฟล์เหล่านี้ไปวางบน Server</text>
-            <text x="26" y="58" font-size="11" font-weight="700" fill="#1e293b">📁 php_server/ + cloud_snapshots/ <tspan font-weight="400" fill="#475569">(หลังบ้าน)</tspan></text>
-            <text x="26" y="80" font-size="11" font-weight="700" fill="#1e293b">📁 js/  css/  report_images/ <tspan font-weight="400" fill="#475569">(หน้าตา &amp; รูป)</tspan></text>
-            <text x="26" y="102" font-size="11" font-weight="700" fill="#1e293b">📄 index.php, index.html, guide.html</text>
-            <text x="26" y="124" font-size="11" font-weight="700" fill="#1e293b">📄 control.html, notification.html, login.html</text>
-            <text x="26" y="146" font-size="11" font-weight="700" fill="#0369a1">📄 server_setup.php, endpoint.php</text>
-            <text x="26" y="168" font-size="11" font-weight="700" fill="#0369a1">📄 cron.php, worker.php, config.json</text>
-            <text x="26" y="190" font-size="11" font-weight="700" fill="#065f46">🔒 .htaccess (Root + php_server + runtime)</text>
+            <rect x="8" y="10" width="300" height="200" rx="12" fill="#f0fdf4" stroke="#4ade80" stroke-width="2" />
+            <text x="158" y="34" text-anchor="middle" font-size="12" font-weight="700" fill="#166534">✅
+              ก๊อปปี้ไฟล์เหล่านี้ไปวางบน Server</text>
+            <text x="26" y="58" font-size="11" font-weight="700" fill="#1e293b">📁 php_server/ + cloud_snapshots/ <tspan
+                font-weight="400" fill="#475569">(หลังบ้าน)</tspan></text>
+            <text x="26" y="80" font-size="11" font-weight="700" fill="#1e293b">📁 js/ css/ report_images/ <tspan
+                font-weight="400" fill="#475569">(หน้าตา &amp; รูป)</tspan></text>
+            <text x="26" y="102" font-size="11" font-weight="700" fill="#1e293b">📄 index.php, index.html,
+              guide.html</text>
+            <text x="26" y="124" font-size="11" font-weight="700" fill="#1e293b">📄 control.html, notification.html,
+              login.html</text>
+            <text x="26" y="146" font-size="11" font-weight="700" fill="#0369a1">📄 server_setup.php,
+              endpoint.php</text>
+            <text x="26" y="168" font-size="11" font-weight="700" fill="#0369a1">📄 cron.php, worker.php,
+              config.json</text>
+            <text x="26" y="190" font-size="11" font-weight="700" fill="#065f46">🔒 .htaccess (Root + php_server +
+              runtime)</text>
 
-            <rect x="332" y="10" width="300" height="200" rx="12" fill="#fff1f2" stroke="#fb7185" stroke-width="2"/>
-            <text x="482" y="34" text-anchor="middle" font-size="12" font-weight="700" fill="#9f1239">❌ ไม่ต้องก๊อปปี้ไป (ข้ามได้เลย)</text>
-            <text x="352" y="66" font-size="11" font-weight="700" fill="#be123c">🚫 node_modules/ <tspan font-weight="400" fill="#64748b">(ของ Node.js ไฟล์เยอะ)</tspan></text>
-            <text x="352" y="92" font-size="11" font-weight="700" fill="#be123c">🚫 runtime/ <tspan font-weight="400" fill="#64748b">(เดี๋ยว Server สร้างใหม่เอง)</tspan></text>
+            <rect x="332" y="10" width="300" height="200" rx="12" fill="#fff1f2" stroke="#fb7185" stroke-width="2" />
+            <text x="482" y="34" text-anchor="middle" font-size="12" font-weight="700" fill="#9f1239">❌ ไม่ต้องก๊อปปี้ไป
+              (ข้ามได้เลย)</text>
+            <text x="352" y="66" font-size="11" font-weight="700" fill="#be123c">🚫 node_modules/ <tspan
+                font-weight="400" fill="#64748b">(ของ Node.js ไฟล์เยอะ)</tspan></text>
+            <text x="352" y="92" font-size="11" font-weight="700" fill="#be123c">🚫 runtime/ <tspan font-weight="400"
+                fill="#64748b">(เดี๋ยว Server สร้างใหม่เอง)</tspan></text>
             <text x="352" y="118" font-size="11" font-weight="700" fill="#be123c">🚫 scratch/ , archive_scratch/</text>
-            <text x="352" y="144" font-size="11" font-weight="700" fill="#be123c">🚫 .git/ <tspan font-weight="400" fill="#64748b">(ไม่ต้องเอาโฟลเดอร์ git ไป)</tspan></text>
-            <rect x="352" y="162" width="260" height="34" rx="8" fill="#ffffff" stroke="#fecdd3"/>
-            <text x="482" y="183" text-anchor="middle" font-size="11" font-weight="600" fill="#9f1239">Path บน Server: /Water_System2/</text>
+            <text x="352" y="144" font-size="11" font-weight="700" fill="#be123c">🚫 .git/ <tspan font-weight="400"
+                fill="#64748b">(ไม่ต้องเอาโฟลเดอร์ git ไป)</tspan></text>
+            <rect x="352" y="162" width="260" height="34" rx="8" fill="#ffffff" stroke="#fecdd3" />
+            <text x="482" y="183" text-anchor="middle" font-size="11" font-weight="600" fill="#9f1239">Path บน Server:
+              /LP-PAO_Smart_Data/</text>
           </svg>
         </div>
       </div>
 
       <!-- STEP 3 -->
-      <div class="rounded-2xl border-2 border-slate-200 bg-slate-50/70 p-5 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+      <div
+        class="rounded-2xl border-2 border-slate-200 bg-slate-50/70 p-5 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
         <div class="lg:col-span-5 space-y-3">
-          <div class="inline-flex items-center gap-2 bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-bold">STEP 3</div>
+          <div
+            class="inline-flex items-center gap-2 bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-bold">
+            STEP 3</div>
           <h3 class="text-lg font-bold text-slate-900">ตั้งค่า MySQL บน Server และสร้างตารางอัตโนมัติ</h3>
           <ol class="text-xs sm:text-sm text-slate-600 space-y-2 list-decimal pl-5 leading-relaxed">
-            <li>เปิดเบราว์เซอร์ไปที่หน้าตั้งค่าบน Server:<br/>
-              <code class="text-xs bg-white px-2 py-0.5 rounded border border-slate-300 text-sky-700">http://ชื่อเซิร์ฟเวอร์/Water_System2/server_setup.php</code></li>
-            <li>กรอก <strong>Host, Database Name, Username, Password</strong> ของ MySQL บน Server (เมื่อตั้งค่าแล้ว การแก้ไขจากภายนอกต้องยืนยันรหัสผ่านเดิม)</li>
-            <li>กดปุ่มเขียว <strong>"💾 บันทึกค่าและตรวจสอบตารางฐานข้อมูลอัตโนมัติ"</strong> (ระบบสร้างครบทั้ง <strong>10 ตาราง</strong> รวม <code>tbl_system_logs</code> ให้อัตโนมัติ)</li>
+            <li>เปิดเบราว์เซอร์ไปที่หน้าตั้งค่าบน Server:<br />
+              <code
+                class="text-xs bg-white px-2 py-0.5 rounded border border-slate-300 text-sky-700">http://ชื่อเซิร์ฟเวอร์/LP-PAO_Smart_Data/server_setup.php</code>
+            </li>
+            <li>กรอก <strong>Host, Database Name, Username, Password</strong> ของ MySQL บน Server (เมื่อตั้งค่าแล้ว
+              การแก้ไขจากภายนอกต้องยืนยันรหัสผ่านเดิม)</li>
+            <li>กดปุ่มเขียว <strong>"💾 บันทึกค่าและตรวจสอบตารางฐานข้อมูลอัตโนมัติ"</strong> (ระบบสร้างครบทั้ง
+              <strong>10 ตาราง</strong> รวม <code>tbl_system_logs</code> ให้อัตโนมัติ)
+            </li>
             <li>กดปุ่มน้ำเงิน <strong>"🚀 ทดสอบดึงข้อมูล... (cron.php)"</strong> เพื่อดูดข้อมูลชุดแรกเข้า Server</li>
           </ol>
         </div>
         <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 p-3 shadow-sm">
           <svg viewBox="0 0 640 220" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
-            <rect x="8" y="8" width="624" height="204" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
-            <rect x="8" y="8" width="624" height="36" rx="12" fill="#065f46"/>
-            <text x="26" y="31" font-size="12" font-weight="700" fill="#ffffff">⚙️ server_setup.php — ตั้งค่าการเชื่อมต่อฐานข้อมูลบน Server</text>
-            <rect x="460" y="15" width="158" height="22" rx="6" fill="#047857"/>
-            <text x="539" y="30" text-anchor="middle" font-size="10" font-weight="700" fill="#a7f3d0">http://.../server_setup.php</text>
+            <rect x="8" y="8" width="624" height="204" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5" />
+            <rect x="8" y="8" width="624" height="36" rx="12" fill="#065f46" />
+            <text x="26" y="31" font-size="12" font-weight="700" fill="#ffffff">⚙️ server_setup.php —
+              ตั้งค่าการเชื่อมต่อฐานข้อมูลบน Server</text>
+            <rect x="460" y="15" width="158" height="22" rx="6" fill="#047857" />
+            <text x="539" y="30" text-anchor="middle" font-size="10" font-weight="700"
+              fill="#a7f3d0">http://.../server_setup.php</text>
 
             <text x="26" y="66" font-size="11" font-weight="700" fill="#334155">1. MySQL Host / Port</text>
-            <rect x="26" y="72" width="270" height="28" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+            <rect x="26" y="72" width="270" height="28" rx="6" fill="#f8fafc" stroke="#cbd5e1" />
             <text x="36" y="90" font-size="11" fill="#0f172a">localhost : 3306</text>
 
             <text x="320" y="66" font-size="11" font-weight="700" fill="#334155">2. Database Name</text>
-            <rect x="320" y="72" width="290" height="28" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
-            <text x="330" y="90" font-size="11" font-weight="700" fill="#0284c7">water_system2</text>
+            <rect x="320" y="72" width="290" height="28" rx="6" fill="#f8fafc" stroke="#cbd5e1" />
+            <text x="330" y="90" font-size="11" font-weight="700" fill="#0284c7">lp_pao_smart_data</text>
 
-            <text x="26" y="122" font-size="11" font-weight="700" fill="#334155">3. Username / Password ของ MySQL บน Server</text>
-            <rect x="26" y="128" width="270" height="28" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+            <text x="26" y="122" font-size="11" font-weight="700" fill="#334155">3. Username / Password ของ MySQL บน
+              Server</text>
+            <rect x="26" y="128" width="270" height="28" rx="6" fill="#f8fafc" stroke="#cbd5e1" />
             <text x="36" y="146" font-size="11" fill="#0f172a">user บน Server / ********</text>
 
-            <rect x="320" y="122" width="290" height="34" rx="8" fill="#ecfdf5" stroke="#34d399"/>
-            <text x="465" y="143" text-anchor="middle" font-size="11" font-weight="700" fill="#065f46">🟢 สร้างตารางอัตโนมัติครบ 10 ตาราง!</text>
+            <rect x="320" y="122" width="290" height="34" rx="8" fill="#ecfdf5" stroke="#34d399" />
+            <text x="465" y="143" text-anchor="middle" font-size="11" font-weight="700" fill="#065f46">🟢
+              สร้างตารางอัตโนมัติครบ 10 ตาราง!</text>
 
-            <rect x="26" y="170" width="285" height="30" rx="8" fill="#047857"/>
-            <text x="168" y="189" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">① กดปุ่ม: 💾 บันทึกและสร้างตารางอัตโนมัติ</text>
+            <rect x="26" y="170" width="285" height="30" rx="8" fill="#047857" />
+            <text x="168" y="189" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">① กดปุ่ม: 💾
+              บันทึกและสร้างตารางอัตโนมัติ</text>
 
-            <rect x="326" y="170" width="284" height="30" rx="8" fill="#2563eb"/>
-            <text x="468" y="189" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">② กดปุ่ม: 🚀 ทดสอบดึงข้อมูลทันที (cron.php)</text>
+            <rect x="326" y="170" width="284" height="30" rx="8" fill="#2563eb" />
+            <text x="468" y="189" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">② กดปุ่ม: 🚀
+              ทดสอบดึงข้อมูลทันที (cron.php)</text>
           </svg>
         </div>
       </div>
 
       <!-- STEP 4 -->
-      <div class="rounded-2xl border-2 border-emerald-200 bg-emerald-50/40 p-5 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+      <div
+        class="rounded-2xl border-2 border-emerald-200 bg-emerald-50/40 p-5 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
         <div class="lg:col-span-5 space-y-3">
-          <div class="inline-flex items-center gap-2 bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-bold">STEP 4</div>
+          <div
+            class="inline-flex items-center gap-2 bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-bold">
+            STEP 4</div>
           <h3 class="text-lg font-bold text-slate-900">เปิด Smart Sleep + ตั้งแจ้งเตือน Gmail/LINE แล้วปิดคอมได้เลย</h3>
           <ol class="text-xs sm:text-sm text-slate-600 space-y-2 list-decimal pl-5 leading-relaxed">
-            <li>ตั้งปลุก Server 24 ชม.: เพิ่ม Secret <code>WATER_SERVER_CRON_URL</code> ใน GitHub ชี้มาที่ Subdomain <code>.../cron.php</code> และตั้ง Uptime Monitor ชี้ที่ <a href="./endpoint.php?r=/api/health" target="_blank" class="text-sky-700 font-bold underline"><code>endpoint.php?r=/api/health</code></a> (หรือเปิด <a href="./worker.php?action=start" target="_blank" class="text-emerald-700 font-bold underline"><code>worker.php?action=start</code></a>)</li>
-            <li>เปิดหน้า <a href="./notification.html" target="_blank" class="text-purple-700 font-bold underline"><code>notification.html</code></a> ใส่ <strong>LINE Token + Group ID</strong> และเพิ่มอีเมลผู้บริหารที่ต้องการรับแจ้งเตือน แล้วกดทดสอบส่งอีเมล</li>
-            <li><strong>Traffy Automation:</strong> ระบบดึง Traffy Public API อัตโนมัติโดยไม่ต้องใช้ Chrome Extension (หรือใส่ <code>org_id</code>/<code>uuid</code> / LINE Token ใน UI และต่อยอด Traffy Exchange API <code>get-auth</code> ได้)</li>
-            <li><strong>เสร็จสมบูรณ์! ปิดคอมพิวเตอร์ได้เลย</strong> Server + GitHub Actions จะทำงานเก็บข้อมูลและแจ้งเตือนต่อตลอด 24 ชม.</li>
+            <li>ตั้งปลุก Server 24 ชม.: เพิ่ม Secret <code>WATER_SERVER_CRON_URL</code> ใน GitHub ชี้มาที่ Subdomain
+              <code>.../cron.php</code> และตั้ง Uptime Monitor ชี้ที่ <a href="./endpoint.php?r=/api/health"
+                target="_blank" class="text-sky-700 font-bold underline"><code>endpoint.php?r=/api/health</code></a>
+              (หรือเปิด <a href="./worker.php?action=start" target="_blank"
+                class="text-emerald-700 font-bold underline"><code>worker.php?action=start</code></a>)
+            </li>
+            <li>เปิดหน้า <a href="./notification.html" target="_blank"
+                class="text-purple-700 font-bold underline"><code>notification.html</code></a> ใส่ <strong>LINE Token +
+                Group ID</strong> และเพิ่มอีเมลผู้บริหารที่ต้องการรับแจ้งเตือน แล้วกดทดสอบส่งอีเมล</li>
+            <li><strong>Traffy Automation:</strong> ระบบดึง Traffy Public API อัตโนมัติโดยไม่ต้องใช้ Chrome Extension
+              (หรือใส่ <code>org_id</code>/<code>uuid</code> / LINE Token ใน UI และต่อยอด Traffy Exchange API
+              <code>get-auth</code> ได้)
+            </li>
+            <li><strong>เสร็จสมบูรณ์! ปิดคอมพิวเตอร์ได้เลย</strong> Server + GitHub Actions
+              จะทำงานเก็บข้อมูลและแจ้งเตือนต่อตลอด 24 ชม.</li>
           </ol>
         </div>
         <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 p-3 shadow-sm">
           <svg viewBox="0 0 640 210" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
-            <rect x="10" y="16" width="190" height="178" rx="12" fill="#ecfdf5" stroke="#34d399" stroke-width="1.5"/>
-            <text x="105" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#065f46">① เปิด Smart Sleep</text>
-            <rect x="24" y="56" width="162" height="32" rx="8" fill="#059669"/>
-            <text x="105" y="76" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">worker.php?action=start</text>
-            <text x="105" y="112" text-anchor="middle" font-size="11" font-weight="700" fill="#047857">สถานะ: running = true</text>
+            <rect x="10" y="16" width="190" height="178" rx="12" fill="#ecfdf5" stroke="#34d399" stroke-width="1.5" />
+            <text x="105" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#065f46">① เปิด Smart
+              Sleep</text>
+            <rect x="24" y="56" width="162" height="32" rx="8" fill="#059669" />
+            <text x="105" y="76" text-anchor="middle" font-size="10" font-weight="700"
+              fill="#ffffff">worker.php?action=start</text>
+            <text x="105" y="112" text-anchor="middle" font-size="11" font-weight="700" fill="#047857">สถานะ: running =
+              true</text>
             <text x="105" y="132" text-anchor="middle" font-size="10" fill="#475569">พักรอ 0 Byte จนถึงเวลา</text>
             <text x="105" y="150" text-anchor="middle" font-size="10" fill="#475569">ตื่นดึง 5 API ใน ~3 วินาที</text>
 
-            <path d="M 206 105 L 228 105" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow)"/>
+            <path d="M 206 105 L 228 105" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow)" />
 
-            <rect x="234" y="16" width="196" height="178" rx="12" fill="#faf5ff" stroke="#c084fc" stroke-width="1.5"/>
-            <text x="332" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#6b21a8">② ตั้งค่า notification.html</text>
-            <rect x="248" y="54" width="168" height="38" rx="6" fill="#ffffff" stroke="#d8b4fe"/>
-            <text x="332" y="71" text-anchor="middle" font-size="10" font-weight="700" fill="#9f1239">📧 Gmail SMTP (ตั้งให้แล้ว)</text>
-            <text x="332" y="85" text-anchor="middle" font-size="9" fill="#64748b">เพิ่มรายชื่อผู้รับ &amp; กด Test Email</text>
-            <rect x="248" y="102" width="168" height="42" rx="6" fill="#f0fdf4" stroke="#86efac"/>
-            <text x="332" y="120" text-anchor="middle" font-size="10" font-weight="700" fill="#166534">💬 LINE Messaging API</text>
-            <text x="332" y="135" text-anchor="middle" font-size="9" fill="#64748b">ใส่ Token + Group ID ผู้บริหาร</text>
-            <rect x="248" y="154" width="168" height="28" rx="6" fill="#7e22ce"/>
-            <text x="332" y="172" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">🔔 แจ้งเตือนทันทีเมื่อเกิดวิกฤต</text>
+            <rect x="234" y="16" width="196" height="178" rx="12" fill="#faf5ff" stroke="#c084fc" stroke-width="1.5" />
+            <text x="332" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#6b21a8">② ตั้งค่า
+              notification.html</text>
+            <rect x="248" y="54" width="168" height="38" rx="6" fill="#ffffff" stroke="#d8b4fe" />
+            <text x="332" y="71" text-anchor="middle" font-size="10" font-weight="700" fill="#9f1239">📧 Gmail SMTP
+              (ตั้งให้แล้ว)</text>
+            <text x="332" y="85" text-anchor="middle" font-size="9" fill="#64748b">เพิ่มรายชื่อผู้รับ &amp; กด Test
+              Email</text>
+            <rect x="248" y="102" width="168" height="42" rx="6" fill="#f0fdf4" stroke="#86efac" />
+            <text x="332" y="120" text-anchor="middle" font-size="10" font-weight="700" fill="#166534">💬 LINE Messaging
+              API</text>
+            <text x="332" y="135" text-anchor="middle" font-size="9" fill="#64748b">ใส่ Token + Group ID
+              ผู้บริหาร</text>
+            <rect x="248" y="154" width="168" height="28" rx="6" fill="#7e22ce" />
+            <text x="332" y="172" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">🔔
+              แจ้งเตือนทันทีเมื่อเกิดวิกฤต</text>
 
-            <path d="M 436 105 L 458 105" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow)"/>
+            <path d="M 436 105 L 458 105" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow)" />
 
-            <rect x="464" y="16" width="166" height="178" rx="12" fill="#0f172a"/>
+            <rect x="464" y="16" width="166" height="178" rx="12" fill="#0f172a" />
             <text x="547" y="52" text-anchor="middle" font-size="24">💻</text>
-            <text x="547" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#34d399">ปิดคอมตัวเองได้เลย!</text>
-            <text x="547" y="108" text-anchor="middle" font-size="10" fill="#cbd5e1">Server รันดึงข้อมูลเอง 24 ชม.</text>
-            <text x="547" y="128" text-anchor="middle" font-size="10" fill="#cbd5e1">แจ้งเตือน Gmail + LINE อัตโนมัติ</text>
-            <text x="547" y="148" text-anchor="middle" font-size="10" fill="#38bdf8">ดู Dashboard จากมือถือได้ทันที</text>
-            <rect x="486" y="162" width="122" height="22" rx="11" fill="#059669"/>
-            <text x="547" y="177" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">100% Autonomous</text>
+            <text x="547" y="82" text-anchor="middle" font-size="13" font-weight="700"
+              fill="#34d399">ปิดคอมตัวเองได้เลย!</text>
+            <text x="547" y="108" text-anchor="middle" font-size="10" fill="#cbd5e1">Server รันดึงข้อมูลเอง 24
+              ชม.</text>
+            <text x="547" y="128" text-anchor="middle" font-size="10" fill="#cbd5e1">แจ้งเตือน Gmail + LINE
+              อัตโนมัติ</text>
+            <text x="547" y="148" text-anchor="middle" font-size="10" fill="#38bdf8">ดู Dashboard
+              จากมือถือได้ทันที</text>
+            <rect x="486" y="162" width="122" height="22" rx="11" fill="#059669" />
+            <text x="547" y="177" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">100%
+              Autonomous</text>
           </svg>
         </div>
       </div>
@@ -783,7 +1082,7 @@
   </main>
 
   <footer class="max-w-7xl mx-auto px-4 sm:px-6 py-8 text-center text-xs text-slate-400">
-    คู่มือระบบ Water_System2 — องค์การบริหารส่วนจังหวัดลำปาง (Port 7000 / Drop-in PHP Edition)
+    คู่มือระบบ LP-PAO Smart Data — องค์การบริหารส่วนจังหวัดลำปาง (Port 7000 / Drop-in PHP Edition)
   </footer>
 
   <script>
@@ -898,7 +1197,7 @@
         if (d.success) {
           const r = d.result?.results || {};
           const cStr = r.complaints?.ok ? (r.complaints?.count || 0) : `RetryQueue(${r.complaints?.error ? 'timeout' : 'queued'})`;
-          logLine(`✅ สำเร็จ (${d.status || 'ok'}) ใน ${d.result?.elapsedSec || dt} วินาที -> ฝน:${r.rainfall?.count||0}, น้ำ:${r.water?.count||0}, เขื่อน:${r.drought?.count||0}, PM2.5:${r.pm25?.count||0}, ร้องเรียน:${cStr}`);
+          logLine(`✅ สำเร็จ (${d.status || 'ok'}) ใน ${d.result?.elapsedSec || dt} วินาที -> ฝน:${r.rainfall?.count || 0}, น้ำ:${r.water?.count || 0}, เขื่อน:${r.drought?.count || 0}, PM2.5:${r.pm25?.count || 0}, ร้องเรียน:${cStr}`);
           if (d.result?.notifications) {
             const n = d.result.notifications;
             logLine(`   🔔 Alert Check: พบ ${n.totalAlerts} | ส่งเมล ${n.sentEmails} | ข้าม(ไม่เปลี่ยน) ${n.skipped}`);
@@ -985,4 +1284,5 @@
     }
   </script>
 </body>
+
 </html>

@@ -1,6 +1,6 @@
 <?php
 // =========================================================================
-// Water_System2 — Live Database Comparator (water_systems vs water_system2)
+// LP-PAO Smart Data — Live Database Comparator (water_systems vs lp_pao_smart_data)
 // Compares schema, table row counts, freshness timestamps, and latest
 // entity-by-entity fields across all 5 monitoring domains in 1 click.
 // Strictly READ-ONLY against reference database (`water_systems`).
@@ -172,7 +172,7 @@ function db_compare_domain_specs(): array {
 function compare_databases_full(string $refDbName = 'water_systems', string $domainFilter = 'all', bool $onlyDiff = false): array {
     $t0 = microtime(true);
     $pdoNew = get_db();
-    $newDbName = env_val('DB_NAME', 'water_system2');
+    $newDbName = env_val('DB_NAME', 'lp_pao_smart_data');
 
     $refConn = db_compare_connect_reference($refDbName);
     if (empty($refConn['ok']) || !($refConn['pdo'] instanceof PDO)) {

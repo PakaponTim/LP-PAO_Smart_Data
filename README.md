@@ -1,7 +1,7 @@
-# Water_System2 — ระบบบูรณาการข้อมูลภัยพิบัติและเรื่องร้องเรียน อบจ.ลำปาง
+# LP-PAO Smart Data — ศูนย์ข้อมูลสาธารณะและบูรณาการข้อมูลภัยพิบัติ อบจ.ลำปาง
 
 ระบบติดตามสถานการณ์น้ำ ปริมาณฝน อ่างเก็บน้ำ/ภัยแล้ง ฝุ่น PM 2.5 และเรื่องร้องเรียน Traffy Fondue จังหวัดลำปาง  
-ทำงานด้วย **PHP 100% + MySQL (`water_system2`, 10 ตาราง) + `curl_multi` Parallel Collector + Smart Sleep Scheduler + GitHub Actions Cloud Collector** (แยกขาดจากระบบเดิมบน Port 3000 และ **ไม่ต้องใช้ Chrome Extension**)
+ทำงานด้วย **PHP 100% + MySQL (`lp_pao_smart_data`, 10 ตาราง) + `curl_multi` Parallel Collector + Smart Sleep Scheduler + GitHub Actions Cloud Collector** (แยกขาดจากระบบเดิมบน Port 3000 และ **ไม่ต้องใช้ Chrome Extension**)
 
 ---
 
@@ -33,7 +33,7 @@
 
 ## เริ่มใช้งานบนเครื่อง (Localhost Port 7000)
 
-1. ตรวจสอบ MySQL และไฟล์ `.env` (ตั้ง `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`, `DB_NAME=water_system2`)
+1. ตรวจสอบ MySQL และไฟล์ `.env` (ตั้ง `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`, `DB_NAME=lp_pao_smart_data`)
 2. เริ่มเว็บเซิร์ฟเวอร์ PHP:
    - เปิดไฟล์ `start_php_7000.bat` หรือรัน:
      ```powershell
@@ -47,7 +47,7 @@
    - Dashboard & System Log Center: `http://127.0.0.1:7000/index.html`
    - Public Dashboard อบจ.ลำปาง + Traffy Fondue + Open Data API (Zero-PII): `http://127.0.0.1:7000/public.html`
    - โหมด Monitor บนมือถือ / iPad (PWA Touch View): `http://127.0.0.1:7000/mobile.html`
-   - เปรียบเทียบฐานข้อมูล `water_systems` vs `water_system2` (1-Click): `http://127.0.0.1:7000/db_compare.html`
+   - เปรียบเทียบฐานข้อมูล `water_systems` vs `lp_pao_smart_data` (1-Click): `http://127.0.0.1:7000/db_compare.html`
    - โหมดฉุกเฉินจาก Cloud Snapshot (Offline Viewer): `http://127.0.0.1:7000/emergency_cloud.html`
    - คู่มือใช้งานและชุดทดสอบสดบนหน้าเว็บ: `http://127.0.0.1:7000/guide.html`
    - ตั้งค่า Gmail SMTP & LINE Messaging API: `http://127.0.0.1:7000/notification.html`
@@ -55,13 +55,13 @@
 
 ---
 
-## Step-by-Step Push โค้ดขึ้น GitHub (`PakaponTim/Water_System2`)
+## Step-by-Step Push โค้ดขึ้น GitHub (`PakaponTim/LP-PAO_Smart_Data`)
 
 > ⚠️ **สำคัญก่อน Push:** ระบบ GitHub Actions (`.github/workflows/collect_every_30min.yml`) จะ Commit ไฟล์เข้า `cloud_snapshots/` บน Branch `main` ทุก 30 นาที **จึงควร Pull Rebase ก่อน Push เสมอ** และห้าม Push ไฟล์ความลับ (`.env`, `runtime/`, `deploy_server/`, `*.zip`)
 
 ### ขั้นตอนที่ 1: ตรวจสอบสถานะไฟล์และความปลอดภัยก่อน Push
 ```powershell
-cd D:\Water_System2
+cd D:\LP-PAO_Smart_Data
 C:\laragon\bin\git\bin\git.exe status --short
 ```
 - ตรวจให้แน่ใจว่าไม่มีไฟล์ `.env`, `runtime/`, `deploy_server/` หรือไฟล์รหัสผ่านติดในรายการเปลี่ยนแปลง
@@ -94,13 +94,13 @@ C:\laragon\bin\git\bin\git.exe push -u origin main
   - **Password:** สร้าง **Personal Access Token (Classic)** ที่ [github.com/settings/tokens/new](https://github.com/settings/tokens/new) โดยติ๊กช่อง **`repo`** และ **`workflow`** แล้วนำรหัส `ghp_...` มาวางช่อง Password
 
 ### ขั้นตอนที่ 4: ยืนยันผลบน GitHub & Subdomain Server
-1. เปิดแท็บ **Actions** บน GitHub → เลือก **Water_System2 Cloud Collector (Every 30 Minutes)** → กด **Run workflow** เพื่อทดสอบให้ขึ้นเครื่องหมายถูกสีเขียว
+1. เปิดแท็บ **Actions** บน GitHub → เลือก **LP-PAO Smart Data Cloud Collector (Every 30 Minutes)** → กด **Run workflow** เพื่อทดสอบให้ขึ้นเครื่องหมายถูกสีเขียว
 2. **ตั้งค่าโดเมนหลัก & โดเมนสำรอง (`domain_config.json`):** แก้ไขไฟล์ [`domain_config.json`](domain_config.json) (หรือบันทึกผ่าน `server_setup.php`) เพื่อระบุ `primary_domain` และ `backup_domain` — ระบบ CORS และ GitHub Actions Failover จะสลับ/ปลุกทั้ง 2 โดเมนให้โดยอัตโนมัติ (หรือตั้งใน GitHub Secrets: `WATER_SERVER_CRON_URL` / `WATER_SERVER_BACKUP_CRON_URL`)
 3. สร้างแพ็กเกจปลอดความลับสำหรับนำไปแตกไฟล์วางบน Subdomain Server:
    ```powershell
    C:\laragon\bin\php\php-7.2.19-Win32-VC15-x64\php.exe php_server\build_server_package.php
    ```
-   จะได้โฟลเดอร์ `deploy_server/Water_System2/` และไฟล์ `deploy_server/Water_System2_Server_Deploy.zip` พร้อมวางบน Server แล้วเปิด `server_setup.php`
+   จะได้โฟลเดอร์ `deploy_server/LP-PAO_Smart_Data/` และไฟล์ `deploy_server/LP-PAO_Smart_Data_Server_Deploy.zip` พร้อมวางบน Server แล้วเปิด `server_setup.php`
 
 ---
 
@@ -145,7 +145,7 @@ php_server/
   api.php                    REST API หลักทุกเส้นทาง + CSV Export
   github_collect_snapshot.php  สคริปต์ดึงข้อมูลบน GitHub Actions
   github_sync_to_mysql.php     ซิงก์ Snapshot จาก GitHub ลง MySQL (Contents API / Raw Fallback)
-  build_server_package.php     สร้างแพ็กเกจ deploy_server/Water_System2 + .zip ปลอดความลับ
+  build_server_package.php     สร้างแพ็กเกจ deploy_server/LP-PAO_Smart_Data + .zip ปลอดความลับ
 endpoint.php / index.php     ตัวชี้เส้นทางสำหรับ Drop-in Subfolder / Subdomain
 server_setup.php             Wizard ตั้งค่า MySQL + ตรวจสอบความปลอดภัย Server 24 ชม.
 cron.php / worker.php        จุดเรียกเก็บข้อมูลและตัวจัดการ Web Worker

@@ -1,8 +1,8 @@
 <?php
 // =========================================================================
-// Water_System2 (Port 7000) — Automatic Cloud-to-MySQL Snapshot Importer
+// LP-PAO Smart Data (Port 7000) — Automatic Cloud-to-MySQL Snapshot Importer
 // Syncs snapshots collected by GitHub Actions (while your PC was turned off)
-// into local MySQL database `water_system2` without duplicates!
+// into local MySQL database `lp_pao_smart_data` without duplicates!
 // =========================================================================
 
 require_once __DIR__ . '/config.php';
@@ -207,7 +207,7 @@ function _sync_github_snapshots_to_mysql_locked(int $maxImport = 0): array {
         @mkdir($cacheDir, 0777, true);
     }
 
-    $ghRepo = env_val('GITHUB_SYNC_REPO', 'PakaponTim/Water_System2');
+    $ghRepo = env_val('GITHUB_SYNC_REPO', 'PakaponTim/LP-PAO_Smart_Data');
     $ghBranch = env_val('GITHUB_SYNC_BRANCH', 'main');
     $ghToken = env_val('GITHUB_SYNC_TOKEN', '');
     if ($ghRepo !== '') {
@@ -219,23 +219,37 @@ function _sync_github_snapshots_to_mysql_locked(int $maxImport = 0): array {
                 $rawHeaders[] = "Authorization: token {$ghToken}";
             }
 
-            $manifestUrl = "https://api.github.com/repos/{$ghRepo}/contents/cloud_snapshots/manifest.json?ref=" . rawurlencode($ghBranch);
-            $rawBase = "https://raw.githubusercontent.com/{$ghRepo}/{$ghBranch}/cloud_snapshots";
-
-            // Prefer raw.githubusercontent.com when unauthenticated to avoid 60 req/hr REST API rate limit on shared hosting
-            if ($ghToken === '') {
-                try {
-                    $remoteManifest = http_get_json("{$rawBase}/manifest.json?ts=" . time(), $rawHeaders, 12);
-                } catch (Throwable $e) {
-                    $remoteManifest = http_get_json($manifestUrl, $apiHeaders, 12);
+            $fetchManifestFromRepo = function (string $repo) use ($ghBranch, $ghToken, $apiHeaders, $rawHeaders): array {
+                $manifestUrl = "https://api.github.com/repos/{$repo}/contents/cloud_snapshots/manifest.json?ref=" . rawurlencode($ghBranch);
+                $rawBase = "https://raw.githubusercontent.com/{$repo}/{$ghBranch}/cloud_snapshots";
+                if ($ghToken === '') {
+                    try {
+                        $m = http_get_json("{$rawBase}/manifest.json?ts=" . time(), $rawHeaders, 12);
+                    } catch (Throwable $e) {
+                        $m = http_get_json($manifestUrl, $apiHeaders, 12);
+                    }
+                } else {
+                    try {
+                        $m = http_get_json($manifestUrl, $apiHeaders, 12);
+                    } catch (Throwable $e) {
+                        $m = http_get_json("{$rawBase}/manifest.json?ts=" . time(), $rawHeaders, 12);
+                    }
                 }
-            } else {
-                try {
-                    $remoteManifest = http_get_json($manifestUrl, $apiHeaders, 12);
-                } catch (Throwable $e) {
-                    $remoteManifest = http_get_json("{$rawBase}/manifest.json?ts=" . time(), $rawHeaders, 12);
+                return ['manifest' => $m, 'repo' => $repo, 'rawBase' => $rawBase];
+            };
+
+            try {
+                $fetched = $fetchManifestFromRepo($ghRepo);
+            } catch (Throwable $primaryErr) {
+                if (strcasecmp($ghRepo, 'PakaponTim/LP-PAO_Smart_Data') === 0) {
+                    $fetched = $fetchManifestFromRepo('PakaponTim/Water_System2');
+                } else {
+                    throw $primaryErr;
                 }
             }
+            $ghRepo = $fetched['repo'];
+            $rawBase = $fetched['rawBase'];
+            $remoteManifest = $fetched['manifest'];
 
             $downloaded = 0;
             if (!empty($remoteManifest['snapshots']) && is_array($remoteManifest['snapshots'])) {
@@ -321,7 +335,7 @@ function _sync_github_snapshots_to_mysql_locked(int $maxImport = 0): array {
                 }
             }
             $slotHm = substr((string)$res['recorded_at'], 11, 5);
-            add_server_log('GitHubSync-7000', "☁️➡️🗄️ ซิงค์ข้อมูลย้อนหลังจาก GitHub Snapshot ({$res['recorded_at']}) เข้าฐานข้อมูล water_system2 สำเร็จ (น้ำ {$c['water']}, ฝน {$c['rainfall']}, เขื่อน {$c['drought']}, PM2.5 {$c['pm25']}, ร้องเรียน {$c['complaints']})");
+            add_server_log('GitHubSync-7000', "☁️➡️🗄️ ซิงค์ข้อมูลย้อนหลังจาก GitHub Snapshot ({$res['recorded_at']}) เข้าฐานข้อมูล lp_pao_smart_data สำเร็จ (น้ำ {$c['water']}, ฝน {$c['rainfall']}, เขื่อน {$c['drought']}, PM2.5 {$c['pm25']}, ร้องเรียน {$c['complaints']})");
             sys_log_record([
                 'module'         => 'github_sync',
                 'action'         => 'Import Cloud Snapshot',
@@ -341,7 +355,7 @@ function _sync_github_snapshots_to_mysql_locked(int $maxImport = 0): array {
     }
 
     if (!empty($importedList)) {
-        log_task_run('ซิงค์ข้อมูลจาก GitHub Actions (ขณะปิดเครื่อง)', 'db', 'success', count($importedList), 'นำเข้าข้อมูลย้อนหลัง ' . count($importedList) . ' รอบเวลา เข้าสู่ฐานข้อมูล water_system2 สำเร็จ');
+        log_task_run('ซิงค์ข้อมูลจาก GitHub Actions (ขณะปิดเครื่อง)', 'db', 'success', count($importedList), 'นำเข้าข้อมูลย้อนหลัง ' . count($importedList) . ' รอบเวลา เข้าสู่ฐานข้อมูล lp_pao_smart_data สำเร็จ');
     }
 
     return [

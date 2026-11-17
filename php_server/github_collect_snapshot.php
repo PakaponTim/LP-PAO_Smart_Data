@@ -1,6 +1,6 @@
 <?php
 // =========================================================================
-// Water_System2 — Cloud-to-Local Snapshot Collector for GitHub Actions
+// LP-PAO Smart Data — Cloud-to-Local Snapshot Collector for GitHub Actions
 // Runs every 30 minutes on GitHub's servers WITHOUT needing MySQL or a PC!
 // Uses shared pure transformers in collectors_transform.php so snapshots match
 // lampang.thaiwater.net & direct collectors 100%, and tracks per-module status.

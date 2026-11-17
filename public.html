@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ศูนย์บูรณาการข้อมูล อบจ.ลำปาง &amp; Traffy Fondue Lampang (Public Dashboard)</title>
+  <link rel="icon" type="image/png" href="./logo_pao.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Prompt', sans-serif; scroll-behavior: smooth; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased">
+
+  <!-- Sticky Navigation -->
+  <header class="sticky top-0 z-50 bg-emerald-950/95 backdrop-blur text-white border-b-4 border-pink-500 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-10 h-10 rounded-xl bg-white/10 p-1 object-contain" />
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-sm sm:text-lg font-extrabold leading-tight">ศูนย์ข้อมูลสาธารณะ อบจ.ลำปาง (Smart Data Hub)</h1>
+            <span class="hidden sm:inline-block px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 text-[10px] font-bold">OPEN DATA v2</span>
+          </div>
+          <p class="text-[11px] text-emerald-200">น้ำ · ฝน · อ่างเก็บน้ำ · PM 2.5 · Traffy Fondue ลำปาง · Inter-Agency Secure API</p>
+        </div>
+      </div>
+      <nav class="flex flex-wrap items-center gap-2 text-xs">
+        <a href="#strengths" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">✨ จุดเด่นข้อมูล</a>
+        <a href="#gis" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">🗺️ แผนที่ &amp; 4 ด้าน</a>
+        <a href="#traffy-lampang" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 font-semibold transition">📢 Traffy Lampang</a>
+        <a href="#api-portal" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition">🔌 API หน่วยงาน</a>
+        <a href="./mobile.html" class="px-3 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 font-semibold transition">📱 มือถือ/iPad</a>
+        <a href="./index.html" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 transition">⚙️ หลังบ้าน</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-10">
+
+    <!-- ==================== 1. HERO: LAMPANG PAO DATA STRENGTHS ==================== -->
+    <section id="strengths" class="bg-gradient-to-br from-emerald-900 via-emerald-950 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div class="max-w-3xl space-y-2">
+          <div class="inline-flex flex-wrap items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-amber-300">
+            <span>🏛️ องค์การบริหารส่วนจังหวัดลำปาง</span>
+            <span>·</span>
+            <span id="heroSourceBadge">🔒 คัดกรองข้อมูลส่วนบุคคล Zero-PII</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold leading-snug">
+            บูรณาการข้อมูลภัยพิบัติและเสียงสะท้อนประชาชน 13 อำเภอ จ.ลำปาง แบบเรียลไทม์ 24 ชม.
+          </h2>
+          <p class="text-xs sm:text-sm text-emerald-100/90 leading-relaxed">
+            ศูนย์ข้อมูลเดียวที่รวบรวมสถานการณ์น้ำท่า ปริมาณฝนสะสม 3 วัน อ่างเก็บน้ำทั้งขนาดใหญ่-กลาง-เล็ก คุณภาพอากาศ PM 2.5 และระบบเรื่องร้องเรียน Traffy Fondue ลำปาง พร้อมเปิด API มาตรฐานให้หน่วยงานเครือข่ายเชื่อมต่ออย่างปลอดภัย
+          </p>
+        </div>
+        <div class="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-4 text-xs min-w-[230px] space-y-1">
+          <div class="text-emerald-200 font-semibold">ดัชนีความเสี่ยงภาพรวมจังหวัด</div>
+          <div class="flex items-baseline gap-2">
+            <span id="pubRiskScore" class="text-4xl font-extrabold text-amber-300">-</span>
+            <span class="text-xs text-slate-300">/ 100</span>
+            <span id="pubRiskLabel" class="px-2 py-0.5 rounded-full bg-white/15 text-xs font-bold">-</span>
+          </div>
+          <div id="pubUpdatedAt" class="text-[11px] text-emerald-200/80 pt-1">อัปเดตล่าสุด: -</div>
+        </div>
+      </div>
+
+      <!-- 4 Highlight Pillars -->
+      <div id="highlightsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs"></div>
+
+      <!-- 5 Domain Live Strip -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 text-slate-900">
+        <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <div class="text-xs text-slate-500">🌊 สถานีวัดระดับน้ำ</div>
+          <div id="kpiWater" class="text-2xl font-extrabold text-sky-700 mt-1">-</div>
+          <div id="kpiWaterNote" class="text-[11px] text-slate-500 mt-0.5">ลุ่มน้ำวังและลุ่มน้ำยม</div>
+        </div>
+        <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <div class="text-xs text-slate-500">🌧️ สถานีวัดปริมาณฝน</div>
+          <div id="kpiRain" class="text-2xl font-extrabold text-blue-700 mt-1">-</div>
+          <div id="kpiRainNote" class="text-[11px] text-slate-500 mt-0.5">ฝน 24 ชม. + สะสม 3 วัน</div>
+        </div>
+        <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <div class="text-xs text-slate-500">🏜️ อ่างเก็บน้ำทั้งหมด</div>
+          <div id="kpiDam" class="text-2xl font-extrabold text-amber-700 mt-1">-</div>
+          <div id="kpiDamNote" class="text-[11px] text-slate-500 mt-0.5">ขนาดใหญ่ 3 + กลาง/เล็ก 33</div>
+        </div>
+        <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <div class="text-xs text-slate-500">💨 จุดวัดฝุ่น PM 2.5</div>
+          <div id="kpiPm" class="text-2xl font-extrabold text-purple-700 mt-1">-</div>
+          <div id="kpiPmNote" class="text-[11px] text-slate-500 mt-0.5">ค่าปัจจุบัน &amp; เฉลี่ย 24 ชม.</div>
+        </div>
+        <div class="bg-white rounded-2xl p-4 shadow-sm col-span-2 sm:col-span-1">
+          <div class="text-xs text-slate-500">📢 Traffy Fondue ลำปาง</div>
+          <div id="kpiTraffy" class="text-2xl font-extrabold text-emerald-700 mt-1">-</div>
+          <div id="kpiTraffyNote" class="text-[11px] text-slate-500 mt-0.5">แยกภารกิจ อบจ. + เครือข่าย</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 2. GIS MAP + 13 AMPHOES + 4 ENV HIGHLIGHTS ==================== -->
+    <section id="gis" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-6 bg-white rounded-3xl border border-slate-200 p-5 shadow-sm flex flex-col space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">แผนที่ติดตามสถานการณ์ 13 อำเภอ จ.ลำปาง</h2>
+            <p class="text-xs text-slate-500">สถานีระดับน้ำและอ่างเก็บน้ำสำคัญแบบเรียลไทม์ (แตะจุดเพื่อดูข้อมูล)</p>
+          </div>
+          <div class="flex items-center gap-2 text-[11px]">
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> วิกฤต</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span> เสี่ยงสูง</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> ปกติ</span>
+          </div>
+        </div>
+        <div id="publicMap" class="w-full h-[380px] rounded-2xl border border-slate-200 bg-slate-50 z-10"></div>
+        <div id="districtStrip" class="flex flex-wrap gap-1.5 text-[11px] pt-1"></div>
+      </div>
+
+      <div class="lg:col-span-6 bg-white rounded-3xl border border-slate-200 p-5 shadow-sm flex flex-col space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h2 class="text-lg font-bold text-slate-900">สรุปข้อมูลสิ่งแวดล้อมสำคัญ 4 ด้าน</h2>
+          <div class="flex gap-1 text-xs">
+            <button onclick="switchEnvTab('water')" data-etab="water" class="etab px-3 py-1.5 rounded-lg bg-slate-900 text-white font-semibold">🌊 น้ำ</button>
+            <button onclick="switchEnvTab('rainfall')" data-etab="rainfall" class="etab px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 font-semibold">🌧️ ฝน</button>
+            <button onclick="switchEnvTab('drought')" data-etab="drought" class="etab px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 font-semibold">🏜️ อ่างฯ</button>
+            <button onclick="switchEnvTab('pm25')" data-etab="pm25" class="etab px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 font-semibold">💨 PM2.5</button>
+          </div>
+        </div>
+        <div class="overflow-auto max-h-[410px] border border-slate-200 rounded-xl flex-1">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead id="envHead" class="bg-slate-100 text-slate-700 sticky top-0"></thead>
+            <tbody id="envBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. DEDICATED DASHBOARD: TRAFFY FONDUE LAMPANG ==================== -->
+    <section id="traffy-lampang" class="bg-white rounded-3xl border-2 border-emerald-200 p-6 sm:p-8 shadow-sm space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <span class="inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-1">TRAFFY FONDUE LAMPANG · PUBLIC EDITION</span>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">Dashboard เรื่องร้องเรียน Traffy Fondue จังหวัดลำปาง</h2>
+          <p class="text-xs text-slate-500 mt-0.5">แยกภารกิจของ อบจ.ลำปาง และหน่วยงานเครือข่ายอัตโนมัติ · <strong>คัดกรองเบอร์โทร เลขบัตร และข้อมูลส่วนบุคคลอัตโนมัติก่อนแสดงผล</strong></p>
+        </div>
+        <div class="flex flex-wrap gap-2 text-xs">
+          <input id="traffySearch" oninput="renderTraffyTable()" type="text" placeholder="🔍 ค้นหารหัสเรื่อง / ปัญหา / พื้นที่..." class="border border-slate-300 rounded-xl px-3 py-2 w-56 bg-slate-50" />
+          <select id="traffyFilterAgency" onchange="renderTraffyTable()" class="border border-slate-300 rounded-xl px-3 py-2 bg-white">
+            <option value="all">ทุกหน่วยงาน</option>
+            <option value="pao">เฉพาะภารกิจ อบจ.ลำปาง</option>
+            <option value="other">ส่งต่อ / หน่วยงานอื่น</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Traffy 5 KPIs -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 text-xs">
+        <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+          <div class="text-slate-500">เรื่องร้องเรียนทั้งหมด</div>
+          <div id="tfTotal" class="text-2xl font-extrabold text-slate-900 mt-1">-</div>
+        </div>
+        <div class="rounded-2xl bg-emerald-50 border border-emerald-200 p-4">
+          <div class="text-emerald-800 font-semibold">ภารกิจ อบจ.ลำปาง</div>
+          <div id="tfPao" class="text-2xl font-extrabold text-emerald-700 mt-1">-</div>
+        </div>
+        <div class="rounded-2xl bg-sky-50 border border-sky-200 p-4">
+          <div class="text-sky-800 font-semibold">หน่วยงานเครือข่ายอื่น</div>
+          <div id="tfOther" class="text-2xl font-extrabold text-sky-700 mt-1">-</div>
+        </div>
+        <div class="rounded-2xl bg-purple-50 border border-purple-200 p-4">
+          <div class="text-purple-800 font-semibold">ดำเนินการเสร็จสิ้น</div>
+          <div id="tfDone" class="text-2xl font-extrabold text-purple-700 mt-1">-</div>
+        </div>
+        <div class="rounded-2xl bg-amber-50 border border-amber-200 p-4 col-span-2 sm:col-span-1">
+          <div class="text-amber-800 font-semibold">ความพึงพอใจเฉลี่ย</div>
+          <div id="tfStars" class="text-2xl font-extrabold text-amber-600 mt-1">-</div>
+        </div>
+      </div>
+
+      <!-- Visual Breakdown Bars -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+        <div class="rounded-2xl border border-slate-200 p-4 space-y-2.5">
+          <div class="font-bold text-slate-800">📌 แยกตามสถานะเรื่องร้องเรียน</div>
+          <div id="tfStateBars" class="space-y-2"></div>
+        </div>
+        <div class="rounded-2xl border border-slate-200 p-4 space-y-2.5">
+          <div class="font-bold text-slate-800">🏛️ แยกตามหมวดหมู่หน่วยงาน</div>
+          <div id="tfAgencyBars" class="space-y-2"></div>
+        </div>
+        <div class="rounded-2xl border border-slate-200 p-4 space-y-2.5">
+          <div class="font-bold text-slate-800">🏷️ ประเภทปัญหาที่พบบ่อย</div>
+          <div id="tfTypeBars" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- Scrubbed Public Traffy Table -->
+      <div class="overflow-auto max-h-[380px] border border-slate-200 rounded-2xl">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead class="bg-slate-100 text-slate-700 sticky top-0">
+            <tr>
+              <th class="p-3">รหัสเรื่อง</th>
+              <th class="p-3">ประเภท &amp; สรุปเรื่อง (คัดกรอง PII แล้ว)</th>
+              <th class="p-3">หน่วยงาน / หมวดหมู่</th>
+              <th class="p-3">สถานะ</th>
+              <th class="p-3">วันที่แจ้ง</th>
+            </tr>
+          </thead>
+          <tbody id="traffyTableBody" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ==================== 4. INTER-AGENCY SECURE OPEN DATA API PORTAL ==================== -->
+    <section id="api-portal" class="bg-slate-900 text-slate-100 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <span class="inline-block px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-bold mb-1">OPEN DATA API FOR PARTNER AGENCIES</span>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-white">API เชื่อมโยงข้อมูลสำหรับหน่วยงานที่เกี่ยวข้อง (มาตรฐานความปลอดภัยสูง)</h2>
+          <p class="text-xs text-slate-300 mt-1">หน่วยงานเครือข่ายใน จ.ลำปาง (ปภ.จังหวัด, อำเภอ, เทศบาล/อบต.) สามารถดึงข้อมูลไปใช้ต่อยอดได้อย่างปลอดภัย</p>
+        </div>
+        <a href="./server_setup.php#agency-keys" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">🔑 ออก / จัดการ API Key หน่วยงาน</a>
+      </div>
+
+      <!-- 4 Security Guarantees -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1">
+          <div class="font-bold text-emerald-300">🛡️ Zero-PII Redaction</div>
+          <p class="text-slate-300">ตัด/ปิดบังเบอร์โทร, เลขบัตรประชาชน 13 หลัก, อีเมล, LINE ID และไม่ส่งออกประวัติแชทภายใน</p>
+        </div>
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1">
+          <div class="font-bold text-amber-300">🔑 SHA-256 Agency Key</div>
+          <p class="text-slate-300">เส้นทาง <code>/api/public/agency/*</code> บังคับใช้ <code>X-API-Key</code> (เก็บรหัสแบบ SHA-256 Hash ใน Server เท่านั้น)</p>
+        </div>
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1">
+          <div class="font-bold text-sky-300">🚦 Sliding Rate Limiting</div>
+          <p class="text-slate-300">ป้องกันการยิงถล่มระบบด้วย Rate Limit ต่อ IP / Key (<code>HTTP 429</code> + <code>X-RateLimit-*</code>)</p>
+        </div>
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-1">
+          <div class="font-bold text-pink-300">🔒 Read-Only &amp; Audit Log</div>
+          <p class="text-slate-300">อนุญาตเฉพาะคำสั่งอ่าน <code>GET</code> เท่านั้น และบันทึกประวัติการดึงของแต่ละหน่วยงานลง Log</p>
+        </div>
+      </div>
+
+      <!-- Endpoints + Live Tester -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div class="lg:col-span-6 space-y-2.5 text-xs">
+          <div class="font-bold text-slate-200 mb-1">รายการ Endpoints พร้อมทดสอบยิงสด</div>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
+            <div><span class="px-1.5 py-0.5 rounded bg-emerald-600 font-bold text-[10px] mr-1">GET</span><code class="text-emerald-300">/endpoint.php?r=/api/public/overview</code><div class="text-slate-400 mt-0.5">สรุปจุดแข็ง 5 ด้าน + ดัชนีความเสี่ยง + สถิติ Traffy (ไม่ต้องใช้ Key)</div></div>
+            <button onclick="probePublicApi('/api/public/overview')" class="px-3 py-1.5 rounded-lg bg-white text-slate-950 font-bold hover:bg-emerald-100">ทดสอบ</button>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
+            <div><span class="px-1.5 py-0.5 rounded bg-emerald-600 font-bold text-[10px] mr-1">GET</span><code class="text-sky-300">/endpoint.php?r=/api/public/traffy</code><div class="text-slate-400 mt-0.5">ข้อมูล Traffy Fondue ลำปาง + Breakdown (คัดกรอง PII แล้ว)</div></div>
+            <button onclick="probePublicApi('/api/public/traffy?limit=5')" class="px-3 py-1.5 rounded-lg bg-white text-slate-950 font-bold hover:bg-sky-100">ทดสอบ</button>
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
+            <div><span class="px-1.5 py-0.5 rounded bg-emerald-600 font-bold text-[10px] mr-1">GET</span><code class="text-purple-300">/endpoint.php?r=/api/public/environment</code><div class="text-slate-400 mt-0.5">ข้อมูลสิ่งแวดล้อมล่าสุด: น้ำ, ฝน, อ่างเก็บน้ำ, PM 2.5</div></div>
+            <button onclick="probePublicApi('/api/public/environment?domain=water')" class="px-3 py-1.5 rounded-lg bg-white text-slate-950 font-bold hover:bg-purple-100">ทดสอบ</button>
+          </div>
+
+          <div class="bg-amber-500/10 border border-amber-400/30 rounded-xl p-3 space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div><span class="px-1.5 py-0.5 rounded bg-amber-500 text-slate-950 font-bold text-[10px] mr-1">KEY REQUIRED</span><code class="text-amber-300">/endpoint.php?r=/api/public/agency/traffy</code></div>
+              <button onclick="probePublicApi('/api/public/agency/traffy?agency=pao&limit=5', true)" class="px-3 py-1.5 rounded-lg bg-amber-400 text-slate-950 font-bold hover:bg-amber-300">ทดสอบด้วย Key</button>
+            </div>
+            <input id="agencyKeyTestInput" type="password" placeholder="วาง X-API-Key (ws2_ag_...) เพื่อทดสอบดึงแบบหน่วยงาน..." class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white mono" />
+          </div>
+
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
+            <div><span class="px-1.5 py-0.5 rounded bg-slate-600 font-bold text-[10px] mr-1">SPEC</span><code class="text-slate-200">/endpoint.php?r=/api/public/openapi</code><div class="text-slate-400 mt-0.5">เอกสาร OpenAPI Spec JSON สำหรับนักพัฒนา</div></div>
+            <button onclick="probePublicApi('/api/public/openapi')" class="px-3 py-1.5 rounded-lg bg-slate-700 text-white font-semibold hover:bg-slate-600">ดู Spec</button>
+          </div>
+        </div>
+
+        <div class="lg:col-span-6 bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2 text-xs">
+            <span class="font-bold text-emerald-300">📡 ผลลัพธ์ JSON จริง (API Response Inspector)</span>
+            <span id="apiProbeMeta" class="text-[11px] text-slate-400 mono">พร้อมทดสอบ</span>
+          </div>
+          <pre id="apiProbeOutput" class="mono text-[11px] text-emerald-200 overflow-auto max-h-[340px] whitespace-pre-wrap leading-relaxed">กดปุ่ม "ทดสอบ" ด้านซ้าย เพื่อดูโครงสร้าง JSON และส่วนหัวความปลอดภัยจริง...</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="max-w-7xl mx-auto px-4 sm:px-6 py-6 text-center text-xs text-slate-400">
+    ศูนย์ข้อมูลสาธารณะองค์การบริหารส่วนจังหวัดลำปาง · Water_System2 Open Data &amp; Traffy Fondue Lampang
+  </footer>
+
+  <script>
+    const state = {
+      overview: null,
+      env: null,
+      traffy: null,
+      risk: null,
+      gis: null,
+      envTab: 'water',
+      map: null,
+      mapLayer: null
+    };
+
+    function esc(v) {
+      return String(v === null || v === undefined ? '' : v).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    }
+
+    function ep(route) {
+      const p = location.pathname;
+      const base = location.origin + p.slice(0, p.lastIndexOf('/') + 1);
+      return base + 'endpoint.php?r=' + encodeURIComponent(route);
+    }
+
+    async function loadPublicDashboard() {
+      try {
+        const [ovR, evR, tfR, rkR, gsR] = await Promise.allSettled([
+          fetch(ep('/api/public/overview')).then(r => r.json()),
+          fetch(ep('/api/public/environment')).then(r => r.json()),
+          fetch(ep('/api/public/traffy?limit=100')).then(r => r.json()),
+          fetch(ep('/api/analytics/risk-index')).then(r => r.json()),
+          fetch(ep('/api/gis/map-data')).then(r => r.json())
+        ]);
+
+        if (ovR.status === 'fulfilled' && ovR.value?.success) state.overview = ovR.value;
+        if (evR.status === 'fulfilled' && evR.value?.success) state.env = evR.value;
+        if (tfR.status === 'fulfilled' && tfR.value?.success) state.traffy = tfR.value;
+        if (rkR.status === 'fulfilled' && rkR.value?.success) state.risk = rkR.value;
+        if (gsR.status === 'fulfilled' && gsR.value?.success) state.gis = gsR.value;
+
+        renderOverview();
+        renderEnvTable();
+        renderTraffy();
+        initAndRenderMap();
+      } catch (e) {
+        console.error('Public dashboard load error:', e);
+      }
+    }
+
+    function renderOverview() {
+      const ov = state.overview || {};
+      const env = ov.environment || {};
+      const tf = ov.traffySummary || {};
+      const rs = state.risk?.summary || {};
+
+      document.getElementById('heroSourceBadge').textContent = ov.meta?.dataSource === 'cloud_fallback'
+        ? '☁️ Cloud Failover Active · Zero-PII'
+        : '🟢 ข้อมูลสดจากฐานข้อมูล อบจ.ลำปาง · Zero-PII';
+
+      document.getElementById('pubRiskScore').textContent = rs.compositeScore ?? '-';
+      document.getElementById('pubRiskLabel').textContent = rs.riskLevel || (ov.meta?.dataSource === 'cloud_fallback' ? 'Cloud Mode' : 'ออนไลน์');
+      document.getElementById('pubUpdatedAt').textContent = 'อัปเดต: ' + (env.latestWaterAt || ov.meta?.generatedAt || '-');
+
+      const hlEl = document.getElementById('highlightsGrid');
+      hlEl.innerHTML = (ov.highlights || []).map(h => `
+        <div class="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-3.5 space-y-1">
+          <div class="font-bold text-amber-300">✦ ${esc(h.title)}</div>
+          <div class="text-emerald-100/90 leading-relaxed">${esc(h.desc)}</div>
+        </div>`).join('');
+
+      document.getElementById('kpiWater').textContent = (env.waterCount ?? 0) + ' สถานี';
+      document.getElementById('kpiWaterNote').textContent = (env.waterCritical ?? 0) > 0 ? `🚨 วิกฤต ${env.waterCritical} แห่ง` : '✅ สถานการณ์ลุ่มน้ำปกติ';
+      document.getElementById('kpiRain').textContent = (env.rainfallCount ?? 0) + ' สถานี';
+      document.getElementById('kpiRainNote').textContent = `กำลังมีฝน ${env.rainfallRaining ?? 0} จุด`;
+      document.getElementById('kpiDam').textContent = (env.droughtCount ?? 0) + ' แห่ง';
+      document.getElementById('kpiPm').textContent = (env.pm25Count ?? 0) + ' จุด';
+      document.getElementById('kpiTraffy').textContent = (tf.total ?? 0) + ' เรื่อง';
+      document.getElementById('kpiTraffyNote').textContent = `อบจ.ลำปาง ${tf.paoCount ?? 0} · เครือข่าย ${tf.otherAgencyCount ?? 0}`;
+
+      const distStrip = document.getElementById('districtStrip');
+      const dists = state.risk?.districts || [];
+      if (dists.length) {
+        distStrip.innerHTML = dists.map(d => {
+          const score = d.compositeScore ?? d.riskScore ?? 0;
+          const cls = score >= 75 ? 'bg-red-100 text-red-800 border-red-200' : (score >= 55 ? 'bg-amber-100 text-amber-800 border-amber-200' : 'bg-emerald-50 text-emerald-800 border-emerald-200');
+          return `<span class="px-2 py-0.5 rounded-full border ${cls} font-medium">${esc(d.district || d.districtName)} <b>${score}</b></span>`;
+        }).join('');
+      }
+    }
+
+    function switchEnvTab(tab) {
+      state.envTab = tab;
+      document.querySelectorAll('.etab').forEach(b => {
+        const act = b.dataset.etab === tab;
+        b.className = 'etab px-3 py-1.5 rounded-lg font-semibold ' + (act ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700');
+      });
+      renderEnvTable();
+    }
+
+    function renderEnvTable() {
+      const env = state.env || {};
+      const head = document.getElementById('envHead');
+      const body = document.getElementById('envBody');
+      const rows = (env[state.envTab] || []).slice(0, 80);
+
+      if (state.envTab === 'water') {
+        head.innerHTML = '<tr><th class="p-2.5">สถานี</th><th class="p-2.5">อำเภอ</th><th class="p-2.5">ระดับน้ำ (ม.)</th><th class="p-2.5">ฝน 3 วัน</th><th class="p-2.5">สถานะ</th></tr>';
+        body.innerHTML = rows.map(r => `<tr><td class="p-2.5 font-semibold">${esc(r.station_name)}</td><td class="p-2.5">${esc(r.amphoe)}</td><td class="p-2.5 font-mono">${esc(r.current_water_level_m ?? '-')}</td><td class="p-2.5">${esc(r.forecast_rain_24h_mm ?? 0)} มม.</td><td class="p-2.5">${esc(r.status)}</td></tr>`).join('');
+      } else if (state.envTab === 'rainfall') {
+        head.innerHTML = '<tr><th class="p-2.5">สถานี</th><th class="p-2.5">พื้นที่</th><th class="p-2.5">ลุ่มน้ำ</th><th class="p-2.5">ฝน 24 ชม.</th><th class="p-2.5">สถานะ</th></tr>';
+        body.innerHTML = rows.map(r => `<tr><td class="p-2.5 font-semibold">${esc(r.station_name)}</td><td class="p-2.5">${esc(r.location)}</td><td class="p-2.5">${esc(r.river_basin || '-')}</td><td class="p-2.5 font-bold">${esc(r.rain_mm)} มม.</td><td class="p-2.5">${esc(r.rain_status)}</td></tr>`).join('');
+      } else if (state.envTab === 'drought') {
+        head.innerHTML = '<tr><th class="p-2.5">อ่างเก็บน้ำ</th><th class="p-2.5">ประเภท</th><th class="p-2.5">ความจุ</th><th class="p-2.5">กักเก็บ</th><th class="p-2.5">% น้ำ</th></tr>';
+        body.innerHTML = rows.map(r => `<tr><td class="p-2.5 font-semibold">${esc(r.dam_name)}</td><td class="p-2.5">${esc(r.dam_type)}</td><td class="p-2.5">${esc(r.capacity_m_cum ?? '-')}</td><td class="p-2.5">${esc(r.water_volume_m_cum ?? '-')}</td><td class="p-2.5 font-bold">${esc(r.water_percent)}</td></tr>`).join('');
+      } else {
+        head.innerHTML = '<tr><th class="p-2.5">สถานี</th><th class="p-2.5">อำเภอ</th><th class="p-2.5">PM 2.5 (µg/m³)</th><th class="p-2.5">เฉลี่ย 24 ชม.</th><th class="p-2.5">คุณภาพ</th></tr>';
+        body.innerHTML = rows.map(r => `<tr><td class="p-2.5 font-semibold">${esc(r.station_name)}</td><td class="p-2.5">${esc(r.amphoe)}</td><td class="p-2.5 font-bold">${esc(r.pm25_value ?? '-')}</td><td class="p-2.5">${esc(r.pm25_avg_24h ?? '-')}</td><td class="p-2.5">${esc(r.air_quality_status)}</td></tr>`).join('');
+      }
+      if (!rows.length) body.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">กำลังโหลดข้อมูล...</td></tr>';
+    }
+
+    function renderBars(elId, obj, colorCls) {
+      const el = document.getElementById(elId);
+      const entries = Object.entries(obj || {});
+      const max = entries.reduce((m, [, v]) => Math.max(m, v), 1);
+      el.innerHTML = entries.slice(0, 6).map(([label, cnt]) => {
+        const pct = Math.round((cnt / max) * 100);
+        return `<div>
+          <div class="flex justify-between mb-0.5"><span class="truncate pr-2 text-slate-700">${esc(label)}</span><b class="text-slate-900">${cnt}</b></div>
+          <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden"><div class="h-full ${colorCls} rounded-full" style="width:${pct}%"></div></div>
+        </div>`;
+      }).join('') || '<div class="text-slate-400">-</div>';
+    }
+
+    function renderTraffy() {
+      const tf = state.traffy || {};
+      const sum = tf.summary || {};
+      const br = tf.breakdown || {};
+      document.getElementById('tfTotal').textContent = sum.total ?? 0;
+      document.getElementById('tfPao').textContent = sum.paoCount ?? 0;
+      document.getElementById('tfOther').textContent = sum.otherAgencyCount ?? 0;
+      document.getElementById('tfDone').textContent = sum.completedCount ?? 0;
+      document.getElementById('tfStars').textContent = sum.avgSatisfaction !== null && sum.avgSatisfaction !== undefined ? `★ ${sum.avgSatisfaction}` : '★ -';
+
+      renderBars('tfStateBars', br.byState, 'bg-emerald-600');
+      renderBars('tfAgencyBars', br.byAgency, 'bg-sky-600');
+      renderBars('tfTypeBars', br.byType, 'bg-purple-600');
+      renderTraffyTable();
+    }
+
+    function renderTraffyTable() {
+      const tf = state.traffy || {};
+      const q = (document.getElementById('traffySearch').value || '').trim().toLowerCase();
+      const agFilter = document.getElementById('traffyFilterAgency').value;
+      let items = tf.items || [];
+      if (agFilter === 'pao') items = items.filter(i => String(i.agency_status || '').includes('อบจ.'));
+      else if (agFilter === 'other') items = items.filter(i => !String(i.agency_status || '').includes('อบจ.'));
+      if (q) items = items.filter(i => JSON.stringify(i).toLowerCase().includes(q));
+
+      const body = document.getElementById('traffyTableBody');
+      if (!items.length) {
+        body.innerHTML = '<tr><td colspan="5" class="p-5 text-center text-slate-400">ไม่พบรายการตามตัวกรอง</td></tr>';
+        return;
+      }
+      body.innerHTML = items.slice(0, 60).map(it => {
+        const isDone = String(it.state_name || '').includes('เสร็จสิ้น');
+        const stCls = isDone ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800';
+        return `<tr class="hover:bg-slate-50 align-top">
+          <td class="p-3 font-mono font-bold text-slate-900 whitespace-nowrap">${esc(it.ticket_id)}</td>
+          <td class="p-3">
+            <span class="font-bold text-slate-800">[${esc(it.problem_type)}]</span>
+            <span class="text-slate-600">${esc(it.summary || '-')}</span>
+            <div class="text-[11px] text-slate-400 mt-0.5">📍 ${esc(it.area || 'จ.ลำปาง')}</div>
+          </td>
+          <td class="p-3">
+            <div class="font-semibold text-slate-800">${esc(it.org_name || '-')}</div>
+            <div class="text-[11px] text-sky-700">${esc(it.agency_status)}</div>
+          </td>
+          <td class="p-3 whitespace-nowrap"><span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${stCls}">${esc(it.state_name)}</span></td>
+          <td class="p-3 text-slate-500 whitespace-nowrap">${esc(it.ticket_datetime || it.recorded_at || '-')}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function initAndRenderMap() {
+      if (typeof L === 'undefined') return;
+      if (!state.map) {
+        state.map = L.map('publicMap', { center: [18.2888, 99.4920], zoom: 9 });
+        const esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+          attribution: 'Tiles &copy; Esri', maxZoom: 19
+        });
+        let fb = false;
+        esri.on('tileerror', () => {
+          if (fb) return; fb = true;
+          L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { attribution: 'OpenTopoMap', maxZoom: 17 }).addTo(state.map);
+        });
+        esri.addTo(state.map);
+        state.mapLayer = L.layerGroup().addTo(state.map);
+      }
+      if (!state.gis || !state.mapLayer) return;
+      state.mapLayer.clearLayers();
+      (state.gis.stations || []).forEach(s => {
+        L.circleMarker([s.lat, s.lng], { radius: 7, color: '#fff', weight: 1.5, fillColor: s.color || '#10b981', fillOpacity: 0.9 })
+          .bindPopup(`<b>🌊 ${esc(s.name)}</b><br/>${esc(s.amphoe)}<br/>ระดับน้ำ: ${s.currentWaterLevel} ม. (${esc(s.status)})`)
+          .addTo(state.mapLayer);
+      });
+      (state.gis.dams || []).forEach(d => {
+        L.circleMarker([d.lat, d.lng], { radius: 6, color: '#1e3a8a', weight: 1.5, fillColor: d.color || '#3b82f6', fillOpacity: 0.85 })
+          .bindPopup(`<b>🏜️ ${esc(d.name)}</b><br/>กักเก็บ: ${d.volume} / ${d.capacity} ล้าน ม³ (${d.percent}%)`)
+          .addTo(state.mapLayer);
+      });
+    }
+
+    async function probePublicApi(route, useKey = false) {
+      const metaEl = document.getElementById('apiProbeMeta');
+      const outEl = document.getElementById('apiProbeOutput');
+      metaEl.textContent = 'กำลังส่งคำขอ...';
+      const headers = {};
+      if (useKey) {
+        const keyVal = (document.getElementById('agencyKeyTestInput').value || '').trim();
+        if (keyVal) headers['X-API-Key'] = keyVal;
+      }
+      try {
+        const t0 = performance.now();
+        const res = await fetch(ep(route), { headers, cache: 'no-store' });
+        const ms = Math.round(performance.now() - t0);
+        const rlRem = res.headers.get('X-RateLimit-Remaining') ?? '-';
+        const json = await res.json();
+        metaEl.textContent = `HTTP ${res.status} · ${ms}ms · RateLimit-Remaining=${rlRem}`;
+        outEl.textContent = JSON.stringify(json, null, 2);
+      } catch (e) {
+        metaEl.textContent = 'Error';
+        outEl.textContent = e.message;
+      }
+    }
+
+    loadPublicDashboard();
+  </script>
+</body>
+</html>

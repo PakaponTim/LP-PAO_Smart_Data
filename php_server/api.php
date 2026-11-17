@@ -13,6 +13,7 @@ require_once __DIR__ . '/github_sync_to_mysql.php';
 require_once __DIR__ . '/smart_worker_lib.php';
 require_once __DIR__ . '/backup_manager.php';
 require_once __DIR__ . '/db_compare_lib.php';
+require_once __DIR__ . '/public_api.php';
 
 function send_json($data, int $status = 200): void {
     http_response_code($status);
@@ -352,6 +353,12 @@ function handle_api_request(string $method, string $path): void {
         $pdo = get_db();
     } catch (Throwable $e) {
         $dbConnError = $e->getMessage();
+    }
+
+    // Public Dashboard & Secure Inter-Agency Open Data API (/api/public/*)
+    // Placed BEFORE strict DB 503 block so public endpoints gracefully fall back to Cloud Snapshots!
+    if (strpos($path, '/api/public/') === 0) {
+        if (handle_public_api_routes($method, $path, $pdo, $body)) return;
     }
 
     if ($pdo === null) {

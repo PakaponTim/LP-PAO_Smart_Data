@@ -29,9 +29,14 @@ header('X-Frame-Options: SAMEORIGIN');
 header('Referrer-Policy: same-origin');
 header('X-Water-System2-Port: 7000');
 
-// CORS for Port 7000 + configured Primary/Backup domains (domain_config.json)
+// CORS for Port 7000 + Open Data Public API (/api/public/* read-only, non-admin)
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-if ($origin !== '') {
+$isPublicOpenApi = (strpos($uri, '/api/public/') === 0 && strpos($uri, '/api/public/admin/') !== 0);
+if ($isPublicOpenApi) {
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, X-API-Key, Authorization');
+} elseif ($origin !== '') {
     $allowed = function_exists('get_allowed_cors_origins') ? get_allowed_cors_origins() : [
         'http://localhost:7000',
         'http://127.0.0.1:7000',
@@ -44,7 +49,7 @@ if ($origin !== '') {
         header("Access-Control-Allow-Origin: {$origin}");
         header('Access-Control-Allow-Credentials: true');
         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-CSRF-Token, X-Bootstrap-Token, X-Ingest-Key');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-CSRF-Token, X-Bootstrap-Token, X-Ingest-Key, X-API-Key');
     }
 }
 if ($method === 'OPTIONS') {

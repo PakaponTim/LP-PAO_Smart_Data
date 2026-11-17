@@ -11,24 +11,31 @@ require_once $phpServerDir . '/config.php';
 require_once $phpServerDir . '/auth.php';
 require_once $phpServerDir . '/smart_worker_lib.php';
 require_once $phpServerDir . '/backup_manager.php';
+require_once $phpServerDir . '/public_api.php';
 
 $message = '';
 $statusType = '';
+$newlyIssuedKey = null;
 $dbOverrideFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'db_config.json';
 
 $isLocalRequest = in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'], true);
 $alreadyConfigured = file_exists($dbOverrideFile) || file_exists(WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . '.env');
 
+function server_setup_passes_guard(bool $alreadyConfigured, bool $isLocalRequest): bool {
+    $existingPass = env_val('DB_PASS', '');
+    $submittedCurrent = (string)($_POST['CURRENT_DB_PASS'] ?? '');
+    $sess = get_current_user_session();
+    $isAdminAuthed = AUTH_ENFORCE && !empty($sess['user']) && (($sess['user']['role'] ?? '') === 'admin');
+    return !($alreadyConfigured && !$isLocalRequest && !$isAdminAuthed && $existingPass !== '' && !hash_equals($existingPass, $submittedCurrent));
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? 'save_db';
     if ($action === 'save_db') {
         $existingPass = env_val('DB_PASS', '');
-        $submittedCurrent = (string)($_POST['CURRENT_DB_PASS'] ?? '');
-        $sess = get_current_user_session();
-        $isAdminAuthed = AUTH_ENFORCE && !empty($sess['user']) && (($sess['user']['role'] ?? '') === 'admin');
 
         // On public subdomain/remote IP, require verifying current DB password once DB is configured
-        if ($alreadyConfigured && !$isLocalRequest && !$isAdminAuthed && $existingPass !== '' && !hash_equals($existingPass, $submittedCurrent)) {
+        if (!server_setup_passes_guard($alreadyConfigured, $isLocalRequest)) {
             $statusType = 'error';
             $message = "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันให้ถูกต้องเพื่อยืนยันสิทธิ์ก่อนแก้ไขค่า Server";
         } else {
@@ -65,11 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     } elseif ($action === 'run_backup' || $action === 'run_backup_email') {
-        $existingPass = env_val('DB_PASS', '');
-        $submittedCurrent = (string)($_POST['CURRENT_DB_PASS'] ?? '');
-        $sess = get_current_user_session();
-        $isAdminAuthed = AUTH_ENFORCE && !empty($sess['user']) && (($sess['user']['role'] ?? '') === 'admin');
-        if ($alreadyConfigured && !$isLocalRequest && !$isAdminAuthed && $existingPass !== '' && !hash_equals($existingPass, $submittedCurrent)) {
+        if (!server_setup_passes_guard($alreadyConfigured, $isLocalRequest)) {
             $statusType = 'error';
             $message = "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันก่อนสั่งสำรองข้อมูลจากภายนอก";
         } else {
@@ -91,11 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     } elseif ($action === 'save_domains') {
-        $existingPass = env_val('DB_PASS', '');
-        $submittedCurrent = (string)($_POST['CURRENT_DB_PASS'] ?? '');
-        $sess = get_current_user_session();
-        $isAdminAuthed = AUTH_ENFORCE && !empty($sess['user']) && (($sess['user']['role'] ?? '') === 'admin');
-        if ($alreadyConfigured && !$isLocalRequest && !$isAdminAuthed && $existingPass !== '' && !hash_equals($existingPass, $submittedCurrent)) {
+        if (!server_setup_passes_guard($alreadyConfigured, $isLocalRequest)) {
             $statusType = 'error';
             $message = "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันก่อนแก้ไขการตั้งค่า Domain บน Server สาธารณะ";
         } else {
@@ -108,10 +107,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $statusType = 'success';
             $message = "🌐 บันทึกไฟล์ domain_config.json สำเร็จ (Primary: {$savedDom['primary_domain']} | Backup: {$savedDom['backup_domain']})";
         }
+    } elseif ($action === 'issue_agency_key') {
+        if (!server_setup_passes_guard($alreadyConfigured, $isLocalRequest)) {
+            $statusType = 'error';
+            $message = "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันก่อนออก Inter-Agency API Key";
+        } else {
+            try {
+                $agencyName = trim((string)($_POST['agencyName'] ?? ''));
+                $rateLimit = (int)($_POST['rateLimit'] ?? 600);
+                $newlyIssuedKey = public_create_api_key($agencyName, ['overview', 'environment', 'traffy'], $rateLimit);
+                $statusType = 'success';
+                $message = "🔑 ออก API Key ให้หน่วยงาน [{$newlyIssuedKey['agencyName']}] เรียบร้อยแล้ว (โปรดคัดลอกเก็บทันที Key จริงจะแสดงครั้งเดียว)";
+            } catch (Throwable $e) {
+                $statusType = 'error';
+                $message = "❌ ออก API Key ไม่สำเร็จ: " . $e->getMessage();
+            }
+        }
+    } elseif ($action === 'revoke_agency_key') {
+        if (!server_setup_passes_guard($alreadyConfigured, $isLocalRequest)) {
+            $statusType = 'error';
+            $message = "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันก่อนเพิกถอน API Key";
+        } else {
+            $keyId = trim((string)($_POST['keyId'] ?? ''));
+            if ($keyId !== '' && public_revoke_api_key($keyId)) {
+                $statusType = 'success';
+                $message = "🛑 เพิกถอน API Key ({$keyId}) เรียบร้อยแล้ว Key เดิมจะถูกปฏิเสธทันที";
+            } else {
+                $statusType = 'error';
+                $message = "⚠️ ไม่พบ API Key ที่ใช้งานอยู่ ({$keyId})";
+            }
+        }
     }
 }
 
 $domainCfg = get_domain_config();
+$agencyKeys = public_list_api_keys();
 
 $curHost = env_val('DB_HOST', 'localhost');
 $curPort = env_val('DB_PORT', '3306');
@@ -258,6 +288,7 @@ try {
           <a href="./emergency_cloud.html" target="_blank" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-semibold transition">☁️ เปิดโหมดฉุกเฉิน (Cloud Viewer)</a>
           <a href="./db_compare.html" target="_blank" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition">⚖️ เทียบ DB water_systems vs water_system2</a>
           <a href="./mobile.html" target="_blank" class="px-3 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-700 text-white font-semibold transition">📱 มุมมองมือถือ / iPad</a>
+          <a href="./public.html" target="_blank" class="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-semibold transition">🌐 Public Dashboard</a>
         </div>
         <div class="text-slate-700">
           • <b>ไฟล์สำรองฐานข้อมูล (10 ตาราง):</b> <?= count($backupsList) ?> ไฟล์
@@ -312,6 +343,93 @@ try {
         <div class="bg-white border border-sky-200 rounded-lg p-2.5 space-y-1 text-[11px] text-slate-600">
           <div><b>Primary Cron:</b> <code><?= htmlspecialchars($domainCfg['resolved']['primary']['cron'] ?? '-') ?></code> <?= !empty($domainCfg['resolved']['primary']['active']) ? '✅ (ใช้งานจริง)' : '⚪ (ตัวอย่าง/ยังไม่ตั้ง)' ?></div>
           <div><b>Backup Cron:</b> <code><?= htmlspecialchars($domainCfg['resolved']['backup']['cron'] ?? '-') ?></code> <?= !empty($domainCfg['resolved']['backup']['active']) ? '✅ (ใช้งานจริง)' : '⚪ (ตัวอย่าง/ยังไม่ตั้ง)' ?></div>
+        </div>
+      </div>
+
+      <div id="agency-keys" class="bg-violet-50/70 border border-violet-200 rounded-xl p-4 text-xs space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="font-bold text-violet-950 text-sm">🔑 จัดการ Inter-Agency API Keys สำหรับหน่วยงานภาคี (Zero-PII + SHA-256 + Rate Limit)</div>
+          <a href="./public.html#api-portal" target="_blank" class="px-3 py-1 rounded-lg bg-violet-700 hover:bg-violet-800 text-white font-semibold transition">📖 เปิด API Explorer / Docs</a>
+        </div>
+        <p class="text-slate-600">ออกรหัส <code>X-API-Key</code> สำหรับหน่วยงานที่ต้องการดึงข้อมูลเฉพาะทาง (เช่น <code>/endpoint.php?r=/api/public/agency/traffy</code> และ <code>/api/public/agency/all</code>) ระบบเก็บเฉพาะค่า SHA-256 Hash บนเซิร์ฟเวอร์, จำกัดสิทธิ์แบบ Read-Only (<code>GET</code>) และตัดข้อมูลส่วนบุคคล (Zero-PII) ออกอัตโนมัติ</p>
+
+        <?php if (is_array($newlyIssuedKey)): ?>
+          <div class="bg-emerald-50 border-2 border-emerald-400 rounded-xl p-3 space-y-1.5">
+            <div class="font-bold text-emerald-900">✅ Key ใหม่สำหรับ: <?= htmlspecialchars($newlyIssuedKey['agencyName']) ?> (บันทึกเก็บทันที — ระบบจะไม่แสดงรหัสเต็มซ้ำอีก)</div>
+            <div class="flex flex-wrap items-center gap-2">
+              <code id="newAgencyApiKeyText" class="bg-white border border-emerald-300 px-2.5 py-1.5 rounded font-mono text-xs text-emerald-950 select-all"><?= htmlspecialchars($newlyIssuedKey['apiKey']) ?></code>
+              <button type="button" onclick="navigator.clipboard && navigator.clipboard.writeText(document.getElementById('newAgencyApiKeyText').textContent)" class="px-2.5 py-1.5 rounded bg-emerald-700 hover:bg-emerald-800 text-white font-semibold transition">📋 คัดลอก</button>
+            </div>
+            <div class="text-[11px] text-emerald-800">ตัวอย่างเรียกใช้: <code>curl -H "X-API-Key: <?= htmlspecialchars($newlyIssuedKey['apiKey']) ?>" "<?= htmlspecialchars($baseSubUrl . '/endpoint.php?r=/api/public/agency/traffy?agency=pao') ?>"</code></div>
+          </div>
+        <?php endif; ?>
+
+        <form method="POST" class="flex flex-wrap gap-2 items-end">
+          <?php if ($alreadyConfigured && !$isLocalRequest): ?>
+            <div class="w-full">
+              <input type="password" name="CURRENT_DB_PASS" value="" required placeholder="รหัสผ่าน DB เดิมก่อนออก Key" class="w-full border border-amber-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
+            </div>
+          <?php endif; ?>
+          <div class="flex-1 min-w-[200px]">
+            <label class="block font-semibold text-slate-700 mb-1">ชื่อหน่วยงานผู้ขอใช้งาน API</label>
+            <input type="text" name="agencyName" required maxlength="80" placeholder="เช่น สนง.ปภ.จังหวัดลำปาง / ศูนย์อุทกฯ ภาคเหนือ" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
+          </div>
+          <div class="w-36">
+            <label class="block font-semibold text-slate-700 mb-1">Rate Limit / นาที</label>
+            <input type="number" name="rateLimit" value="600" min="60" max="3000" step="60" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
+          </div>
+          <button type="submit" name="action" value="issue_agency_key" class="px-4 py-2 rounded-lg bg-violet-700 hover:bg-violet-800 text-white font-semibold transition">➕ ออก API Key</button>
+        </form>
+
+        <div class="bg-white border border-violet-200 rounded-lg overflow-hidden">
+          <?php if (empty($agencyKeys)): ?>
+            <div class="p-3 text-slate-500 text-center">ยังไม่มี API Key ที่ออกให้หน่วยงานภายนอก</div>
+          <?php else: ?>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-[11px]">
+                <thead class="bg-violet-100/70 text-violet-950">
+                  <tr>
+                    <th class="px-3 py-2 font-semibold">หน่วยงาน</th>
+                    <th class="px-3 py-2 font-semibold">Prefix</th>
+                    <th class="px-3 py-2 font-semibold">Rate Limit</th>
+                    <th class="px-3 py-2 font-semibold">สถานะ</th>
+                    <th class="px-3 py-2 font-semibold">ใช้งานล่าสุด</th>
+                    <th class="px-3 py-2 font-semibold text-right">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  <?php foreach (array_reverse($agencyKeys) as $ak): ?>
+                    <tr>
+                      <td class="px-3 py-2 font-medium text-slate-800"><?= htmlspecialchars($ak['agencyName']) ?></td>
+                      <td class="px-3 py-2 font-mono text-slate-600"><?= htmlspecialchars($ak['keyPrefix']) ?></td>
+                      <td class="px-3 py-2"><?= (int)$ak['rateLimit'] ?> / นาที</td>
+                      <td class="px-3 py-2">
+                        <?php if (!empty($ak['active'])): ?>
+                          <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold">ใช้งานอยู่</span>
+                        <?php else: ?>
+                          <span class="px-2 py-0.5 rounded-full bg-slate-200 text-slate-600 font-semibold">เพิกถอนแล้ว</span>
+                        <?php endif; ?>
+                      </td>
+                      <td class="px-3 py-2 text-slate-500"><?= htmlspecialchars((string)($ak['lastUsedAt'] ?: $ak['createdAt'] ?: '-')) ?></td>
+                      <td class="px-3 py-2 text-right">
+                        <?php if (!empty($ak['active'])): ?>
+                          <form method="POST" class="inline-flex items-center gap-1">
+                            <?php if ($alreadyConfigured && !$isLocalRequest): ?>
+                              <input type="password" name="CURRENT_DB_PASS" value="" required placeholder="รหัส DB" class="w-24 border border-amber-300 rounded px-1.5 py-0.5 text-[11px]">
+                            <?php endif; ?>
+                            <input type="hidden" name="keyId" value="<?= htmlspecialchars($ak['id']) ?>">
+                            <button type="submit" name="action" value="revoke_agency_key" onclick="return confirm('ยืนยันเพิกถอน API Key ของ <?= htmlspecialchars($ak['agencyName'], ENT_QUOTES) ?> ?')" class="px-2 py-1 rounded bg-rose-600 hover:bg-rose-700 text-white font-semibold transition">🛑 เพิกถอน</button>
+                          </form>
+                        <?php else: ?>
+                          <span class="text-slate-400">—</span>
+                        <?php endif; ?>
+                      </td>
+                    </tr>
+                  <?php endforeach; ?>
+                </tbody>
+              </table>
+            </div>
+          <?php endif; ?>
         </div>
       </div>
 

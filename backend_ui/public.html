@@ -70,6 +70,53 @@
     .spin-once { animation: spinOnce .8s ease; display: inline-block; }
     @keyframes spinOnce { to { transform: rotate(360deg); } }
 
+    /* ===== Modern Project-Themed Animated Background Graphics ===== */
+    @keyframes bgOrbDrift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(35px, -28px) scale(1.08); }
+    }
+    @keyframes bgRadarPulse {
+      0% { transform: scale(0.75); opacity: 0.42; }
+      100% { transform: scale(1.45); opacity: 0; }
+    }
+    @keyframes bgWaveShift {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    #bgGraphics {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .bg-orb {
+      position: absolute;
+      border-radius: 9999px;
+      filter: blur(55px);
+      animation: bgOrbDrift 16s ease-in-out infinite;
+    }
+    .bg-radar {
+      position: absolute;
+      border-radius: 9999px;
+      border: 1.5px solid rgba(16, 185, 129, 0.28);
+      animation: bgRadarPulse 5.5s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+    }
+    .bg-bottom-waves {
+      position: absolute;
+      left: 0; bottom: -6px;
+      width: 200%; height: 150px;
+      opacity: 0.35;
+      animation: bgWaveShift 24s linear infinite;
+    }
+    .bg-bottom-waves.w2 {
+      opacity: 0.22;
+      height: 120px;
+      animation-duration: 34s;
+      animation-direction: reverse;
+    }
+    header, main, footer { position: relative; z-index: 1; }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
       .reveal { opacity: 1; transform: none; }
@@ -82,6 +129,27 @@
 </head>
 <body class="text-slate-800 antialiased">
   <div id="topLoader"><span></span></div>
+
+  <!-- Modern Project-Themed Animated Background Graphics -->
+  <div id="bgGraphics" aria-hidden="true">
+    <div class="bg-orb" style="width:380px;height:380px;top:-80px;left:-90px;background:rgba(16,185,129,0.18);"></div>
+    <div class="bg-orb" style="width:420px;height:420px;top:24%;right:-110px;background:rgba(14,165,233,0.16);animation-delay:-5s;"></div>
+    <div class="bg-orb" style="width:320px;height:320px;bottom:8%;left:12%;background:rgba(52,211,153,0.14);animation-delay:-10s;"></div>
+
+    <!-- Sensor Radar Ripples (Water / Rain / PM2.5 Telemetry Stations) -->
+    <div class="bg-radar" style="width:220px;height:220px;top:14%;left:6%;"></div>
+    <div class="bg-radar" style="width:220px;height:220px;top:14%;left:6%;animation-delay:2.7s;"></div>
+    <div class="bg-radar" style="width:260px;height:260px;bottom:18%;right:8%;border-color:rgba(14,165,233,0.25);"></div>
+    <div class="bg-radar" style="width:260px;height:260px;bottom:18%;right:8%;border-color:rgba(14,165,233,0.25);animation-delay:2.8s;"></div>
+
+    <!-- Flowing River / Topographic Contour Waves -->
+    <svg class="bg-bottom-waves" viewBox="0 0 1200 150" preserveAspectRatio="none">
+      <path fill="rgba(16,185,129,0.14)" d="M0,70 C180,10 360,130 600,70 C840,10 1020,130 1200,70 L1200,150 L0,150 Z"/>
+    </svg>
+    <svg class="bg-bottom-waves w2" viewBox="0 0 1200 150" preserveAspectRatio="none">
+      <path fill="rgba(56,189,248,0.14)" d="M0,90 C200,140 400,30 600,85 C800,140 1000,30 1200,85 L1200,150 L0,150 Z"/>
+    </svg>
+  </div>
 
   <!-- Sticky Navigation -->
   <header class="sticky top-0 z-50 bg-emerald-950/95 backdrop-blur text-white border-b-4 border-pink-500 shadow-lg">

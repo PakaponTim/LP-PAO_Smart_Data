@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,8 +9,14 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
   <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      scroll-behavior: smooth;
+    }
+
     body {
       font-family: 'Prompt', sans-serif;
       scroll-behavior: smooth;
@@ -23,52 +30,293 @@
       background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 24px 24px;
       background-attachment: fixed;
     }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
 
     /* ===== Design Animation System (Public Dashboard) ===== */
-    @keyframes heroGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    @keyframes waveSlide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-    @keyframes dropFloat { 0% { transform: translateY(0) scale(1); opacity: .0; } 15% { opacity: .5; } 100% { transform: translateY(-140px) scale(.7); opacity: 0; } }
-    @keyframes popIn { from { opacity: 0; transform: translateY(18px) scale(.96); } to { opacity: 1; transform: none; } }
-    @keyframes rowIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
-    @keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-    @keyframes alertPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,.55); } 50% { box-shadow: 0 0 0 6px rgba(239,68,68,0); } }
-    @keyframes liveDot { 0% { box-shadow: 0 0 0 0 rgba(52,211,153,.7); } 100% { box-shadow: 0 0 0 9px rgba(52,211,153,0); } }
-    @keyframes markerPulse { 0%, 100% { fill-opacity: .92; } 50% { fill-opacity: .35; } }
-    @keyframes loaderRun { 0% { left: -40%; width: 40%; } 100% { left: 100%; width: 40%; } }
+    @keyframes heroGradient {
+      0% {
+        background-position: 0% 50%;
+      }
 
-    .hero-animated { background-size: 220% 220%; animation: heroGradient 18s ease infinite; }
-    #strengths > *:not(.hero-fx) { position: relative; z-index: 1; }
-    .hero-fx { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
-    .hero-waves { position: absolute; left: 0; bottom: 0; width: 200%; height: 90px; opacity: .16; animation: waveSlide 14s linear infinite; }
-    .hero-waves.w2 { opacity: .10; height: 70px; animation-duration: 22s; animation-direction: reverse; }
-    .hero-drop { position: absolute; bottom: 10px; font-size: 18px; opacity: 0; animation: dropFloat 7s ease-in infinite; }
+      50% {
+        background-position: 100% 50%;
+      }
 
-    .reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1); }
-    .reveal.in { opacity: 1; transform: none; }
-    .anim-pop { animation: popIn .6s cubic-bezier(.2,.8,.2,1) both; }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
 
-    #strengths button.anim-pop, #strengths .grid > button { transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
-    #strengths .grid > button:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -10px rgba(0,0,0,.35); }
-    .h-full.rounded-full { transform-origin: left; animation: barGrow 1s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes waveSlide {
+      from {
+        transform: translateX(0);
+      }
 
-    #envBody tr, #traffyTableBody tr { animation: rowIn .4s ease both; }
-    #envBody tr:nth-child(2), #traffyTableBody tr:nth-child(2) { animation-delay: .04s; }
-    #envBody tr:nth-child(3), #traffyTableBody tr:nth-child(3) { animation-delay: .08s; }
-    #envBody tr:nth-child(4), #traffyTableBody tr:nth-child(4) { animation-delay: .12s; }
-    #envBody tr:nth-child(5), #traffyTableBody tr:nth-child(5) { animation-delay: .16s; }
-    #envBody tr:nth-child(6), #traffyTableBody tr:nth-child(6) { animation-delay: .20s; }
-    #envBody tr:nth-child(n+7), #traffyTableBody tr:nth-child(n+7) { animation-delay: .24s; }
+      to {
+        transform: translateX(-50%);
+      }
+    }
 
-    .badge-pulse { animation: alertPulse 1.8s ease-in-out infinite; }
-    .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 9999px; background: #34d399; margin-right: 6px; animation: liveDot 1.6s ease-out infinite; }
-    .marker-alert { animation: markerPulse 1.6s ease-in-out infinite; }
+    @keyframes dropFloat {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: .0;
+      }
 
-    #topLoader { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 9999; overflow: hidden; opacity: 0; transition: opacity .3s; pointer-events: none; }
-    #topLoader.active { opacity: 1; }
-    #topLoader span { position: absolute; top: 0; height: 100%; background: linear-gradient(90deg, #34d399, #f472b6); animation: loaderRun 1.1s ease-in-out infinite; }
-    .spin-once { animation: spinOnce .8s ease; display: inline-block; }
-    @keyframes spinOnce { to { transform: rotate(360deg); } }
+      15% {
+        opacity: .5;
+      }
+
+      100% {
+        transform: translateY(-140px) scale(.7);
+        opacity: 0;
+      }
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(.96);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @keyframes rowIn {
+      from {
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @keyframes barGrow {
+      from {
+        transform: scaleX(0);
+      }
+
+      to {
+        transform: scaleX(1);
+      }
+    }
+
+    @keyframes alertPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, .55);
+      }
+
+      50% {
+        box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+      }
+    }
+
+    @keyframes liveDot {
+      0% {
+        box-shadow: 0 0 0 0 rgba(52, 211, 153, .7);
+      }
+
+      100% {
+        box-shadow: 0 0 0 9px rgba(52, 211, 153, 0);
+      }
+    }
+
+    @keyframes markerPulse {
+
+      0%,
+      100% {
+        fill-opacity: .92;
+      }
+
+      50% {
+        fill-opacity: .35;
+      }
+    }
+
+    @keyframes loaderRun {
+      0% {
+        left: -40%;
+        width: 40%;
+      }
+
+      100% {
+        left: 100%;
+        width: 40%;
+      }
+    }
+
+    .hero-animated {
+      background-size: 220% 220%;
+      animation: heroGradient 18s ease infinite;
+    }
+
+    #strengths>*:not(.hero-fx) {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-fx {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .hero-waves {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 200%;
+      height: 90px;
+      opacity: .16;
+      animation: waveSlide 14s linear infinite;
+    }
+
+    .hero-waves.w2 {
+      opacity: .10;
+      height: 70px;
+      animation-duration: 22s;
+      animation-direction: reverse;
+    }
+
+    .hero-drop {
+      position: absolute;
+      bottom: 10px;
+      font-size: 18px;
+      opacity: 0;
+      animation: dropFloat 7s ease-in infinite;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity .7s ease, transform .7s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .reveal.in {
+      opacity: 1;
+      transform: none;
+    }
+
+    .anim-pop {
+      animation: popIn .6s cubic-bezier(.2, .8, .2, 1) both;
+    }
+
+    #strengths button.anim-pop,
+    #strengths .grid>button {
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+
+    #strengths .grid>button:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px -10px rgba(0, 0, 0, .35);
+    }
+
+    .h-full.rounded-full {
+      transform-origin: left;
+      animation: barGrow 1s cubic-bezier(.2, .8, .2, 1) both;
+    }
+
+    #envBody tr,
+    #traffyTableBody tr {
+      animation: rowIn .4s ease both;
+    }
+
+    #envBody tr:nth-child(2),
+    #traffyTableBody tr:nth-child(2) {
+      animation-delay: .04s;
+    }
+
+    #envBody tr:nth-child(3),
+    #traffyTableBody tr:nth-child(3) {
+      animation-delay: .08s;
+    }
+
+    #envBody tr:nth-child(4),
+    #traffyTableBody tr:nth-child(4) {
+      animation-delay: .12s;
+    }
+
+    #envBody tr:nth-child(5),
+    #traffyTableBody tr:nth-child(5) {
+      animation-delay: .16s;
+    }
+
+    #envBody tr:nth-child(6),
+    #traffyTableBody tr:nth-child(6) {
+      animation-delay: .20s;
+    }
+
+    #envBody tr:nth-child(n+7),
+    #traffyTableBody tr:nth-child(n+7) {
+      animation-delay: .24s;
+    }
+
+    .badge-pulse {
+      animation: alertPulse 1.8s ease-in-out infinite;
+    }
+
+    .live-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 9999px;
+      background: #34d399;
+      margin-right: 6px;
+      animation: liveDot 1.6s ease-out infinite;
+    }
+
+    .marker-alert {
+      animation: markerPulse 1.6s ease-in-out infinite;
+    }
+
+    #topLoader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      z-index: 9999;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity .3s;
+      pointer-events: none;
+    }
+
+    #topLoader.active {
+      opacity: 1;
+    }
+
+    #topLoader span {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #34d399, #f472b6);
+      animation: loaderRun 1.1s ease-in-out infinite;
+    }
+
+    .spin-once {
+      animation: spinOnce .8s ease;
+      display: inline-block;
+    }
+
+    @keyframes spinOnce {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
     /* ===== Modern Project-Themed Animated Background Graphics ===== */
     @keyframes bgOrbDrift {
@@ -118,17 +366,40 @@
     header, main, footer { position: relative; z-index: 1; }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
-      .reveal { opacity: 1; transform: none; }
-      .hero-fx { display: none; }
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+
+      .hero-fx {
+        display: none;
+      }
     }
-    body.large-text { font-size: 108%; }
-    body.large-text .text-xs { font-size: 0.85rem; line-height: 1.35rem; }
-    body.large-text .text-\[11px\] { font-size: 0.78rem; line-height: 1.2rem; }
+
+    body.large-text {
+      font-size: 108%;
+    }
+
+    body.large-text .text-xs {
+      font-size: 0.85rem;
+      line-height: 1.35rem;
+    }
+
+    body.large-text .text-\[11px\] {
+      font-size: 0.78rem;
+      line-height: 1.2rem;
+    }
   </style>
 </head>
-<body class="text-slate-800 antialiased">
-  <div id="topLoader"><span></span></div>
 
   <!-- Modern Project-Themed Animated Background Graphics -->
   <div id="bgGraphics" aria-hidden="true">
@@ -151,642 +422,764 @@
     </svg>
   </div>
 
-  <!-- Sticky Navigation -->
-  <header class="sticky top-0 z-50 bg-emerald-950/95 backdrop-blur text-white border-b-4 border-pink-500 shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-10 h-10 rounded-xl bg-white/10 p-1 object-contain" />
-        <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-sm sm:text-lg font-extrabold leading-tight">ศูนย์ข้อมูลสาธารณะ อบจ.ลำปาง (Smart Data Hub)</h1>
-            <span class="hidden sm:inline-block px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 text-[10px] font-bold">OPEN DATA v2</span>
+<body class="bg-slate-50 text-slate-800 antialiased">
+
+  <body class="text-slate-800 antialiased">
+    <div id="topLoader"><span></span></div>
+
+    <!-- Sticky Navigation -->
+    <header class="sticky top-0 z-50 bg-emerald-950/95 backdrop-blur text-white border-b-4 border-pink-500 shadow-lg">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-10 h-10 rounded-xl bg-white/10 p-1 object-contain" />
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-sm sm:text-lg font-extrabold leading-tight">ศูนย์ข้อมูลสาธารณะ อบจ.ลำปาง (Smart Data Hub)
+              </h1>
+              <span
+                class="hidden sm:inline-block px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 text-[10px] font-bold">OPEN
+                DATA v2</span>
+            </div>
+            <p class="text-[11px] text-emerald-200">น้ำ · ฝน · อ่างเก็บน้ำ · PM 2.5 · Traffy Fondue ลำปาง · Inter-Agency
+              Secure API</p>
           </div>
-          <p class="text-[11px] text-emerald-200">น้ำ · ฝน · อ่างเก็บน้ำ · PM 2.5 · Traffy Fondue ลำปาง · Inter-Agency Secure API</p>
         </div>
+        <nav class="flex flex-wrap items-center gap-1.5 text-xs">
+          <a href="#strengths" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">✨
+            ภาพรวมวันนี้</a>
+          <a href="#gis" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">🗺️ แผนที่ &amp; 4
+            ด้าน</a>
+          <a href="#traffy-lampang"
+            class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 font-semibold transition">📢 Traffy
+            Lampang</a>
+          <a href="#api-portal"
+            class="px-2.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition">🔌 API
+            หน่วยงาน</a>
+          <button onclick="toggleFontSize()" id="btnFontToggle" title="ขยายขนาดตัวอักษรให้อ่านง่าย"
+            class="px-2.5 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 font-bold transition">ก+</button>
+          <button onclick="loadPublicDashboard(true)" id="btnReloadPublic" title="อัปเดตข้อมูลล่าสุด"
+            class="px-2.5 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 font-semibold transition">🔄 รีเฟรช</button>
+          <a href="./mobile.html"
+            class="px-2.5 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 font-semibold transition">📱 มือถือ/iPad</a>
+          <a href="./login.html?reauth=1&amp;next=index.html" onclick="goToAdminLogin(event)"
+            class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 font-semibold transition">🔐 หลังบ้าน</a>
+        </nav>
       </div>
-      <nav class="flex flex-wrap items-center gap-1.5 text-xs">
-        <a href="#strengths" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">✨ ภาพรวมวันนี้</a>
-        <a href="#gis" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">🗺️ แผนที่ &amp; 4 ด้าน</a>
-        <a href="#traffy-lampang" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 font-semibold transition">📢 Traffy Lampang</a>
-        <a href="#api-portal" class="px-2.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition">🔌 API หน่วยงาน</a>
-        <button onclick="toggleFontSize()" id="btnFontToggle" title="ขยายขนาดตัวอักษรให้อ่านง่าย" class="px-2.5 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 font-bold transition">ก+</button>
-        <button onclick="loadPublicDashboard(true)" id="btnReloadPublic" title="อัปเดตข้อมูลล่าสุด" class="px-2.5 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 font-semibold transition">🔄 รีเฟรช</button>
-        <a href="./mobile.html" class="px-2.5 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 font-semibold transition">📱 มือถือ/iPad</a>
-        <a href="./login.html?reauth=1&amp;next=index.html" onclick="goToAdminLogin(event)" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 font-semibold transition">🔐 หลังบ้าน</a>
-      </nav>
-    </div>
-  </header>
+    </header>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-8">
 
-    <!-- ==================== 1. HERO + PLAIN-LANGUAGE SITUATION + 5 ACTIONABLE CARDS ==================== -->
-    <section id="strengths" class="hero-animated relative overflow-hidden bg-gradient-to-br from-emerald-900 via-emerald-950 to-slate-900 text-white rounded-3xl p-5 sm:p-8 shadow-xl space-y-5">
-      <div class="flex flex-wrap items-start justify-between gap-4">
-        <div class="max-w-3xl space-y-2">
-          <div class="inline-flex flex-wrap items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-amber-300">
-            <span>🏛️ องค์การบริหารส่วนจังหวัดลำปาง</span>
-            <span>·</span>
-            <span id="heroSourceBadge">🔒 คัดกรองข้อมูลส่วนบุคคล Zero-PII</span>
+      <!-- ==================== 1. HERO + PLAIN-LANGUAGE SITUATION + 5 ACTIONABLE CARDS ==================== -->
+      <section id="strengths"
+        class="hero-animated relative overflow-hidden bg-gradient-to-br from-emerald-900 via-emerald-950 to-slate-900 text-white rounded-3xl p-5 sm:p-8 shadow-xl space-y-5">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div class="max-w-3xl space-y-2">
+            <div
+              class="inline-flex flex-wrap items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-amber-300">
+              <span>🏛️ องค์การบริหารส่วนจังหวัดลำปาง</span>
+              <span>·</span>
+              <span id="heroSourceBadge">🔒 คัดกรองข้อมูลส่วนบุคคล Zero-PII</span>
+            </div>
+            <h2 class="text-xl sm:text-3xl font-extrabold leading-snug">
+              สรุปสถานการณ์น้ำ ฝน อ่างเก็บน้ำ ฝุ่น PM 2.5 และเรื่องร้องเรียน 13 อำเภอ จ.ลำปาง
+            </h2>
+            <!-- Plain-Language Executive Banner -->
+            <div
+              class="bg-emerald-950/80 border border-emerald-400/30 rounded-2xl p-3.5 text-xs sm:text-sm text-emerald-100 leading-relaxed flex items-start gap-2.5">
+              <span class="text-lg leading-none mt-0.5">📢</span>
+              <div>
+                <span class="font-bold text-amber-300">สรุปสถานการณ์วันนี้: </span>
+                <span id="execHeadlineText">กำลังโหลดข้อมูลสรุปสถานการณ์ล่าสุดของจังหวัดลำปาง...</span>
+              </div>
+            </div>
           </div>
-          <h2 class="text-xl sm:text-3xl font-extrabold leading-snug">
-            สรุปสถานการณ์น้ำ ฝน อ่างเก็บน้ำ ฝุ่น PM 2.5 และเรื่องร้องเรียน 13 อำเภอ จ.ลำปาง
-          </h2>
-          <!-- Plain-Language Executive Banner -->
-          <div class="bg-emerald-950/80 border border-emerald-400/30 rounded-2xl p-3.5 text-xs sm:text-sm text-emerald-100 leading-relaxed flex items-start gap-2.5">
-            <span class="text-lg leading-none mt-0.5">📢</span>
+
+          <div class="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-4 text-xs min-w-[230px] space-y-1">
+            <div class="text-emerald-200 font-semibold"><span class="live-dot"></span>ดัชนีความเสี่ยงภาพรวมจังหวัด</div>
+            <div class="flex items-baseline gap-2">
+              <span id="pubRiskScore" class="text-4xl font-extrabold text-amber-300">-</span>
+              <span class="text-xs text-slate-300">/ 100</span>
+              <span id="pubRiskLabel" class="px-2.5 py-0.5 rounded-full bg-white/15 text-xs font-bold">-</span>
+            </div>
+            <div id="pubUpdatedAt" class="text-[11px] text-emerald-200/80 pt-1">อัปเดตล่าสุด: -</div>
+          </div>
+        </div>
+
+        <!-- 5 Actionable Domain Cards (Click to Jump & Inspect) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-slate-900">
+          <!-- 1. Water Level -->
+          <button type="button" onclick="jumpToDomain('water')"
+            class="text-left bg-white hover:bg-sky-50/60 rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-sky-400 transition flex flex-col justify-between">
             <div>
-              <span class="font-bold text-amber-300">สรุปสถานการณ์วันนี้: </span>
-              <span id="execHeadlineText">กำลังโหลดข้อมูลสรุปสถานการณ์ล่าสุดของจังหวัดลำปาง...</span>
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-600">🌊 ระดับน้ำท่า</span>
+                <span id="badgeWater"
+                  class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">ปกติ</span>
+              </div>
+              <div id="kpiWater" class="text-2xl font-extrabold text-sky-700 mt-1.5">-</div>
+              <div id="kpiWaterNote" class="text-[11px] text-slate-600 mt-0.5 line-clamp-2">ลุ่มน้ำวังและลุ่มน้ำยม</div>
             </div>
-          </div>
+            <div
+              class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-sky-700 font-semibold">
+              <span id="kpiWaterSub">ดูตารางสถานีน้ำ</span><span>→</span>
+            </div>
+          </button>
+
+          <!-- 2. Rainfall -->
+          <button type="button" onclick="jumpToDomain('rainfall')"
+            class="text-left bg-white hover:bg-blue-50/60 rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-blue-400 transition flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-600">🌧️ น้ำฝน 24 ชม.</span>
+                <span id="badgeRain"
+                  class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">-</span>
+              </div>
+              <div id="kpiRain" class="text-2xl font-extrabold text-blue-700 mt-1.5">-</div>
+              <div id="kpiRainNote" class="text-[11px] text-slate-600 mt-0.5 line-clamp-2">ฝนสูงสุดรายสถานี</div>
+            </div>
+            <div
+              class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-blue-700 font-semibold">
+              <span id="kpiRainSub">ตรวจสอบ 193 สถานี</span><span>→</span>
+            </div>
+          </button>
+
+          <!-- 3. Reservoirs / Drought -->
+          <button type="button" onclick="jumpToDomain('drought')"
+            class="text-left bg-white hover:bg-amber-50/60 rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-amber-400 transition flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-600">🏜️ น้ำในอ่างฯ (36 แห่ง)</span>
+                <span id="badgeDam"
+                  class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">-</span>
+              </div>
+              <div id="kpiDam" class="text-2xl font-extrabold text-amber-700 mt-1.5">-</div>
+              <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden my-1.5">
+                <div id="kpiDamBar" class="h-full bg-amber-500 rounded-full transition-all" style="width:0%"></div>
+              </div>
+              <div id="kpiDamNote" class="text-[11px] text-slate-600 line-clamp-1">อ่างใหญ่ 3 + กลาง/เล็ก 33</div>
+            </div>
+            <div
+              class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-amber-800 font-semibold">
+              <span>ดู 3 อ่างใหญ่ &amp; ทั้งหมด</span><span>→</span>
+            </div>
+          </button>
+
+          <!-- 4. PM 2.5 -->
+          <button type="button" onclick="jumpToDomain('pm25')"
+            class="text-left bg-white hover:bg-purple-50/60 rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-purple-400 transition flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-600">💨 ฝุ่น PM 2.5</span>
+                <span id="badgePm"
+                  class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">ดีมาก</span>
+              </div>
+              <div id="kpiPm" class="text-2xl font-extrabold text-purple-700 mt-1.5">-</div>
+              <div id="kpiPmNote" class="text-[11px] text-slate-600 mt-0.5 line-clamp-2">ค่าเฉลี่ยและจุดสูงสุด</div>
+            </div>
+            <div
+              class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-purple-700 font-semibold">
+              <span id="kpiPmSub">ดูคุณภาพอากาศรายจุด</span><span>→</span>
+            </div>
+          </button>
+
+          <!-- 5. Traffy Fondue -->
+          <button type="button" onclick="document.getElementById('traffy-lampang').scrollIntoView({behavior:'smooth'})"
+            class="text-left bg-white hover:bg-emerald-50/60 rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-emerald-400 transition flex flex-col justify-between sm:col-span-2 lg:col-span-1">
+            <div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-600">📢 Traffy ลำปาง</span>
+                <span id="badgeTraffy"
+                  class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">-</span>
+              </div>
+              <div id="kpiTraffy" class="text-2xl font-extrabold text-emerald-700 mt-1.5">-</div>
+              <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden my-1.5">
+                <div id="kpiTraffyBar" class="h-full bg-emerald-600 rounded-full transition-all" style="width:0%"></div>
+              </div>
+              <div id="kpiTraffyNote" class="text-[11px] text-slate-600 line-clamp-1">แยกภารกิจ อบจ. + เครือข่าย</div>
+            </div>
+            <div
+              class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-emerald-800 font-semibold">
+              <span>ดูเรื่องร้องเรียน</span><span>→</span>
+            </div>
+          </button>
         </div>
 
-        <div class="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-4 text-xs min-w-[230px] space-y-1">
-          <div class="text-emerald-200 font-semibold"><span class="live-dot"></span>ดัชนีความเสี่ยงภาพรวมจังหวัด</div>
-          <div class="flex items-baseline gap-2">
-            <span id="pubRiskScore" class="text-4xl font-extrabold text-amber-300">-</span>
-            <span class="text-xs text-slate-300">/ 100</span>
-            <span id="pubRiskLabel" class="px-2.5 py-0.5 rounded-full bg-white/15 text-xs font-bold">-</span>
-          </div>
-          <div id="pubUpdatedAt" class="text-[11px] text-emerald-200/80 pt-1">อัปเดตล่าสุด: -</div>
+        <!-- 4 Highlight Pillars -->
+        <div id="highlightsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs"></div>
+
+        <!-- Decorative animated water waves & rising droplets (pure CSS, non-interactive) -->
+        <div class="hero-fx" aria-hidden="true">
+          <svg class="hero-waves" viewBox="0 0 1200 90" preserveAspectRatio="none">
+            <path fill="#34d399" d="M0 45 Q150 0 300 45 T600 45 T900 45 T1200 45 V90 H0 Z" />
+          </svg>
+          <svg class="hero-waves w2" viewBox="0 0 1200 90" preserveAspectRatio="none">
+            <path fill="#38bdf8" d="M0 50 Q150 95 300 50 T600 50 T900 50 T1200 50 V90 H0 Z" />
+          </svg>
+          <span class="hero-drop" style="left:8%;animation-delay:0s">💧</span>
+          <span class="hero-drop" style="left:24%;animation-delay:1.8s">💧</span>
+          <span class="hero-drop" style="left:46%;animation-delay:3.4s">💧</span>
+          <span class="hero-drop" style="left:63%;animation-delay:.9s">💧</span>
+          <span class="hero-drop" style="left:79%;animation-delay:4.6s">💧</span>
+          <span class="hero-drop" style="left:92%;animation-delay:2.6s">💧</span>
         </div>
-      </div>
+      </section>
 
-      <!-- 5 Actionable Domain Cards (Click to Jump & Inspect) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-slate-900">
-        <!-- 1. Water Level -->
-        <button type="button" onclick="jumpToDomain('water')" class="text-left bg-white hover:bg-sky-50/60 rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-sky-400 transition flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between text-xs">
-              <span class="font-bold text-slate-600">🌊 ระดับน้ำท่า</span>
-              <span id="badgeWater" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">ปกติ</span>
-            </div>
-            <div id="kpiWater" class="text-2xl font-extrabold text-sky-700 mt-1.5">-</div>
-            <div id="kpiWaterNote" class="text-[11px] text-slate-600 mt-0.5 line-clamp-2">ลุ่มน้ำวังและลุ่มน้ำยม</div>
-          </div>
-          <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-sky-700 font-semibold">
-            <span id="kpiWaterSub">ดูตารางสถานีน้ำ</span><span>→</span>
-          </div>
-        </button>
-
-        <!-- 2. Rainfall -->
-        <button type="button" onclick="jumpToDomain('rainfall')" class="text-left bg-white hover:bg-blue-50/60 rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-blue-400 transition flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between text-xs">
-              <span class="font-bold text-slate-600">🌧️ น้ำฝน 24 ชม.</span>
-              <span id="badgeRain" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">-</span>
-            </div>
-            <div id="kpiRain" class="text-2xl font-extrabold text-blue-700 mt-1.5">-</div>
-            <div id="kpiRainNote" class="text-[11px] text-slate-600 mt-0.5 line-clamp-2">ฝนสูงสุดรายสถานี</div>
-          </div>
-          <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-blue-700 font-semibold">
-            <span id="kpiRainSub">ตรวจสอบ 193 สถานี</span><span>→</span>
-          </div>
-        </button>
-
-        <!-- 3. Reservoirs / Drought -->
-        <button type="button" onclick="jumpToDomain('drought')" class="text-left bg-white hover:bg-amber-50/60 rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-amber-400 transition flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between text-xs">
-              <span class="font-bold text-slate-600">🏜️ น้ำในอ่างฯ (36 แห่ง)</span>
-              <span id="badgeDam" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">-</span>
-            </div>
-            <div id="kpiDam" class="text-2xl font-extrabold text-amber-700 mt-1.5">-</div>
-            <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden my-1.5">
-              <div id="kpiDamBar" class="h-full bg-amber-500 rounded-full transition-all" style="width:0%"></div>
-            </div>
-            <div id="kpiDamNote" class="text-[11px] text-slate-600 line-clamp-1">อ่างใหญ่ 3 + กลาง/เล็ก 33</div>
-          </div>
-          <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-amber-800 font-semibold">
-            <span>ดู 3 อ่างใหญ่ &amp; ทั้งหมด</span><span>→</span>
-          </div>
-        </button>
-
-        <!-- 4. PM 2.5 -->
-        <button type="button" onclick="jumpToDomain('pm25')" class="text-left bg-white hover:bg-purple-50/60 rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-purple-400 transition flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between text-xs">
-              <span class="font-bold text-slate-600">💨 ฝุ่น PM 2.5</span>
-              <span id="badgePm" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">ดีมาก</span>
-            </div>
-            <div id="kpiPm" class="text-2xl font-extrabold text-purple-700 mt-1.5">-</div>
-            <div id="kpiPmNote" class="text-[11px] text-slate-600 mt-0.5 line-clamp-2">ค่าเฉลี่ยและจุดสูงสุด</div>
-          </div>
-          <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-purple-700 font-semibold">
-            <span id="kpiPmSub">ดูคุณภาพอากาศรายจุด</span><span>→</span>
-          </div>
-        </button>
-
-        <!-- 5. Traffy Fondue -->
-        <button type="button" onclick="document.getElementById('traffy-lampang').scrollIntoView({behavior:'smooth'})" class="text-left bg-white hover:bg-emerald-50/60 rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-emerald-400 transition flex flex-col justify-between sm:col-span-2 lg:col-span-1">
-          <div>
-            <div class="flex items-center justify-between text-xs">
-              <span class="font-bold text-slate-600">📢 Traffy ลำปาง</span>
-              <span id="badgeTraffy" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">-</span>
-            </div>
-            <div id="kpiTraffy" class="text-2xl font-extrabold text-emerald-700 mt-1.5">-</div>
-            <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden my-1.5">
-              <div id="kpiTraffyBar" class="h-full bg-emerald-600 rounded-full transition-all" style="width:0%"></div>
-            </div>
-            <div id="kpiTraffyNote" class="text-[11px] text-slate-600 line-clamp-1">แยกภารกิจ อบจ. + เครือข่าย</div>
-          </div>
-          <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-emerald-800 font-semibold">
-            <span>ดูเรื่องร้องเรียน</span><span>→</span>
-          </div>
-        </button>
-      </div>
-
-      <!-- 4 Highlight Pillars -->
-      <div id="highlightsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs"></div>
-
-      <!-- Decorative animated water waves & rising droplets (pure CSS, non-interactive) -->
-      <div class="hero-fx" aria-hidden="true">
-        <svg class="hero-waves" viewBox="0 0 1200 90" preserveAspectRatio="none"><path fill="#34d399" d="M0 45 Q150 0 300 45 T600 45 T900 45 T1200 45 V90 H0 Z"/></svg>
-        <svg class="hero-waves w2" viewBox="0 0 1200 90" preserveAspectRatio="none"><path fill="#38bdf8" d="M0 50 Q150 95 300 50 T600 50 T900 50 T1200 50 V90 H0 Z"/></svg>
-        <span class="hero-drop" style="left:8%;animation-delay:0s">💧</span>
-        <span class="hero-drop" style="left:24%;animation-delay:1.8s">💧</span>
-        <span class="hero-drop" style="left:46%;animation-delay:3.4s">💧</span>
-        <span class="hero-drop" style="left:63%;animation-delay:.9s">💧</span>
-        <span class="hero-drop" style="left:79%;animation-delay:4.6s">💧</span>
-        <span class="hero-drop" style="left:92%;animation-delay:2.6s">💧</span>
-      </div>
-    </section>
-
-    <!-- ==================== GLOBAL 13-AMPHOE SELECTOR BAR ==================== -->
-    <section class="bg-white rounded-3xl border border-slate-200 p-4 sm:p-5 shadow-sm space-y-3">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <div class="flex items-center gap-2">
-          <span class="text-base">📍</span>
-          <div>
-            <h3 class="text-sm font-extrabold text-slate-900">เลือกดูข้อมูลรายอำเภอ (13 อำเภอ จ.ลำปาง)</h3>
-            <p class="text-[11px] text-slate-500">คลิกชื่ออำเภอเพื่อกรองแผนที่, ตารางระดับน้ำ/ฝน/อ่างฯ/PM 2.5 และเรื่องร้องเรียน Traffy Fondue ในคลิกเดียว</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-2 text-xs">
-          <span id="activeAmphoeBadge" class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 font-bold">แสดง: ทั้งจังหวัด (13 อำเภอ)</span>
-          <button type="button" id="btnResetAmphoe" onclick="selectAmphoe('all')" class="hidden px-2.5 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold transition">✕ ล้างตัวกรองอำเภอ</button>
-        </div>
-      </div>
-      <div id="districtStrip" class="flex flex-wrap gap-1.5 text-xs"></div>
-    </section>
-
-    <!-- ==================== 2. GIS MAP + 4 ENV HIGHLIGHTS ==================== -->
-    <section id="gis" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      <!-- Left: Interactive GIS Map -->
-      <div class="lg:col-span-5 bg-white rounded-3xl border border-slate-200 p-5 shadow-sm flex flex-col space-y-3">
+      <!-- ==================== GLOBAL 13-AMPHOE SELECTOR BAR ==================== -->
+      <section class="bg-white rounded-3xl border border-slate-200 p-4 sm:p-5 shadow-sm space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="text-base">📍</span>
+            <div>
+              <h3 class="text-sm font-extrabold text-slate-900">เลือกดูข้อมูลรายอำเภอ (13 อำเภอ จ.ลำปาง)</h3>
+              <p class="text-[11px] text-slate-500">คลิกชื่ออำเภอเพื่อกรองแผนที่, ตารางระดับน้ำ/ฝน/อ่างฯ/PM 2.5
+                และเรื่องร้องเรียน Traffy Fondue ในคลิกเดียว</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <span id="activeAmphoeBadge" class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 font-bold">แสดง:
+              ทั้งจังหวัด (13 อำเภอ)</span>
+            <button type="button" id="btnResetAmphoe" onclick="selectAmphoe('all')"
+              class="hidden px-2.5 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold transition">✕
+              ล้างตัวกรองอำเภอ</button>
+          </div>
+        </div>
+        <div id="districtStrip" class="flex flex-wrap gap-1.5 text-xs"></div>
+      </section>
+
+      <!-- ==================== 2. GIS MAP + 4 ENV HIGHLIGHTS ==================== -->
+      <section id="gis" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left: Interactive GIS Map -->
+        <div class="lg:col-span-5 bg-white rounded-3xl border border-slate-200 p-5 shadow-sm flex flex-col space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-base sm:text-lg font-bold text-slate-900">🗺️ แผนที่สถานีตรวจวัดและจุดเฝ้าระวัง</h2>
+              <p class="text-xs text-slate-500">แตะที่หมุดบนแผนที่เพื่อดูค่าระดับน้ำและความจุอ่างเก็บน้ำ</p>
+            </div>
+            <button type="button" onclick="resetMapView()"
+              class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">🔍
+              มุมมองทั้งจังหวัด</button>
+          </div>
+
+          <!-- Map Layer Filter Pills -->
+          <div class="flex flex-wrap gap-1.5 text-xs">
+            <button type="button" onclick="setMapFilter('all')" data-mfilter="all"
+              class="mfilter px-2.5 py-1 rounded-lg bg-slate-900 text-white font-semibold">แสดงทั้งหมด</button>
+            <button type="button" onclick="setMapFilter('water')" data-mfilter="water"
+              class="mfilter px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold">🌊 สถานีน้ำ</button>
+            <button type="button" onclick="setMapFilter('dam')" data-mfilter="dam"
+              class="mfilter px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold">🏜️ อ่างเก็บน้ำ</button>
+            <button type="button" onclick="setMapFilter('alert')" data-mfilter="alert"
+              class="mfilter px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold">🚨
+              เฉพาะเฝ้าระวัง</button>
+          </div>
+
+          <div id="publicMap" class="relative w-full h-[430px] rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 overflow-hidden shadow-inner select-none"></div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-600 pt-1">
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                วิกฤต/ล้นตลิ่ง</span>
+              <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                เฝ้าระวัง</span>
+              <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                ปกติ</span>
+              <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                อ่างเก็บน้ำ</span>
+            </div>
+            <span id="mapMarkerCount" class="font-semibold text-slate-500">-</span>
+          </div>
+        </div>
+
+        <!-- Right: 4-Domain Table + Search + Large Dams Spotlight -->
+        <div class="lg:col-span-7 bg-white rounded-3xl border border-slate-200 p-5 shadow-sm flex flex-col space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-base sm:text-lg font-bold text-slate-900">📊 ข้อมูลสิ่งแวดล้อมสำคัญ 4 ด้าน</h2>
+              <p id="envTableSubtitle" class="text-xs text-slate-500">เรียงลำดับตามจุดสำคัญและเข้าใจง่ายด้วยแถบสีสถานะ
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-1 text-xs">
+              <button type="button" onclick="switchEnvTab('water')" data-etab="water"
+                class="etab px-3 py-1.5 rounded-xl bg-slate-900 text-white font-semibold">🌊 ระดับน้ำ</button>
+              <button type="button" onclick="switchEnvTab('rainfall')" data-etab="rainfall"
+                class="etab px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-semibold">🌧️ น้ำฝน</button>
+              <button type="button" onclick="switchEnvTab('drought')" data-etab="drought"
+                class="etab px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-semibold">🏜️ อ่างเก็บน้ำ</button>
+              <button type="button" onclick="switchEnvTab('pm25')" data-etab="pm25"
+                class="etab px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-semibold">💨 PM 2.5</button>
+            </div>
+          </div>
+
+          <!-- Search & Only-Alert Filter Bar -->
+          <div
+            class="flex flex-wrap items-center justify-between gap-2 bg-slate-50 border border-slate-200 rounded-2xl p-2.5 text-xs">
+            <input id="envSearchInput" oninput="renderEnvTable()" type="text"
+              placeholder="🔍 พิมพ์ค้นหาชื่อสถานี / ตำบล / อำเภอ..."
+              class="flex-1 min-w-[180px] bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs" />
+            <label
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-slate-200 cursor-pointer font-semibold text-slate-700">
+              <input type="checkbox" id="envOnlyWatch" onchange="renderEnvTable()" class="rounded text-rose-600" />
+              <span>🚨 เฉพาะจุดมีฝน / เฝ้าระวัง</span>
+            </label>
+            <span id="envRowCounter" class="text-[11px] font-bold text-slate-500 px-1">-</span>
+          </div>
+
+          <!-- 3 Large Reservoirs Spotlight (Shown automatically on Drought tab) -->
+          <div id="largeDamsSpotlight" class="hidden bg-amber-50/80 border border-amber-200 rounded-2xl p-3 space-y-2">
+            <div class="text-xs font-extrabold text-amber-950 flex items-center justify-between">
+              <span>🏛️ ไฮไลต์ 3 อ่างเก็บน้ำขนาดใหญ่ จ.ลำปาง</span>
+              <span class="text-[11px] font-semibold text-amber-800">กิ่วลม · กิ่วคอหมา · แม่มอก</span>
+            </div>
+            <div id="largeDamsGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs"></div>
+          </div>
+
+          <!-- Table / Responsive Container -->
+          <div class="overflow-auto max-h-[410px] border border-slate-200 rounded-2xl flex-1">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead id="envHead" class="bg-slate-100 text-slate-700 sticky top-0 z-10"></thead>
+              <tbody id="envBody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== 3. DEDICATED DASHBOARD: TRAFFY FONDUE LAMPANG ==================== -->
+      <section id="traffy-lampang"
+        class="bg-white rounded-3xl border-2 border-emerald-200 p-5 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900">🗺️ แผนที่สถานีตรวจวัดและจุดเฝ้าระวัง</h2>
-            <p class="text-xs text-slate-500">แตะที่หมุดบนแผนที่เพื่อดูค่าระดับน้ำและความจุอ่างเก็บน้ำ</p>
+            <span
+              class="inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-1">TRAFFY
+              FONDUE LAMPANG · PUBLIC EDITION</span>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">📢 Dashboard เรื่องร้องเรียน Traffy Fondue
+              จังหวัดลำปาง</h2>
+            <p class="text-xs text-slate-500 mt-0.5">แยกภารกิจของ อบจ.ลำปาง และหน่วยงานเครือข่ายอัตโนมัติ ·
+              <strong>คลิกที่กราฟแท่งด้านล่างเพื่อกรองรายการได้ทันที (Zero-PII)</strong>
+            </p>
           </div>
-          <button type="button" onclick="resetMapView()" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">🔍 มุมมองทั้งจังหวัด</button>
-        </div>
-
-        <!-- Map Layer Filter Pills -->
-        <div class="flex flex-wrap gap-1.5 text-xs">
-          <button type="button" onclick="setMapFilter('all')" data-mfilter="all" class="mfilter px-2.5 py-1 rounded-lg bg-slate-900 text-white font-semibold">แสดงทั้งหมด</button>
-          <button type="button" onclick="setMapFilter('water')" data-mfilter="water" class="mfilter px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold">🌊 สถานีน้ำ</button>
-          <button type="button" onclick="setMapFilter('dam')" data-mfilter="dam" class="mfilter px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold">🏜️ อ่างเก็บน้ำ</button>
-          <button type="button" onclick="setMapFilter('alert')" data-mfilter="alert" class="mfilter px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold">🚨 เฉพาะเฝ้าระวัง</button>
-        </div>
-
-        <div id="publicMap" class="w-full h-[400px] rounded-2xl border border-slate-200 bg-slate-50 z-10"></div>
-
-        <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-600 pt-1">
-          <div class="flex items-center gap-3">
-            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> วิกฤต/ล้นตลิ่ง</span>
-            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> เฝ้าระวัง</span>
-            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> ปกติ</span>
-            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> อ่างเก็บน้ำ</span>
-          </div>
-          <span id="mapMarkerCount" class="font-semibold text-slate-500">-</span>
-        </div>
-      </div>
-
-      <!-- Right: 4-Domain Table + Search + Large Dams Spotlight -->
-      <div class="lg:col-span-7 bg-white rounded-3xl border border-slate-200 p-5 shadow-sm flex flex-col space-y-3">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900">📊 ข้อมูลสิ่งแวดล้อมสำคัญ 4 ด้าน</h2>
-            <p id="envTableSubtitle" class="text-xs text-slate-500">เรียงลำดับตามจุดสำคัญและเข้าใจง่ายด้วยแถบสีสถานะ</p>
-          </div>
-          <div class="flex flex-wrap gap-1 text-xs">
-            <button type="button" onclick="switchEnvTab('water')" data-etab="water" class="etab px-3 py-1.5 rounded-xl bg-slate-900 text-white font-semibold">🌊 ระดับน้ำ</button>
-            <button type="button" onclick="switchEnvTab('rainfall')" data-etab="rainfall" class="etab px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-semibold">🌧️ น้ำฝน</button>
-            <button type="button" onclick="switchEnvTab('drought')" data-etab="drought" class="etab px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-semibold">🏜️ อ่างเก็บน้ำ</button>
-            <button type="button" onclick="switchEnvTab('pm25')" data-etab="pm25" class="etab px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-semibold">💨 PM 2.5</button>
+          <div class="flex flex-wrap items-center gap-2 text-xs">
+            <input id="traffySearch" oninput="renderTraffyTable()" type="text"
+              placeholder="🔍 ค้นหารหัสเรื่อง / ปัญหา / พื้นที่..."
+              class="border border-slate-300 rounded-xl px-3 py-2 w-52 bg-slate-50" />
+            <select id="traffyFilterAgency" onchange="renderTraffyTable()"
+              class="border border-slate-300 rounded-xl px-3 py-2 bg-white font-medium">
+              <option value="all">ทุกหน่วยงาน</option>
+              <option value="pao">เฉพาะภารกิจ อบจ.ลำปาง</option>
+              <option value="other">ส่งต่อ / หน่วยงานเครือข่ายอื่น</option>
+            </select>
+            <select id="traffyFilterState" onchange="renderTraffyTable()"
+              class="border border-slate-300 rounded-xl px-3 py-2 bg-white font-medium">
+              <option value="">ทุกสถานะ</option>
+              <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+              <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
+              <option value="รอรับเรื่อง">รอรับเรื่อง</option>
+            </select>
+            <button type="button" onclick="downloadPublicTraffyCsv()"
+              class="px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition">📥
+              ดาวน์โหลด CSV</button>
           </div>
         </div>
 
-        <!-- Search & Only-Alert Filter Bar -->
-        <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-50 border border-slate-200 rounded-2xl p-2.5 text-xs">
-          <input id="envSearchInput" oninput="renderEnvTable()" type="text" placeholder="🔍 พิมพ์ค้นหาชื่อสถานี / ตำบล / อำเภอ..." class="flex-1 min-w-[180px] bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs" />
-          <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-slate-200 cursor-pointer font-semibold text-slate-700">
-            <input type="checkbox" id="envOnlyWatch" onchange="renderEnvTable()" class="rounded text-rose-600" />
-            <span>🚨 เฉพาะจุดมีฝน / เฝ้าระวัง</span>
-          </label>
-          <span id="envRowCounter" class="text-[11px] font-bold text-slate-500 px-1">-</span>
-        </div>
-
-        <!-- 3 Large Reservoirs Spotlight (Shown automatically on Drought tab) -->
-        <div id="largeDamsSpotlight" class="hidden bg-amber-50/80 border border-amber-200 rounded-2xl p-3 space-y-2">
-          <div class="text-xs font-extrabold text-amber-950 flex items-center justify-between">
-            <span>🏛️ ไฮไลต์ 3 อ่างเก็บน้ำขนาดใหญ่ จ.ลำปาง</span>
-            <span class="text-[11px] font-semibold text-amber-800">กิ่วลม · กิ่วคอหมา · แม่มอก</span>
+        <!-- Traffy 5 KPIs -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 text-xs">
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+            <div class="text-slate-500">เรื่องร้องเรียนทั้งหมด</div>
+            <div id="tfTotal" class="text-2xl font-extrabold text-slate-900 mt-1">-</div>
+            <div id="tfTotalSub" class="text-[11px] text-slate-400 mt-0.5">รายการล่าสุดในระบบ</div>
           </div>
-          <div id="largeDamsGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs"></div>
+          <div class="rounded-2xl bg-emerald-50 border border-emerald-200 p-4">
+            <div class="text-emerald-800 font-semibold">ภารกิจ อบจ.ลำปาง</div>
+            <div id="tfPao" class="text-2xl font-extrabold text-emerald-700 mt-1">-</div>
+            <div class="text-[11px] text-emerald-700/80 mt-0.5">รับผิดชอบโดยตรง</div>
+          </div>
+          <div class="rounded-2xl bg-sky-50 border border-sky-200 p-4">
+            <div class="text-sky-800 font-semibold">หน่วยงานเครือข่ายอื่น</div>
+            <div id="tfOther" class="text-2xl font-extrabold text-sky-700 mt-1">-</div>
+            <div class="text-[11px] text-sky-700/80 mt-0.5">ประสานงานส่งต่อ</div>
+          </div>
+          <div class="rounded-2xl bg-purple-50 border border-purple-200 p-4">
+            <div class="text-purple-800 font-semibold">ดำเนินการเสร็จสิ้น</div>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span id="tfDone" class="text-2xl font-extrabold text-purple-700">-</span>
+              <span id="tfDonePct" class="text-xs font-bold text-purple-600">(-)</span>
+            </div>
+            <div id="tfInProgSub" class="text-[11px] text-purple-700/80 mt-0.5">กำลังดำเนินการ: -</div>
+          </div>
+          <div class="rounded-2xl bg-amber-50 border border-amber-200 p-4 col-span-2 sm:col-span-1">
+            <div class="text-amber-800 font-semibold">ความพึงพอใจเฉลี่ย</div>
+            <div id="tfStars" class="text-2xl font-extrabold text-amber-600 mt-1">-</div>
+            <div class="text-[11px] text-amber-700/80 mt-0.5">จากผู้แจ้งเรื่องประเมินผล</div>
+          </div>
         </div>
 
-        <!-- Table / Responsive Container -->
-        <div class="overflow-auto max-h-[410px] border border-slate-200 rounded-2xl flex-1">
+        <!-- Interactive Visual Breakdown Bars (Click to filter) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <div class="rounded-2xl border border-slate-200 p-4 space-y-2.5">
+            <div class="font-bold text-slate-800 flex items-center justify-between">
+              <span>📌 แยกตามสถานะ (คลิกเพื่อกรอง)</span>
+              <span class="text-[10px] text-slate-400">จำนวนเรื่อง</span>
+            </div>
+            <div id="tfStateBars" class="space-y-2"></div>
+          </div>
+          <div class="rounded-2xl border border-slate-200 p-4 space-y-2.5">
+            <div class="font-bold text-slate-800 flex items-center justify-between">
+              <span>🏛️ แยกตามหมวดหน่วยงาน (คลิกเพื่อกรอง)</span>
+              <span class="text-[10px] text-slate-400">จำนวนเรื่อง</span>
+            </div>
+            <div id="tfAgencyBars" class="space-y-2"></div>
+          </div>
+          <div class="rounded-2xl border border-slate-200 p-4 space-y-2.5">
+            <div class="font-bold text-slate-800 flex items-center justify-between">
+              <span>🏷️ ประเภทปัญหาที่พบบ่อย (คลิกเพื่อกรอง)</span>
+              <span class="text-[10px] text-slate-400">จำนวนเรื่อง</span>
+            </div>
+            <div id="tfTypeBars" class="space-y-2"></div>
+          </div>
+        </div>
+
+        <!-- Active Bar Filter Indicator -->
+        <div id="traffyActiveFilterBar"
+          class="hidden flex-wrap items-center justify-between gap-2 bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-2.5 text-xs">
+          <span id="traffyActiveFilterText" class="font-bold text-emerald-900">-</span>
+          <button type="button" onclick="clearTraffyFilters()"
+            class="px-3 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-semibold">✕
+            ล้างตัวกรองทั้งหมด</button>
+        </div>
+
+        <!-- Scrubbed Public Traffy Table -->
+        <div class="overflow-auto max-h-[400px] border border-slate-200 rounded-2xl">
           <table class="w-full text-left text-xs border-collapse">
-            <thead id="envHead" class="bg-slate-100 text-slate-700 sticky top-0 z-10"></thead>
-            <tbody id="envBody" class="divide-y divide-slate-100"></tbody>
+            <thead class="bg-slate-100 text-slate-700 sticky top-0 z-10">
+              <tr>
+                <th class="p-3">รหัสเรื่อง</th>
+                <th class="p-3">ประเภท &amp; สรุปเรื่อง (คัดกรอง PII แล้ว)</th>
+                <th class="p-3">หน่วยงาน / หมวดหมู่</th>
+                <th class="p-3">สถานะ</th>
+                <th class="p-3">วันที่แจ้ง</th>
+              </tr>
+            </thead>
+            <tbody id="traffyTableBody" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ==================== 3. DEDICATED DASHBOARD: TRAFFY FONDUE LAMPANG ==================== -->
-    <section id="traffy-lampang" class="bg-white rounded-3xl border-2 border-emerald-200 p-5 sm:p-8 shadow-sm space-y-6">
-      <div class="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <span class="inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-1">TRAFFY FONDUE LAMPANG · PUBLIC EDITION</span>
-          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">📢 Dashboard เรื่องร้องเรียน Traffy Fondue จังหวัดลำปาง</h2>
-          <p class="text-xs text-slate-500 mt-0.5">แยกภารกิจของ อบจ.ลำปาง และหน่วยงานเครือข่ายอัตโนมัติ · <strong>คลิกที่กราฟแท่งด้านล่างเพื่อกรองรายการได้ทันที (Zero-PII)</strong></p>
-        </div>
-        <div class="flex flex-wrap items-center gap-2 text-xs">
-          <input id="traffySearch" oninput="renderTraffyTable()" type="text" placeholder="🔍 ค้นหารหัสเรื่อง / ปัญหา / พื้นที่..." class="border border-slate-300 rounded-xl px-3 py-2 w-52 bg-slate-50" />
-          <select id="traffyFilterAgency" onchange="renderTraffyTable()" class="border border-slate-300 rounded-xl px-3 py-2 bg-white font-medium">
-            <option value="all">ทุกหน่วยงาน</option>
-            <option value="pao">เฉพาะภารกิจ อบจ.ลำปาง</option>
-            <option value="other">ส่งต่อ / หน่วยงานเครือข่ายอื่น</option>
-          </select>
-          <select id="traffyFilterState" onchange="renderTraffyTable()" class="border border-slate-300 rounded-xl px-3 py-2 bg-white font-medium">
-            <option value="">ทุกสถานะ</option>
-            <option value="เสร็จสิ้น">เสร็จสิ้น</option>
-            <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
-            <option value="รอรับเรื่อง">รอรับเรื่อง</option>
-          </select>
-          <button type="button" onclick="downloadPublicTraffyCsv()" class="px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition">📥 ดาวน์โหลด CSV</button>
-        </div>
-      </div>
-
-      <!-- Traffy 5 KPIs -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 text-xs">
-        <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-          <div class="text-slate-500">เรื่องร้องเรียนทั้งหมด</div>
-          <div id="tfTotal" class="text-2xl font-extrabold text-slate-900 mt-1">-</div>
-          <div id="tfTotalSub" class="text-[11px] text-slate-400 mt-0.5">รายการล่าสุดในระบบ</div>
-        </div>
-        <div class="rounded-2xl bg-emerald-50 border border-emerald-200 p-4">
-          <div class="text-emerald-800 font-semibold">ภารกิจ อบจ.ลำปาง</div>
-          <div id="tfPao" class="text-2xl font-extrabold text-emerald-700 mt-1">-</div>
-          <div class="text-[11px] text-emerald-700/80 mt-0.5">รับผิดชอบโดยตรง</div>
-        </div>
-        <div class="rounded-2xl bg-sky-50 border border-sky-200 p-4">
-          <div class="text-sky-800 font-semibold">หน่วยงานเครือข่ายอื่น</div>
-          <div id="tfOther" class="text-2xl font-extrabold text-sky-700 mt-1">-</div>
-          <div class="text-[11px] text-sky-700/80 mt-0.5">ประสานงานส่งต่อ</div>
-        </div>
-        <div class="rounded-2xl bg-purple-50 border border-purple-200 p-4">
-          <div class="text-purple-800 font-semibold">ดำเนินการเสร็จสิ้น</div>
-          <div class="flex items-baseline gap-2 mt-1">
-            <span id="tfDone" class="text-2xl font-extrabold text-purple-700">-</span>
-            <span id="tfDonePct" class="text-xs font-bold text-purple-600">(-)</span>
+      <!-- ==================== 4. INTER-AGENCY SECURE OPEN DATA API PORTAL (COLLAPSIBLE) ==================== -->
+      <section id="api-portal" class="bg-slate-900 text-slate-100 rounded-3xl p-5 sm:p-8 shadow-xl space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <span class="inline-block px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-bold mb-1">OPEN
+              DATA API FOR PARTNER AGENCIES</span>
+            <h2 class="text-lg sm:text-2xl font-extrabold text-white">🔌 API เชื่อมโยงข้อมูลสำหรับหน่วยงานที่เกี่ยวข้อง
+              (มาตรฐานความปลอดภัยสูง)</h2>
+            <p class="text-xs text-slate-300 mt-0.5">หน่วยงานเครือข่ายใน จ.ลำปาง (ปภ.จังหวัด, อำเภอ, เทศบาล/อบต.)
+              สามารถดึงข้อมูลไปใช้ต่อยอดได้อย่างปลอดภัย</p>
           </div>
-          <div id="tfInProgSub" class="text-[11px] text-purple-700/80 mt-0.5">กำลังดำเนินการ: -</div>
-        </div>
-        <div class="rounded-2xl bg-amber-50 border border-amber-200 p-4 col-span-2 sm:col-span-1">
-          <div class="text-amber-800 font-semibold">ความพึงพอใจเฉลี่ย</div>
-          <div id="tfStars" class="text-2xl font-extrabold text-amber-600 mt-1">-</div>
-          <div class="text-[11px] text-amber-700/80 mt-0.5">จากผู้แจ้งเรื่องประเมินผล</div>
-        </div>
-      </div>
-
-      <!-- Interactive Visual Breakdown Bars (Click to filter) -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-        <div class="rounded-2xl border border-slate-200 p-4 space-y-2.5">
-          <div class="font-bold text-slate-800 flex items-center justify-between">
-            <span>📌 แยกตามสถานะ (คลิกเพื่อกรอง)</span>
-            <span class="text-[10px] text-slate-400">จำนวนเรื่อง</span>
+          <div class="flex flex-wrap gap-2">
+            <a href="./endpoint.php?r=/api/public/openapi" target="_blank"
+              class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-bold border border-slate-700 transition">📄
+              OpenAPI 3.0 Spec</a>
+            <a href="./server_setup.php#agency-keys"
+              class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">🔑
+              ออก / จัดการ API Key หน่วยงาน</a>
           </div>
-          <div id="tfStateBars" class="space-y-2"></div>
         </div>
-        <div class="rounded-2xl border border-slate-200 p-4 space-y-2.5">
-          <div class="font-bold text-slate-800 flex items-center justify-between">
-            <span>🏛️ แยกตามหมวดหน่วยงาน (คลิกเพื่อกรอง)</span>
-            <span class="text-[10px] text-slate-400">จำนวนเรื่อง</span>
+
+        <!-- 4 Security Guarantees -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-3.5 space-y-1">
+            <div class="font-bold text-emerald-300">🛡️ Zero-PII Redaction</div>
+            <p class="text-slate-300">ตัด/ปิดบังเบอร์โทร, เลขบัตรประชาชน 13 หลัก, อีเมล, LINE ID
+              และไม่ส่งออกประวัติแชทภายใน</p>
           </div>
-          <div id="tfAgencyBars" class="space-y-2"></div>
-        </div>
-        <div class="rounded-2xl border border-slate-200 p-4 space-y-2.5">
-          <div class="font-bold text-slate-800 flex items-center justify-between">
-            <span>🏷️ ประเภทปัญหาที่พบบ่อย (คลิกเพื่อกรอง)</span>
-            <span class="text-[10px] text-slate-400">จำนวนเรื่อง</span>
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-3.5 space-y-1">
+            <div class="font-bold text-amber-300">🔑 SHA-256 Agency Key</div>
+            <p class="text-slate-300">เส้นทาง <code>/api/public/agency/*</code> บังคับใช้ <code>X-API-Key</code>
+              (เก็บเฉพาะ SHA-256 Hash ใน Server)</p>
           </div>
-          <div id="tfTypeBars" class="space-y-2"></div>
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-3.5 space-y-1">
+            <div class="font-bold text-sky-300">🚦 Sliding Rate Limiting</div>
+            <p class="text-slate-300">ป้องกันการยิงถล่มระบบด้วย Rate Limit ต่อ IP / Key (<code>HTTP 429</code> +
+              <code>X-RateLimit-*</code>)
+            </p>
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-3.5 space-y-1">
+            <div class="font-bold text-pink-300">🔒 Read-Only &amp; Audit Log</div>
+            <p class="text-slate-300">อนุญาตเฉพาะคำสั่งอ่าน <code>GET</code> เท่านั้น
+              และบันทึกประวัติการดึงของแต่ละหน่วยงานลง Log</p>
+          </div>
         </div>
-      </div>
 
-      <!-- Active Bar Filter Indicator -->
-      <div id="traffyActiveFilterBar" class="hidden flex-wrap items-center justify-between gap-2 bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-2.5 text-xs">
-        <span id="traffyActiveFilterText" class="font-bold text-emerald-900">-</span>
-        <button type="button" onclick="clearTraffyFilters()" class="px-3 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-semibold">✕ ล้างตัวกรองทั้งหมด</button>
-      </div>
+        <!-- Collapsible Developer Inspector Drawer -->
+        <details class="group bg-slate-950/70 border border-slate-800 rounded-2xl p-4">
+          <summary
+            class="cursor-pointer list-none flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-amber-300">
+            <span>🛠️ กดเพื่อเปิด/ปิด เครื่องมือทดสอบยิง API สด (สำหรับนักพัฒนาและเจ้าหน้าที่เทคนิค)</span>
+            <span
+              class="px-2.5 py-1 rounded-lg bg-white/10 text-white group-open:bg-amber-400 group-open:text-slate-950 transition">คลิกเพื่อกางออก
+              ▾</span>
+          </summary>
 
-      <!-- Scrubbed Public Traffy Table -->
-      <div class="overflow-auto max-h-[400px] border border-slate-200 rounded-2xl">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead class="bg-slate-100 text-slate-700 sticky top-0 z-10">
-            <tr>
-              <th class="p-3">รหัสเรื่อง</th>
-              <th class="p-3">ประเภท &amp; สรุปเรื่อง (คัดกรอง PII แล้ว)</th>
-              <th class="p-3">หน่วยงาน / หมวดหมู่</th>
-              <th class="p-3">สถานะ</th>
-              <th class="p-3">วันที่แจ้ง</th>
-            </tr>
-          </thead>
-          <tbody id="traffyTableBody" class="divide-y divide-slate-100"></tbody>
-        </table>
-      </div>
-    </section>
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 pt-4 mt-4 border-t border-slate-800">
+            <div class="lg:col-span-6 space-y-2.5 text-xs">
+              <div class="font-bold text-slate-200 mb-1">รายการ Endpoints พร้อมทดสอบยิงสด</div>
 
-    <!-- ==================== 4. INTER-AGENCY SECURE OPEN DATA API PORTAL (COLLAPSIBLE) ==================== -->
-    <section id="api-portal" class="bg-slate-900 text-slate-100 rounded-3xl p-5 sm:p-8 shadow-xl space-y-5">
-      <div class="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <span class="inline-block px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-bold mb-1">OPEN DATA API FOR PARTNER AGENCIES</span>
-          <h2 class="text-lg sm:text-2xl font-extrabold text-white">🔌 API เชื่อมโยงข้อมูลสำหรับหน่วยงานที่เกี่ยวข้อง (มาตรฐานความปลอดภัยสูง)</h2>
-          <p class="text-xs text-slate-300 mt-0.5">หน่วยงานเครือข่ายใน จ.ลำปาง (ปภ.จังหวัด, อำเภอ, เทศบาล/อบต.) สามารถดึงข้อมูลไปใช้ต่อยอดได้อย่างปลอดภัย</p>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          <a href="./endpoint.php?r=/api/public/openapi" target="_blank" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-bold border border-slate-700 transition">📄 OpenAPI 3.0 Spec</a>
-          <a href="./server_setup.php#agency-keys" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">🔑 ออก / จัดการ API Key หน่วยงาน</a>
-        </div>
-      </div>
-
-      <!-- 4 Security Guarantees -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-        <div class="bg-white/5 border border-white/10 rounded-2xl p-3.5 space-y-1">
-          <div class="font-bold text-emerald-300">🛡️ Zero-PII Redaction</div>
-          <p class="text-slate-300">ตัด/ปิดบังเบอร์โทร, เลขบัตรประชาชน 13 หลัก, อีเมล, LINE ID และไม่ส่งออกประวัติแชทภายใน</p>
-        </div>
-        <div class="bg-white/5 border border-white/10 rounded-2xl p-3.5 space-y-1">
-          <div class="font-bold text-amber-300">🔑 SHA-256 Agency Key</div>
-          <p class="text-slate-300">เส้นทาง <code>/api/public/agency/*</code> บังคับใช้ <code>X-API-Key</code> (เก็บเฉพาะ SHA-256 Hash ใน Server)</p>
-        </div>
-        <div class="bg-white/5 border border-white/10 rounded-2xl p-3.5 space-y-1">
-          <div class="font-bold text-sky-300">🚦 Sliding Rate Limiting</div>
-          <p class="text-slate-300">ป้องกันการยิงถล่มระบบด้วย Rate Limit ต่อ IP / Key (<code>HTTP 429</code> + <code>X-RateLimit-*</code>)</p>
-        </div>
-        <div class="bg-white/5 border border-white/10 rounded-2xl p-3.5 space-y-1">
-          <div class="font-bold text-pink-300">🔒 Read-Only &amp; Audit Log</div>
-          <p class="text-slate-300">อนุญาตเฉพาะคำสั่งอ่าน <code>GET</code> เท่านั้น และบันทึกประวัติการดึงของแต่ละหน่วยงานลง Log</p>
-        </div>
-      </div>
-
-      <!-- Collapsible Developer Inspector Drawer -->
-      <details class="group bg-slate-950/70 border border-slate-800 rounded-2xl p-4">
-        <summary class="cursor-pointer list-none flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-amber-300">
-          <span>🛠️ กดเพื่อเปิด/ปิด เครื่องมือทดสอบยิง API สด (สำหรับนักพัฒนาและเจ้าหน้าที่เทคนิค)</span>
-          <span class="px-2.5 py-1 rounded-lg bg-white/10 text-white group-open:bg-amber-400 group-open:text-slate-950 transition">คลิกเพื่อกางออก ▾</span>
-        </summary>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 pt-4 mt-4 border-t border-slate-800">
-          <div class="lg:col-span-6 space-y-2.5 text-xs">
-            <div class="font-bold text-slate-200 mb-1">รายการ Endpoints พร้อมทดสอบยิงสด</div>
-
-            <div class="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
-              <div><span class="px-1.5 py-0.5 rounded bg-emerald-600 font-bold text-[10px] mr-1">GET</span><code class="text-emerald-300">/endpoint.php?r=/api/public/overview</code><div class="text-slate-400 mt-0.5">สรุปจุดแข็ง 5 ด้าน + Executive Summary + สถิติ Traffy</div></div>
-              <button type="button" onclick="probePublicApi('/api/public/overview')" class="px-3 py-1.5 rounded-lg bg-white text-slate-950 font-bold hover:bg-emerald-100">ทดสอบ</button>
-            </div>
-
-            <div class="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
-              <div><span class="px-1.5 py-0.5 rounded bg-emerald-600 font-bold text-[10px] mr-1">GET</span><code class="text-sky-300">/endpoint.php?r=/api/public/traffy</code><div class="text-slate-400 mt-0.5">ข้อมูล Traffy Fondue ลำปาง + Breakdown (คัดกรอง PII แล้ว)</div></div>
-              <button type="button" onclick="probePublicApi('/api/public/traffy?limit=5')" class="px-3 py-1.5 rounded-lg bg-white text-slate-950 font-bold hover:bg-sky-100">ทดสอบ</button>
-            </div>
-
-            <div class="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
-              <div><span class="px-1.5 py-0.5 rounded bg-emerald-600 font-bold text-[10px] mr-1">GET</span><code class="text-purple-300">/endpoint.php?r=/api/public/environment</code><div class="text-slate-400 mt-0.5">ข้อมูลสิ่งแวดล้อมล่าสุด: น้ำ, ฝน, อ่างเก็บน้ำ, PM 2.5</div></div>
-              <button type="button" onclick="probePublicApi('/api/public/environment?domain=water')" class="px-3 py-1.5 rounded-lg bg-white text-slate-950 font-bold hover:bg-purple-100">ทดสอบ</button>
-            </div>
-
-            <div class="bg-amber-500/10 border border-amber-400/30 rounded-xl p-3 space-y-2">
-              <div class="flex flex-wrap items-center justify-between gap-2">
-                <div><span class="px-1.5 py-0.5 rounded bg-amber-500 text-slate-950 font-bold text-[10px] mr-1">KEY REQUIRED</span><code class="text-amber-300">/endpoint.php?r=/api/public/agency/traffy</code></div>
-                <button type="button" onclick="probePublicApi('/api/public/agency/traffy?agency=pao&limit=5', true)" class="px-3 py-1.5 rounded-lg bg-amber-400 text-slate-950 font-bold hover:bg-amber-300">ทดสอบด้วย Key</button>
+              <div
+                class="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
+                <div><span class="px-1.5 py-0.5 rounded bg-emerald-600 font-bold text-[10px] mr-1">GET</span><code
+                    class="text-emerald-300">/endpoint.php?r=/api/public/overview</code>
+                  <div class="text-slate-400 mt-0.5">สรุปจุดแข็ง 5 ด้าน + Executive Summary + สถิติ Traffy</div>
+                </div>
+                <button type="button" onclick="probePublicApi('/api/public/overview')"
+                  class="px-3 py-1.5 rounded-lg bg-white text-slate-950 font-bold hover:bg-emerald-100">ทดสอบ</button>
               </div>
-              <input id="agencyKeyTestInput" type="password" placeholder="วาง X-API-Key (ws2_ag_...) เพื่อทดสอบดึงแบบหน่วยงาน..." class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white mono" />
+
+              <div
+                class="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
+                <div><span class="px-1.5 py-0.5 rounded bg-emerald-600 font-bold text-[10px] mr-1">GET</span><code
+                    class="text-sky-300">/endpoint.php?r=/api/public/traffy</code>
+                  <div class="text-slate-400 mt-0.5">ข้อมูล Traffy Fondue ลำปาง + Breakdown (คัดกรอง PII แล้ว)</div>
+                </div>
+                <button type="button" onclick="probePublicApi('/api/public/traffy?limit=5')"
+                  class="px-3 py-1.5 rounded-lg bg-white text-slate-950 font-bold hover:bg-sky-100">ทดสอบ</button>
+              </div>
+
+              <div
+                class="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
+                <div><span class="px-1.5 py-0.5 rounded bg-emerald-600 font-bold text-[10px] mr-1">GET</span><code
+                    class="text-purple-300">/endpoint.php?r=/api/public/environment</code>
+                  <div class="text-slate-400 mt-0.5">ข้อมูลสิ่งแวดล้อมล่าสุด: น้ำ, ฝน, อ่างเก็บน้ำ, PM 2.5</div>
+                </div>
+                <button type="button" onclick="probePublicApi('/api/public/environment?domain=water')"
+                  class="px-3 py-1.5 rounded-lg bg-white text-slate-950 font-bold hover:bg-purple-100">ทดสอบ</button>
+              </div>
+
+              <div class="bg-amber-500/10 border border-amber-400/30 rounded-xl p-3 space-y-2">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div><span class="px-1.5 py-0.5 rounded bg-amber-500 text-slate-950 font-bold text-[10px] mr-1">KEY
+                      REQUIRED</span><code class="text-amber-300">/endpoint.php?r=/api/public/agency/traffy</code></div>
+                  <button type="button" onclick="probePublicApi('/api/public/agency/traffy?agency=pao&limit=5', true)"
+                    class="px-3 py-1.5 rounded-lg bg-amber-400 text-slate-950 font-bold hover:bg-amber-300">ทดสอบด้วย
+                    Key</button>
+                </div>
+                <input id="agencyKeyTestInput" type="password"
+                  placeholder="วาง X-API-Key (ws2_ag_...) เพื่อทดสอบดึงแบบหน่วยงาน..."
+                  class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white mono" />
+              </div>
+
+              <div
+                class="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
+                <div><span class="px-1.5 py-0.5 rounded bg-slate-600 font-bold text-[10px] mr-1">SPEC</span><code
+                    class="text-slate-200">/endpoint.php?r=/api/public/openapi</code>
+                  <div class="text-slate-400 mt-0.5">เอกสาร OpenAPI Spec JSON สำหรับนักพัฒนา</div>
+                </div>
+                <button type="button" onclick="probePublicApi('/api/public/openapi')"
+                  class="px-3 py-1.5 rounded-lg bg-slate-700 text-white font-semibold hover:bg-slate-600">ดู
+                  Spec</button>
+              </div>
             </div>
 
-            <div class="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
-              <div><span class="px-1.5 py-0.5 rounded bg-slate-600 font-bold text-[10px] mr-1">SPEC</span><code class="text-slate-200">/endpoint.php?r=/api/public/openapi</code><div class="text-slate-400 mt-0.5">เอกสาร OpenAPI Spec JSON สำหรับนักพัฒนา</div></div>
-              <button type="button" onclick="probePublicApi('/api/public/openapi')" class="px-3 py-1.5 rounded-lg bg-slate-700 text-white font-semibold hover:bg-slate-600">ดู Spec</button>
+            <div class="lg:col-span-6 bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2 text-xs">
+                <span class="font-bold text-emerald-300">📡 ผลลัพธ์ JSON จริง (API Response Inspector)</span>
+                <span id="apiProbeMeta" class="text-[11px] text-slate-400 mono">พร้อมทดสอบ</span>
+              </div>
+              <pre id="apiProbeOutput"
+                class="mono text-[11px] text-emerald-200 overflow-auto max-h-[340px] whitespace-pre-wrap leading-relaxed">กดปุ่ม "ทดสอบ" ด้านซ้าย เพื่อดูโครงสร้าง JSON และส่วนหัวความปลอดภัยจริง...</pre>
             </div>
           </div>
+        </details>
+      </section>
+    </main>
 
-          <div class="lg:col-span-6 bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2 text-xs">
-              <span class="font-bold text-emerald-300">📡 ผลลัพธ์ JSON จริง (API Response Inspector)</span>
-              <span id="apiProbeMeta" class="text-[11px] text-slate-400 mono">พร้อมทดสอบ</span>
-            </div>
-            <pre id="apiProbeOutput" class="mono text-[11px] text-emerald-200 overflow-auto max-h-[340px] whitespace-pre-wrap leading-relaxed">กดปุ่ม "ทดสอบ" ด้านซ้าย เพื่อดูโครงสร้าง JSON และส่วนหัวความปลอดภัยจริง...</pre>
-          </div>
-        </div>
-      </details>
-    </section>
-  </main>
+    <footer class="max-w-7xl mx-auto px-4 sm:px-6 py-6 text-center text-xs text-slate-400">
+      ศูนย์ข้อมูลสาธารณะองค์การบริหารส่วนจังหวัดลำปาง · Water_System2 Open Data &amp; Traffy Fondue Lampang
+    </footer>
 
-  <footer class="max-w-7xl mx-auto px-4 sm:px-6 py-6 text-center text-xs text-slate-400">
-    ศูนย์ข้อมูลสาธารณะองค์การบริหารส่วนจังหวัดลำปาง · Water_System2 Open Data &amp; Traffy Fondue Lampang
-  </footer>
+    <script>
+      const ALL_AMPHOES = [
+        'เมืองลำปาง', 'เกาะคา', 'แม่เมาะ', 'ห้างฉัตร', 'แจ้ห่ม',
+        'งาว', 'วังเหนือ', 'เถิน', 'สบปราบ', 'แม่พริก',
+        'แม่ทะ', 'เมืองปาน', 'เสริมงาม'
+      ];
 
-  <script>
-    const ALL_AMPHOES = [
-      'เมืองลำปาง', 'เกาะคา', 'แม่เมาะ', 'ห้างฉัตร', 'แจ้ห่ม',
-      'งาว', 'วังเหนือ', 'เถิน', 'สบปราบ', 'แม่พริก',
-      'แม่ทะ', 'เมืองปาน', 'เสริมงาม'
-    ];
+      const state = {
+        overview: null,
+        env: null,
+        traffy: null,
+        risk: null,
+        gis: null,
+        selectedAmphoe: 'all',
+        envTab: 'water',
+        mapFilter: 'all',
+        traffyBarFilter: { kind: '', value: '' },
+        map: null,
+        mapLayer: null
+      };
 
-    const state = {
-      overview: null,
-      env: null,
-      traffy: null,
-      risk: null,
-      gis: null,
-      selectedAmphoe: 'all',
-      envTab: 'water',
-      mapFilter: 'all',
-      traffyBarFilter: { kind: '', value: '' },
-      map: null,
-      mapLayer: null
-    };
-
-    function esc(v) {
-      return String(v === null || v === undefined ? '' : v).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
-    }
-
-    function ep(route) {
-      const p = location.pathname;
-      const base = location.origin + p.slice(0, p.lastIndexOf('/') + 1);
-      return base + 'endpoint.php?r=' + encodeURIComponent(route);
-    }
-
-    function toggleFontSize() {
-      document.body.classList.toggle('large-text');
-      const isLarge = document.body.classList.contains('large-text');
-      const btn = document.getElementById('btnFontToggle');
-      if (btn) btn.textContent = isLarge ? 'ก-' : 'ก+';
-    }
-
-    function matchesAmphoe(text, amphoe) {
-      if (!amphoe || amphoe === 'all') return true;
-      return String(text || '').includes(amphoe);
-    }
-
-    function jumpToDomain(tab) {
-      switchEnvTab(tab);
-      const el = document.getElementById('gis');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function selectAmphoe(amp) {
-      state.selectedAmphoe = amp || 'all';
-      const badge = document.getElementById('activeAmphoeBadge');
-      const rst = document.getElementById('btnResetAmphoe');
-      if (state.selectedAmphoe === 'all') {
-        badge.textContent = 'แสดง: ทั้งจังหวัด (13 อำเภอ)';
-        rst.classList.add('hidden');
-      } else {
-        badge.textContent = '📍 เฉพาะอำเภอ' + state.selectedAmphoe;
-        rst.classList.remove('hidden');
+      function esc(v) {
+        return String(v === null || v === undefined ? '' : v).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s]));
       }
-      renderDistrictStrip();
-      renderEnvTable();
-      renderTraffyTable();
-      initAndRenderMap(true);
-    }
 
-    async function loadPublicDashboard(isManual = false) {
-      const btn = document.getElementById('btnReloadPublic');
-      if (btn && isManual) btn.textContent = '⏳ กำลังโหลด...';
-      setLoader(true);
-      try {
-        const [ovR, evR, tfR, rkR, gsR] = await Promise.allSettled([
-          fetch(ep('/api/public/overview'), { cache: 'no-store' }).then(r => r.json()),
-          fetch(ep('/api/public/environment'), { cache: 'no-store' }).then(r => r.json()),
-          fetch(ep('/api/public/traffy?limit=100'), { cache: 'no-store' }).then(r => r.json()),
-          fetch(ep('/api/analytics/risk-index'), { cache: 'no-store' }).then(r => r.json()),
-          fetch(ep('/api/gis/map-data'), { cache: 'no-store' }).then(r => r.json())
-        ]);
+      function ep(route) {
+        const p = location.pathname;
+        const base = location.origin + p.slice(0, p.lastIndexOf('/') + 1);
+        return base + 'endpoint.php?r=' + encodeURIComponent(route);
+      }
 
-        if (ovR.status === 'fulfilled' && ovR.value?.success) state.overview = ovR.value;
-        if (evR.status === 'fulfilled' && evR.value?.success) state.env = evR.value;
-        if (tfR.status === 'fulfilled' && tfR.value?.success) state.traffy = tfR.value;
-        if (rkR.status === 'fulfilled' && rkR.value?.success) state.risk = rkR.value;
-        if (gsR.status === 'fulfilled' && gsR.value?.success) state.gis = gsR.value;
+      function toggleFontSize() {
+        document.body.classList.toggle('large-text');
+        const isLarge = document.body.classList.contains('large-text');
+        const btn = document.getElementById('btnFontToggle');
+        if (btn) btn.textContent = isLarge ? 'ก-' : 'ก+';
+      }
 
-        renderOverview();
+      function matchesAmphoe(text, amphoe) {
+        if (!amphoe || amphoe === 'all') return true;
+        return String(text || '').includes(amphoe);
+      }
+
+      function jumpToDomain(tab) {
+        switchEnvTab(tab);
+        const el = document.getElementById('gis');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      function selectAmphoe(amp) {
+        state.selectedAmphoe = amp || 'all';
+        const badge = document.getElementById('activeAmphoeBadge');
+        const rst = document.getElementById('btnResetAmphoe');
+        if (state.selectedAmphoe === 'all') {
+          badge.textContent = 'แสดง: ทั้งจังหวัด (13 อำเภอ)';
+          rst.classList.add('hidden');
+        } else {
+          badge.textContent = '📍 เฉพาะอำเภอ' + state.selectedAmphoe;
+          rst.classList.remove('hidden');
+        }
         renderDistrictStrip();
         renderEnvTable();
-        renderTraffy();
-        initAndRenderMap(false);
-        animateKpis();
-      } catch (e) {
-        console.error('Public dashboard load error:', e);
-      } finally {
-        if (btn && isManual) btn.innerHTML = '<span class="spin-once">🔄</span> รีเฟรช';
-        setLoader(false);
+        renderTraffyTable();
+        initAndRenderMap(true);
       }
-    }
 
-    function renderOverview() {
-      const ov = state.overview || {};
-      const env = ov.environment || {};
-      const ex = ov.executiveSummary || {};
-      const tf = ov.traffySummary || {};
-      const rs = state.risk?.summary || {};
+      async function loadPublicDashboard(isManual = false) {
+        const btn = document.getElementById('btnReloadPublic');
+        if (btn && isManual) btn.textContent = '⏳ กำลังโหลด...';
+        setLoader(true);
+        try {
+          const [ovR, evR, tfR, rkR, gsR] = await Promise.allSettled([
+            fetch(ep('/api/public/overview'), { cache: 'no-store' }).then(r => r.json()),
+            fetch(ep('/api/public/environment'), { cache: 'no-store' }).then(r => r.json()),
+            fetch(ep('/api/public/traffy?limit=100'), { cache: 'no-store' }).then(r => r.json()),
+            fetch(ep('/api/analytics/risk-index'), { cache: 'no-store' }).then(r => r.json()),
+            fetch(ep('/api/gis/map-data'), { cache: 'no-store' }).then(r => r.json())
+          ]);
 
-      document.getElementById('heroSourceBadge').textContent = ov.meta?.dataSource === 'cloud_fallback'
-        ? '☁️ Cloud Failover Active · Zero-PII'
-        : '🟢 ข้อมูลสดจากฐานข้อมูล อบจ.ลำปาง · Zero-PII';
+          if (ovR.status === 'fulfilled' && ovR.value?.success) state.overview = ovR.value;
+          if (evR.status === 'fulfilled' && evR.value?.success) state.env = evR.value;
+          if (tfR.status === 'fulfilled' && tfR.value?.success) state.traffy = tfR.value;
+          if (rkR.status === 'fulfilled' && rkR.value?.success) state.risk = rkR.value;
+          if (gsR.status === 'fulfilled' && gsR.value?.success) state.gis = gsR.value;
 
-      document.getElementById('execHeadlineText').textContent = ex.headline || 'ระบบเชื่อมโยงข้อมูลทั้ง 5 ด้านของจังหวัดลำปางเรียบร้อย';
-      document.getElementById('pubRiskScore').textContent = rs.compositeScore ?? '-';
-      document.getElementById('pubRiskLabel').textContent = rs.riskLevel || (ov.meta?.dataSource === 'cloud_fallback' ? 'Cloud Mode' : 'ออนไลน์');
-      document.getElementById('pubUpdatedAt').textContent = 'อัปเดต: ' + (env.latestWaterAt || ov.meta?.generatedAt || '-');
-
-      // 1. Water Card
-      const wCrit = env.waterCritical ?? 0;
-      const wWatch = env.waterWatch ?? 0;
-      const wNorm = env.waterNormal ?? (env.waterCount ?? 0);
-      const badgeWater = document.getElementById('badgeWater');
-      if (wCrit > 0) {
-        badgeWater.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-800 badge-pulse';
-        badgeWater.textContent = `🚨 วิกฤต ${wCrit} จุด`;
-      } else if (wWatch > 0) {
-        badgeWater.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800';
-        badgeWater.textContent = `⚠️ เฝ้าระวัง ${wWatch} จุด`;
-      } else {
-        badgeWater.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800';
-        badgeWater.textContent = '✅ ปกติทุกสถานี';
+          renderOverview();
+          renderDistrictStrip();
+          renderEnvTable();
+          renderTraffy();
+          initAndRenderMap(false);
+          animateKpis();
+        } catch (e) {
+          console.error('Public dashboard load error:', e);
+        } finally {
+          if (btn && isManual) btn.innerHTML = '<span class="spin-once">🔄</span> รีเฟรช';
+          setLoader(false);
+        }
       }
-      document.getElementById('kpiWater').textContent = `${wNorm}/${env.waterCount ?? 0} ปกติ`;
-      document.getElementById('kpiWaterNote').textContent = ex.water?.topStation
-        ? `เด่น: ${ex.water.topStation.station_name} (${ex.water.topStation.status})`
-        : 'ติดตามลุ่มน้ำวังและลุ่มน้ำยม';
 
-      // 2. Rainfall Card
-      const rRaining = env.rainfallRaining ?? 0;
-      const maxRain = Number(env.maxRainMm ?? ex.rainfall?.maxRainMm ?? 0);
-      const badgeRain = document.getElementById('badgeRain');
-      badgeRain.textContent = rRaining > 0 ? `ตก ${rRaining} จุด` : 'ไม่มีฝน';
-      badgeRain.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold ' + (maxRain > 35 ? 'bg-red-100 text-red-800' : (rRaining > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-600'));
-      document.getElementById('kpiRain').textContent = maxRain > 0 ? `สูงสุด ${maxRain.toFixed(1)} มม.` : '0.0 มม.';
-      document.getElementById('kpiRainNote').textContent = maxRain > 0
-        ? `ที่สถานี ${env.maxRainStation || ex.rainfall?.maxStation || '-'}`
-        : `ไม่มีฝนตกในรอบ 24 ชม. (${env.rainfallCount ?? 0} สถานี)`;
+      function renderOverview() {
+        const ov = state.overview || {};
+        const env = ov.environment || {};
+        const ex = ov.executiveSummary || {};
+        const tf = ov.traffySummary || {};
+        const rs = state.risk?.summary || {};
 
-      // 3. Reservoir / Drought Card
-      const damPct = Number(env.overallDamPercent ?? ex.drought?.overallPercent ?? 0);
-      document.getElementById('badgeDam').textContent = `${env.droughtCount ?? 0} อ่างฯ`;
-      document.getElementById('kpiDam').textContent = `${damPct.toFixed(1)}% ความจุรวม`;
-      document.getElementById('kpiDamBar').style.width = `${Math.min(100, Math.max(0, damPct))}%`;
-      document.getElementById('kpiDamNote').textContent = `${env.totalDamVolMCum ?? 0} / ${env.totalDamCapMCum ?? 0} ล้าน ม³`;
+        document.getElementById('heroSourceBadge').textContent = ov.meta?.dataSource === 'cloud_fallback'
+          ? '☁️ Cloud Failover Active · Zero-PII'
+          : '🟢 ข้อมูลสดจากฐานข้อมูล อบจ.ลำปาง · Zero-PII';
 
-      // 4. PM 2.5 Card
-      const maxPm = Number(env.maxPm25 ?? ex.pm25?.maxPm25 ?? 0);
-      const avgPm = Number(env.avgPm25 ?? ex.pm25?.avgPm25 ?? 0);
-      const pmStatus = env.maxPm25Status || ex.pm25?.maxStatus || 'ดีมาก';
-      const badgePm = document.getElementById('badgePm');
-      badgePm.textContent = pmStatus;
-      badgePm.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold ' + (maxPm > 37.5 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800');
-      document.getElementById('kpiPm').textContent = `เฉลี่ย ${avgPm.toFixed(1)} µg/m³`;
-      document.getElementById('kpiPmNote').textContent = `สูงสุด ${maxPm.toFixed(1)} µg/m³ (${env.maxPm25Station || '-'})`;
+        document.getElementById('execHeadlineText').textContent = ex.headline || 'ระบบเชื่อมโยงข้อมูลทั้ง 5 ด้านของจังหวัดลำปางเรียบร้อย';
+        document.getElementById('pubRiskScore').textContent = rs.compositeScore ?? '-';
+        document.getElementById('pubRiskLabel').textContent = rs.riskLevel || (ov.meta?.dataSource === 'cloud_fallback' ? 'Cloud Mode' : 'ออนไลน์');
+        document.getElementById('pubUpdatedAt').textContent = 'อัปเดต: ' + (env.latestWaterAt || ov.meta?.generatedAt || '-');
 
-      // 5. Traffy Card
-      const compPct = Number(tf.completionRatePct ?? 0);
-      document.getElementById('badgeTraffy').textContent = `สำเร็จ ${compPct}%`;
-      document.getElementById('kpiTraffy').textContent = `${tf.total ?? 0} เรื่อง`;
-      document.getElementById('kpiTraffyBar').style.width = `${Math.min(100, Math.max(0, compPct))}%`;
-      document.getElementById('kpiTraffyNote').textContent = `อบจ.ลำปาง ${tf.paoCount ?? 0} · เครือข่าย ${tf.otherAgencyCount ?? 0}`;
+        // 1. Water Card
+        const wCrit = env.waterCritical ?? 0;
+        const wWatch = env.waterWatch ?? 0;
+        const wNorm = env.waterNormal ?? (env.waterCount ?? 0);
+        const badgeWater = document.getElementById('badgeWater');
+        if (wCrit > 0) {
+          badgeWater.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-800 badge-pulse';
+          badgeWater.textContent = `🚨 วิกฤต ${wCrit} จุด`;
+        } else if (wWatch > 0) {
+          badgeWater.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800';
+          badgeWater.textContent = `⚠️ เฝ้าระวัง ${wWatch} จุด`;
+        } else {
+          badgeWater.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800';
+          badgeWater.textContent = '✅ ปกติทุกสถานี';
+        }
+        document.getElementById('kpiWater').textContent = `${wNorm}/${env.waterCount ?? 0} ปกติ`;
+        document.getElementById('kpiWaterNote').textContent = ex.water?.topStation
+          ? `เด่น: ${ex.water.topStation.station_name} (${ex.water.topStation.status})`
+          : 'ติดตามลุ่มน้ำวังและลุ่มน้ำยม';
 
-      const hlEl = document.getElementById('highlightsGrid');
-      hlEl.innerHTML = (ov.highlights || []).map(h => `
+        // 2. Rainfall Card
+        const rRaining = env.rainfallRaining ?? 0;
+        const maxRain = Number(env.maxRainMm ?? ex.rainfall?.maxRainMm ?? 0);
+        const badgeRain = document.getElementById('badgeRain');
+        badgeRain.textContent = rRaining > 0 ? `ตก ${rRaining} จุด` : 'ไม่มีฝน';
+        badgeRain.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold ' + (maxRain > 35 ? 'bg-red-100 text-red-800' : (rRaining > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-600'));
+        document.getElementById('kpiRain').textContent = maxRain > 0 ? `สูงสุด ${maxRain.toFixed(1)} มม.` : '0.0 มม.';
+        document.getElementById('kpiRainNote').textContent = maxRain > 0
+          ? `ที่สถานี ${env.maxRainStation || ex.rainfall?.maxStation || '-'}`
+          : `ไม่มีฝนตกในรอบ 24 ชม. (${env.rainfallCount ?? 0} สถานี)`;
+
+        // 3. Reservoir / Drought Card
+        const damPct = Number(env.overallDamPercent ?? ex.drought?.overallPercent ?? 0);
+        document.getElementById('badgeDam').textContent = `${env.droughtCount ?? 0} อ่างฯ`;
+        document.getElementById('kpiDam').textContent = `${damPct.toFixed(1)}% ความจุรวม`;
+        document.getElementById('kpiDamBar').style.width = `${Math.min(100, Math.max(0, damPct))}%`;
+        document.getElementById('kpiDamNote').textContent = `${env.totalDamVolMCum ?? 0} / ${env.totalDamCapMCum ?? 0} ล้าน ม³`;
+
+        // 4. PM 2.5 Card
+        const maxPm = Number(env.maxPm25 ?? ex.pm25?.maxPm25 ?? 0);
+        const avgPm = Number(env.avgPm25 ?? ex.pm25?.avgPm25 ?? 0);
+        const pmStatus = env.maxPm25Status || ex.pm25?.maxStatus || 'ดีมาก';
+        const badgePm = document.getElementById('badgePm');
+        badgePm.textContent = pmStatus;
+        badgePm.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold ' + (maxPm > 37.5 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800');
+        document.getElementById('kpiPm').textContent = `เฉลี่ย ${avgPm.toFixed(1)} µg/m³`;
+        document.getElementById('kpiPmNote').textContent = `สูงสุด ${maxPm.toFixed(1)} µg/m³ (${env.maxPm25Station || '-'})`;
+
+        // 5. Traffy Card
+        const compPct = Number(tf.completionRatePct ?? 0);
+        document.getElementById('badgeTraffy').textContent = `สำเร็จ ${compPct}%`;
+        document.getElementById('kpiTraffy').textContent = `${tf.total ?? 0} เรื่อง`;
+        document.getElementById('kpiTraffyBar').style.width = `${Math.min(100, Math.max(0, compPct))}%`;
+        document.getElementById('kpiTraffyNote').textContent = `อบจ.ลำปาง ${tf.paoCount ?? 0} · เครือข่าย ${tf.otherAgencyCount ?? 0}`;
+
+        const hlEl = document.getElementById('highlightsGrid');
+        hlEl.innerHTML = (ov.highlights || []).map(h => `
         <div class="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-3 space-y-0.5">
           <div class="font-bold text-amber-300">✦ ${esc(h.title)}</div>
           <div class="text-emerald-100/90 leading-relaxed text-[11px]">${esc(h.desc)}</div>
         </div>`).join('');
 
-      // Render 3 Large Reservoirs Spotlight inside Drought tab
-      const largeDams = ex.drought?.largeDams || [];
-      const ldGrid = document.getElementById('largeDamsGrid');
-      if (ldGrid && largeDams.length) {
-        ldGrid.innerHTML = largeDams.map(d => {
-          const pct = Math.min(100, Math.max(0, Number(d.percent || 0)));
-          const barCls = pct > 85 ? 'bg-blue-600' : (pct <= 30 ? 'bg-red-500' : 'bg-emerald-600');
-          return `<div class="bg-white border border-amber-200 rounded-xl p-2.5 space-y-1">
+        // Render 3 Large Reservoirs Spotlight inside Drought tab
+        const largeDams = ex.drought?.largeDams || [];
+        const ldGrid = document.getElementById('largeDamsGrid');
+        if (ldGrid && largeDams.length) {
+          ldGrid.innerHTML = largeDams.map(d => {
+            const pct = Math.min(100, Math.max(0, Number(d.percent || 0)));
+            const barCls = pct > 85 ? 'bg-blue-600' : (pct <= 30 ? 'bg-red-500' : 'bg-emerald-600');
+            return `<div class="bg-white border border-amber-200 rounded-xl p-2.5 space-y-1">
             <div class="flex items-center justify-between font-bold text-slate-900">
               <span>🏜️ ${esc(d.dam_name)}</span>
               <span class="text-amber-800">${d.percent}%</span>
@@ -799,124 +1192,124 @@
               <span>ใช้การ: <b>${d.usable ?? '-'}</b></span>
             </div>
           </div>`;
-        }).join('');
-      }
-    }
-
-    function renderDistrictStrip() {
-      const distStrip = document.getElementById('districtStrip');
-      if (!distStrip) return;
-      const riskMap = {};
-      (state.risk?.districts || []).forEach(d => {
-        const name = String(d.district || d.districtName || '').replace(/^อำเภอ/, '').trim();
-        if (name) riskMap[name] = d.compositeScore ?? d.riskScore ?? 0;
-      });
-
-      const allBtnCls = state.selectedAmphoe === 'all'
-        ? 'bg-emerald-800 text-white border-emerald-900 shadow-sm'
-        : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200';
-
-      let html = `<button type="button" onclick="selectAmphoe('all')" class="px-3 py-1.5 rounded-xl border font-bold transition ${allBtnCls}">🌐 ทั้งจังหวัด (13)</button>`;
-      html += ALL_AMPHOES.map(amp => {
-        const score = riskMap[amp];
-        const isSel = state.selectedAmphoe === amp;
-        let cls = 'bg-slate-50 hover:bg-emerald-50 text-slate-700 border-slate-200';
-        if (isSel) {
-          cls = 'bg-emerald-700 text-white border-emerald-800 shadow-sm font-bold';
-        } else if (score !== undefined) {
-          if (score >= 75) cls = 'bg-red-50 hover:bg-red-100 text-red-900 border-red-200';
-          else if (score >= 55) cls = 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-200';
+          }).join('');
         }
-        const scoreTag = score !== undefined ? ` <span class="opacity-75 text-[10px]">(${score})</span>` : '';
-        return `<button type="button" onclick="selectAmphoe('${esc(amp)}')" class="px-2.5 py-1.5 rounded-xl border font-medium transition ${cls}">อ.${esc(amp)}${scoreTag}</button>`;
-      }).join('');
-      distStrip.innerHTML = html;
-    }
-
-    function switchEnvTab(tab) {
-      state.envTab = tab;
-      document.querySelectorAll('.etab').forEach(b => {
-        const act = b.dataset.etab === tab;
-        b.className = 'etab px-3 py-1.5 rounded-xl font-semibold ' + (act ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700');
-      });
-      const spot = document.getElementById('largeDamsSpotlight');
-      if (spot) {
-        if (tab === 'drought') spot.classList.remove('hidden');
-        else spot.classList.add('hidden');
       }
-      renderEnvTable();
-    }
 
-    function statusBadgeHtml(text) {
-      const s = String(text || '-');
-      let cls = 'bg-emerald-100 text-emerald-800';
-      if (s.includes('ล้น') || s.includes('วิกฤต') || s.includes('หนักมาก') || s.includes('มีผลกระทบ')) {
-        cls = 'bg-red-100 text-red-800 badge-pulse';
-      } else if (s.includes('มาก') || s.includes('เฝ้าระวัง') || s.includes('หนัก') || s.includes('ปานกลาง') || s.includes('น้อย')) {
-        cls = 'bg-amber-100 text-amber-800';
-      } else if (s.includes('ไม่มีฝน')) {
-        cls = 'bg-slate-100 text-slate-600';
-      }
-      return `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${cls}">${esc(s)}</span>`;
-    }
+      function renderDistrictStrip() {
+        const distStrip = document.getElementById('districtStrip');
+        if (!distStrip) return;
+        const riskMap = {};
+        (state.risk?.districts || []).forEach(d => {
+          const name = String(d.district || d.districtName || '').replace(/^อำเภอ/, '').trim();
+          if (name) riskMap[name] = d.compositeScore ?? d.riskScore ?? 0;
+        });
 
-    function renderEnvTable() {
-      const env = state.env || {};
-      const head = document.getElementById('envHead');
-      const body = document.getElementById('envBody');
-      const q = (document.getElementById('envSearchInput')?.value || '').trim().toLowerCase();
-      const onlyWatch = Boolean(document.getElementById('envOnlyWatch')?.checked);
-      const amp = state.selectedAmphoe;
+        const allBtnCls = state.selectedAmphoe === 'all'
+          ? 'bg-emerald-800 text-white border-emerald-900 shadow-sm'
+          : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200';
 
-      let rows = (env[state.envTab] || []).filter(r => {
-        const locStr = `${r.amphoe || ''} ${r.location || ''} ${r.station_name || ''} ${r.dam_name || ''}`;
-        if (!matchesAmphoe(locStr, amp)) return false;
-        if (q && !JSON.stringify(r).toLowerCase().includes(q)) return false;
-        if (onlyWatch) {
-          if (state.envTab === 'water') return !String(r.status || '').includes('น้ำปกติ');
-          if (state.envTab === 'rainfall') return parseFloat(r.rain_mm || 0) > 0;
-          if (state.envTab === 'drought') {
-            const p = parseFloat(String(r.water_percent || '50').replace('%', ''));
-            return p <= 30 || p >= 85;
+        let html = `<button type="button" onclick="selectAmphoe('all')" class="px-3 py-1.5 rounded-xl border font-bold transition ${allBtnCls}">🌐 ทั้งจังหวัด (13)</button>`;
+        html += ALL_AMPHOES.map(amp => {
+          const score = riskMap[amp];
+          const isSel = state.selectedAmphoe === amp;
+          let cls = 'bg-slate-50 hover:bg-emerald-50 text-slate-700 border-slate-200';
+          if (isSel) {
+            cls = 'bg-emerald-700 text-white border-emerald-800 shadow-sm font-bold';
+          } else if (score !== undefined) {
+            if (score >= 75) cls = 'bg-red-50 hover:bg-red-100 text-red-900 border-red-200';
+            else if (score >= 55) cls = 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-200';
           }
-          if (state.envTab === 'pm25') return parseFloat(r.pm25_value || 0) > 25;
+          const scoreTag = score !== undefined ? ` <span class="opacity-75 text-[10px]">(${score})</span>` : '';
+          return `<button type="button" onclick="selectAmphoe('${esc(amp)}')" class="px-2.5 py-1.5 rounded-xl border font-medium transition ${cls}">อ.${esc(amp)}${scoreTag}</button>`;
+        }).join('');
+        distStrip.innerHTML = html;
+      }
+
+      function switchEnvTab(tab) {
+        state.envTab = tab;
+        document.querySelectorAll('.etab').forEach(b => {
+          const act = b.dataset.etab === tab;
+          b.className = 'etab px-3 py-1.5 rounded-xl font-semibold ' + (act ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700');
+        });
+        const spot = document.getElementById('largeDamsSpotlight');
+        if (spot) {
+          if (tab === 'drought') spot.classList.remove('hidden');
+          else spot.classList.add('hidden');
         }
-        return true;
-      });
+        renderEnvTable();
+      }
 
-      document.getElementById('envRowCounter').textContent = `แสดง ${rows.length} รายการ`;
-      rows = rows.slice(0, 80);
+      function statusBadgeHtml(text) {
+        const s = String(text || '-');
+        let cls = 'bg-emerald-100 text-emerald-800';
+        if (s.includes('ล้น') || s.includes('วิกฤต') || s.includes('หนักมาก') || s.includes('มีผลกระทบ')) {
+          cls = 'bg-red-100 text-red-800 badge-pulse';
+        } else if (s.includes('มาก') || s.includes('เฝ้าระวัง') || s.includes('หนัก') || s.includes('ปานกลาง') || s.includes('น้อย')) {
+          cls = 'bg-amber-100 text-amber-800';
+        } else if (s.includes('ไม่มีฝน')) {
+          cls = 'bg-slate-100 text-slate-600';
+        }
+        return `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${cls}">${esc(s)}</span>`;
+      }
 
-      if (state.envTab === 'water') {
-        head.innerHTML = '<tr><th class="p-2.5">สถานี</th><th class="p-2.5">อำเภอ / ลุ่มน้ำ</th><th class="p-2.5">ระดับน้ำ (ม.)</th><th class="p-2.5">ฝนสะสม 3 วัน</th><th class="p-2.5">สถานะ</th></tr>';
-        body.innerHTML = rows.map(r => `<tr class="hover:bg-slate-50">
+      function renderEnvTable() {
+        const env = state.env || {};
+        const head = document.getElementById('envHead');
+        const body = document.getElementById('envBody');
+        const q = (document.getElementById('envSearchInput')?.value || '').trim().toLowerCase();
+        const onlyWatch = Boolean(document.getElementById('envOnlyWatch')?.checked);
+        const amp = state.selectedAmphoe;
+
+        let rows = (env[state.envTab] || []).filter(r => {
+          const locStr = `${r.amphoe || ''} ${r.location || ''} ${r.station_name || ''} ${r.dam_name || ''}`;
+          if (!matchesAmphoe(locStr, amp)) return false;
+          if (q && !JSON.stringify(r).toLowerCase().includes(q)) return false;
+          if (onlyWatch) {
+            if (state.envTab === 'water') return !String(r.status || '').includes('น้ำปกติ');
+            if (state.envTab === 'rainfall') return parseFloat(r.rain_mm || 0) > 0;
+            if (state.envTab === 'drought') {
+              const p = parseFloat(String(r.water_percent || '50').replace('%', ''));
+              return p <= 30 || p >= 85;
+            }
+            if (state.envTab === 'pm25') return parseFloat(r.pm25_value || 0) > 25;
+          }
+          return true;
+        });
+
+        document.getElementById('envRowCounter').textContent = `แสดง ${rows.length} รายการ`;
+        rows = rows.slice(0, 80);
+
+        if (state.envTab === 'water') {
+          head.innerHTML = '<tr><th class="p-2.5">สถานี</th><th class="p-2.5">อำเภอ / ลุ่มน้ำ</th><th class="p-2.5">ระดับน้ำ (ม.)</th><th class="p-2.5">ฝนสะสม 3 วัน</th><th class="p-2.5">สถานะ</th></tr>';
+          body.innerHTML = rows.map(r => `<tr class="hover:bg-slate-50">
           <td class="p-2.5 font-bold text-slate-900">${esc(r.station_name)}</td>
           <td class="p-2.5 text-slate-600">${esc(r.amphoe)}<div class="text-[10px] text-slate-400">${esc(r.river || '')}</div></td>
           <td class="p-2.5 font-mono font-bold text-sky-800">${esc(r.current_water_level_m ?? '-')} <span class="text-[10px] font-normal text-slate-400">/ ตลิ่ง ${esc(r.left_bank_level_m ?? '-')}</span></td>
           <td class="p-2.5 font-semibold">${esc(r.forecast_rain_24h_mm ?? 0)} มม.</td>
           <td class="p-2.5">${statusBadgeHtml(r.status)}</td>
         </tr>`).join('');
-      } else if (state.envTab === 'rainfall') {
-        head.innerHTML = '<tr><th class="p-2.5">สถานี</th><th class="p-2.5">พื้นที่</th><th class="p-2.5">ลุ่มน้ำ</th><th class="p-2.5">ฝน 24 ชม.</th><th class="p-2.5">สถานะ</th></tr>';
-        body.innerHTML = rows.map(r => {
-          const mm = parseFloat(r.rain_mm || 0);
-          return `<tr class="hover:bg-slate-50">
+        } else if (state.envTab === 'rainfall') {
+          head.innerHTML = '<tr><th class="p-2.5">สถานี</th><th class="p-2.5">พื้นที่</th><th class="p-2.5">ลุ่มน้ำ</th><th class="p-2.5">ฝน 24 ชม.</th><th class="p-2.5">สถานะ</th></tr>';
+          body.innerHTML = rows.map(r => {
+            const mm = parseFloat(r.rain_mm || 0);
+            return `<tr class="hover:bg-slate-50">
             <td class="p-2.5 font-bold text-slate-900">${esc(r.station_name)}</td>
             <td class="p-2.5 text-slate-600">${esc(r.location)}</td>
             <td class="p-2.5 text-slate-500">${esc(r.river_basin || '-')}</td>
             <td class="p-2.5 font-extrabold ${mm > 35 ? 'text-red-600' : (mm > 0 ? 'text-blue-700' : 'text-slate-400')}">${mm.toFixed(1)} มม.</td>
             <td class="p-2.5">${statusBadgeHtml(r.rain_status)}</td>
           </tr>`;
-        }).join('');
-      } else if (state.envTab === 'drought') {
-        head.innerHTML = '<tr><th class="p-2.5">อ่างเก็บน้ำ</th><th class="p-2.5">ประเภท</th><th class="p-2.5">กักเก็บ / ความจุ (ล้าน ม³)</th><th class="p-2.5 w-40">% น้ำในอ่างฯ</th></tr>';
-        body.innerHTML = rows.map(r => {
-          const cap = parseFloat(r.capacity_m_cum || 0);
-          const vol = parseFloat(r.water_volume_m_cum || 0);
-          const pctNum = cap > 0 ? Math.round((vol / cap) * 1000) / 10 : parseFloat(String(r.water_percent || '0').replace('%', ''));
-          const barW = Math.min(100, Math.max(0, isNaN(pctNum) ? 0 : pctNum));
-          const barCls = barW <= 30 ? 'bg-red-500' : (barW >= 85 ? 'bg-blue-600' : 'bg-emerald-600');
-          return `<tr class="hover:bg-slate-50">
+          }).join('');
+        } else if (state.envTab === 'drought') {
+          head.innerHTML = '<tr><th class="p-2.5">อ่างเก็บน้ำ</th><th class="p-2.5">ประเภท</th><th class="p-2.5">กักเก็บ / ความจุ (ล้าน ม³)</th><th class="p-2.5 w-40">% น้ำในอ่างฯ</th></tr>';
+          body.innerHTML = rows.map(r => {
+            const cap = parseFloat(r.capacity_m_cum || 0);
+            const vol = parseFloat(r.water_volume_m_cum || 0);
+            const pctNum = cap > 0 ? Math.round((vol / cap) * 1000) / 10 : parseFloat(String(r.water_percent || '0').replace('%', ''));
+            const barW = Math.min(100, Math.max(0, isNaN(pctNum) ? 0 : pctNum));
+            const barCls = barW <= 30 ? 'bg-red-500' : (barW >= 85 ? 'bg-blue-600' : 'bg-emerald-600');
+            return `<tr class="hover:bg-slate-50">
             <td class="p-2.5 font-bold text-slate-900">${esc(r.dam_name)}</td>
             <td class="p-2.5 text-slate-500">${esc(r.dam_type)}</td>
             <td class="p-2.5 font-mono"><b>${esc(r.water_volume_m_cum ?? '-')}</b> / ${esc(r.capacity_m_cum ?? '-')}</td>
@@ -925,118 +1318,118 @@
               <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden"><div class="h-full ${barCls} rounded-full" style="width:${barW}%"></div></div>
             </td>
           </tr>`;
-        }).join('');
-      } else {
-        head.innerHTML = '<tr><th class="p-2.5">สถานี</th><th class="p-2.5">อำเภอ</th><th class="p-2.5">PM 2.5 ปัจจุบัน</th><th class="p-2.5">เฉลี่ย 24 ชม.</th><th class="p-2.5">คุณภาพอากาศ</th></tr>';
-        body.innerHTML = rows.map(r => {
-          const val = parseFloat(r.pm25_value || 0);
-          return `<tr class="hover:bg-slate-50">
+          }).join('');
+        } else {
+          head.innerHTML = '<tr><th class="p-2.5">สถานี</th><th class="p-2.5">อำเภอ</th><th class="p-2.5">PM 2.5 ปัจจุบัน</th><th class="p-2.5">เฉลี่ย 24 ชม.</th><th class="p-2.5">คุณภาพอากาศ</th></tr>';
+          body.innerHTML = rows.map(r => {
+            const val = parseFloat(r.pm25_value || 0);
+            return `<tr class="hover:bg-slate-50">
             <td class="p-2.5 font-bold text-slate-900">${esc(r.station_name)}</td>
             <td class="p-2.5 text-slate-600">${esc(r.amphoe)}</td>
             <td class="p-2.5 font-extrabold ${val > 37.5 ? 'text-amber-600' : 'text-emerald-700'}">${esc(r.pm25_value ?? '-')} µg/m³</td>
             <td class="p-2.5 text-slate-500">${esc(r.pm25_avg_24h ?? '-')}</td>
             <td class="p-2.5">${statusBadgeHtml(r.air_quality_status)}</td>
           </tr>`;
-        }).join('');
+          }).join('');
+        }
+        if (!rows.length) {
+          body.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-slate-400">ไม่พบรายการที่ตรงกับเงื่อนไขตัวกรอง</td></tr>';
+        }
       }
-      if (!rows.length) {
-        body.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-slate-400">ไม่พบรายการที่ตรงกับเงื่อนไขตัวกรอง</td></tr>';
-      }
-    }
 
-    function renderBars(elId, obj, colorCls, kind) {
-      const el = document.getElementById(elId);
-      const entries = Object.entries(obj || {});
-      const max = entries.reduce((m, [, v]) => Math.max(m, v), 1);
-      el.innerHTML = entries.slice(0, 6).map(([label, cnt]) => {
-        const pct = Math.round((cnt / max) * 100);
-        const isActive = state.traffyBarFilter.kind === kind && state.traffyBarFilter.value === label;
-        const ringCls = isActive ? 'ring-2 ring-emerald-600 bg-emerald-50/70 p-1.5 rounded-xl' : 'hover:bg-slate-50 p-1 rounded-lg';
-        return `<button type="button" onclick="toggleTraffyBarFilter('${esc(kind)}', '${esc(label)}')" class="w-full text-left transition ${ringCls}">
+      function renderBars(elId, obj, colorCls, kind) {
+        const el = document.getElementById(elId);
+        const entries = Object.entries(obj || {});
+        const max = entries.reduce((m, [, v]) => Math.max(m, v), 1);
+        el.innerHTML = entries.slice(0, 6).map(([label, cnt]) => {
+          const pct = Math.round((cnt / max) * 100);
+          const isActive = state.traffyBarFilter.kind === kind && state.traffyBarFilter.value === label;
+          const ringCls = isActive ? 'ring-2 ring-emerald-600 bg-emerald-50/70 p-1.5 rounded-xl' : 'hover:bg-slate-50 p-1 rounded-lg';
+          return `<button type="button" onclick="toggleTraffyBarFilter('${esc(kind)}', '${esc(label)}')" class="w-full text-left transition ${ringCls}">
           <div class="flex justify-between mb-0.5"><span class="truncate pr-2 font-medium text-slate-700">${esc(label)}</span><b class="text-slate-900">${cnt}</b></div>
           <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden"><div class="h-full ${colorCls} rounded-full" style="width:${pct}%"></div></div>
         </button>`;
-      }).join('') || '<div class="text-slate-400">-</div>';
-    }
+        }).join('') || '<div class="text-slate-400">-</div>';
+      }
 
-    function toggleTraffyBarFilter(kind, value) {
-      if (state.traffyBarFilter.kind === kind && state.traffyBarFilter.value === value) {
+      function toggleTraffyBarFilter(kind, value) {
+        if (state.traffyBarFilter.kind === kind && state.traffyBarFilter.value === value) {
+          state.traffyBarFilter = { kind: '', value: '' };
+        } else {
+          state.traffyBarFilter = { kind, value };
+        }
+        renderTraffy();
+      }
+
+      function clearTraffyFilters() {
         state.traffyBarFilter = { kind: '', value: '' };
-      } else {
-        state.traffyBarFilter = { kind, value };
-      }
-      renderTraffy();
-    }
-
-    function clearTraffyFilters() {
-      state.traffyBarFilter = { kind: '', value: '' };
-      document.getElementById('traffySearch').value = '';
-      document.getElementById('traffyFilterAgency').value = 'all';
-      document.getElementById('traffyFilterState').value = '';
-      renderTraffy();
-    }
-
-    function renderTraffy() {
-      const tf = state.traffy || {};
-      const sum = tf.summary || {};
-      const br = tf.breakdown || {};
-      document.getElementById('tfTotal').textContent = sum.total ?? 0;
-      document.getElementById('tfPao').textContent = sum.paoCount ?? 0;
-      document.getElementById('tfOther').textContent = sum.otherAgencyCount ?? 0;
-      document.getElementById('tfDone').textContent = sum.completedCount ?? 0;
-      document.getElementById('tfDonePct').textContent = `(${sum.completionRatePct ?? 0}%)`;
-      document.getElementById('tfInProgSub').textContent = `กำลังดำเนินการ: ${sum.inProgressCount ?? 0} · รอรับเรื่อง: ${sum.pendingCount ?? 0}`;
-      document.getElementById('tfStars').textContent = sum.avgSatisfaction !== null && sum.avgSatisfaction !== undefined ? `★ ${sum.avgSatisfaction}` : '★ -';
-
-      renderBars('tfStateBars', br.byState, 'bg-emerald-600', 'state');
-      renderBars('tfAgencyBars', br.byAgency, 'bg-sky-600', 'agency');
-      renderBars('tfTypeBars', br.byType, 'bg-purple-600', 'type');
-      renderTraffyTable();
-    }
-
-    function getFilteredTraffyItems() {
-      const tf = state.traffy || {};
-      const q = (document.getElementById('traffySearch').value || '').trim().toLowerCase();
-      const agFilter = document.getElementById('traffyFilterAgency').value;
-      const stFilter = document.getElementById('traffyFilterState').value;
-      const bf = state.traffyBarFilter;
-      const amp = state.selectedAmphoe;
-
-      return (tf.items || []).filter(i => {
-        if (!matchesAmphoe(`${i.area || ''} ${i.summary || ''} ${i.org_name || ''}`, amp)) return false;
-        if (agFilter === 'pao' && !String(i.agency_status || '').includes('อบจ.')) return false;
-        if (agFilter === 'other' && String(i.agency_status || '').includes('อบจ.')) return false;
-        if (stFilter && !String(i.state_name || '').includes(stFilter)) return false;
-        if (bf.kind === 'state' && i.state_name !== bf.value) return false;
-        if (bf.kind === 'agency' && i.agency_status !== bf.value) return false;
-        if (bf.kind === 'type' && i.problem_type !== bf.value) return false;
-        if (q && !JSON.stringify(i).toLowerCase().includes(q)) return false;
-        return true;
-      });
-    }
-
-    function renderTraffyTable() {
-      const items = getFilteredTraffyItems();
-      const bf = state.traffyBarFilter;
-      const filterBar = document.getElementById('traffyActiveFilterBar');
-      if (bf.kind && bf.value) {
-        filterBar.classList.remove('hidden');
-        filterBar.classList.add('flex');
-        document.getElementById('traffyActiveFilterText').textContent = `🔍 กำลังกรองเฉพาะ: "${bf.value}" (พบ ${items.length} เรื่อง)`;
-      } else {
-        filterBar.classList.add('hidden');
-        filterBar.classList.remove('flex');
+        document.getElementById('traffySearch').value = '';
+        document.getElementById('traffyFilterAgency').value = 'all';
+        document.getElementById('traffyFilterState').value = '';
+        renderTraffy();
       }
 
-      const body = document.getElementById('traffyTableBody');
-      if (!items.length) {
-        body.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-slate-400">ไม่พบรายการเรื่องร้องเรียนตามตัวกรองที่เลือก</td></tr>';
-        return;
+      function renderTraffy() {
+        const tf = state.traffy || {};
+        const sum = tf.summary || {};
+        const br = tf.breakdown || {};
+        document.getElementById('tfTotal').textContent = sum.total ?? 0;
+        document.getElementById('tfPao').textContent = sum.paoCount ?? 0;
+        document.getElementById('tfOther').textContent = sum.otherAgencyCount ?? 0;
+        document.getElementById('tfDone').textContent = sum.completedCount ?? 0;
+        document.getElementById('tfDonePct').textContent = `(${sum.completionRatePct ?? 0}%)`;
+        document.getElementById('tfInProgSub').textContent = `กำลังดำเนินการ: ${sum.inProgressCount ?? 0} · รอรับเรื่อง: ${sum.pendingCount ?? 0}`;
+        document.getElementById('tfStars').textContent = sum.avgSatisfaction !== null && sum.avgSatisfaction !== undefined ? `★ ${sum.avgSatisfaction}` : '★ -';
+
+        renderBars('tfStateBars', br.byState, 'bg-emerald-600', 'state');
+        renderBars('tfAgencyBars', br.byAgency, 'bg-sky-600', 'agency');
+        renderBars('tfTypeBars', br.byType, 'bg-purple-600', 'type');
+        renderTraffyTable();
       }
-      body.innerHTML = items.slice(0, 60).map(it => {
-        const isDone = String(it.state_name || '').includes('เสร็จสิ้น');
-        const stCls = isDone ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800';
-        return `<tr class="hover:bg-slate-50 align-top">
+
+      function getFilteredTraffyItems() {
+        const tf = state.traffy || {};
+        const q = (document.getElementById('traffySearch').value || '').trim().toLowerCase();
+        const agFilter = document.getElementById('traffyFilterAgency').value;
+        const stFilter = document.getElementById('traffyFilterState').value;
+        const bf = state.traffyBarFilter;
+        const amp = state.selectedAmphoe;
+
+        return (tf.items || []).filter(i => {
+          if (!matchesAmphoe(`${i.area || ''} ${i.summary || ''} ${i.org_name || ''}`, amp)) return false;
+          if (agFilter === 'pao' && !String(i.agency_status || '').includes('อบจ.')) return false;
+          if (agFilter === 'other' && String(i.agency_status || '').includes('อบจ.')) return false;
+          if (stFilter && !String(i.state_name || '').includes(stFilter)) return false;
+          if (bf.kind === 'state' && i.state_name !== bf.value) return false;
+          if (bf.kind === 'agency' && i.agency_status !== bf.value) return false;
+          if (bf.kind === 'type' && i.problem_type !== bf.value) return false;
+          if (q && !JSON.stringify(i).toLowerCase().includes(q)) return false;
+          return true;
+        });
+      }
+
+      function renderTraffyTable() {
+        const items = getFilteredTraffyItems();
+        const bf = state.traffyBarFilter;
+        const filterBar = document.getElementById('traffyActiveFilterBar');
+        if (bf.kind && bf.value) {
+          filterBar.classList.remove('hidden');
+          filterBar.classList.add('flex');
+          document.getElementById('traffyActiveFilterText').textContent = `🔍 กำลังกรองเฉพาะ: "${bf.value}" (พบ ${items.length} เรื่อง)`;
+        } else {
+          filterBar.classList.add('hidden');
+          filterBar.classList.remove('flex');
+        }
+
+        const body = document.getElementById('traffyTableBody');
+        if (!items.length) {
+          body.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-slate-400">ไม่พบรายการเรื่องร้องเรียนตามตัวกรองที่เลือก</td></tr>';
+          return;
+        }
+        body.innerHTML = items.slice(0, 60).map(it => {
+          const isDone = String(it.state_name || '').includes('เสร็จสิ้น');
+          const stCls = isDone ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800';
+          return `<tr class="hover:bg-slate-50 align-top">
           <td class="p-3 font-mono font-bold text-slate-900 whitespace-nowrap">${esc(it.ticket_id)}</td>
           <td class="p-3">
             <span class="font-bold text-slate-800">[${esc(it.problem_type)}]</span>
@@ -1050,201 +1443,202 @@
           <td class="p-3 whitespace-nowrap"><span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${stCls}">${esc(it.state_name)}</span></td>
           <td class="p-3 text-slate-500 whitespace-nowrap">${esc(it.ticket_datetime || it.recorded_at || '-')}</td>
         </tr>`;
-      }).join('');
-    }
-
-    function downloadPublicTraffyCsv() {
-      const items = getFilteredTraffyItems();
-      let csv = '\uFEFFรหัสเรื่อง,สถานะ,หมวดหน่วยงาน,ประเภทปัญหา,หน่วยงาน,พื้นที่,สรุปเรื่อง(Zero-PII),วันที่แจ้ง\n';
-      items.forEach(it => {
-        const row = [
-          it.ticket_id, it.state_name, it.agency_status, it.problem_type,
-          it.org_name, it.area, it.summary, it.ticket_datetime || it.recorded_at
-        ].map(v => `"${String(v ?? '').replace(/"/g, '""')}"`);
-        csv += row.join(',') + '\n';
-      });
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `Lampang_Traffy_Public_${new Date().toISOString().slice(0, 10)}.csv`;
-      a.click();
-    }
-
-    function setMapFilter(mode) {
-      state.mapFilter = mode;
-      document.querySelectorAll('.mfilter').forEach(b => {
-        const act = b.dataset.mfilter === mode;
-        b.className = 'mfilter px-2.5 py-1 rounded-lg font-semibold ' + (act ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700');
-      });
-      initAndRenderMap(false);
-    }
-
-    function resetMapView() {
-      if (state.map) state.map.setView([18.2888, 99.4920], 9);
-    }
-
-    function initAndRenderMap(panToBounds = false) {
-      if (typeof L === 'undefined') return;
-      if (!state.map) {
-        state.map = L.map('publicMap', { center: [18.2888, 99.4920], zoom: 9 });
-        const esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-          attribution: 'Tiles &copy; Esri', maxZoom: 19
-        });
-        let fb = false;
-        esri.on('tileerror', () => {
-          if (fb) return; fb = true;
-          L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { attribution: 'OpenTopoMap', maxZoom: 17 }).addTo(state.map);
-        });
-        esri.addTo(state.map);
-        state.mapLayer = L.layerGroup().addTo(state.map);
-      }
-      if (!state.gis || !state.mapLayer) return;
-      state.mapLayer.clearLayers();
-
-      const amp = state.selectedAmphoe;
-      const mf = state.mapFilter;
-      const coords = [];
-
-      if (mf === 'all' || mf === 'water' || mf === 'alert') {
-        (state.gis.stations || []).forEach(s => {
-          if (!matchesAmphoe(s.amphoe || s.name, amp)) return;
-          const isAlert = !String(s.status || '').includes('ปกติ');
-          if (mf === 'alert' && !isAlert) return;
-          coords.push([s.lat, s.lng]);
-          L.circleMarker([s.lat, s.lng], { radius: 8, color: '#fff', weight: 2, fillColor: s.color || '#10b981', fillOpacity: 0.92, className: isAlert ? 'marker-alert' : '' })
-            .bindPopup(`<b>🌊 ${esc(s.name)}</b><br/>${esc(s.amphoe)}<br/>ระดับน้ำ: <b>${s.currentWaterLevel} ม.</b> (${esc(s.status)})`)
-            .addTo(state.mapLayer);
-        });
+        }).join('');
       }
 
-      if (mf === 'all' || mf === 'dam' || mf === 'alert') {
-        (state.gis.dams || []).forEach(d => {
-          if (!matchesAmphoe(`${d.amphoe || ''} ${d.name || ''}`, amp)) return;
-          const pct = parseFloat(d.percent || 50);
-          if (mf === 'alert' && pct > 30 && pct < 85) return;
-          coords.push([d.lat, d.lng]);
-          L.circleMarker([d.lat, d.lng], { radius: 7, color: '#1e3a8a', weight: 2, fillColor: d.color || '#2563eb', fillOpacity: 0.88 })
-            .bindPopup(`<b>🏜️ ${esc(d.name)}</b><br/>กักเก็บ: <b>${d.volume} / ${d.capacity} ล้าน ม³</b> (${d.percent}%)`)
-            .addTo(state.mapLayer);
+      function downloadPublicTraffyCsv() {
+        const items = getFilteredTraffyItems();
+        let csv = '\uFEFFรหัสเรื่อง,สถานะ,หมวดหน่วยงาน,ประเภทปัญหา,หน่วยงาน,พื้นที่,สรุปเรื่อง(Zero-PII),วันที่แจ้ง\n';
+        items.forEach(it => {
+          const row = [
+            it.ticket_id, it.state_name, it.agency_status, it.problem_type,
+            it.org_name, it.area, it.summary, it.ticket_datetime || it.recorded_at
+          ].map(v => `"${String(v ?? '').replace(/"/g, '""')}"`);
+          csv += row.join(',') + '\n';
         });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `Lampang_Traffy_Public_${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
       }
 
-      const cntEl = document.getElementById('mapMarkerCount');
-      if (cntEl) cntEl.textContent = `แสดงบนแผนที่ ${coords.length} จุด`;
+      function setMapFilter(mode) {
+        state.mapFilter = mode;
+        document.querySelectorAll('.mfilter').forEach(b => {
+          const act = b.dataset.mfilter === mode;
+          b.className = 'mfilter px-2.5 py-1 rounded-lg font-semibold ' + (act ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700');
+        });
+        initAndRenderMap(false);
+      }
 
-      if (panToBounds && state.map) {
-        if (amp === 'all') {
-          resetMapView();
-        } else if (coords.length > 0) {
-          state.map.fitBounds(coords, { maxZoom: 11, padding: [30, 30] });
+      function resetMapView() {
+        if (state.map) state.map.setView([18.2888, 99.4920], 9);
+      }
+
+      function initAndRenderMap(panToBounds = false) {
+        if (typeof L === 'undefined') return;
+        if (!state.map) {
+          state.map = L.map('publicMap', { center: [18.2888, 99.4920], zoom: 9 });
+          const esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri', maxZoom: 19
+          });
+          let fb = false;
+          esri.on('tileerror', () => {
+            if (fb) return; fb = true;
+            L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { attribution: 'OpenTopoMap', maxZoom: 17 }).addTo(state.map);
+          });
+          esri.addTo(state.map);
+          state.mapLayer = L.layerGroup().addTo(state.map);
+        }
+        if (!state.gis || !state.mapLayer) return;
+        state.mapLayer.clearLayers();
+
+        const amp = state.selectedAmphoe;
+        const mf = state.mapFilter;
+        const coords = [];
+
+        if (mf === 'all' || mf === 'water' || mf === 'alert') {
+          (state.gis.stations || []).forEach(s => {
+            if (!matchesAmphoe(s.amphoe || s.name, amp)) return;
+            const isAlert = !String(s.status || '').includes('ปกติ');
+            if (mf === 'alert' && !isAlert) return;
+            coords.push([s.lat, s.lng]);
+            L.circleMarker([s.lat, s.lng], { radius: 8, color: '#fff', weight: 2, fillColor: s.color || '#10b981', fillOpacity: 0.92, className: isAlert ? 'marker-alert' : '' })
+              .bindPopup(`<b>🌊 ${esc(s.name)}</b><br/>${esc(s.amphoe)}<br/>ระดับน้ำ: <b>${s.currentWaterLevel} ม.</b> (${esc(s.status)})`)
+              .addTo(state.mapLayer);
+          });
+        }
+
+        if (mf === 'all' || mf === 'dam' || mf === 'alert') {
+          (state.gis.dams || []).forEach(d => {
+            if (!matchesAmphoe(`${d.amphoe || ''} ${d.name || ''}`, amp)) return;
+            const pct = parseFloat(d.percent || 50);
+            if (mf === 'alert' && pct > 30 && pct < 85) return;
+            coords.push([d.lat, d.lng]);
+            L.circleMarker([d.lat, d.lng], { radius: 7, color: '#1e3a8a', weight: 2, fillColor: d.color || '#2563eb', fillOpacity: 0.88 })
+              .bindPopup(`<b>🏜️ ${esc(d.name)}</b><br/>กักเก็บ: <b>${d.volume} / ${d.capacity} ล้าน ม³</b> (${d.percent}%)`)
+              .addTo(state.mapLayer);
+          });
+        }
+
+        const cntEl = document.getElementById('mapMarkerCount');
+        if (cntEl) cntEl.textContent = `แสดงบนแผนที่ ${coords.length} จุด`;
+
+        if (panToBounds && state.map) {
+          if (amp === 'all') {
+            resetMapView();
+          } else if (coords.length > 0) {
+            state.map.fitBounds(coords, { maxZoom: 11, padding: [30, 30] });
+          }
         }
       }
-    }
 
-    async function probePublicApi(route, useKey = false) {
-      const metaEl = document.getElementById('apiProbeMeta');
-      const outEl = document.getElementById('apiProbeOutput');
-      metaEl.textContent = 'กำลังส่งคำขอ...';
-      const headers = {};
-      if (useKey) {
-        const keyVal = (document.getElementById('agencyKeyTestInput').value || '').trim();
-        if (keyVal) headers['X-API-Key'] = keyVal;
+      async function probePublicApi(route, useKey = false) {
+        const metaEl = document.getElementById('apiProbeMeta');
+        const outEl = document.getElementById('apiProbeOutput');
+        metaEl.textContent = 'กำลังส่งคำขอ...';
+        const headers = {};
+        if (useKey) {
+          const keyVal = (document.getElementById('agencyKeyTestInput').value || '').trim();
+          if (keyVal) headers['X-API-Key'] = keyVal;
+        }
+        try {
+          const t0 = performance.now();
+          const res = await fetch(ep(route), { headers, cache: 'no-store' });
+          const ms = Math.round(performance.now() - t0);
+          const rlRem = res.headers.get('X-RateLimit-Remaining') ?? '-';
+          const json = await res.json();
+          metaEl.textContent = `HTTP ${res.status} · ${ms}ms · RateLimit-Remaining=${rlRem}`;
+          outEl.textContent = JSON.stringify(json, null, 2);
+        } catch (e) {
+          metaEl.textContent = 'Error';
+          outEl.textContent = e.message;
+        }
       }
-      try {
+
+      // ===== Animation helpers =====
+      const REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function setLoader(on) {
+        const l = document.getElementById('topLoader');
+        if (l) l.classList.toggle('active', Boolean(on));
+      }
+
+      // Count-up: animates the first number found inside an element's text, keeps the rest (units/labels)
+      function countUpText(el, dur) {
+        if (!el || REDUCED_MOTION) return;
+        const finalText = el.textContent || '';
+        const m = finalText.match(/\d+(?:\.\d+)?/);
+        if (!m) return;
+        const target = parseFloat(m[0]);
+        const dec = (m[0].split('.')[1] || '').length;
+        const pre = finalText.slice(0, m.index);
+        const post = finalText.slice(m.index + m[0].length);
         const t0 = performance.now();
-        const res = await fetch(ep(route), { headers, cache: 'no-store' });
-        const ms = Math.round(performance.now() - t0);
-        const rlRem = res.headers.get('X-RateLimit-Remaining') ?? '-';
-        const json = await res.json();
-        metaEl.textContent = `HTTP ${res.status} · ${ms}ms · RateLimit-Remaining=${rlRem}`;
-        outEl.textContent = JSON.stringify(json, null, 2);
-      } catch (e) {
-        metaEl.textContent = 'Error';
-        outEl.textContent = e.message;
+        const total = dur || 1000;
+        (function tick(now) {
+          const p = Math.min(1, (now - t0) / total);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = pre + (target * eased).toFixed(dec) + post;
+          if (p < 1) requestAnimationFrame(tick);
+          else el.textContent = finalText;
+        })(t0);
       }
-    }
 
-    // ===== Animation helpers =====
-    const REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      function animateKpis() {
+        ['pubRiskScore', 'kpiWater', 'kpiRain', 'kpiDam', 'kpiPm', 'kpiTraffy',
+          'tfTotal', 'tfPao', 'tfOther', 'tfDone', 'tfDonePct', 'tfStars'
+        ].forEach(id => countUpText(document.getElementById(id), 1100));
 
-    function setLoader(on) {
-      const l = document.getElementById('topLoader');
-      if (l) l.classList.toggle('active', Boolean(on));
-    }
-
-    // Count-up: animates the first number found inside an element's text, keeps the rest (units/labels)
-    function countUpText(el, dur) {
-      if (!el || REDUCED_MOTION) return;
-      const finalText = el.textContent || '';
-      const m = finalText.match(/\d+(?:\.\d+)?/);
-      if (!m) return;
-      const target = parseFloat(m[0]);
-      const dec = (m[0].split('.')[1] || '').length;
-      const pre = finalText.slice(0, m.index);
-      const post = finalText.slice(m.index + m[0].length);
-      const t0 = performance.now();
-      const total = dur || 1000;
-      (function tick(now) {
-        const p = Math.min(1, (now - t0) / total);
-        const eased = 1 - Math.pow(1 - p, 3);
-        el.textContent = pre + (target * eased).toFixed(dec) + post;
-        if (p < 1) requestAnimationFrame(tick);
-        else el.textContent = finalText;
-      })(t0);
-    }
-
-    function animateKpis() {
-      ['pubRiskScore', 'kpiWater', 'kpiRain', 'kpiDam', 'kpiPm', 'kpiTraffy',
-       'tfTotal', 'tfPao', 'tfOther', 'tfDone', 'tfDonePct', 'tfStars'
-      ].forEach(id => countUpText(document.getElementById(id), 1100));
-
-      // Replay gauge bar fill from 0
-      ['kpiDamBar', 'kpiTraffyBar'].forEach(id => {
-        const b = document.getElementById(id);
-        if (!b) return;
-        const w = b.style.width;
-        b.style.width = '0%';
-        void b.offsetWidth;
-        requestAnimationFrame(() => { b.style.width = w; });
-      });
-
-      // Staggered pop-in for 5 domain cards + highlight pillars
-      document.querySelectorAll('#strengths .grid > button, #highlightsGrid > div').forEach((el, i) => {
-        el.classList.remove('anim-pop');
-        void el.offsetWidth;
-        el.classList.add('anim-pop');
-        el.style.animationDelay = (i * 80) + 'ms';
-      });
-    }
-
-    function initScrollReveal() {
-      const secs = document.querySelectorAll('main > section');
-      if (!('IntersectionObserver' in window) || REDUCED_MOTION) {
-        secs.forEach(s => s.classList.add('reveal', 'in'));
-        return;
-      }
-      const io = new IntersectionObserver(entries => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            e.target.classList.add('in');
-            io.unobserve(e.target);
-            if (state.map) setTimeout(() => state.map.invalidateSize(), 800);
-          }
+        // Replay gauge bar fill from 0
+        ['kpiDamBar', 'kpiTraffyBar'].forEach(id => {
+          const b = document.getElementById(id);
+          if (!b) return;
+          const w = b.style.width;
+          b.style.width = '0%';
+          void b.offsetWidth;
+          requestAnimationFrame(() => { b.style.width = w; });
         });
-      }, { threshold: 0.08 });
-      secs.forEach(s => { s.classList.add('reveal'); io.observe(s); });
-    }
 
-    async function goToAdminLogin(e) {
-      if (e) e.preventDefault();
-      try {
-        await fetch(ep('/api/auth/logout'), { method: 'POST', cache: 'no-store' });
-      } catch (err) {}
-      location.href = './login.html?reauth=1&next=index.html';
-    }
+        // Staggered pop-in for 5 domain cards + highlight pillars
+        document.querySelectorAll('#strengths .grid > button, #highlightsGrid > div').forEach((el, i) => {
+          el.classList.remove('anim-pop');
+          void el.offsetWidth;
+          el.classList.add('anim-pop');
+          el.style.animationDelay = (i * 80) + 'ms';
+        });
+      }
 
-    initScrollReveal();
-    loadPublicDashboard();
-  </script>
-</body>
+      function initScrollReveal() {
+        const secs = document.querySelectorAll('main > section');
+        if (!('IntersectionObserver' in window) || REDUCED_MOTION) {
+          secs.forEach(s => s.classList.add('reveal', 'in'));
+          return;
+        }
+        const io = new IntersectionObserver(entries => {
+          entries.forEach(e => {
+            if (e.isIntersecting) {
+              e.target.classList.add('in');
+              io.unobserve(e.target);
+              if (state.map) setTimeout(() => state.map.invalidateSize(), 800);
+            }
+          });
+        }, { threshold: 0.08 });
+        secs.forEach(s => { s.classList.add('reveal'); io.observe(s); });
+      }
+
+      async function goToAdminLogin(e) {
+        if (e) e.preventDefault();
+        try {
+          await fetch(ep('/api/auth/logout'), { method: 'POST', cache: 'no-store' });
+        } catch (err) { }
+        location.href = './login.html?reauth=1&next=index.html';
+      }
+
+      initScrollReveal();
+      loadPublicDashboard();
+    </script>
+  </body>
+
 </html>

@@ -47,6 +47,13 @@ if ($method === 'OPTIONS') {
     exit;
 }
 
+if ($origin !== '' && stripos($origin, 'chrome-extension://') === 0 && !security_is_allowed_origin($origin)) {
+    http_response_code(403);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['success' => false, 'error' => 'Forbidden: Chrome Extension origin disabled'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 // =========================================================================
 // 1. Socket.IO Client JS & Real-Time Polling Stream (/socket.io/*)
 // =========================================================================

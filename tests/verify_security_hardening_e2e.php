@@ -155,10 +155,16 @@ $rWorkerStop = http_sec_req("{$base}/worker.php?action=stop", 'GET', $extHeaders
 $rWorkerStart = http_sec_req("{$base}/worker.php?action=start", 'GET', $extHeaders);
 $rCronForce = http_sec_req("{$base}/cron.php?force=1", 'GET', $extHeaders);
 $rExtIngest = http_sec_req("{$base}/endpoint.php?r=" . urlencode('/api/append-complaints-db'), 'POST', array_merge($extHeaders, ['Content-Type: application/json']), '{"rows":[]}');
+$rChromeExtCors = http_sec_req("{$base}/endpoint.php?r=" . urlencode('/api/append-complaints-db'), 'POST', ['Origin: chrome-extension://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'Content-Type: application/json'], '{"rows":[]}');
 s_assert(
-    $rWorkerStop['code'] === 403 && $rWorkerStart['code'] === 403 && $rCronForce['code'] === 403 && $rExtIngest['code'] === 401,
-    'Approach 3 (Worker & Extension Guard): External worker stop/start (403), force cron (403), unauthenticated ingest (401) rejected',
-    "stop={$rWorkerStop['code']}, start={$rWorkerStart['code']}, cronForce={$rCronForce['code']}, ingest={$rExtIngest['code']}"
+    $rWorkerStop['code'] === 403
+    && $rWorkerStart['code'] === 403
+    && $rCronForce['code'] === 403
+    && $rExtIngest['code'] === 401
+    && $rChromeExtCors['code'] === 403
+    && stripos($rChromeExtCors['headers'], 'Access-Control-Allow-Origin') === false,
+    'Approach 3 (Cron/Worker HMAC & Extension Block): External worker stop/start (403), force cron (403), unauthenticated ingest (401) & chrome-extension:// Origin (403 + no CORS) rejected',
+    "stop={$rWorkerStop['code']}, start={$rWorkerStart['code']}, cronForce={$rCronForce['code']}, ingest={$rExtIngest['code']}, extOrigin={$rChromeExtCors['code']}"
 );
 
 // -------------------------------------------------------------------------

@@ -175,7 +175,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'primary_domain'            => trim((string)($_POST['primary_domain'] ?? '')),
                 'backup_domain'             => trim((string)($_POST['backup_domain'] ?? '')),
                 'extra_allowed_origins'     => trim((string)($_POST['extra_allowed_origins'] ?? '')),
-                'allowed_extension_ids'     => trim((string)($_POST['allowed_extension_ids'] ?? '')),
                 'failover_auto_ping_backup' => !empty($_POST['failover_auto_ping_backup']),
             ]);
             $statusType = 'success';
@@ -436,9 +435,8 @@ try {
             <label class="block font-semibold text-slate-700 mb-1">Allowed CORS Origins เพิ่มเติม (คั่นด้วยลูกน้ำ ,)</label>
             <input type="text" name="extra_allowed_origins" value="<?= htmlspecialchars(implode(', ', $domainCfg['extra_allowed_origins'] ?? [])) ?>" placeholder="https://portal.lampangpao.go.th" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
           </div>
-          <div>
-            <label class="block font-semibold text-slate-700 mb-1">Allowed Chrome Extension IDs (คั่นด้วยลูกน้ำ — ล็อก Extension เฉพาะเครื่องที่ระบุ)</label>
-            <input type="text" name="allowed_extension_ids" value="<?= htmlspecialchars(implode(', ', $domainCfg['allowed_extension_ids'] ?? [])) ?>" placeholder="เช่น abcdefghijklmnopabcdefghijklmnop (เว้นว่างอนุญาตเฉพาะ Localhost)" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
+          <div class="text-[11px] text-slate-500 bg-white border border-sky-200 rounded-lg px-2.5 py-1.5">
+            🔒 <b>Chrome Extension Origin Guard:</b> ปิดกั้น <code>chrome-extension://*</code> ทั้งหมดเป็นค่าเริ่มต้น (เนื่องจากระบบใช้ Direct PHP Collector 100%)
           </div>
           <label class="inline-flex items-center gap-2 text-slate-700 cursor-pointer">
             <input type="checkbox" name="failover_auto_ping_backup" value="1" <?= !empty($domainCfg['failover_auto_ping_backup']) ? 'checked' : '' ?> class="rounded">

@@ -300,8 +300,8 @@ function security_is_allowed_origin(string $origin): bool {
         if (!empty($extIds) && is_array($extIds)) {
             return in_array($m[1], $extIds, true);
         }
-        // When no explicit extension allowlist is pinned, allow extension origins only on local loopback setups
-        return is_local_loopback_request();
+        // Chrome Extension is disabled by default (system uses Direct PHP Collector 100%)
+        return false;
     }
     return false;
 }

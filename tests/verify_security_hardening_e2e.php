@@ -87,7 +87,13 @@ s_assert(
 );
 
 $rExtPub = http_sec_req("{$base}/endpoint.php?r=" . urlencode('/api/public/overview'), 'GET', $extHeaders);
-s_assert($rExtPub['code'] === 200, 'Approach 1 (Public Access): External /api/public/overview remains accessible', "code={$rExtPub['code']}");
+$rExtGis = http_sec_req("{$base}/endpoint.php?r=" . urlencode('/api/gis/map-data'), 'GET', $extHeaders);
+$rExtRisk = http_sec_req("{$base}/endpoint.php?r=" . urlencode('/api/analytics/risk-index'), 'GET', $extHeaders);
+s_assert(
+    $rExtPub['code'] === 200 && $rExtGis['code'] === 200 && $rExtRisk['code'] === 200,
+    'Approach 1 (Public Access): External /api/public/overview, /api/gis/map-data & /api/analytics/risk-index remain accessible',
+    "overview={$rExtPub['code']}, gis={$rExtGis['code']}, risk={$rExtRisk['code']}"
+);
 
 // -------------------------------------------------------------------------
 // Approach 2: Zero-PII Cloud Snapshot & Push Guard

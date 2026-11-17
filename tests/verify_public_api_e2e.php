@@ -138,10 +138,12 @@ t_assert(
     $resOv['code'] === 200
     && !empty($jOv['success'])
     && count($jOv['highlights'] ?? []) >= 4
+    && !empty($jOv['executiveSummary']['headline'])
+    && isset($jOv['executiveSummary']['drought']['largeDams'], $jOv['traffySummary']['completionRatePct'])
     && isset($jOv['environment'], $jOv['traffySummary'], $jOv['traffyBreakdown'])
     && stripos($resOv['headers'], 'Access-Control-Allow-Origin: *') !== false,
-    'Public Overview API & Read-Only CORS: GET /api/public/overview returns 200 JSON + wildcard CORS',
-    "code={$resOv['code']}"
+    'Public Overview API & Read-Only CORS: GET /api/public/overview returns 200 JSON + executiveSummary + wildcard CORS',
+    "code={$resOv['code']}, largeDams=" . count($jOv['executiveSummary']['drought']['largeDams'] ?? [])
 );
 
 $resPrivCors = http_req($base . '/endpoint.php?r=' . urlencode('/api/status'), 'GET', ['Origin: https://evil.example.com']);

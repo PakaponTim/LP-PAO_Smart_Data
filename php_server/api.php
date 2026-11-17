@@ -260,7 +260,7 @@ function api_enforce_strict_security(string $method, string $path): void {
         return;
     }
 
-    // 2. Pre-auth & health/failover discovery allowlist
+    // 2. Pre-auth & public read-only discovery allowlist
     $publicAllowlist = [
         '/api/health',
         '/api/cloud-fallback',
@@ -274,6 +274,9 @@ function api_enforce_strict_security(string $method, string $path): void {
         '/api/auth/pair-device',
     ];
     if (in_array($path, $publicAllowlist, true)) {
+        return;
+    }
+    if ($method === 'GET' && in_array($path, ['/api/analytics/risk-index', '/api/gis/map-data'], true)) {
         return;
     }
 

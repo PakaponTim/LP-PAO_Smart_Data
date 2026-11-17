@@ -267,6 +267,8 @@ function public_build_traffy_stats(array $rawComplaints): array {
     $starsCnt = 0;
     $paoTotal = 0;
     $completedTotal = 0;
+    $inProgressTotal = 0;
+    $pendingTotal = 0;
     $sanitized = [];
 
     foreach ($rawComplaints as $r) {
@@ -281,7 +283,13 @@ function public_build_traffy_stats(array $rawComplaints): array {
         $byType[$tp] = ($byType[$tp] ?? 0) + 1;
 
         if (mb_strpos($ag, 'อบจ.') !== false) $paoTotal++;
-        if (mb_strpos($st, 'เสร็จสิ้น') !== false) $completedTotal++;
+        if (mb_strpos($st, 'เสร็จสิ้น') !== false) {
+            $completedTotal++;
+        } elseif (mb_strpos($st, 'กำลัง') !== false || mb_strpos($st, 'ส่งต่อ') !== false) {
+            $inProgressTotal++;
+        } else {
+            $pendingTotal++;
+        }
         if ($clean['satisfaction_stars'] !== null && $clean['satisfaction_stars'] > 0) {
             $starsSum += $clean['satisfaction_stars'];
             $starsCnt++;
@@ -291,15 +299,21 @@ function public_build_traffy_stats(array $rawComplaints): array {
     arsort($byAgency);
     arsort($byType);
 
+    $totalCnt = count($sanitized);
+    $compPct  = $totalCnt > 0 ? round(($completedTotal / $totalCnt) * 100, 1) : 0.0;
+
     return [
         'summary' => [
-            'total'            => count($sanitized),
-            'paoCount'         => $paoTotal,
-            'otherAgencyCount' => max(0, count($sanitized) - $paoTotal),
-            'completedCount'   => $completedTotal,
-            'avgSatisfaction'  => $starsCnt > 0 ? round($starsSum / $starsCnt, 2) : null,
-            'ratedCount'       => $starsCnt,
-            'latestRecordedAt' => $sanitized[0]['recorded_at'] ?? null,
+            'total'             => $totalCnt,
+            'paoCount'          => $paoTotal,
+            'otherAgencyCount'  => max(0, $totalCnt - $paoTotal),
+            'completedCount'    => $completedTotal,
+            'inProgressCount'   => $inProgressTotal,
+            'pendingCount'      => $pendingTotal,
+            'completionRatePct' => $compPct,
+            'avgSatisfaction'   => $starsCnt > 0 ? round($starsSum / $starsCnt, 2) : null,
+            'ratedCount'        => $starsCnt,
+            'latestRecordedAt'  => $sanitized[0]['recorded_at'] ?? null,
         ],
         'breakdown' => [
             'byState'  => $byState,
@@ -307,6 +321,147 @@ function public_build_traffy_stats(array $rawComplaints): array {
             'byType'   => array_slice($byType, 0, 10, true),
         ],
         'items' => $sanitized,
+    ];
+}
+
+function public_build_executive_summary(array $data, array $traffySummary): array {
+    // 1. Water Level
+    $waterNormal = 0;
+    $waterWatch = 0;
+    $waterCrit = 0;
+    $topWater = null;
+    foreach ($data['water'] as $w) {
+        $st = (string)($w['status'] ?? '');
+        $rk = (string)($w['risk_level'] ?? '');
+        if ($rk === 'วิกฤต' || mb_strpos($st, 'ล้น') !== false || mb_strpos($st, 'วิกฤต') !== false) {
+            $waterCrit++;
+        } elseif (mb_strpos($st, 'มาก') !== false || mb_strpos($rk, 'เฝ้าระวัง') !== false) {
+            $waterWatch++;
+        } else {
+            $waterNormal++;
+        }
+        if ($topWater === null) {
+            $topWater = [
+                'station_name' => $w['station_name'] ?? '-',
+                'amphoe'       => $w['amphoe'] ?? '-',
+                'status'       => $st ?: 'น้ำปกติ',
+                'level_m'      => isset($w['current_water_level_m']) ? (float)$w['current_water_level_m'] : null,
+                'rain_3d_mm'   => isset($w['forecast_rain_24h_mm']) ? (float)$w['forecast_rain_24h_mm'] : 0.0,
+            ];
+        }
+    }
+
+    // 2. Rainfall
+    $rainingCnt = 0;
+    $heavyCnt = 0;
+    $maxRainMm = 0.0;
+    $maxRainStation = '-';
+    $maxRainLocation = '-';
+    foreach ($data['rainfall'] as $r) {
+        $mm = (float)($r['rain_mm'] ?? 0);
+        if ($mm > 0) $rainingCnt++;
+        if ($mm > 35) $heavyCnt++;
+        if (($mm >= $maxRainMm && $maxRainStation === '-') || $mm > $maxRainMm) {
+            $maxRainMm = $mm;
+            $maxRainStation = (string)($r['station_name'] ?? '-');
+            $maxRainLocation = (string)($r['location'] ?? '-');
+        }
+    }
+
+    // 3. Drought / Reservoirs (36 total, 3 large spotlight)
+    $totCap = 0.0;
+    $totVol = 0.0;
+    $largeDams = [];
+    foreach ($data['drought'] as $d) {
+        $cap = is_numeric($d['capacity_m_cum'] ?? null) ? (float)$d['capacity_m_cum'] : 0.0;
+        $vol = is_numeric($d['water_volume_m_cum'] ?? null) ? (float)$d['water_volume_m_cum'] : 0.0;
+        $totCap += $cap;
+        $totVol += $vol;
+        $dName = (string)($d['dam_name'] ?? '');
+        $dType = (string)($d['dam_type'] ?? '');
+        if (mb_strpos($dType, 'ใหญ่') !== false || in_array($dName, ['อ่างกิ่วลม', 'อ่างกิ่วคอหมา', 'อ่างแม่มอก'], true)) {
+            $pctNum = $cap > 0 ? round(($vol / $cap) * 100, 1) : (float)str_replace('%', '', (string)($d['water_percent'] ?? '0'));
+            $largeDams[] = [
+                'dam_name' => $dName,
+                'capacity' => round($cap, 2),
+                'volume'   => round($vol, 2),
+                'usable'   => is_numeric($d['usable_water_m_cum'] ?? null) ? round((float)$d['usable_water_m_cum'], 2) : null,
+                'percent'  => $pctNum,
+            ];
+        }
+    }
+    $overallDamPct = $totCap > 0 ? round(($totVol / $totCap) * 100, 1) : 0.0;
+
+    // 4. PM 2.5
+    $maxPm = 0.0;
+    $minPm = null;
+    $sumPm = 0.0;
+    $cntPm = 0;
+    $overPmCnt = 0;
+    $maxPmStation = '-';
+    $maxPmAmphoe = '-';
+    $maxPmStatus = 'ดีมาก';
+    foreach ($data['pm25'] as $p) {
+        if (!is_numeric($p['pm25_value'] ?? null)) continue;
+        $v = (float)$p['pm25_value'];
+        $sumPm += $v;
+        $cntPm++;
+        if ($v > 37.5) $overPmCnt++;
+        if ($minPm === null || $v < $minPm) $minPm = $v;
+        if (($v >= $maxPm && $maxPmStation === '-') || $v > $maxPm) {
+            $maxPm = $v;
+            $maxPmStation = (string)($p['station_name'] ?? '-');
+            $maxPmAmphoe  = (string)($p['amphoe'] ?? '-');
+            $maxPmStatus  = (string)($p['air_quality_status'] ?? 'ดี');
+        }
+    }
+    $avgPm = $cntPm > 0 ? round($sumPm / $cntPm, 1) : 0.0;
+
+    $wTotal = count($data['water']);
+    $waterText = $waterCrit > 0
+        ? "เฝ้าระวังระดับน้ำวิกฤต {$waterCrit} สถานี"
+        : "ระดับน้ำปกติ {$waterNormal}/{$wTotal} สถานี";
+    $rainText = $rainingCnt > 0
+        ? "มีฝนตก {$rainingCnt} จุด (สูงสุด {$maxRainMm} มม. ที่ {$maxRainStation})"
+        : "ไม่มีฝนตกในรอบ 24 ชม. (ตรวจสอบ " . count($data['rainfall']) . " สถานี)";
+    $damText = "น้ำในอ่างเก็บน้ำรวม {$overallDamPct}% (" . round($totVol, 1) . "/" . round($totCap, 1) . " ล้าน ม³)";
+    $pmText  = "ค่าฝุ่น PM 2.5 เฉลี่ย {$avgPm} µg/m³ (สูงสุด {$maxPm} µg/m³ · {$maxPmStatus})";
+    $tfPct   = $traffySummary['completionRatePct'] ?? 0;
+
+    return [
+        'headline' => "{$waterText} · {$rainText} · {$damText} · {$pmText} · แก้ไข Traffy สำเร็จ {$tfPct}%",
+        'water' => [
+            'total'         => $wTotal,
+            'normalCount'   => $waterNormal,
+            'watchCount'    => $waterWatch,
+            'criticalCount' => $waterCrit,
+            'topStation'    => $topWater,
+        ],
+        'rainfall' => [
+            'total'        => count($data['rainfall']),
+            'rainingCount' => $rainingCnt,
+            'heavyCount'   => $heavyCnt,
+            'maxRainMm'    => $maxRainMm,
+            'maxStation'   => $maxRainStation,
+            'maxLocation'  => $maxRainLocation,
+        ],
+        'drought' => [
+            'total'             => count($data['drought']),
+            'totalCapacityMCum' => round($totCap, 2),
+            'totalVolumeMCum'   => round($totVol, 2),
+            'overallPercent'    => $overallDamPct,
+            'largeDams'         => $largeDams,
+        ],
+        'pm25' => [
+            'total'              => count($data['pm25']),
+            'avgPm25'            => $avgPm,
+            'maxPm25'            => $maxPm,
+            'minPm25'            => $minPm ?? 0.0,
+            'overThresholdCount' => $overPmCnt,
+            'maxStation'         => $maxPmStation,
+            'maxAmphoe'          => $maxPmAmphoe,
+            'maxStatus'          => $maxPmStatus,
+        ],
     ];
 }
 
@@ -416,14 +571,26 @@ function handle_public_api_routes(string $method, string $path, ?PDO $pdo, array
 
     $data = public_load_data_sources($pdo);
     $traffy = public_build_traffy_stats($data['complaints']);
+    $execSummary = public_build_executive_summary($data, $traffy['summary']);
 
     $envMeta = [
         'waterCount'        => count($data['water']),
-        'waterCritical'     => count(array_filter($data['water'], function ($r) { return ($r['risk_level'] ?? '') === 'วิกฤต' || mb_strpos((string)($r['status'] ?? ''), 'ล้น') !== false; })),
+        'waterCritical'     => $execSummary['water']['criticalCount'],
+        'waterWatch'        => $execSummary['water']['watchCount'],
+        'waterNormal'       => $execSummary['water']['normalCount'],
         'rainfallCount'     => count($data['rainfall']),
-        'rainfallRaining'   => count(array_filter($data['rainfall'], function ($r) { return (float)($r['rain_mm'] ?? 0) > 0; })),
+        'rainfallRaining'   => $execSummary['rainfall']['rainingCount'],
+        'maxRainMm'         => $execSummary['rainfall']['maxRainMm'],
+        'maxRainStation'    => $execSummary['rainfall']['maxStation'],
         'droughtCount'      => count($data['drought']),
+        'overallDamPercent' => $execSummary['drought']['overallPercent'],
+        'totalDamVolMCum'   => $execSummary['drought']['totalVolumeMCum'],
+        'totalDamCapMCum'   => $execSummary['drought']['totalCapacityMCum'],
         'pm25Count'         => count($data['pm25']),
+        'avgPm25'           => $execSummary['pm25']['avgPm25'],
+        'maxPm25'           => $execSummary['pm25']['maxPm25'],
+        'maxPm25Station'    => $execSummary['pm25']['maxStation'],
+        'maxPm25Status'     => $execSummary['pm25']['maxStatus'],
         'latestWaterAt'     => $data['water'][0]['recorded_at'] ?? null,
         'latestRainfallAt'  => $data['rainfall'][0]['recorded_at'] ?? null,
         'latestDroughtAt'   => $data['drought'][0]['recorded_at'] ?? null,
@@ -442,18 +609,19 @@ function handle_public_api_routes(string $method, string $path, ?PDO $pdo, array
 
     if ($path === '/api/public/overview') {
         send_json([
-            'success'       => true,
-            'meta'          => $metaHeader,
-            'organization'  => 'องค์การบริหารส่วนจังหวัดลำปาง (อบจ.ลำปาง)',
-            'highlights'    => [
+            'success'          => true,
+            'meta'             => $metaHeader,
+            'organization'     => 'องค์การบริหารส่วนจังหวัดลำปาง (อบจ.ลำปาง)',
+            'executiveSummary' => $execSummary,
+            'highlights'       => [
                 ['title' => 'บูรณาการ 5 มิติครบจังหวัด', 'desc' => "น้ำ {$envMeta['waterCount']} สถานี, ฝน {$envMeta['rainfallCount']} สถานี, อ่างฯ {$envMeta['droughtCount']} แห่ง, ฝุ่น PM2.5 {$envMeta['pm25Count']} จุด และ Traffy Fondue {$traffy['summary']['total']} เรื่อง"],
                 ['title' => 'ครบทั้ง 36 อ่างฯ + ฝน 3 วัน', 'desc' => 'ติดตามอ่างใหญ่ 3 แห่ง (กิ่วลม, กิ่วคอหมา, แม่มอก) กลาง/เล็ก 33 แห่ง พร้อมค่าฝนสะสม 3 วันล่วงหน้า'],
                 ['title' => 'เก็บข้อมูล 24 ชม. + Cloud Failover', 'desc' => 'เก็บอัตโนมัติ 48 รอบ/วัน พร้อม Local Spool, Auto Backup และ GitHub Snapshot สำรอง'],
                 ['title' => 'Open Data API ปลอดภัยระดับหน่วยงาน', 'desc' => 'คัดกรองข้อมูลส่วนบุคคล (Zero-PII), จำกัด Rate Limit และใช้ SHA-256 X-API-Key'],
             ],
-            'environment'   => $envMeta,
-            'traffySummary' => $traffy['summary'],
-            'traffyBreakdown'=> $traffy['breakdown'],
+            'environment'      => $envMeta,
+            'traffySummary'    => $traffy['summary'],
+            'traffyBreakdown'  => $traffy['breakdown'],
         ]);
     }
 

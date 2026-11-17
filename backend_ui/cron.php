@@ -36,7 +36,7 @@ try {
     $results['parallel'] = ['success' => false, 'error' => $e->getMessage()];
 }
 
-$stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
+$stateFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
 $state = read_json_file($stateFile, []);
 $state['lastAutoDirectCollect'] = time();
 $state['lastGitHubSyncCheck'] = time();

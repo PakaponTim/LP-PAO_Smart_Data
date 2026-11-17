@@ -157,7 +157,7 @@ function calc_dam_drought_risk(array $d): int {
 }
 
 function check_excel_file(string $filename): array {
-    $full = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . $filename;
+    $full = LP_PAO_ROOT . DIRECTORY_SEPARATOR . $filename;
     if (file_exists($full)) {
         $size = round(filesize($full) / 1024, 2) . ' KB';
         $mtime = format_iso_datetime(filemtime($full));
@@ -218,7 +218,7 @@ function recent_dates(int $days): array {
 }
 
 function run_auto_server_collection_if_due(): void {
-    $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
+    $stateFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
     $now = time();
     $shouldSyncGh = false;
 
@@ -570,7 +570,7 @@ function handle_api_request(string $method, string $path): void {
         $cfg = get_app_config();
         $hist = get_task_history();
         $storageStats = collect_storage_stats($pdo);
-        $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
+        $stateFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
         $state = read_json_file($stateFile, []);
 
         $lastFetchTs = $state['lastDataReceived'] ?? null;
@@ -643,7 +643,7 @@ function handle_api_request(string $method, string $path): void {
         }
 
         $cfg = get_app_config();
-        $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
+        $stateFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
         $state = read_json_file($stateFile, []);
 
         $excelFiles = [];
@@ -1716,7 +1716,7 @@ function handle_api_request(string $method, string $path): void {
 
     if ($path === '/api/incidents' && $method === 'GET') {
         $alerts = $pdo->query("SELECT id, alert_type, station_name, alert_level, alert_title, created_at FROM tbl_alert_notifications ORDER BY id DESC LIMIT 100")->fetchAll();
-        $incFile = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'incidents.json';
+        $incFile = LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'incidents.json';
         $saved = read_json_file($incFile, ['incidents' => []])['incidents'] ?? [];
         $out = [];
         foreach ($alerts as $a) {
@@ -1732,7 +1732,7 @@ function handle_api_request(string $method, string $path): void {
         $status = $body['status'] ?? 'acknowledged';
         $owner  = trim((string)($body['owner'] ?? ''));
         $note   = trim((string)($body['note'] ?? ''));
-        $incFile = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'incidents.json';
+        $incFile = LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'incidents.json';
         $data = read_json_file($incFile, ['incidents' => []]);
         $prev = $data['incidents'][$id] ?? ['status' => 'new', 'history' => []];
         $event = [
@@ -2265,7 +2265,7 @@ function handle_api_request(string $method, string $path): void {
                 send_json(['ok' => false, 'error' => 'Unauthorized: session or device token required'], 401);
             }
         }
-        $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
+        $stateFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
         update_json_file_atomic($stateFile, [], function (array $s) use ($deviceAuth) {
             $s['lastExtensionPing'] = time();
             if (is_array($deviceAuth)) {

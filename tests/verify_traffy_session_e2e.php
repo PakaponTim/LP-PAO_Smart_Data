@@ -102,7 +102,7 @@ check_pass(
 $badLogin = call_http("{$baseUrl}/api/auth/login", 'POST', ['username' => $testAdminUser, 'password' => 'WrongPassword123!']);
 check_pass($badLogin['code'] === 401, '1.0b POST /api/auth/login rejects wrong password with HTTP 401');
 
-$jar = WATER_SYSTEM2_RUNTIME_DIR . '/e2e_cookie_jar.txt';
+$jar = LP_PAO_RUNTIME_DIR . '/e2e_cookie_jar.txt';
 @unlink($jar);
 
 $login1 = call_http("{$baseUrl}/api/auth/login", 'POST', ['username' => $testAdminUser, 'password' => $testAdminPass], [], $jar);

@@ -92,7 +92,7 @@ t_assert(
 );
 
 // 3. Approach 3: GitHub Failover Alert script CLI check
-$tmpSnapPath = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'e2e_failover_snap.json';
+$tmpSnapPath = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'e2e_failover_snap.json';
 write_json_file($tmpSnapPath, [
     'recorded_at' => date('Y-m-d H:i:s'),
     'water'       => [['station_name' => 'TestStation', 'amphoe' => 'เมืองลำปาง', 'current_water_level_m' => 9.9, 'status' => 'น้ำล้นตลิ่ง', 'risk_level' => 'วิกฤต']],

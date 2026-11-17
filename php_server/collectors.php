@@ -878,7 +878,7 @@ function test_traffy_connection_and_session(bool $logResult = true): array {
     $ta = $cfg['traffyAuth'] ?? [];
 
     // 1. Internal Water_System2 Session & Cookie Check (water_session_7000)
-    $sessionsPath = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'sessions.json';
+    $sessionsPath = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'sessions.json';
     $sessionWritable = is_dir(dirname($sessionsPath)) && is_writable(dirname($sessionsPath));
     $curCookie = $_COOKIE[SESSION_COOKIE_NAME] ?? '';
     $appSessionCheck = [

@@ -201,8 +201,8 @@ function _sync_github_snapshots_to_mysql_locked(int $maxImport = 0): array {
     $pdo = get_db();
     ensure_ingest_tables($pdo);
 
-    $baseDir = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'cloud_snapshots';
-    $cacheDir = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'cloud_cache';
+    $baseDir = LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'cloud_snapshots';
+    $cacheDir = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'cloud_cache';
     if (!is_dir($cacheDir)) {
         @mkdir($cacheDir, 0777, true);
     }

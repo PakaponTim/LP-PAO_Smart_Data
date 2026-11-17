@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>เข้าสู่ระบบ | Lampang Smart Command</title>
+  <title>เข้าสู่ระบบ | LP-PAO Smart Data</title>
   <link rel="icon" type="image/png" href="./logo_pao.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="./css/ux-motion.css" />
   <script src="./js/ux-motion.js" defer></script>
   <style>
@@ -18,15 +20,23 @@
                   linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 52%, #f8fafc 100%);
       min-height: 100vh;
     }
+
     .loader {
       display: none;
-      width: 16px; height: 16px;
+      width: 16px;
+      height: 16px;
       border: 2px solid rgba(255, 255, 255, 0.4);
       border-top-color: #ffffff;
       border-radius: 9999px;
       animation: spin 0.7s linear infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
     input:-webkit-autofill,
     input:-webkit-autofill:hover,
     input:-webkit-autofill:focus {
@@ -38,6 +48,9 @@
 </head>
 <body class="text-slate-800 antialiased flex items-center justify-center p-4 selection:bg-emerald-500 selection:text-white">
 
+<body
+  class="text-slate-100 antialiased flex items-center justify-center p-4 selection:bg-emerald-500 selection:text-white">
+
   <div class="w-full max-w-md ws-reveal">
     <div class="bg-white/95 backdrop-blur-xl border border-emerald-100 rounded-3xl p-7 sm:p-9 shadow-xl shadow-emerald-950/10 space-y-6">
 
@@ -46,7 +59,7 @@
         <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-emerald-50 border border-emerald-200/70 p-2 shadow-sm mx-auto">
           <img src="./logo_pao.png" class="w-full h-full object-contain select-none" alt="อบจ.ลำปาง" />
         </div>
-        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight pt-1">Lampang Smart Command</h1>
+        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight pt-1">LP-PAO Smart Data</h1>
         <p class="text-xs text-emerald-700 font-semibold">ศูนย์บัญชาการข้อมูล อบจ.ลำปาง · สำหรับผู้ดูแลระบบ</p>
       </div>
 
@@ -93,7 +106,7 @@
             <span>← กลับหน้า Public Dashboard</span>
           </a>
         </div>
-        <p class="text-[11px] text-slate-400">&copy; 2026 Lampang Smart Command · อบจ.ลำปาง</p>
+        <p class="text-[11px] text-slate-400">&copy; 2026 LP-PAO Smart Data · อบจ.ลำปาง</p>
       </div>
 
     </div>
@@ -101,4 +114,5 @@
 
   <script src="./js/login-1.js"></script>
 </body>
+
 </html>

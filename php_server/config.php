@@ -6,10 +6,10 @@
 
 date_default_timezone_set('Asia/Bangkok');
 
-define('WATER_SYSTEM2_PORT', 7000);
-define('WATER_SYSTEM2_ROOT', dirname(__DIR__));
-define('WATER_SYSTEM2_UI_DIR', WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'backend_ui');
-define('WATER_SYSTEM2_RUNTIME_DIR', WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'php_7000');
+define('LP_PAO_PORT', 7000);
+define('LP_PAO_ROOT', dirname(__DIR__));
+define('LP_PAO_UI_DIR', LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'backend_ui');
+define('LP_PAO_RUNTIME_DIR', LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'php_7000');
 
 function ensure_runtime_htaccess(string $dir): void {
     if (!is_dir($dir)) @mkdir($dir, 0777, true);
@@ -19,11 +19,11 @@ function ensure_runtime_htaccess(string $dir): void {
     }
 }
 
-ensure_runtime_htaccess(dirname(WATER_SYSTEM2_RUNTIME_DIR));
-ensure_runtime_htaccess(WATER_SYSTEM2_RUNTIME_DIR);
+ensure_runtime_htaccess(dirname(LP_PAO_RUNTIME_DIR));
+ensure_runtime_htaccess(LP_PAO_RUNTIME_DIR);
 
 // Load .env if present
-$envFile = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . '.env';
+$envFile = LP_PAO_ROOT . DIRECTORY_SEPARATOR . '.env';
 $ENV_VARS = [];
 if (file_exists($envFile)) {
     $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -38,7 +38,7 @@ if (file_exists($envFile)) {
 }
 
 // Also allow overriding DB config via runtime/php_7000/db_config.json (from server_setup.php)
-$dbOverrideFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'db_config.json';
+$dbOverrideFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'db_config.json';
 if (file_exists($dbOverrideFile)) {
     $dbOverride = json_decode((string)@file_get_contents($dbOverrideFile), true);
     if (is_array($dbOverride)) {
@@ -105,7 +105,7 @@ function ensure_all_tables(PDO $pdo, string $dbName = 'water_system2'): void {
     static $checked = false;
     if ($checked) return;
 
-    $flagFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'schema_ready_v2_' . preg_replace('/[^a-zA-Z0-9_]/', '', $dbName) . '.flag';
+    $flagFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'schema_ready_v2_' . preg_replace('/[^a-zA-Z0-9_]/', '', $dbName) . '.flag';
     if (file_exists($flagFile)) {
         $checked = true;
         return;
@@ -347,7 +347,7 @@ function write_json_file(string $path, array $data): bool {
 }
 
 function with_file_lock(string $lockName, callable $callback, bool $nonBlocking = false) {
-    $lockDir = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'locks';
+    $lockDir = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'locks';
     if (!is_dir($lockDir)) @mkdir($lockDir, 0777, true);
     $safeName = preg_replace('/[^a-zA-Z0-9_.-]/', '_', $lockName);
     $lockFile = $lockDir . DIRECTORY_SEPARATOR . $safeName . '.lock';
@@ -406,7 +406,7 @@ function add_server_log(string $source, string $message): string {
     $datetimeStr = format_iso_datetime();
     $logStr = "[{$datetimeStr}] [{$source}] {$message}";
 
-    $eventsFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'socketio_events.json';
+    $eventsFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'socketio_events.json';
     update_json_file_atomic($eventsFile, ['seq' => 0, 'events' => []], function (array $eventsData) use ($logStr) {
         $seq = (int)($eventsData['seq'] ?? 0) + 1;
         $events = $eventsData['events'] ?? [];
@@ -422,7 +422,7 @@ function add_server_log(string $source, string $message): string {
         return ['seq' => $seq, 'events' => $events];
     });
 
-    $logsFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'recent_logs.json';
+    $logsFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'recent_logs.json';
     update_json_file_atomic($logsFile, [], function (array $logs) use ($logStr) {
         array_unshift($logs, $logStr);
         if (count($logs) > 50) {
@@ -431,7 +431,7 @@ function add_server_log(string $source, string $message): string {
         return $logs;
     });
 
-    $fetchLogPath = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'fetch_history.log';
+    $fetchLogPath = LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'fetch_history.log';
     rotate_log_if_needed($fetchLogPath, 5242880, 3);
     @file_put_contents($fetchLogPath, $logStr . PHP_EOL, FILE_APPEND | LOCK_EX);
 
@@ -439,7 +439,7 @@ function add_server_log(string $source, string $message): string {
 }
 
 function get_recent_logs(): array {
-    $logsFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'recent_logs.json';
+    $logsFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'recent_logs.json';
     $logs = read_json_file($logsFile, []);
     if (empty($logs)) {
         $logs = [
@@ -452,7 +452,7 @@ function get_recent_logs(): array {
 }
 
 function get_task_history(): array {
-    $histPath = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'task_history.json';
+    $histPath = LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'task_history.json';
     $defaultStats = [
         'waterLevel' => [
             'lastFetchSuccess' => null,
@@ -491,7 +491,7 @@ function get_task_history(): array {
 }
 
 function log_task_run(string $projectName, string $mode, string $status, int $count, string $message) {
-    $histPath = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'task_history.json';
+    $histPath = LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'task_history.json';
     $timeStr = format_iso_datetime();
 
     $key = '';
@@ -536,7 +536,7 @@ function log_task_run(string $projectName, string $mode, string $status, int $co
         return $hist;
     });
 
-    $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
+    $stateFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
     update_json_file_atomic($stateFile, [], function (array $state) use ($status, $key) {
         if ($status === 'success') {
             $state['lastDataReceived'] = time();
@@ -550,7 +550,7 @@ function log_task_run(string $projectName, string $mode, string $status, int $co
 }
 
 function get_app_config(): array {
-    $configPath = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'config.json';
+    $configPath = LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'config.json';
     $default = [
         'scheduledTasks' => ['06:00', '12:00', '18:00'],
         'isScheduleActive' => ['water' => true, 'drought' => true, 'pm25' => true, 'complaints' => true],
@@ -584,7 +584,7 @@ function get_app_config(): array {
     }
 
     // Load SMTP/LINE/Traffy secrets saved via Web UI (stored outside config.json inside runtime/)
-    $secretsPath = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'notification_secrets.json';
+    $secretsPath = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'notification_secrets.json';
     $secrets = read_json_file($secretsPath, []);
     if (!empty($secrets['smtp_user'])) $default['notifications']['smtp']['user'] = $secrets['smtp_user'];
     if (!empty($secrets['smtp_pass'])) $default['notifications']['smtp']['pass'] = $secrets['smtp_pass'];
@@ -611,7 +611,7 @@ function get_app_config(): array {
 }
 
 function save_app_config(array $cfg) {
-    $secretsPath = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'notification_secrets.json';
+    $secretsPath = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'notification_secrets.json';
     $secrets = read_json_file($secretsPath, []);
     if (!empty($cfg['notifications']['smtp']['user'])) {
         $secrets['smtp_user'] = $cfg['notifications']['smtp']['user'];
@@ -639,7 +639,7 @@ function save_app_config(array $cfg) {
     }
     write_json_file($secretsPath, $secrets);
 
-    $configPath = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'config.json';
+    $configPath = LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'config.json';
     $toSave = $cfg;
     if (isset($toSave['notifications']['smtp']['pass'])) {
         $toSave['notifications']['smtp']['pass'] = '';
@@ -694,7 +694,7 @@ function is_active_public_domain(string $url): bool {
 }
 
 function get_domain_config(): array {
-    $cfgPath = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'domain_config.json';
+    $cfgPath = LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'domain_config.json';
     $default = [
         'primary_domain'            => 'https://water.your-domain.com/Water_System2',
         'backup_domain'             => 'https://backup-water.your-domain.com/Water_System2',
@@ -794,7 +794,7 @@ function save_domain_config(array $input): array {
         'failover_auto_ping_backup' => array_key_exists('failover_auto_ping_backup', $input) ? !empty($input['failover_auto_ping_backup']) : !empty($current['failover_auto_ping_backup']),
         'notes'                     => (string)($current['notes'] ?? 'แก้ไขไฟล์นี้หรือผ่าน server_setup.php เมื่อเปลี่ยนโดเมนหรือเพิ่มโดเมนสำรอง'),
     ];
-    $cfgPath = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'domain_config.json';
+    $cfgPath = LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'domain_config.json';
     write_json_file($cfgPath, $toSave);
     return get_domain_config();
 }

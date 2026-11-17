@@ -186,7 +186,7 @@ foreach ($freshSummary as $fMod => $fInfo) {
 // -------------------------------------------------------------------------
 echo "\n--- Testing HTTP Endpoints & Cookie/Session on http://127.0.0.1:7000 ---\n";
 $baseUrl = 'http://127.0.0.1:7000';
-$cookieJar = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'test_cookie_jar.txt';
+$cookieJar = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'test_cookie_jar.txt';
 @unlink($cookieJar);
 
 // 5a. Login -> verify Set-Cookie: water_session_7000 -> /api/auth/me -> Logout
@@ -297,9 +297,9 @@ $lockRes = with_file_lock('verify_mutex_test', function () {
     return ($inner === null) ? 'nested_nonblocking_rejected' : 'failed';
 }, false);
 assert_ok($lockRes === 'nested_nonblocking_rejected', 'with_file_lock non-blocking mutex rejects concurrent overlapping lock cleanly');
-@unlink(WATER_SYSTEM2_RUNTIME_DIR . '/locks/verify_mutex_test.lock');
+@unlink(LP_PAO_RUNTIME_DIR . '/locks/verify_mutex_test.lock');
 
-$rotTmp = WATER_SYSTEM2_RUNTIME_DIR . '/verify_rotate_test.log';
+$rotTmp = LP_PAO_RUNTIME_DIR . '/verify_rotate_test.log';
 @unlink($rotTmp);
 @unlink($rotTmp . '.1');
 file_put_contents($rotTmp, str_repeat("LOG LINE\n", 1500));

@@ -44,15 +44,15 @@ function smart_compute_next_slot(array $tasks, ?int $now = null): array {
 }
 
 function smart_worker_state_file(): string {
-    return WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'smart_worker_state.json';
+    return LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'smart_worker_state.json';
 }
 
 function smart_worker_stop_flag_file(): string {
-    return WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'smart_worker.stop';
+    return LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'smart_worker.stop';
 }
 
 function smart_worker_lock_file(): string {
-    return WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'smart_worker.lock';
+    return LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'smart_worker.lock';
 }
 
 function smart_worker_status(): array {
@@ -77,7 +77,7 @@ function smart_worker_status(): array {
 }
 
 function smart_check_and_run_if_due(bool $allowStartupCatchup = false, string $source = 'smart_sleep'): array {
-    $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
+    $stateFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
     $cfg = get_app_config();
     $active = $cfg['isScheduleActive'] ?? [];
     $anyActive = !empty($active['water']) || !empty($active['drought']) || !empty($active['pm25']) || !empty($active['complaints']);

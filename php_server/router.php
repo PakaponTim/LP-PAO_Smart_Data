@@ -65,22 +65,22 @@ if ($uri === '/socket.io/socket.io.js' || $uri === '/socketio_client.js') {
 }
 
 if ($uri === '/server_setup.php') {
-    require WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'server_setup.php';
+    require LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'server_setup.php';
     exit;
 }
 
 if ($uri === '/cron.php') {
-    require WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'cron.php';
+    require LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'cron.php';
     exit;
 }
 
 if ($uri === '/worker.php') {
-    require WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'worker.php';
+    require LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'worker.php';
     exit;
 }
 
 if (strpos($uri, '/socket.io/') === 0) {
-    $eventsFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'socketio_events.json';
+    $eventsFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'socketio_events.json';
     if ($method === 'GET') {
         $sinceSeq = isset($_GET['seq']) ? (int)$_GET['seq'] : -1;
         $eventsData = read_json_file($eventsFile, ['seq' => 0, 'events' => []]);
@@ -139,7 +139,7 @@ if (is_strict_auth_required() && security_is_admin_page_uri($safeRel) && !auth_i
     header('Location: ./login.html?reauth=1&next=' . rawurlencode($nextPage), true, 302);
     exit;
 }
-$filePath = WATER_SYSTEM2_UI_DIR . str_replace('/', DIRECTORY_SEPARATOR, $safeRel);
+$filePath = LP_PAO_UI_DIR . str_replace('/', DIRECTORY_SEPARATOR, $safeRel);
 
 if (is_file($filePath)) {
     $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));

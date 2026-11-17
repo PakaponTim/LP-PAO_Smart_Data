@@ -24,10 +24,10 @@ $setupCsrfToken = security_get_or_issue_setup_csrf();
 $message = '';
 $statusType = '';
 $newlyIssuedKey = null;
-$dbOverrideFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'db_config.json';
+$dbOverrideFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'db_config.json';
 
 $isLocalRequest = is_local_loopback_request();
-$alreadyConfigured = file_exists($dbOverrideFile) || file_exists(WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . '.env');
+$alreadyConfigured = file_exists($dbOverrideFile) || file_exists(LP_PAO_ROOT . DIRECTORY_SEPARATOR . '.env');
 
 function server_setup_passes_guard(bool $alreadyConfigured, bool $isLocalRequest, ?string &$reason = null): bool {
     $reason = '';
@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $ENV_VARS[$k] = $v;
             }
             try {
-                $flagFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'schema_ready_v2_' . preg_replace('/[^a-zA-Z0-9_]/', '', $newCfg['DB_NAME']) . '.flag';
+                $flagFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'schema_ready_v2_' . preg_replace('/[^a-zA-Z0-9_]/', '', $newCfg['DB_NAME']) . '.flag';
                 @unlink($flagFile);
                 $pdo = get_db();
                 $statusType = 'success';

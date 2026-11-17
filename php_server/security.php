@@ -10,8 +10,8 @@
 //   6. Safe Setup Form CSRF Helpers
 // =========================================================================
 
-if (!defined('WATER_SYSTEM2_SECURITY_LOADED')) {
-    define('WATER_SYSTEM2_SECURITY_LOADED', true);
+if (!defined('LP_PAO_SECURITY_LOADED')) {
+    define('LP_PAO_SECURITY_LOADED', true);
 }
 
 function security_is_https_request(): bool {
@@ -173,7 +173,7 @@ function security_sliding_window_hit(string $filePath, string $bucketKey, int $l
 }
 
 function security_bruteforce_file(): string {
-    return WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'auth_bruteforce.json';
+    return LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'auth_bruteforce.json';
 }
 
 function security_bruteforce_bucket(string $scope, string $identifier): string {

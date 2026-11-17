@@ -9,7 +9,7 @@
 require_once __DIR__ . '/config.php';
 
 function get_accounts_path(): string {
-    $dir = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'security';
+    $dir = LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'security';
     if (!is_dir($dir)) @mkdir($dir, 0777, true);
     return $dir . DIRECTORY_SEPARATOR . 'accounts.json';
 }
@@ -26,7 +26,7 @@ function save_accounts_data(array $data): void {
 }
 
 function get_sessions_path(): string {
-    return WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'sessions.json';
+    return LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'sessions.json';
 }
 
 function auth_send_session_cookie(string $token, int $maxAgeSec): void {

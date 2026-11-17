@@ -113,7 +113,7 @@ t_assert(
 );
 
 // Clean up rate limit test bucket immediately
-$rlFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'public_rate_limits.json';
+$rlFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'public_rate_limits.json';
 update_json_file_atomic($rlFile, [], function (array $buckets) use ($rlBucket) {
     unset($buckets[$rlBucket]);
     return $buckets;

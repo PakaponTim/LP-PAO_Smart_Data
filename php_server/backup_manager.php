@@ -13,7 +13,7 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/collectors_transform.php';
 
 function db_spool_dir(): string {
-    $dir = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'db_spool';
+    $dir = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'db_spool';
     if (!is_dir($dir)) {
         @mkdir($dir, 0777, true);
     }
@@ -21,7 +21,7 @@ function db_spool_dir(): string {
 }
 
 function db_backup_dir(): string {
-    $dir = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'backups';
+    $dir = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'backups';
     if (!is_dir($dir)) {
         @mkdir($dir, 0777, true);
     }
@@ -430,7 +430,7 @@ function run_full_mysql_backup(bool $sendEmail = false, string $triggerSource = 
  * Triggered once per 24h from housekeeping or scheduler.
  */
 function run_daily_db_backup_if_due(): array {
-    $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
+    $stateFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
     $now = time();
     $st = read_json_file($stateFile, []);
     $lastBackup = (int)($st['lastDbBackupAt'] ?? 0);
@@ -451,8 +451,8 @@ function run_daily_db_backup_if_due(): array {
  * Load latest cloud snapshot (local cache first, remote raw GitHub fallback) for emergency failover.
  */
 function get_latest_cloud_snapshot_bundle(): array {
-    $baseDir = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'cloud_snapshots';
-    $cacheDir = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'cloud_cache';
+    $baseDir = LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'cloud_snapshots';
+    $cacheDir = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'cloud_cache';
     $files = array_merge(
         is_dir($baseDir) ? (glob($baseDir . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . 'snapshot_*.json') ?: []) : [],
         is_dir($cacheDir) ? (glob($cacheDir . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . 'snapshot_*.json') ?: []) : []
@@ -469,7 +469,7 @@ function get_latest_cloud_snapshot_bundle(): array {
                 $decoded['complaints'] = sanitize_traffy_rows_zero_pii($decoded['complaints']);
             }
             $decoded['_source'] = 'local_cloud_snapshot';
-            $decoded['_file'] = str_replace(WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR, '', $latest);
+            $decoded['_file'] = str_replace(LP_PAO_ROOT . DIRECTORY_SEPARATOR, '', $latest);
             return $decoded;
         }
     }

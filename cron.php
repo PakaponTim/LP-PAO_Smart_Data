@@ -33,7 +33,7 @@ if ($cronSecret !== '') {
     echo json_encode(['success' => false, 'error' => 'Forbidden: external force-cron requires admin session or CRON_SECRET'], JSON_UNESCAPED_UNICODE);
     exit;
 }
-$stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
+$stateFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
 $now = time();
 
 $results = [

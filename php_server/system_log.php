@@ -41,7 +41,7 @@ const SYSTEM_LOG_TRIGGER_LABELS = [
 ];
 
 function sys_log_push_realtime_event(string $eventName, $data, ?string $plainLogLine = null): void {
-    $eventsFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'socketio_events.json';
+    $eventsFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'socketio_events.json';
     update_json_file_atomic($eventsFile, ['seq' => 0, 'events' => []], function (array $eventsData) use ($eventName, $data) {
         $seq = (int)($eventsData['seq'] ?? 0) + 1;
         $events = $eventsData['events'] ?? [];
@@ -58,7 +58,7 @@ function sys_log_push_realtime_event(string $eventName, $data, ?string $plainLog
     });
 
     if ($plainLogLine !== null) {
-        $logsFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'recent_logs.json';
+        $logsFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'recent_logs.json';
         update_json_file_atomic($logsFile, [], function (array $logs) use ($plainLogLine) {
             array_unshift($logs, $plainLogLine);
             if (count($logs) > 80) {
@@ -67,7 +67,7 @@ function sys_log_push_realtime_event(string $eventName, $data, ?string $plainLog
             return $logs;
         });
 
-        $fetchLogPath = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'fetch_history.log';
+        $fetchLogPath = LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'fetch_history.log';
         rotate_log_if_needed($fetchLogPath, 5242880, 3);
         @file_put_contents($fetchLogPath, $plainLogLine . PHP_EOL, FILE_APPEND | LOCK_EX);
     }
@@ -487,7 +487,7 @@ function sys_log_export_csv(array $filters = []): string {
 // =========================================================================
 
 function retry_queue_file(): string {
-    return WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'retry_queue.json';
+    return LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'retry_queue.json';
 }
 
 function retry_queue_get(): array {
@@ -537,11 +537,11 @@ function retry_queue_clear(string $module): void {
 // =========================================================================
 
 function freshness_state_file(): string {
-    return WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'freshness_state.json';
+    return LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'freshness_state.json';
 }
 
 function freshness_latest_file(): string {
-    return WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'freshness_latest.json';
+    return LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'freshness_latest.json';
 }
 
 /**
@@ -704,7 +704,7 @@ function get_latest_freshness_summary(PDO $pdo): array {
  * 24/7 Server Sustainability: Daily log rotation, snapshot retention, session cleanup, & DB log pruning.
  */
 function run_system_housekeeping(bool $force = false): array {
-    $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
+    $stateFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'runtime_state.json';
     $now = time();
     if (!$force) {
         $st = read_json_file($stateFile, []);
@@ -734,14 +734,14 @@ function run_system_housekeeping(bool $force = false): array {
         ];
 
         // 1. Rotate fetch_history.log > 5MB (keep .1 .. .3)
-        $fetchLogPath = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'fetch_history.log';
+        $fetchLogPath = LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'fetch_history.log';
         if (file_exists($fetchLogPath) && (@filesize($fetchLogPath) ?: 0) >= 5242880) {
             rotate_log_if_needed($fetchLogPath, 5242880, 3);
             $stats['rotatedLogs'] = 1;
         }
 
         // 2. Clean orphaned *.tmp.* files > 1h old inside runtime dir
-        $tmpFiles = glob(WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . '*.tmp.*') ?: [];
+        $tmpFiles = glob(LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . '*.tmp.*') ?: [];
         foreach ($tmpFiles as $tf) {
             if (($now - (@filemtime($tf) ?: $now)) > 3600) {
                 if (@unlink($tf)) $stats['cleanedTmpFiles']++;
@@ -749,7 +749,7 @@ function run_system_housekeeping(bool $force = false): array {
         }
 
         // 3. Remove expired sessions
-        $sessPath = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'sessions.json';
+        $sessPath = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'sessions.json';
         if (file_exists($sessPath)) {
             update_json_file_atomic($sessPath, [], function (array $sessions) use ($now, &$stats) {
                 $kept = [];
@@ -779,7 +779,7 @@ function run_system_housekeeping(bool $force = false): array {
 
         // 5. Prune local snapshot date folders older than SNAPSHOT_LOCAL_RETENTION_DAYS (default 30 days)
         $snapDays = max(7, (int)env_val('SNAPSHOT_LOCAL_RETENTION_DAYS', '30'));
-        $snapBase = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'cloud_snapshots';
+        $snapBase = LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'cloud_snapshots';
         $cutoffYmd = date('Y-m-d', $now - ($snapDays * 86400));
         if (is_dir($snapBase)) {
             foreach ((scandir($snapBase) ?: []) as $entry) {
@@ -859,14 +859,14 @@ function get_system_health_report(): array {
         $dbErr = $e->getMessage();
     }
 
-    $wState = read_json_file(WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'smart_worker_state.json', []);
+    $wState = read_json_file(LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'smart_worker_state.json', []);
     $lastHb = (int)($wState['lastHeartbeat'] ?? 0);
-    $stopFlag = file_exists(WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'smart_worker.stop');
+    $stopFlag = file_exists(LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'smart_worker.stop');
     $workerAlive = ($lastHb > 0) && ((time() - $lastHb) <= 60) && !$stopFlag;
 
-    $fetchLogPath = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'fetch_history.log';
+    $fetchLogPath = LP_PAO_ROOT . DIRECTORY_SEPARATOR . 'fetch_history.log';
     $fetchLogKb = file_exists($fetchLogPath) ? round((@filesize($fetchLogPath) ?: 0) / 1024, 1) : 0.0;
-    $freeBytes = @disk_free_space(WATER_SYSTEM2_ROOT);
+    $freeBytes = @disk_free_space(LP_PAO_ROOT);
     $freeMb = ($freeBytes !== false) ? (int)round($freeBytes / 1048576) : null;
 
     $spoolCnt = 0;
@@ -942,10 +942,10 @@ function get_system_health_report(): array {
             'latestSizeKb'=> $backupsList[0]['sizeKb'] ?? 0,
         ],
         'security'   => [
-            'hasRootHtaccess'    => file_exists(WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . '.htaccess'),
-            'hasRuntimeHtaccess' => file_exists(WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . '.htaccess'),
+            'hasRootHtaccess'    => file_exists(LP_PAO_ROOT . DIRECTORY_SEPARATOR . '.htaccess'),
+            'hasRuntimeHtaccess' => file_exists(LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . '.htaccess'),
             'authEnforce'        => AUTH_ENFORCE,
-            'setupConfigured'    => file_exists(WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'db_config.json'),
+            'setupConfigured'    => file_exists(LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'db_config.json'),
         ],
     ];
 }

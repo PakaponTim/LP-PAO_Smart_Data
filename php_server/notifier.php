@@ -372,7 +372,7 @@ function php_build_digest_email_html(array $alerts): string {
     <div style=\"padding:0 32px 8px;\">{$tablesHtml}</div>
     <div style=\"background:#f1f5f9;padding:20px 32px;border-top:1px solid #e2e8f0;text-align:center;\">
       <p style=\"color:#475569;font-size:12px;font-weight:bold;margin:0 0 4px 0;\">ศูนย์บริการสารสนเทศบูรณาการ องค์การบริหารส่วนจังหวัดลำปาง</p>
-      <p style=\"color:#94a3b8;font-size:11px;margin:0;\">อีเมลฉบับนี้ส่งโดยระบบแจ้งเตือนวิกฤตอัตโนมัติ (Water_System2)</p>
+      <p style=\"color:#94a3b8;font-size:11px;margin:0;\">อีเมลฉบับนี้ส่งโดยระบบแจ้งเตือนวิกฤตอัตโนมัติ (LP-PAO Smart Data)</p>
     </div>
   </div>
 </body>
@@ -549,7 +549,7 @@ function php_line_send_push(array $alerts, array $lineCfg): array {
     $warnings  = array_values(array_filter($alerts, function ($a) { return $a['level'] === 'warning'; }));
 
     $lines = [];
-    $lines[] = "🔔 [Water_System2 อบจ.ลำปาง]";
+    $lines[] = "🔔 [LP-PAO Smart Data อบจ.ลำปาง]";
     $lines[] = "แจ้งเตือนสถานการณ์วิกฤต/เฝ้าระวัง";
     $lines[] = "📅 " . format_thai_date() . " " . date('H:i') . " น.";
     $lines[] = "🚨 วิกฤต: " . count($criticals) . " | ⚠️ เฝ้าระวัง: " . count($warnings);
@@ -911,7 +911,7 @@ function php_send_test_email(?string $specificEmail = null): array {
             'type' => 'drought',
             'level' => 'critical',
             'title' => '🚨 ทดสอบระบบแจ้งเตือน: อ่างเก็บน้ำแม่ต๋ำตอนล่าง',
-            'message' => 'ทดสอบการส่งแจ้งเตือนวิกฤตอัตโนมัติผ่าน PHP Gmail SMTP (Water_System2)',
+            'message' => 'ทดสอบการส่งแจ้งเตือนวิกฤตอัตโนมัติผ่าน PHP Gmail SMTP (LP-PAO Smart Data)',
             'triggerValue' => '🚨 น้ำกักเก็บน้อยวิกฤต (22%)',
             'thresholdValue' => '≤30%',
             'stationName' => 'อ่างเก็บน้ำแม่ต๋ำตอนล่าง'
@@ -981,7 +981,7 @@ function php_send_operational_alert(string $alertKey, string $title, string $det
         return ['sent' => false, 'reason' => 'notifications_disabled'];
     }
 
-    $stateFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'operational_alert_state.json';
+    $stateFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'operational_alert_state.json';
     $now = time();
     $shouldSend = false;
 
@@ -1013,10 +1013,10 @@ function php_send_operational_alert(string $alertKey, string $title, string $det
         'message'        => $detail,
         'triggerValue'   => '⚠️ ต้องการการตรวจสอบจากผู้ดูแลระบบ',
         'thresholdValue' => 'อัตโนมัติ (Dead-Man Switch)',
-        'stationName'    => 'Water_System2 Server Monitor',
+        'stationName'    => 'LP-PAO Smart Data Server Monitor',
     ]];
 
-    $subject = "🛡️ [Water_System2 Monitor] {$title}";
+    $subject = "🛡️ [LP-PAO Smart Data Monitor] {$title}";
     $html = php_build_digest_email_html($alertsPayload);
     $res = php_smtp_send_email($smtpCfg, $recipients, $subject, $html);
 

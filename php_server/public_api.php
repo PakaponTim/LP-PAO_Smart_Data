@@ -37,7 +37,7 @@ function public_sanitize_complaint(array $r): array {
 }
 
 function public_api_keys_file(): string {
-    return WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'agency_api_keys.json';
+    return LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'agency_api_keys.json';
 }
 
 function public_list_api_keys(): array {
@@ -179,7 +179,7 @@ function public_verify_api_key_if_present() {
  * Sliding-window 60-second rate limiter stored atomically in runtime/.
  */
 function public_rate_limit_check(string $bucketKey, int $limitPerMin): array {
-    $rlFile = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'public_rate_limits.json';
+    $rlFile = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'public_rate_limits.json';
     $res = security_sliding_window_hit($rlFile, $bucketKey, $limitPerMin, 60, true);
 
     if (!headers_sent()) {

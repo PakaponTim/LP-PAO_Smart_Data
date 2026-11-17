@@ -186,7 +186,7 @@ s_assert(
 
 $accountsFile = get_accounts_path();
 $origAccountsRaw = file_exists($accountsFile) ? file_get_contents($accountsFile) : null;
-$cookieJar = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'sec_e2e_cookie.txt';
+$cookieJar = LP_PAO_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'sec_e2e_cookie.txt';
 @unlink($cookieJar);
 $bfIp = '203.0.113.99';
 $bfHeaders = ["X-Forwarded-For: {$bfIp}", 'Content-Type: application/json'];

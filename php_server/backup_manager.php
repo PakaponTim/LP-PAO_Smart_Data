@@ -452,8 +452,14 @@ function run_daily_db_backup_if_due(): array {
  */
 function get_latest_cloud_snapshot_bundle(): array {
     $baseDir = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'cloud_snapshots';
-    $files = is_dir($baseDir) ? (glob($baseDir . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . 'snapshot_*.json') ?: []) : [];
-    sort($files);
+    $cacheDir = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'cloud_cache';
+    $files = array_merge(
+        is_dir($baseDir) ? (glob($baseDir . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . 'snapshot_*.json') ?: []) : [],
+        is_dir($cacheDir) ? (glob($cacheDir . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . 'snapshot_*.json') ?: []) : []
+    );
+    usort($files, function ($a, $b) {
+        return strcmp(basename($a), basename($b));
+    });
     if (!empty($files)) {
         $latest = end($files);
         $raw = @file_get_contents($latest);

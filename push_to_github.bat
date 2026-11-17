@@ -31,7 +31,8 @@ if %errorlevel%==0 (
 )
 echo.
 
-echo [2/4] Syncing latest remote snapshots (git pull --rebase --autostash origin main)...
+echo [2/4] Cleaning cached untracked cloud_snapshots & syncing latest remote snapshots...
+powershell -NoProfile -Command "& '%GIT_BIN%' ls-files --others --exclude-standard -- cloud_snapshots/ | ForEach-Object { if ($_ -and (Test-Path $_)) { Remove-Item -Force $_ } }" >nul 2>&1
 "%GIT_BIN%" pull --rebase --autostash origin main
 if errorlevel 1 (
     echo.

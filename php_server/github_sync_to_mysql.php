@@ -202,8 +202,9 @@ function _sync_github_snapshots_to_mysql_locked(int $maxImport = 0): array {
     ensure_ingest_tables($pdo);
 
     $baseDir = WATER_SYSTEM2_ROOT . DIRECTORY_SEPARATOR . 'cloud_snapshots';
-    if (!is_dir($baseDir)) {
-        @mkdir($baseDir, 0777, true);
+    $cacheDir = WATER_SYSTEM2_RUNTIME_DIR . DIRECTORY_SEPARATOR . 'cloud_cache';
+    if (!is_dir($cacheDir)) {
+        @mkdir($cacheDir, 0777, true);
     }
 
     $ghRepo = env_val('GITHUB_SYNC_REPO', 'PakaponTim/Water_System2');
@@ -241,12 +242,15 @@ function _sync_github_snapshots_to_mysql_locked(int $maxImport = 0): array {
                 foreach ($remoteManifest['snapshots'] as $sid => $meta) {
                     $relPath = $meta['path'] ?? '';
                     if ($relPath === '') continue;
-                    $localFile = $baseDir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relPath);
-                    if (!file_exists($localFile)) {
+                    $relOs = str_replace('/', DIRECTORY_SEPARATOR, $relPath);
+                    $gitFile = $baseDir . DIRECTORY_SEPARATOR . $relOs;
+                    $cacheFile = $cacheDir . DIRECTORY_SEPARATOR . $relOs;
+                    // Store downloaded snapshots in git-ignored runtime/cloud_cache so git pull --rebase never hits untracked file conflicts!
+                    if (!file_exists($gitFile) && !file_exists($cacheFile)) {
                         if ($maxImport > 0 && $downloaded >= $maxImport) {
                             break;
                         }
-                        $dir = dirname($localFile);
+                        $dir = dirname($cacheFile);
                         if (!is_dir($dir)) @mkdir($dir, 0777, true);
                         if ($ghToken === '') {
                             try {
@@ -262,7 +266,7 @@ function _sync_github_snapshots_to_mysql_locked(int $maxImport = 0): array {
                             }
                         }
                         if (is_array($snapData)) {
-                            file_put_contents($localFile, json_encode($snapData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                            file_put_contents($cacheFile, json_encode($snapData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
                             $downloaded++;
                         }
                     }
@@ -281,9 +285,13 @@ function _sync_github_snapshots_to_mysql_locked(int $maxImport = 0): array {
         }
     }
 
-    // Step 3: Scan all local cloud_snapshots/*/*.json files and import any unimported snapshots into MySQL `water_system2`
-    $files = glob($baseDir . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . 'snapshot_*.json') ?: [];
-    sort($files);
+    // Step 3: Scan both git cloud_snapshots/ and git-ignored runtime/cloud_cache/ cleanly
+    $gitFiles = is_dir($baseDir) ? (glob($baseDir . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . 'snapshot_*.json') ?: []) : [];
+    $cacheFiles = is_dir($cacheDir) ? (glob($cacheDir . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . 'snapshot_*.json') ?: []) : [];
+    $files = array_merge($gitFiles, $cacheFiles);
+    usort($files, function ($a, $b) {
+        return strcmp(basename($a), basename($b));
+    });
 
     $importedList = [];
     $skippedCount = 0;

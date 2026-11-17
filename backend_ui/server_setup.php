@@ -257,6 +257,8 @@ try {
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>body { font-family: 'Prompt', sans-serif; }</style>
+  <link rel="stylesheet" href="./css/ux-motion.css" />
+  <script src="./js/ux-motion.js" defer></script>
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen py-10 px-4">
   <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">

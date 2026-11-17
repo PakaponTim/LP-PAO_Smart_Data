@@ -7,8 +7,6 @@
   <title>ศูนย์บูรณาการข้อมูล อบจ.ลำปาง &amp; Traffy Fondue Lampang (Public Dashboard)</title>
   <link rel="icon" type="image/png" href="./logo_pao.png" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet" />
   <style>
@@ -1472,66 +1470,175 @@
         initAndRenderMap(false);
       }
 
+      // Lampang 2D Vector Map (13 Districts Only)
+      function projectLampang(lat, lng) {
+        const minLat = 17.15, maxLat = 19.45;
+        const minLng = 98.88, maxLng = 100.18;
+        const x = 42 + ((Number(lng) - minLng) / (maxLng - minLng)) * 336;
+        const y = 38 + ((maxLat - Number(lat)) / (maxLat - minLat)) * 484;
+        return {
+          x: Math.max(24, Math.min(396, Math.round(x * 10) / 10)),
+          y: Math.max(24, Math.min(536, Math.round(y * 10) / 10))
+        };
+      }
+
+      const LAMPANG_DISTRICT_NODES = [
+        { name: 'วังเหนือ', lat: 19.146, lng: 99.618 },
+        { name: 'งาว', lat: 18.758, lng: 99.975 },
+        { name: 'แจ้ห่ม', lat: 18.712, lng: 99.556 },
+        { name: 'เมืองปาน', lat: 18.795, lng: 99.375 },
+        { name: 'แม่เมาะ', lat: 18.305, lng: 99.718 },
+        { name: 'เมืองลำปาง', lat: 18.2888, lng: 99.4920 },
+        { name: 'ห้างฉัตร', lat: 18.322, lng: 99.342 },
+        { name: 'เกาะคา', lat: 18.188, lng: 99.388 },
+        { name: 'แม่ทะ', lat: 18.132, lng: 99.615 },
+        { name: 'เสริมงาม', lat: 18.068, lng: 99.235 },
+        { name: 'สบปราบ', lat: 17.878, lng: 99.345 },
+        { name: 'เถิน', lat: 17.612, lng: 99.218 },
+        { name: 'แม่พริก', lat: 17.448, lng: 99.132 }
+      ];
+
+      function showMapTooltip(title, body, clientX, clientY) {
+        const container = document.getElementById('publicMap');
+        const tip = document.getElementById('svgMapTip');
+        if (!container || !tip) return;
+        tip.innerHTML = `<div class="font-bold text-emerald-300 mb-0.5">${title}</div><div class="text-slate-200 leading-snug">${body}</div>`;
+        tip.classList.remove('hidden');
+        const rect = container.getBoundingClientRect();
+        const left = Math.min(rect.width - 230, Math.max(10, clientX - rect.left + 12));
+        const top = Math.min(rect.height - 90, Math.max(10, clientY - rect.top - 12));
+        tip.style.left = `${left}px`;
+        tip.style.top = `${top}px`;
+      }
+
+      function hideMapTooltip() {
+        const tip = document.getElementById('svgMapTip');
+        if (tip) tip.classList.add('hidden');
+      }
+
       function resetMapView() {
-        if (state.map) state.map.setView([18.2888, 99.4920], 9);
+        hideMapTooltip();
+        const svg = document.getElementById('lampangVectorSvg');
+        if (svg) svg.setAttribute('viewBox', '0 0 420 560');
       }
 
       function initAndRenderMap(panToBounds = false) {
-        if (typeof L === 'undefined') return;
-        if (!state.map) {
-          state.map = L.map('publicMap', { center: [18.2888, 99.4920], zoom: 9 });
-          const esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri', maxZoom: 19
-          });
-          let fb = false;
-          esri.on('tileerror', () => {
-            if (fb) return; fb = true;
-            L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { attribution: 'OpenTopoMap', maxZoom: 17 }).addTo(state.map);
-          });
-          esri.addTo(state.map);
-          state.mapLayer = L.layerGroup().addTo(state.map);
-        }
-        if (!state.gis || !state.mapLayer) return;
-        state.mapLayer.clearLayers();
-
+        const container = document.getElementById('publicMap');
+        if (!container) return;
         const amp = state.selectedAmphoe;
         const mf = state.mapFilter;
-        const coords = [];
+        const stations = state.gis?.stations || [];
+        const dams = state.gis?.dams || [];
+        const points = [];
 
         if (mf === 'all' || mf === 'water' || mf === 'alert') {
-          (state.gis.stations || []).forEach(s => {
+          stations.forEach(s => {
             if (!matchesAmphoe(s.amphoe || s.name, amp)) return;
             const isAlert = !String(s.status || '').includes('ปกติ');
             if (mf === 'alert' && !isAlert) return;
-            coords.push([s.lat, s.lng]);
-            L.circleMarker([s.lat, s.lng], { radius: 8, color: '#fff', weight: 2, fillColor: s.color || '#10b981', fillOpacity: 0.92, className: isAlert ? 'marker-alert' : '' })
-              .bindPopup(`<b>🌊 ${esc(s.name)}</b><br/>${esc(s.amphoe)}<br/>ระดับน้ำ: <b>${s.currentWaterLevel} ม.</b> (${esc(s.status)})`)
-              .addTo(state.mapLayer);
+            const pt = projectLampang(s.lat, s.lng);
+            points.push({
+              kind: 'water',
+              x: pt.x, y: pt.y,
+              color: s.color || '#10b981',
+              isAlert,
+              title: `🌊 ${esc(s.name)}`,
+              body: `อ.${esc(s.amphoe || '-')} · ระดับน้ำ <b>${s.currentWaterLevel} ม.</b> (${esc(s.status)})`
+            });
           });
         }
 
         if (mf === 'all' || mf === 'dam' || mf === 'alert') {
-          (state.gis.dams || []).forEach(d => {
+          dams.forEach(d => {
             if (!matchesAmphoe(`${d.amphoe || ''} ${d.name || ''}`, amp)) return;
             const pct = parseFloat(d.percent || 50);
             if (mf === 'alert' && pct > 30 && pct < 85) return;
-            coords.push([d.lat, d.lng]);
-            L.circleMarker([d.lat, d.lng], { radius: 7, color: '#1e3a8a', weight: 2, fillColor: d.color || '#2563eb', fillOpacity: 0.88 })
-              .bindPopup(`<b>🏜️ ${esc(d.name)}</b><br/>กักเก็บ: <b>${d.volume} / ${d.capacity} ล้าน ม³</b> (${d.percent}%)`)
-              .addTo(state.mapLayer);
+            const pt = projectLampang(d.lat, d.lng);
+            points.push({
+              kind: 'dam',
+              x: pt.x, y: pt.y,
+              color: d.color || '#38bdf8',
+              isAlert: pct <= 30 || pct >= 85,
+              title: `🏜️ ${esc(d.name)}`,
+              body: `กักเก็บ <b>${d.volume} / ${d.capacity} ล้าน ม³</b> (${d.percent}%)`
+            });
           });
         }
 
         const cntEl = document.getElementById('mapMarkerCount');
-        if (cntEl) cntEl.textContent = `แสดงบนแผนที่ ${coords.length} จุด`;
+        if (cntEl) cntEl.textContent = `แสดงบนแผนที่ 2D ${points.length} จุด (เฉพาะ จ.ลำปาง)`;
 
-        if (panToBounds && state.map) {
-          if (amp === 'all') {
-            resetMapView();
-          } else if (coords.length > 0) {
-            state.map.fitBounds(coords, { maxZoom: 11, padding: [30, 30] });
-          }
-        }
+        const districtSvg = LAMPANG_DISTRICT_NODES.map(d => {
+          const p = projectLampang(d.lat, d.lng);
+          const isSel = amp !== 'all' && d.name === amp;
+          return `
+            <g class="cursor-pointer" onclick="selectAmphoe('${d.name}')">
+              <circle cx="${p.x}" cy="${p.y}" r="${isSel ? 5.5 : 3.2}" fill="${isSel ? '#fbbf24' : '#6ee7b7'}" opacity="${isSel ? 1 : 0.72}" />
+              <text x="${p.x + 6}" y="${p.y + 3}" fill="${isSel ? '#fde68a' : '#a7f3d0'}" font-size="${isSel ? 11.5 : 9.5}" font-weight="${isSel ? '700' : '500'}" style="paint-order:stroke;stroke:#022c22;stroke-width:2.5px;">${d.name}</text>
+            </g>`;
+        }).join('');
+
+        const markersSvg = points.map((pt, idx) => {
+          const pulse = pt.isAlert
+            ? `<circle cx="${pt.x}" cy="${pt.y}" r="11" fill="none" stroke="${pt.color}" stroke-width="2" opacity="0.65"><animate attributeName="r" values="7;17;7" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;0;0.8" dur="2s" repeatCount="indefinite"/></circle>`
+            : '';
+          const shape = pt.kind === 'dam'
+            ? `<rect x="${pt.x - 5.5}" y="${pt.y - 5.5}" width="11" height="11" rx="2.5" fill="${pt.color}" stroke="#ffffff" stroke-width="1.8" />`
+            : `<circle cx="${pt.x}" cy="${pt.y}" r="6" fill="${pt.color}" stroke="#ffffff" stroke-width="1.8" />`;
+          return `
+            <g class="cursor-pointer" data-idx="${idx}"
+               onmouseenter="window.__mapShowTip(${idx}, event)"
+               onclick="window.__mapShowTip(${idx}, event)"
+               onmouseleave="hideMapTooltip()">
+              ${pulse}
+              ${shape}
+            </g>`;
+        }).join('');
+
+        window.__mapPoints = points;
+        window.__mapShowTip = (idx, ev) => {
+          const p = (window.__mapPoints || [])[idx];
+          if (p) showMapTooltip(p.title, p.body, ev.clientX, ev.clientY);
+        };
+
+        container.innerHTML = `
+          <div class="absolute inset-0 pointer-events-none opacity-25" style="background-image:radial-gradient(#34d399 1px, transparent 1px);background-size:20px 20px;"></div>
+          <div class="relative z-10 flex items-center justify-between px-3.5 pt-3 text-[11px]">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/80 border border-emerald-400/30 text-emerald-200 font-semibold">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              แผนที่ 2 มิติ · เฉพาะจังหวัดลำปาง (13 อำเภอ)
+            </div>
+            <div class="px-2 py-0.5 rounded-lg bg-slate-900/75 border border-white/10 text-slate-300 font-semibold">N ▲</div>
+          </div>
+          <svg id="lampangVectorSvg" viewBox="0 0 420 560" class="w-full h-[385px] drop-shadow-[0_8px_24px_rgba(16,185,129,0.22)]">
+            <defs>
+              <linearGradient id="lpLandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#065f46" stop-opacity="0.88" />
+                <stop offset="55%" stop-color="#047857" stop-opacity="0.72" />
+                <stop offset="100%" stop-color="#0f766e" stop-opacity="0.85" />
+              </linearGradient>
+              <linearGradient id="wangRiverGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#38bdf8" />
+                <stop offset="100%" stop-color="#22d3ee" />
+              </linearGradient>
+            </defs>
+            <!-- Stylized Lampang Province 2D Boundary -->
+            <path d="M 218 32 L 268 48 L 315 88 L 368 128 L 382 185 L 348 232 L 325 278 L 312 332 L 265 375 L 222 418 L 195 478 L 152 528 L 104 512 L 88 455 L 116 392 L 92 338 L 72 276 L 96 218 L 128 168 L 156 105 L 182 54 Z"
+              fill="url(#lpLandGrad)" stroke="#34d399" stroke-width="2.5" stroke-linejoin="round" />
+            <path d="M 218 32 L 268 48 L 315 88 L 368 128 L 382 185 L 348 232 L 325 278 L 312 332 L 265 375 L 222 418 L 195 478 L 152 528 L 104 512 L 88 455 L 116 392 L 92 338 L 72 276 L 96 218 L 128 168 L 156 105 L 182 54 Z"
+              fill="none" stroke="#a7f3d0" stroke-width="0.8" stroke-dasharray="4 4" opacity="0.55" />
+            <!-- Wang River (แม่น้ำวัง) Animated Flow -->
+            <path d="M 248 64 C 242 125, 224 185, 204 248 C 188 298, 174 345, 165 398 C 158 442, 138 482, 122 518"
+              fill="none" stroke="url(#wangRiverGrad)" stroke-width="3.2" stroke-linecap="round" opacity="0.85" />
+            <path d="M 248 64 C 242 125, 224 185, 204 248 C 188 298, 174 345, 165 398 C 158 442, 138 482, 122 518"
+              fill="none" stroke="#e0f2fe" stroke-width="1.4" stroke-dasharray="6 10" stroke-linecap="round">
+              <animate attributeName="stroke-dashoffset" from="32" to="0" dur="2.2s" repeatCount="indefinite" />
+            </path>
+            ${districtSvg}
+            ${markersSvg}
+          </svg>
+          <div id="svgMapTip" class="hidden absolute z-20 max-w-[220px] rounded-xl bg-slate-900/95 border border-emerald-400/40 px-3 py-2 text-[11px] shadow-xl pointer-events-none"></div>
+        `;
       }
 
       async function probePublicApi(route, useKey = false) {

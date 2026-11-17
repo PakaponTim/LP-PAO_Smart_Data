@@ -131,7 +131,9 @@ $httpChecks = [
     '/endpoint.php?r=/api/health',
     '/endpoint.php?r=/api/analytics/risk-index',
     '/endpoint.php?r=/api/gis/map-data',
+    '/endpoint.php?r=/api/db-compare',
     '/emergency_cloud.html',
+    '/db_compare.html',
     '/server_setup.php',
 ];
 
@@ -154,6 +156,9 @@ foreach ($httpChecks as $p) {
     } elseif ($p === '/endpoint.php?r=/api/cloud-fallback') {
         $j = json_decode((string)$body, true);
         $ok = $ok && !empty($j['success']) && !empty($j['snapshot']);
+    } elseif ($p === '/endpoint.php?r=/api/db-compare') {
+        $j = json_decode((string)$body, true);
+        $ok = $ok && !empty($j['success']) && isset($j['overallCorePct'], $j['domains']['water'], $j['domains']['rainfall'], $j['domains']['drought'], $j['domains']['pm25'], $j['domains']['complaints']);
     } elseif ($p === '/server_setup.php') {
         $ok = $ok && strpos($body, 'emergency_cloud.html') !== false && strpos($body, 'domain_config.json') !== false && strpos($body, 'DB_PASS') !== false;
     }

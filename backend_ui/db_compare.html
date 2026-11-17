@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>เปรียบเทียบฐานข้อมูล (water_systems vs water_system2) — อบจ.ลำปาง</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Prompt', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen">
+  <header class="bg-emerald-900 text-white border-b-4 border-pink-500 shadow">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 text-xs font-bold">DB VERIFIER</span>
+          <h1 class="text-base sm:text-lg font-bold">ระบบเปรียบเทียบฐานข้อมูล: <code class="text-amber-300">water_systems</code> vs <code class="text-emerald-300">water_system2</code></h1>
+        </div>
+        <p class="text-xs text-emerald-200 mt-0.5">ตรวจ Schema, จำนวนแถว, เวลารอบล่าสุด และค่าข้อมูลรายสถานีทั้ง 5 ด้านพร้อมกัน (อ่านอย่างเดียว 100% — ไม่แก้ไขฐานข้อมูลตัวเดิม)</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 text-xs">
+        <a href="./index.html" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 transition">📊 Dashboard หลัก</a>
+        <a href="./guide.html" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 transition">📖 คู่มือระบบ</a>
+        <a href="./server_setup.php" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 transition">⚙️ ตั้งค่า Server</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+    <!-- Control Toolbar -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-wrap items-end justify-between gap-4">
+      <div class="flex flex-wrap items-end gap-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-600 mb-1">ฐานข้อมูลต้นแบบ (ตัวสมบูรณ์)</label>
+          <input id="refDbInput" type="text" value="water_systems" class="border border-slate-300 rounded-lg px-3 py-2 text-xs font-mono bg-slate-50 w-44">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-600 mb-1">ฐานข้อมูลใหม่ (ตัวพัฒนา)</label>
+          <input type="text" value="water_system2" disabled class="border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono bg-slate-100 text-slate-500 w-44">
+        </div>
+        <button onclick="runComparison()" id="btnCompare" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm shadow transition">
+          🔍 เปรียบเทียบทั้งหมดทันที
+        </button>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 text-xs">
+        <button onclick="exportCompareCsv()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-semibold transition">📥 Export รายงาน CSV</button>
+      </div>
+    </section>
+
+    <div id="statusAlert" class="hidden rounded-2xl border p-4 text-xs sm:text-sm"></div>
+
+    <!-- Overall & 5-Domain Summary Cards -->
+    <section id="summarySection" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white rounded-2xl border-2 border-emerald-200 p-4 shadow-sm">
+          <div class="text-xs text-slate-500">🎯 ความตรงกันของค่าข้อมูลหลัก (Core Values)</div>
+          <div id="coreScore" class="text-3xl font-extrabold text-emerald-700 mt-1">-</div>
+          <div id="coreDetail" class="text-[11px] text-slate-500 mt-0.5">ระดับน้ำ, ปริมาณฝน, %อ่าง, PM2.5, สถานะ Traffy</div>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+          <div class="text-xs text-slate-500">🔬 ตรงกันทุกฟิลด์ 100% (Strict All Columns)</div>
+          <div id="strictScore" class="text-3xl font-extrabold text-sky-700 mt-1">-</div>
+          <div id="strictDetail" class="text-[11px] text-slate-500 mt-0.5">รวมรูปแบบชื่อ/คอลัมน์ที่ตัวใหม่ปรับปรุง</div>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+          <div class="text-xs text-slate-500">⏱️ เวลาประมวลผล &amp; อัปเดต</div>
+          <div id="compareTime" class="text-base font-bold text-slate-800 mt-2">-</div>
+          <div id="compareElapsed" class="text-[11px] text-slate-500 mt-0.5">-</div>
+        </div>
+        <div class="bg-amber-50/70 rounded-2xl border border-amber-200 p-4 text-xs text-amber-900 space-y-1">
+          <div class="font-bold">💡 คำอธิบายผลต่างปกติใน v2</div>
+          <p class="text-[11px] leading-relaxed">
+            ฟิลด์ที่ระบบใหม่ตั้งใจปรับปรุงให้ดีขึ้น เช่น ตัดคำว่า <code>ลำปาง</code> ซ้ำ, เพิ่ม <code>ฝน 3 วัน</code>, คำนวณ <code>น้ำใช้การได้</code>, และทศนิยม <code>PM2.5 24h</code> จะไม่ถูกนับเป็น Error ของค่าหลัก (Core)
+          </p>
+        </div>
+      </div>
+
+      <!-- 5 Domain KPI Row -->
+      <div id="domainCards" class="grid grid-cols-2 md:grid-cols-5 gap-3"></div>
+    </section>
+
+    <!-- Table Overview (Schema & Row Count) -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="font-bold text-sm sm:text-base text-slate-900">1. เปรียบเทียบระดับตารางทั้งหมด (Schema &amp; จำนวนแถว)</h2>
+        <span class="text-xs text-slate-500">เช็กตารางครบถ้วน, คอลัมน์ที่ขาด/เกิน และเวลาบันทึกข้อมูลล่าสุด</span>
+      </div>
+      <div class="overflow-x-auto border border-slate-200 rounded-xl">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead class="bg-slate-100 text-slate-700">
+            <tr>
+              <th class="p-2.5">ชื่อตาราง</th>
+              <th class="p-2.5">โครงสร้าง Schema</th>
+              <th class="p-2.5 text-right">แถวฝั่งเก่า (<code>water_systems</code>)</th>
+              <th class="p-2.5 text-right">แถวฝั่งใหม่ (<code>water_system2</code>)</th>
+              <th class="p-2.5">อัปเดตล่าสุดฝั่งเก่า</th>
+              <th class="p-2.5">อัปเดตล่าสุดฝั่งใหม่</th>
+            </tr>
+          </thead>
+          <tbody id="tablesBody" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Entity-by-Entity Field Diff Viewer -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap gap-1.5 text-xs" id="domainTabs">
+          <button onclick="selectDomain('water')" data-dom="water" class="dom-tab px-3 py-1.5 rounded-lg bg-slate-900 text-white font-semibold">🌊 ระดับน้ำ</button>
+          <button onclick="selectDomain('rainfall')" data-dom="rainfall" class="dom-tab px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 font-semibold">🌧️ น้ำฝน</button>
+          <button onclick="selectDomain('drought')" data-dom="drought" class="dom-tab px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 font-semibold">🏜️ อ่างเก็บน้ำ</button>
+          <button onclick="selectDomain('pm25')" data-dom="pm25" class="dom-tab px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 font-semibold">💨 PM 2.5</button>
+          <button onclick="selectDomain('complaints')" data-dom="complaints" class="dom-tab px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 font-semibold">📢 Traffy</button>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <select id="filterMode" onchange="renderDomainTable()" class="border border-slate-300 rounded-lg px-2.5 py-1.5 bg-white">
+            <option value="all">แสดงทุกรายการ</option>
+            <option value="core_diff">เฉพาะค่าหลัก (Core) ไม่ตรง / ขาด</option>
+            <option value="any_diff">เฉพาะจุดที่ต่าง (รวมรูปแบบ)</option>
+            <option value="match">เฉพาะรายการที่ตรงกัน 100%</option>
+          </select>
+          <input id="searchBox" oninput="renderDomainTable()" type="text" placeholder="ค้นหาสถานี / รหัส..." class="border border-slate-300 rounded-lg px-2.5 py-1.5 w-44">
+        </div>
+      </div>
+
+      <div id="domainMetaBanner" class="text-xs bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2"></div>
+
+      <div class="overflow-x-auto max-h-[520px] border border-slate-200 rounded-xl">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead class="bg-slate-100 text-slate-700 sticky top-0">
+            <tr>
+              <th class="p-2.5">สถานี / อ่างเก็บน้ำ / รหัสเรื่อง</th>
+              <th class="p-2.5">สถานะเทียบ</th>
+              <th class="p-2.5">รายละเอียดฟิลด์ที่ไม่ตรง (<span class="text-blue-700">ฝั่งเก่า</span> vs <span class="text-emerald-700">ฝั่งใหม่</span>)</th>
+              <th class="p-2.5">เวลาบันทึก (เก่า / ใหม่)</th>
+            </tr>
+          </thead>
+          <tbody id="entityBody" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let compareData = null;
+    let activeDomain = 'water';
+
+    function esc(v) {
+      return String(v === null || v === undefined ? '' : v).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    }
+
+    function apiUrl(route, qs = '') {
+      const p = location.pathname;
+      const base = location.origin + p.slice(0, p.lastIndexOf('/') + 1);
+      return base + 'endpoint.php?r=' + encodeURIComponent(route) + (qs ? '&' + qs : '');
+    }
+
+    async function runComparison() {
+      const refDb = (document.getElementById('refDbInput').value || 'water_systems').trim();
+      const btn = document.getElementById('btnCompare');
+      const alertEl = document.getElementById('statusAlert');
+      btn.disabled = true;
+      btn.textContent = '⏳ กำลังเปรียบเทียบ...';
+      alertEl.className = 'hidden';
+
+      try {
+        const res = await fetch(apiUrl('/api/db-compare', 'refDb=' + encodeURIComponent(refDb)), { cache: 'no-store' });
+        const d = await res.json();
+        if (!d.success) {
+          alertEl.className = 'rounded-2xl border border-red-300 bg-red-50 text-red-900 p-4 text-xs sm:text-sm';
+          alertEl.textContent = '❌ ' + (d.error || 'เปรียบเทียบไม่สำเร็จ');
+          return;
+        }
+        compareData = d;
+        renderAll();
+      } catch (e) {
+        alertEl.className = 'rounded-2xl border border-red-300 bg-red-50 text-red-900 p-4 text-xs sm:text-sm';
+        alertEl.textContent = '❌ เกิดข้อผิดพลาดในการเชื่อมต่อ: ' + e.message;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🔍 เปรียบเทียบทั้งหมดทันที';
+      }
+    }
+
+    function renderAll() {
+      const d = compareData;
+      if (!d) return;
+
+      document.getElementById('coreScore').textContent = `${d.overallCorePct}%`;
+      document.getElementById('coreDetail').textContent = `ตรงค่าหลัก ${d.totalCoreMatched} / ${d.totalCompared} รายการ`;
+      document.getElementById('strictScore').textContent = `${d.overallMatchPct}%`;
+      document.getElementById('strictDetail').textContent = `ตรง 100% ทุกฟิลด์ ${d.totalMatched} / ${d.totalCompared} รายการ`;
+      document.getElementById('compareTime').textContent = d.comparedAt;
+      document.getElementById('compareElapsed').textContent = `ใช้เวลาเปรียบเทียบ ${d.elapsedMs} ms`;
+
+      // Domain cards
+      const cardsEl = document.getElementById('domainCards');
+      const order = ['water', 'rainfall', 'drought', 'pm25', 'complaints'];
+      cardsEl.innerHTML = order.map(k => {
+        const info = d.domains[k];
+        if (!info) return '';
+        const coreColor = info.coreMatchPct >= 95 ? 'text-emerald-700' : (info.coreMatchPct >= 70 ? 'text-amber-600' : 'text-red-600');
+        return `
+          <button onclick="selectDomain('${k}')" class="text-left bg-white hover:border-emerald-400 rounded-2xl p-3.5 border ${activeDomain === k ? 'border-emerald-600 ring-2 ring-emerald-200' : 'border-slate-200'} shadow-sm transition">
+            <div class="text-xs font-bold text-slate-700">${esc(info.label)}</div>
+            <div class="text-2xl font-extrabold ${coreColor} mt-1">${info.coreMatchPct}% <span class="text-[11px] font-normal text-slate-400">Core</span></div>
+            <div class="text-[11px] text-slate-500 mt-1">
+              สถานี: เก่า <b>${info.refCount ?? '-'}</b> | ใหม่ <b>${info.newCount ?? '-'}</b><br/>
+              Core ต่าง: <b class="${info.coreDiffCount > 0 ? 'text-red-600' : 'text-emerald-600'}">${info.coreDiffCount ?? 0}</b> | ตรงทุกฟิลด์: ${info.matchPct}%
+            </div>
+          </button>`;
+      }).join('');
+
+      // Tables overview
+      const tb = document.getElementById('tablesBody');
+      tb.innerHTML = (d.tables || []).map(t => {
+        let badge = '<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">✅ โครงสร้างตรงกัน</span>';
+        if (t.schemaStatus === 'only_in_new') badge = '<span class="px-2 py-0.5 rounded bg-sky-100 text-sky-800 font-semibold">🆕 เพิ่มใหม่ใน v2</span>';
+        else if (t.schemaStatus === 'missing_in_new') badge = '<span class="px-2 py-0.5 rounded bg-red-100 text-red-800 font-semibold">❌ ขาดใน v2</span>';
+        else if (t.schemaStatus === 'col_diff') badge = `<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">⚠️ คอลัมน์ต่าง (ขาด:${(t.missingCols||[]).join(',')||'-'} เกิน:${(t.extraCols||[]).join(',')||'-'})</span>`;
+
+        return `<tr class="hover:bg-slate-50">
+          <td class="p-2.5 font-mono font-semibold text-slate-800">${esc(t.table)}</td>
+          <td class="p-2.5">${badge}</td>
+          <td class="p-2.5 text-right font-mono">${t.refRows !== null ? t.refRows.toLocaleString() : '-'}</td>
+          <td class="p-2.5 text-right font-mono">${t.newRows !== null ? t.newRows.toLocaleString() : '-'}</td>
+          <td class="p-2.5 text-slate-500">${esc(t.refLatestAt || '-')}</td>
+          <td class="p-2.5 text-slate-700 font-medium">${esc(t.newLatestAt || '-')}</td>
+        </tr>`;
+      }).join('');
+
+      renderDomainTable();
+    }
+
+    function selectDomain(dom) {
+      activeDomain = dom;
+      document.querySelectorAll('.dom-tab').forEach(btn => {
+        const isAct = btn.dataset.dom === dom;
+        btn.className = 'dom-tab px-3 py-1.5 rounded-lg font-semibold ' + (isAct ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700');
+      });
+      if (compareData) renderAll();
+    }
+
+    function renderDomainTable() {
+      if (!compareData || !compareData.domains || !compareData.domains[activeDomain]) return;
+      const info = compareData.domains[activeDomain];
+      const mode = document.getElementById('filterMode').value;
+      const q = (document.getElementById('searchBox').value || '').trim().toLowerCase();
+
+      const banner = document.getElementById('domainMetaBanner');
+      const diffKeys = Object.entries(info.fieldDiffCounts || {}).map(([k, v]) => `${k}(${v})`).join(', ');
+      banner.innerHTML = `
+        <div>
+          <strong>${esc(info.label)}</strong> · สถานีเก่า: <b>${info.refCount ?? 0}</b> (${esc(info.refLatestAt || '-')}) vs ใหม่: <b>${info.newCount ?? 0}</b> (${esc(info.newLatestAt || '-')})
+        </div>
+        <div class="text-slate-600">${diffKeys ? 'ฟิลด์ที่ต่าง: ' + esc(diffKeys) : '✅ ทุกฟิลด์ตรงกันหมด'}</div>
+      `;
+
+      let rows = info.items || [];
+      if (mode === 'core_diff') rows = rows.filter(r => r.hasCoreDiff || r.status === 'only_in_ref' || r.status === 'only_in_new');
+      else if (mode === 'any_diff') rows = rows.filter(r => r.status !== 'match');
+      else if (mode === 'match') rows = rows.filter(r => r.status === 'match');
+      if (q) rows = rows.filter(r => r.key.toLowerCase().includes(q) || JSON.stringify(r.diffs || []).toLowerCase().includes(q));
+
+      const body = document.getElementById('entityBody');
+      if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-slate-400">ไม่พบรายการตามตัวกรองที่เลือก</td></tr>';
+        return;
+      }
+
+      body.innerHTML = rows.map(r => {
+        let stBadge = '<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">✅ ตรง 100%</span>';
+        let detailHtml = '<span class="text-slate-400">ข้อมูลตรงกันทุกฟิลด์</span>';
+
+        if (r.status === 'only_in_ref') {
+          stBadge = '<span class="px-2 py-0.5 rounded bg-red-100 text-red-800 font-semibold">⚠️ มีเฉพาะในตัวเก่า</span>';
+          detailHtml = '<span class="text-red-700">ไม่พบใน water_system2</span>';
+        } else if (r.status === 'only_in_new') {
+          stBadge = '<span class="px-2 py-0.5 rounded bg-sky-100 text-sky-800 font-semibold">🆕 มีเฉพาะในตัวใหม่</span>';
+          detailHtml = '<span class="text-sky-700">รายการใหม่เพิ่มเติมใน water_system2</span>';
+        } else if (r.status === 'diff') {
+          stBadge = r.hasCoreDiff
+            ? '<span class="px-2 py-0.5 rounded bg-rose-100 text-rose-800 font-semibold">❌ ค่าหลักไม่ตรง</span>'
+            : '<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">ℹ️ รูปแบบ/ฟิลด์เสริมต่าง</span>';
+          detailHtml = (r.diffs || []).map(df => {
+            const vRef = df.ref === null ? 'NULL' : df.ref;
+            const vNew = df.new === null ? 'NULL' : df.new;
+            const tag = df.core ? '<span class="text-[10px] px-1 rounded bg-rose-100 text-rose-800 font-bold">Core</span>' : '<span class="text-[10px] px-1 rounded bg-slate-100 text-slate-600">Format/v2</span>';
+            return `<div class="mb-1">${tag} <b>${esc(df.label)}</b>: <span class="bg-blue-50 text-blue-800 px-1 rounded">${esc(vRef)}</span> → <span class="bg-emerald-50 text-emerald-800 px-1 rounded">${esc(vNew)}</span></div>`;
+          }).join('');
+        }
+
+        return `<tr class="hover:bg-slate-50 align-top">
+          <td class="p-2.5 font-semibold text-slate-900">${esc(r.key)}</td>
+          <td class="p-2.5 whitespace-nowrap">${stBadge}</td>
+          <td class="p-2.5">${detailHtml}</td>
+          <td class="p-2.5 text-[11px] text-slate-500 whitespace-nowrap">
+            เก่า: ${esc(r.refRecorded || '-')}<br/>
+            ใหม่: ${esc(r.newRecorded || '-')}
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    function exportCompareCsv() {
+      const refDb = (document.getElementById('refDbInput').value || 'water_systems').trim();
+      window.open(apiUrl('/api/db-compare/export', 'refDb=' + encodeURIComponent(refDb)), '_blank');
+    }
+
+    runComparison();
+  </script>
+</body>
+</html>

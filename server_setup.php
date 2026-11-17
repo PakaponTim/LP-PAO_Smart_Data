@@ -256,6 +256,7 @@ try {
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div class="font-bold text-emerald-950 text-sm">💾 ระบบสำรองฐานข้อมูล &amp; กู้คืนภัยพิบัติ (Backup + Local Spool + Cloud Viewer)</div>
           <a href="./emergency_cloud.html" target="_blank" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-semibold transition">☁️ เปิดโหมดฉุกเฉิน (Cloud Viewer)</a>
+          <a href="./db_compare.html" target="_blank" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition">⚖️ เทียบ DB water_systems vs water_system2</a>
         </div>
         <div class="text-slate-700">
           • <b>ไฟล์สำรองฐานข้อมูล (10 ตาราง):</b> <?= count($backupsList) ?> ไฟล์

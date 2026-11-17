@@ -12,6 +12,7 @@ require_once __DIR__ . '/notifier.php';
 require_once __DIR__ . '/github_sync_to_mysql.php';
 require_once __DIR__ . '/smart_worker_lib.php';
 require_once __DIR__ . '/backup_manager.php';
+require_once __DIR__ . '/db_compare_lib.php';
 
 function send_json($data, int $status = 200): void {
     http_response_code($status);
@@ -396,6 +397,35 @@ function handle_api_request(string $method, string $path): void {
         } catch (Throwable $e) {
             send_json(['success' => false, 'error' => $e->getMessage()], 500);
         }
+    }
+
+    if ($path === '/api/db-compare' && $method === 'GET') {
+        $refDb = (string)($_GET['refDb'] ?? 'water_systems');
+        $dom   = (string)($_GET['domain'] ?? 'all');
+        $onlyDiff = !empty($_GET['onlyDiff']);
+        $res = compare_databases_full($refDb, $dom, $onlyDiff);
+        send_json($res, !empty($res['success']) ? 200 : 400);
+    }
+
+    if ($path === '/api/db-compare/export' && $method === 'GET') {
+        $tCmp = microtime(true);
+        $refDb = (string)($_GET['refDb'] ?? 'water_systems');
+        $csv = export_db_compare_csv($refDb);
+        $lineCount = max(0, substr_count($csv, "\n") - 2);
+        sys_log_record([
+            'module'         => 'db_compare',
+            'action'         => "Export DB Comparison CSV ({$refDb} vs water_system2)",
+            'status'         => 'success',
+            'trigger_source' => 'user',
+            'duration_ms'    => (int)round((microtime(true) - $tCmp) * 1000),
+            'row_count'      => $lineCount,
+            'summary'        => "ส่งออกรายงานเปรียบเทียบฐานข้อมูล {$refDb} vs water_system2 ({$lineCount} รายการ)",
+        ]);
+        $fname = 'DB_Compare_' . preg_replace('/[^a-zA-Z0-9_]/', '', $refDb) . '_' . date('Ymd_His') . '.csv';
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $fname . '"');
+        echo $csv;
+        exit;
     }
 
     // =====================================================================

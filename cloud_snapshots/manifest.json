@@ -1,5 +1,5 @@
 {
-    "updated_at": "2026-11-17 12:02:18",
+    "updated_at": "2026-11-17 14:06:05",
     "snapshots": {
         "gh_20261113_1354": {
             "id": "gh_20261113_1354",
@@ -242,6 +242,50 @@
                 "rainfall": 193,
                 "drought": 36,
                 "pm25": 33,
+                "complaints": 0
+            }
+        },
+        "gh_20261117_1406": {
+            "id": "gh_20261117_1406",
+            "recorded_at": "2026-11-17 14:06:05",
+            "path": "2026-11-17\/snapshot_20261117_1406.json",
+            "module_status": {
+                "rainfall": {
+                    "ok": true,
+                    "count": 193,
+                    "durationMs": 2315,
+                    "error": null
+                },
+                "water": {
+                    "ok": true,
+                    "count": 25,
+                    "durationMs": 1671,
+                    "error": null
+                },
+                "drought": {
+                    "ok": true,
+                    "count": 36,
+                    "durationMs": 2800,
+                    "error": null
+                },
+                "pm25": {
+                    "ok": true,
+                    "count": 34,
+                    "durationMs": 4019,
+                    "error": null
+                },
+                "complaints": {
+                    "ok": false,
+                    "count": 0,
+                    "durationMs": 14001,
+                    "error": "HTTP (0): https:\/\/publicapi.traffy.in.th\/teamchadchart-stat-api\/geojson\/v1?text=%E0%B8%A5%E0%B8%B3%E0%B8%9B%E0%B8%B2%E0%B8%87"
+                }
+            },
+            "counts": {
+                "water": 25,
+                "rainfall": 193,
+                "drought": 36,
+                "pm25": 34,
                 "complaints": 0
             }
         }

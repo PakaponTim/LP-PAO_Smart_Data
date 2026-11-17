@@ -13,15 +13,15 @@
   <style>
     body {
       font-family: 'Prompt', system-ui, sans-serif;
-      background: radial-gradient(circle at 15% 20%, rgba(16, 185, 129, 0.22), transparent 45%),
+      background: radial-gradient(circle at 15% 20%, rgba(16, 185, 129, 0.16), transparent 45%),
                   radial-gradient(circle at 85% 80%, rgba(56, 189, 248, 0.18), transparent 45%),
-                  linear-gradient(135deg, #020617 0%, #062821 52%, #0f172a 100%);
+                  linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 52%, #f8fafc 100%);
       min-height: 100vh;
     }
     .loader {
       display: none;
       width: 16px; height: 16px;
-      border: 2px solid rgba(255, 255, 255, 0.35);
+      border: 2px solid rgba(255, 255, 255, 0.4);
       border-top-color: #ffffff;
       border-radius: 9999px;
       animation: spin 0.7s linear infinite;
@@ -30,70 +30,70 @@
     input:-webkit-autofill,
     input:-webkit-autofill:hover,
     input:-webkit-autofill:focus {
-      -webkit-text-fill-color: #f8fafc;
-      -webkit-box-shadow: 0 0 0px 1000px #0f172a inset;
+      -webkit-text-fill-color: #0f172a;
+      -webkit-box-shadow: 0 0 0px 1000px #f8fafc inset;
       transition: background-color 5000s ease-in-out 0s;
     }
   </style>
 </head>
-<body class="text-slate-100 antialiased flex items-center justify-center p-4 selection:bg-emerald-500 selection:text-white">
+<body class="text-slate-800 antialiased flex items-center justify-center p-4 selection:bg-emerald-500 selection:text-white">
 
   <div class="w-full max-w-md ws-reveal">
-    <div class="bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-7 sm:p-9 shadow-2xl space-y-6">
+    <div class="bg-white/95 backdrop-blur-xl border border-emerald-100 rounded-3xl p-7 sm:p-9 shadow-xl shadow-emerald-950/10 space-y-6">
 
       <!-- Header -->
       <div class="text-center space-y-2">
-        <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white/10 border border-white/15 p-2 shadow-inner mx-auto">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-emerald-50 border border-emerald-200/70 p-2 shadow-sm mx-auto">
           <img src="./logo_pao.png" class="w-full h-full object-contain select-none" alt="อบจ.ลำปาง" />
         </div>
-        <h1 class="text-2xl font-extrabold text-white tracking-tight pt-1">Lampang Smart Command</h1>
-        <p class="text-xs text-emerald-300/90 font-medium">ศูนย์บัญชาการข้อมูล อบจ.ลำปาง · สำหรับผู้ดูแลระบบ</p>
+        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight pt-1">Lampang Smart Command</h1>
+        <p class="text-xs text-emerald-700 font-semibold">ศูนย์บัญชาการข้อมูล อบจ.ลำปาง · สำหรับผู้ดูแลระบบ</p>
       </div>
 
-      <!-- Login Form (Flexbox Input Groups: Zero Icon Overlap) -->
+      <!-- Login Form (Light Theme + Flexbox Input Groups) -->
       <form id="loginForm" class="space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5" for="username">บัญชีผู้ใช้</label>
-          <div class="flex items-center bg-slate-950/90 border border-slate-700/80 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-400/25 rounded-xl px-3.5 transition">
-            <i class="fa-solid fa-user text-slate-400 text-sm mr-3 shrink-0"></i>
-            <input type="text" id="username" class="w-full bg-transparent py-3 text-sm text-white placeholder-slate-500 focus:outline-none" placeholder="admin@lampangpao.go.th" required autocomplete="username" />
+          <label class="block text-xs font-bold text-slate-700 mb-1.5" for="username">บัญชีผู้ใช้</label>
+          <div class="flex items-center bg-slate-50 border border-slate-200 focus-within:bg-white focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 rounded-xl px-3.5 transition">
+            <i class="fa-solid fa-user text-emerald-600 text-sm mr-3 shrink-0"></i>
+            <input type="text" id="username" class="w-full bg-transparent py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none" placeholder="admin@lampangpao.go.th" required autocomplete="username" />
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5" for="password">รหัสผ่าน</label>
-          <div class="flex items-center bg-slate-950/90 border border-slate-700/80 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-400/25 rounded-xl px-3.5 transition">
-            <i class="fa-solid fa-lock text-slate-400 text-sm mr-3 shrink-0"></i>
-            <input type="password" id="password" class="w-full bg-transparent py-3 text-sm text-white placeholder-slate-500 focus:outline-none" placeholder="••••••••" required autocomplete="current-password" />
-            <button type="button" id="togglePassword" class="ml-2 text-slate-400 hover:text-white focus:outline-none transition shrink-0" aria-label="แสดงหรือซ่อนรหัสผ่าน">
+          <label class="block text-xs font-bold text-slate-700 mb-1.5" for="password">รหัสผ่าน</label>
+          <div class="flex items-center bg-slate-50 border border-slate-200 focus-within:bg-white focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 rounded-xl px-3.5 transition">
+            <i class="fa-solid fa-lock text-emerald-600 text-sm mr-3 shrink-0"></i>
+            <input type="password" id="password" class="w-full bg-transparent py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none" placeholder="••••••••" required autocomplete="current-password" />
+            <button type="button" id="togglePassword" class="ml-2 text-slate-400 hover:text-slate-700 focus:outline-none transition shrink-0" aria-label="แสดงหรือซ่อนรหัสผ่าน">
               <i class="fa-regular fa-eye" id="eyeIcon"></i>
             </button>
           </div>
         </div>
 
         <label for="remember" class="flex items-center gap-2.5 pt-1 cursor-pointer select-none">
-          <input type="checkbox" id="remember" checked class="w-4 h-4 rounded border-slate-600 bg-slate-900 text-emerald-500 focus:ring-emerald-500" />
-          <span class="text-xs text-slate-300">จดจำการเข้าสู่ระบบ (30 วัน)</span>
+          <input type="checkbox" id="remember" checked class="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" />
+          <span class="text-xs text-slate-600 font-medium">จดจำการเข้าสู่ระบบ (30 วัน)</span>
         </label>
 
-        <div id="errorMessage" class="hidden text-rose-300 text-xs text-center bg-rose-500/15 border border-rose-500/30 py-2.5 px-3 rounded-xl font-medium">
+        <div id="errorMessage" class="hidden text-rose-700 text-xs text-center bg-rose-50 border border-rose-200 py-2.5 px-3 rounded-xl font-medium">
           ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง
         </div>
 
-        <button type="submit" id="submitBtn" class="w-full flex justify-center items-center gap-2 py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-sm shadow-lg shadow-emerald-950/50 transition active:scale-95">
+        <button type="submit" id="submitBtn" class="w-full flex justify-center items-center gap-2 py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-sm shadow-lg shadow-emerald-600/25 transition active:scale-95">
           <span id="btnText">เข้าสู่ระบบ</span>
           <div id="btnLoader" class="loader"></div>
         </button>
       </form>
 
       <!-- Footer -->
-      <div class="pt-3 border-t border-white/10 text-center text-xs space-y-2">
+      <div class="pt-3 border-t border-slate-100 text-center text-xs space-y-2">
         <div>
-          <a href="./public.html" class="inline-flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 font-semibold transition">
+          <a href="./public.html" class="inline-flex items-center gap-1.5 text-emerald-700 hover:text-emerald-800 font-semibold transition">
             <span>← กลับหน้า Public Dashboard</span>
           </a>
         </div>
-        <p class="text-[11px] text-slate-500">&copy; 2026 Lampang Smart Command · อบจ.ลำปาง</p>
+        <p class="text-[11px] text-slate-400">&copy; 2026 Lampang Smart Command · อบจ.ลำปาง</p>
       </div>
 
     </div>

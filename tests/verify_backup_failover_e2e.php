@@ -134,6 +134,7 @@ $httpChecks = [
     '/endpoint.php?r=/api/db-compare',
     '/emergency_cloud.html',
     '/db_compare.html',
+    '/mobile.html',
     '/server_setup.php',
 ];
 

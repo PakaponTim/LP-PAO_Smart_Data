@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Water_System2" />
+  <meta name="theme-color" content="#064e3b" />
+  <link rel="apple-touch-icon" href="./logo_pao.png" />
+  <link rel="icon" type="image/png" href="./logo_pao.png" />
+  <title>Mobile &amp; iPad Monitor — Water_System2 อบจ.ลำปาง</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+    }
+    .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen">
+
+  <!-- Sticky Mobile / iPad Header -->
+  <header class="sticky top-0 z-40 bg-emerald-900/95 backdrop-blur text-white border-b-2 border-pink-500 shadow-md">
+    <div class="max-w-6xl mx-auto px-3 sm:px-5 py-2.5 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-9 h-9 rounded-xl bg-white/10 p-1 object-contain shrink-0" />
+        <div class="min-w-0">
+          <div class="font-bold text-sm sm:text-base truncate">Water_System2 Monitor</div>
+          <div id="hdrSub" class="text-[11px] text-emerald-200 truncate">กำลังเชื่อมต่อเซิร์ฟเวอร์...</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5 shrink-0">
+        <span id="healthBadge" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-white/15">
+          <span class="w-2 h-2 rounded-full bg-slate-300"></span> ตรวจ...
+        </span>
+        <button onclick="toggleAutoRefresh()" id="btnAutoRef" class="hidden sm:inline-flex px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-[11px] font-semibold">⏱️ Auto 60s: ON</button>
+        <button onclick="refreshAll(true)" id="btnRefresh" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs font-bold active:scale-95 transition">🔄</button>
+      </div>
+    </div>
+
+    <!-- Tablet / iPad Horizontal Tabs (hidden on narrow phone where bottom bar is used) -->
+    <div class="hidden md:flex max-w-6xl mx-auto px-5 pb-2 gap-2 text-xs">
+      <button onclick="switchView('overview')" data-view="overview" class="top-tab px-3.5 py-1.5 rounded-lg bg-white text-emerald-950 font-bold">🏠 ภาพรวมสถานการณ์</button>
+      <button onclick="switchView('ops')" data-view="ops" class="top-tab px-3.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 font-semibold">🛠️ สุขภาพระบบ &amp; Log</button>
+      <button onclick="switchView('map')" data-view="map" class="top-tab px-3.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 font-semibold">🗺️ แผนที่ GIS ลำปาง</button>
+      <button onclick="switchView('data')" data-view="data" class="top-tab px-3.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 font-semibold">📋 ข้อมูล 5 ด้านล่าสุด</button>
+      <div class="ml-auto flex items-center gap-2">
+        <a href="./index.html" class="px-3 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 font-semibold">🖥️ Desktop</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-3 sm:px-5 pt-4 space-y-4">
+    <!-- Offline / Cloud Failover Banner -->
+    <div id="cloudBanner" class="hidden rounded-2xl border border-amber-300 bg-amber-50 p-3 text-xs text-amber-950 flex flex-wrap items-center justify-between gap-2">
+      <span id="cloudBannerText">⚠️ กำลังแสดงผลจาก Cloud Snapshot สำรอง</span>
+      <a href="./emergency_cloud.html" class="px-3 py-1 rounded-lg bg-amber-600 text-white font-bold">เปิด Cloud Viewer</a>
+    </div>
+
+    <!-- Toast Feedback -->
+    <div id="toastBox" class="hidden rounded-xl border p-3 text-xs font-medium"></div>
+
+    <!-- ==================== VIEW 1: OVERVIEW ==================== -->
+    <section id="view-overview" class="view-pane space-y-4">
+      <!-- Risk Hero + Quick Stats (2 cols on iPad, 1 col on Mobile) -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+        <div class="md:col-span-7 bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-3">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="text-xs text-slate-500 font-medium">ดัชนีความเสี่ยงรวม จ.ลำปาง</div>
+              <div class="flex items-baseline gap-2 mt-0.5">
+                <span id="riskScore" class="text-4xl font-extrabold text-slate-900">-</span>
+                <span class="text-xs text-slate-400">/ 100</span>
+                <span id="riskBadge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700">-</span>
+              </div>
+              <div id="riskThreat" class="text-xs text-slate-600 mt-1">ปัจจัยหลัก: -</div>
+            </div>
+            <div class="text-right text-[11px] text-slate-500">
+              <div>อำเภอเสี่ยงสูง: <b id="distHigh" class="text-red-600">-</b></div>
+              <div>เฝ้าระวัง: <b id="distWarn" class="text-amber-600">-</b></div>
+              <div>ปกติ: <b id="distNorm" class="text-emerald-600">-</b></div>
+            </div>
+          </div>
+          <p id="riskAdvice" class="text-xs text-slate-700 bg-slate-50 border border-slate-200 rounded-xl p-3 leading-relaxed">กำลังวิเคราะห์ข้อมูล...</p>
+        </div>
+
+        <!-- Quick Controls & Shortcuts -->
+        <div class="md:col-span-5 bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-col justify-between gap-3">
+          <div>
+            <div class="text-xs font-bold text-slate-800 mb-2">⚡ สั่งงานด่วนจากมือถือ / iPad</div>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <button onclick="triggerForceFetchAll()" id="btnFetchNow" class="col-span-2 py-2.5 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold shadow-sm active:scale-95 transition">⚡ ดึงข้อมูล 5 ด้านทันที</button>
+              <a href="./db_compare.html" class="py-2 px-2.5 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-900 font-semibold text-center">⚖️ เทียบ DB</a>
+              <a href="./emergency_cloud.html" class="py-2 px-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 font-semibold text-center">☁️ โหมดฉุกเฉิน</a>
+              <a href="./server_setup.php" class="py-2 px-2.5 rounded-xl bg-sky-50 border border-sky-200 text-sky-900 font-semibold text-center">⚙️ Server/Backup</a>
+              <a href="./index.html" class="py-2 px-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 font-semibold text-center">🖥️ เวอร์ชัน Desktop</a>
+            </div>
+          </div>
+          <div class="text-[11px] text-slate-500 flex items-center justify-between border-t border-slate-100 pt-2">
+            <span>รอบถัดไป: <b id="nextSlotLbl" class="text-emerald-700">-</b></span>
+            <span>ระบบ Log 24h: <b id="logStatsInline">-</b></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5 Domain Quick KPI Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+        <button onclick="openDataDomain('water')" class="text-left bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm active:scale-95 transition">
+          <div class="text-xs text-slate-500">🌊 ระดับน้ำ</div>
+          <div id="ovWaterCnt" class="text-xl font-extrabold text-sky-700 mt-0.5">-</div>
+          <div id="ovWaterSub" class="text-[11px] text-slate-500 truncate">-</div>
+        </button>
+        <button onclick="openDataDomain('rainfall')" class="text-left bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm active:scale-95 transition">
+          <div class="text-xs text-slate-500">🌧️ น้ำฝน 24 ชม.</div>
+          <div id="ovRainCnt" class="text-xl font-extrabold text-blue-700 mt-0.5">-</div>
+          <div id="ovRainSub" class="text-[11px] text-slate-500 truncate">-</div>
+        </button>
+        <button onclick="openDataDomain('drought')" class="text-left bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm active:scale-95 transition">
+          <div class="text-xs text-slate-500">🏜️ อ่างเก็บน้ำ</div>
+          <div id="ovDamCnt" class="text-xl font-extrabold text-amber-700 mt-0.5">-</div>
+          <div id="ovDamSub" class="text-[11px] text-slate-500 truncate">-</div>
+        </button>
+        <button onclick="openDataDomain('pm25')" class="text-left bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm active:scale-95 transition">
+          <div class="text-xs text-slate-500">💨 ฝุ่น PM 2.5</div>
+          <div id="ovPmCnt" class="text-xl font-extrabold text-purple-700 mt-0.5">-</div>
+          <div id="ovPmSub" class="text-[11px] text-slate-500 truncate">-</div>
+        </button>
+        <button onclick="openDataDomain('complaints')" class="text-left bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm col-span-2 sm:col-span-1 active:scale-95 transition">
+          <div class="text-xs text-slate-500">📢 Traffy</div>
+          <div id="ovCompCnt" class="text-xl font-extrabold text-emerald-700 mt-0.5">-</div>
+          <div id="ovCompSub" class="text-[11px] text-slate-500 truncate">-</div>
+        </button>
+      </div>
+
+      <!-- Hotspots -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="font-bold text-sm text-slate-900">🚨 จุดเฝ้าระวัง / เสี่ยงสูงล่าสุด</h2>
+          <button onclick="switchView('map')" class="text-xs font-semibold text-emerald-700">ดูบนแผนที่ →</button>
+        </div>
+        <div id="hotspotsList" class="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs"></div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 2: OPS / HEALTH / LOGS ==================== -->
+    <section id="view-ops" class="view-pane hidden space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Server Health & Resilience Card -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <h2 class="font-bold text-sm text-slate-900">🩺 สุขภาพ Server &amp; การป้องกัน 24 ชม.</h2>
+            <span id="opsStatusPill" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100">-</span>
+          </div>
+          <div id="opsHealthGrid" class="grid grid-cols-2 gap-2 text-xs"></div>
+          <div id="opsBackupRow" class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-[11px] text-slate-600"></div>
+        </div>
+
+        <!-- Freshness & Retry Queue -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-3">
+          <h2 class="font-bold text-sm text-slate-900">⏱️ ความสดของข้อมูลต้นทาง &amp; คิว Retry</h2>
+          <div id="opsFreshnessList" class="space-y-2 text-xs"></div>
+          <div id="opsRetryBox" class="pt-2 border-t border-slate-100 text-xs"></div>
+        </div>
+      </div>
+
+      <!-- 48-Slot Daily Heatmap -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h2 class="font-bold text-sm text-slate-900">📊 ตารางสถานะรายรอบวันนี้ (48 ช่อง)</h2>
+          <div class="flex items-center gap-2 text-[10px] text-slate-500">
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-emerald-500"></span> สำเร็จ</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-amber-400"></span> บางส่วน</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-red-500"></span> ล้มเหลว</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-slate-200"></span> รอรอบ/ว่าง</span>
+          </div>
+        </div>
+        <div id="heatmapGrid" class="grid grid-cols-8 sm:grid-cols-12 md:grid-cols-16 gap-1.5"></div>
+        <div id="heatmapTooltip" class="text-[11px] text-slate-600 bg-slate-50 rounded-lg p-2 border border-slate-200">แตะช่องเวลาเพื่อดูรายละเอียดรอบการทำงาน</div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: GIS MAP ==================== -->
+    <section id="view-map" class="view-pane hidden space-y-3">
+      <div class="bg-white rounded-2xl border border-slate-200 p-3 sm:p-4 shadow-sm space-y-2.5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h2 class="font-bold text-sm text-slate-900">🗺️ แผนที่จุดตรวจวัด จ.ลำปาง</h2>
+          <div class="flex items-center gap-2 text-[11px]">
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> วิกฤต</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span> เสี่ยงสูง</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span> เฝ้าระวัง</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> ปกติ</span>
+          </div>
+        </div>
+        <div id="mobileMap" class="w-full h-[60vh] md:h-[68vh] rounded-xl border border-slate-200 bg-slate-50 z-10"></div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: DATA CARDS ==================== -->
+    <section id="view-data" class="view-pane hidden space-y-3">
+      <div class="bg-white rounded-2xl border border-slate-200 p-3 shadow-sm space-y-3">
+        <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs">
+          <button onclick="switchDataTab('water')" data-dtab="water" class="dtab shrink-0 px-3 py-2 rounded-xl bg-slate-900 text-white font-bold">🌊 ระดับน้ำ</button>
+          <button onclick="switchDataTab('rainfall')" data-dtab="rainfall" class="dtab shrink-0 px-3 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold">🌧️ น้ำฝน</button>
+          <button onclick="switchDataTab('drought')" data-dtab="drought" class="dtab shrink-0 px-3 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold">🏜️ อ่างเก็บน้ำ</button>
+          <button onclick="switchDataTab('pm25')" data-dtab="pm25" class="dtab shrink-0 px-3 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold">💨 PM 2.5</button>
+          <button onclick="switchDataTab('complaints')" data-dtab="complaints" class="dtab shrink-0 px-3 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold">📢 Traffy</button>
+        </div>
+        <input id="dataSearch" oninput="renderDataCards()" type="text" placeholder="🔍 ค้นหาชื่อสถานี / อำเภอ / รหัส..." class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs bg-slate-50" />
+      </div>
+      <div id="dataCardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5"></div>
+    </section>
+  </main>
+
+  <!-- Fixed Bottom Navigation Bar for Phone / Narrow Tablet -->
+  <nav class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-t border-slate-200 shadow-lg safe-bottom">
+    <div class="grid grid-cols-4 text-[11px]">
+      <button onclick="switchView('overview')" data-view="overview" class="bot-tab py-2.5 flex flex-col items-center justify-center gap-0.5 text-emerald-700 font-bold">
+        <span class="text-lg leading-none">🏠</span><span>ภาพรวม</span>
+      </button>
+      <button onclick="switchView('ops')" data-view="ops" class="bot-tab py-2.5 flex flex-col items-center justify-center gap-0.5 text-slate-500 font-medium">
+        <span class="text-lg leading-none">🛠️</span><span>ระบบ/Log</span>
+      </button>
+      <button onclick="switchView('map')" data-view="map" class="bot-tab py-2.5 flex flex-col items-center justify-center gap-0.5 text-slate-500 font-medium">
+        <span class="text-lg leading-none">🗺️</span><span>แผนที่</span>
+      </button>
+      <button onclick="switchView('data')" data-view="data" class="bot-tab py-2.5 flex flex-col items-center justify-center gap-0.5 text-slate-500 font-medium">
+        <span class="text-lg leading-none">📋</span><span>ข้อมูล</span>
+      </button>
+    </div>
+  </nav>
+
+  <script>
+    let currentView = 'overview';
+    let currentDataTab = 'water';
+    let autoRefresh = true;
+    let refreshTimer = null;
+    let leafletMap = null;
+    let mapLayer = null;
+
+    const store = {
+      health: null,
+      status: null,
+      risk: null,
+      gis: null,
+      heatmap: null,
+      domainCfg: null,
+      water: [],
+      drought: [],
+      pm25: [],
+      rainfall: [],
+      complaints: [],
+      cloudMode: false
+    };
+
+    function esc(v) {
+      return String(v === null || v === undefined ? '' : v).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    }
+
+    function ep(route) {
+      const p = location.pathname;
+      const base = location.origin + p.slice(0, p.lastIndexOf('/') + 1);
+      return base + 'endpoint.php?r=' + encodeURIComponent(route);
+    }
+
+    function showToast(msg, ok = true) {
+      const el = document.getElementById('toastBox');
+      el.className = 'rounded-xl border p-3 text-xs font-medium ' + (ok ? 'bg-emerald-50 border-emerald-300 text-emerald-900' : 'bg-red-50 border-red-300 text-red-900');
+      el.textContent = msg;
+      setTimeout(() => { el.className = 'hidden'; }, 5000);
+    }
+
+    function switchView(view) {
+      currentView = view;
+      document.querySelectorAll('.view-pane').forEach(p => p.classList.add('hidden'));
+      const pane = document.getElementById('view-' + view);
+      if (pane) pane.classList.remove('hidden');
+
+      document.querySelectorAll('.top-tab').forEach(b => {
+        const act = b.dataset.view === view;
+        b.className = 'top-tab px-3.5 py-1.5 rounded-lg ' + (act ? 'bg-white text-emerald-950 font-bold' : 'bg-white/10 hover:bg-white/20 font-semibold');
+      });
+      document.querySelectorAll('.bot-tab').forEach(b => {
+        const act = b.dataset.view === view;
+        b.className = 'bot-tab py-2.5 flex flex-col items-center justify-center gap-0.5 ' + (act ? 'text-emerald-700 font-bold' : 'text-slate-500 font-medium');
+      });
+
+      if (view === 'map') {
+        initMobileMap();
+        renderMapMarkers();
+        setTimeout(() => leafletMap && leafletMap.invalidateSize(), 150);
+      }
+      if (view === 'data') {
+        renderDataCards();
+      }
+    }
+
+    function openDataDomain(tab) {
+      switchView('data');
+      switchDataTab(tab);
+    }
+
+    function switchDataTab(tab) {
+      currentDataTab = tab;
+      document.querySelectorAll('.dtab').forEach(b => {
+        const act = b.dataset.dtab === tab;
+        b.className = 'dtab shrink-0 px-3 py-2 rounded-xl ' + (act ? 'bg-slate-900 text-white font-bold' : 'bg-slate-100 text-slate-700 font-semibold');
+      });
+      renderDataCards();
+    }
+
+    async function fetchSafe(route) {
+      const r = await fetch(ep(route), { cache: 'no-store' });
+      const j = await r.json();
+      return { ok: r.ok, status: r.status, data: j };
+    }
+
+    async function refreshAll(manual = false) {
+      const btn = document.getElementById('btnRefresh');
+      if (btn) btn.textContent = '⏳';
+      try {
+        const [hRes, sRes, rRes, gRes, hmRes, dcRes, dsRes, rfRes, cpRes] = await Promise.allSettled([
+          fetchSafe('/api/health'),
+          fetchSafe('/api/status'),
+          fetchSafe('/api/analytics/risk-index'),
+          fetchSafe('/api/gis/map-data'),
+          fetchSafe('/api/system-logs/heatmap'),
+          fetchSafe('/api/domain-config'),
+          fetchSafe('/api/dashboard-summary'),
+          fetchSafe('/api/rainfall-data'),
+          fetchSafe('/api/complaints')
+        ]);
+
+        if (hRes.status === 'fulfilled') store.health = hRes.value.data;
+        if (sRes.status === 'fulfilled') store.status = sRes.value.data;
+        if (rRes.status === 'fulfilled' && rRes.value.ok) store.risk = rRes.value.data;
+        if (gRes.status === 'fulfilled' && gRes.value.ok) store.gis = gRes.value.data;
+        if (hmRes.status === 'fulfilled' && hmRes.value.ok) store.heatmap = hmRes.value.data;
+        if (dcRes.status === 'fulfilled' && dcRes.value.ok) store.domainCfg = dcRes.value.data.config;
+
+        if (dsRes.status === 'fulfilled' && dsRes.value.ok && dsRes.value.data?.data) {
+          const d = dsRes.value.data.data;
+          store.water = d.water?.current || [];
+          store.drought = d.drought?.current || [];
+          store.pm25 = d.pm25?.current || [];
+        }
+        if (rfRes.status === 'fulfilled' && Array.isArray(rfRes.value.data)) {
+          store.rainfall = rfRes.value.data;
+        }
+        if (cpRes.status === 'fulfilled' && Array.isArray(cpRes.value.data)) {
+          store.complaints = cpRes.value.data;
+        }
+
+        // Handle Cloud Fallback mode gracefully if DB offline
+        store.cloudMode = Boolean(store.status?.cloudFallback || store.gis?.cloudFallback || (store.health && !store.health.database?.connected));
+        if (store.cloudMode) {
+          const cf = await fetchSafe('/api/cloud-fallback');
+          const snap = cf.data?.snapshot;
+          if (snap) {
+            store.water = snap.water || store.water;
+            store.rainfall = snap.rainfall || store.rainfall;
+            store.drought = snap.drought || store.drought;
+            store.pm25 = snap.pm25 || store.pm25;
+            store.complaints = snap.complaints || store.complaints;
+            document.getElementById('cloudBannerText').textContent = `⚠️ MySQL ออฟไลน์ — แสดงข้อมูลสำรองจาก Cloud Snapshot (${snap.recorded_at || '-'})`;
+          }
+          document.getElementById('cloudBanner').classList.remove('hidden');
+        } else {
+          document.getElementById('cloudBanner').classList.add('hidden');
+        }
+
+        renderOverview();
+        renderOps();
+        if (currentView === 'map') renderMapMarkers();
+        if (currentView === 'data') renderDataCards();
+        if (manual) showToast('✅ อัปเดตข้อมูลล่าสุดเรียบร้อยแล้ว (' + new Date().toLocaleTimeString('th-TH', { hour12: false }) + ')');
+      } catch (e) {
+        if (manual) showToast('❌ โหลดข้อมูลไม่สำเร็จ: ' + e.message, false);
+      } finally {
+        if (btn) btn.textContent = '🔄';
+      }
+    }
+
+    function renderOverview() {
+      const h = store.health || {};
+      const st = store.status || {};
+      const wk = st.smartWorker || h.worker || {};
+
+      // Header Badge
+      const hb = document.getElementById('healthBadge');
+      const sysSt = h.status || 'unknown';
+      if (sysSt === 'healthy') {
+        hb.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/25 text-emerald-100';
+        hb.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> ปกติ';
+      } else if (sysSt === 'warning') {
+        hb.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/30 text-amber-100';
+        hb.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-300"></span> เฝ้าระวัง';
+      } else {
+        hb.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-500/40 text-red-100';
+        hb.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-300"></span> ขัดข้อง';
+      }
+
+      document.getElementById('hdrSub').textContent = `อัปเดต ${h.timestamp || new Date().toLocaleTimeString('th-TH')} · DB ${h.database?.connected ? h.database.latencyMs + 'ms' : 'Offline'}`;
+      document.getElementById('nextSlotLbl').textContent = wk.nextSlot ? `${wk.nextSlot} น. (${wk.secondsUntilNext || 0}s)` : '-';
+      const ls = st.systemLogsStats;
+      document.getElementById('logStatsInline').textContent = ls ? `OK ${ls.success}/${ls.total}` : '-';
+
+      // Risk Hero
+      const rs = store.risk?.summary;
+      if (rs) {
+        document.getElementById('riskScore').textContent = rs.compositeScore;
+        const rb = document.getElementById('riskBadge');
+        rb.textContent = rs.riskLevel;
+        rb.style.backgroundColor = (rs.riskColor || '#10b981') + '22';
+        rb.style.color = rs.riskColor || '#065f46';
+        document.getElementById('riskThreat').textContent = `ปัจจัยหลัก: ${rs.primaryThreat || '-'}`;
+        document.getElementById('distHigh').textContent = rs.highRiskDistrictsCount ?? 0;
+        document.getElementById('distWarn').textContent = rs.warningDistrictsCount ?? 0;
+        document.getElementById('distNorm').textContent = rs.normalDistrictsCount ?? 0;
+        document.getElementById('riskAdvice').textContent = rs.aiRecommendation || '-';
+      }
+
+      // 5 Domain KPI Cards
+      const maxRain = store.rainfall.reduce((m, r) => Math.max(m, parseFloat(r.rain_mm || 0)), 0);
+      const maxPm = store.pm25.reduce((m, r) => Math.max(m, parseFloat(r.pm25_value || 0)), 0);
+      const critWater = store.water.filter(w => String(w.status || '').includes('ล้น') || w.risk_level === 'วิกฤต').length;
+      document.getElementById('ovWaterCnt').textContent = store.water.length + ' สถานี';
+      document.getElementById('ovWaterSub').textContent = critWater > 0 ? `🚨 วิกฤต ${critWater} แห่ง` : '✅ ไม่ล้นตลิ่ง';
+      document.getElementById('ovRainCnt').textContent = store.rainfall.length + ' สถานี';
+      document.getElementById('ovRainSub').textContent = `สูงสุด ${maxRain.toFixed(1)} มม.`;
+      document.getElementById('ovDamCnt').textContent = store.drought.length + ' แห่ง';
+      document.getElementById('ovDamSub').textContent = store.drought[0]?.record_date || 'รายวัน';
+      document.getElementById('ovPmCnt').textContent = store.pm25.length + ' สถานี';
+      document.getElementById('ovPmSub').textContent = `สูงสุด ${maxPm.toFixed(1)} µg/m³`;
+      document.getElementById('ovCompCnt').textContent = store.complaints.length + ' เรื่อง';
+      document.getElementById('ovCompSub').textContent = store.complaints[0]?.state_name || 'Traffy Fondue';
+
+      // Hotspots
+      const hsEl = document.getElementById('hotspotsList');
+      const hotspots = (store.risk?.hotspots || []).slice(0, 8);
+      if (!hotspots.length) {
+        hsEl.innerHTML = '<div class="col-span-full text-slate-400 py-3 text-center">ยังไม่มีจุดเฝ้าระวังสูงในรอบล่าสุด</div>';
+      } else {
+        hsEl.innerHTML = hotspots.map(h => `
+          <div class="rounded-xl border border-slate-200 bg-slate-50/70 p-3 flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <div class="font-bold text-slate-900 truncate">${esc(h.name)} <span class="text-slate-500 font-normal">(${esc(h.amphoe)})</span></div>
+              <div class="text-[11px] text-slate-600 mt-0.5">${esc(h.detail)}</div>
+            </div>
+            <span class="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-bold" style="background:${esc(h.color)}20;color:${esc(h.color)}">${esc(h.riskLevel)} (${h.score})</span>
+          </div>`).join('');
+      }
+    }
+
+    function renderOps() {
+      const h = store.health || {};
+      const st = store.status || {};
+      const sec = h.security || {};
+      const sto = h.storage || {};
+      const bk = h.backup || {};
+
+      const pill = document.getElementById('opsStatusPill');
+      pill.textContent = (h.status || 'unknown').toUpperCase();
+      pill.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold ' + (h.status === 'healthy' ? 'bg-emerald-100 text-emerald-800' : (h.status === 'warning' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800'));
+
+      document.getElementById('opsHealthGrid').innerHTML = `
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200"><div class="text-slate-500">MySQL DB</div><div class="font-bold mt-0.5">${h.database?.connected ? '🟢 เชื่อมต่อ (' + h.database.latencyMs + 'ms)' : '🔴 ขัดข้อง'}</div></div>
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200"><div class="text-slate-500">Background Worker</div><div class="font-bold mt-0.5">${h.worker?.alive ? '🟢 ' + esc(h.worker.mode) : '🟡 Idle/Web'}</div></div>
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200"><div class="text-slate-500">พื้นที่ว่างดิสก์</div><div class="font-bold mt-0.5">${sto.diskFreeMb ?? '-'} MB</div></div>
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200"><div class="text-slate-500">.htaccess ความปลอดภัย</div><div class="font-bold mt-0.5">${sec.hasRootHtaccess && sec.hasRuntimeHtaccess ? '🛡️ ป้องกันครบ' : '⚠️ ตรวจดู'}</div></div>
+      `;
+
+      const domPrimary = store.domainCfg?.primary_domain || '-';
+      const domBackup = store.domainCfg?.backup_domain || '-';
+      document.getElementById('opsBackupRow').innerHTML =
+        `💾 <b>Backup (.sql.gz):</b> ${bk.count ?? 0} ไฟล์ (ล่าสุด: <code>${esc(bk.latestFile || '-')}</code>, ${bk.latestSizeKb ?? 0} KB) | <b>Spool:</b> ${sto.dbSpoolCount ?? 0}<br/>`
+        + `🌐 <b>Domain:</b> หลัก <code>${esc(domPrimary)}</code> | สำรอง <code>${esc(domBackup)}</code>`;
+
+      // Freshness
+      const fr = st.freshness || {};
+      const fList = Object.values(fr);
+      document.getElementById('opsFreshnessList').innerHTML = fList.length
+        ? fList.map(m => `<div class="flex items-center justify-between p-2 rounded-xl border ${m.isStale ? 'bg-amber-50 border-amber-200' : 'bg-emerald-50/50 border-emerald-200'}">
+            <span><b>${esc(m.moduleLabel || m.module)}</b> (${m.totalStations ?? 0} จุด)</span>
+            <span class="${m.isStale ? 'text-amber-800 font-bold' : 'text-emerald-700 font-semibold'}">${m.isStale ? `⚠️ ค้าง ${m.maxLagHours}h (>${m.thresholdHours}h)` : `✅ สด (${m.maxLagHours}h)`}</span>
+          </div>`).join('')
+        : '<div class="text-slate-400">ยังไม่มีข้อมูลสรุปความสด</div>';
+
+      // Retry Queue
+      const rq = st.retryQueue || {};
+      const rqItems = Array.isArray(rq) ? rq : Object.values(rq);
+      document.getElementById('opsRetryBox').innerHTML = rqItems.length
+        ? rqItems.map(q => `<div class="flex items-center justify-between gap-2 bg-amber-50 border border-amber-200 rounded-xl p-2 mb-1.5">
+            <div class="min-w-0 truncate"><b>${esc(q.module)}</b> (ครั้งที่ ${q.attempts || 1})</div>
+            <button onclick="retryModule('${esc(q.module)}')" class="shrink-0 px-2.5 py-1 rounded-lg bg-amber-600 text-white font-bold">🔄 ลองใหม่</button>
+          </div>`).join('')
+        : '<div class="text-emerald-700 font-semibold">✅ ไม่มีคิวงานรอ Retry</div>';
+
+      // 48-Slot Heatmap
+      const slots = store.heatmap?.slots || [];
+      document.getElementById('heatmapGrid').innerHTML = slots.map(s => {
+        let cls = 'bg-slate-200 text-slate-600';
+        if (s.status === 'success') cls = 'bg-emerald-500 text-white';
+        else if (s.status === 'partial' || s.status === 'warning') cls = 'bg-amber-400 text-slate-950';
+        else if (s.status === 'failed') cls = 'bg-red-500 text-white';
+        return `<button onclick='showSlotInfo(${JSON.stringify(s)})' class="py-1.5 rounded text-[10px] font-mono font-bold ${cls} active:scale-95 transition">${esc(s.slot)}</button>`;
+      }).join('');
+    }
+
+    function showSlotInfo(s) {
+      document.getElementById('heatmapTooltip').innerHTML =
+        `<b>รอบ ${esc(s.slot)} น.</b> (${esc(s.status)}) — ${esc(s.summary || '-')}`
+        + (s.durationMs ? ` (${(s.durationMs / 1000).toFixed(1)}s, ${s.rowCount} แถว)` : '');
+    }
+
+    function initMobileMap() {
+      if (leafletMap || typeof L === 'undefined') return;
+      leafletMap = L.map('mobileMap', { center: [18.2888, 99.4920], zoom: 9 });
+      const esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri', maxZoom: 19
+      });
+      let fb = false;
+      esri.on('tileerror', () => {
+        if (fb) return; fb = true;
+        L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { attribution: 'OpenTopoMap', maxZoom: 17 }).addTo(leafletMap);
+      });
+      esri.addTo(leafletMap);
+      mapLayer = L.layerGroup().addTo(leafletMap);
+    }
+
+    function renderMapMarkers() {
+      if (!leafletMap || !mapLayer || !store.gis) return;
+      mapLayer.clearLayers();
+      (store.gis.stations || []).forEach(s => {
+        L.circleMarker([s.lat, s.lng], { radius: 8, color: '#fff', weight: 2, fillColor: s.color || '#10b981', fillOpacity: 0.9 })
+          .bindPopup(`<b>🌊 ${esc(s.name)}</b><br/>${esc(s.amphoe)}<br/>ระดับน้ำ: ${s.currentWaterLevel} ม. (${esc(s.status)})`)
+          .addTo(mapLayer);
+      });
+      (store.gis.dams || []).forEach(d => {
+        L.circleMarker([d.lat, d.lng], { radius: 7, color: '#1e3a8a', weight: 2, fillColor: d.color || '#3b82f6', fillOpacity: 0.85 })
+          .bindPopup(`<b>🏜️ ${esc(d.name)}</b><br/>ความจุ: ${d.capacity} ล้าน ม³<br/>กักเก็บ: ${d.volume} (${d.percent}%)`)
+          .addTo(mapLayer);
+      });
+    }
+
+    function renderDataCards() {
+      const box = document.getElementById('dataCardsContainer');
+      const q = (document.getElementById('dataSearch').value || '').trim().toLowerCase();
+      let rows = store[currentDataTab] || [];
+      if (q) rows = rows.filter(r => JSON.stringify(r).toLowerCase().includes(q));
+      if (!rows.length) {
+        box.innerHTML = '<div class="col-span-full bg-white rounded-2xl p-6 text-center text-xs text-slate-400 border border-slate-200">ไม่พบข้อมูล</div>';
+        return;
+      }
+
+      box.innerHTML = rows.slice(0, 60).map(r => {
+        if (currentDataTab === 'water') {
+          const isCrit = String(r.status || '').includes('ล้น') || r.risk_level === 'วิกฤต';
+          return `<div class="bg-white rounded-2xl border ${isCrit ? 'border-red-300 bg-red-50/40' : 'border-slate-200'} p-3.5 shadow-sm text-xs space-y-1">
+            <div class="flex justify-between gap-2"><b class="text-slate-900">${esc(r.station_name)}</b><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800">${esc(r.status)}</span></div>
+            <div class="text-slate-500">${esc(r.amphoe)} · แนวโน้ม: ${esc(r.trend || '-')}</div>
+            <div class="pt-1 flex justify-between text-slate-700"><span>น้ำ: <b>${r.current_water_level_m ?? '-'} ม.</b></span><span>ตลิ่ง: ${r.left_bank_level_m ?? '-'} ม.</span><span>ฝน 3d: <b>${r.rainfall_accum_3d_mm ?? r.forecast_rain_24h_mm ?? 0}</b></span></div>
+          </div>`;
+        }
+        if (currentDataTab === 'rainfall') {
+          const mm = parseFloat(r.rain_mm || 0);
+          return `<div class="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-sm text-xs space-y-1">
+            <div class="flex justify-between gap-2"><b class="text-slate-900">${esc(r.station_name)}</b><span class="font-extrabold ${mm > 35 ? 'text-red-600' : (mm > 0 ? 'text-blue-700' : 'text-slate-500')}">${mm.toFixed(1)} มม.</span></div>
+            <div class="text-slate-500">${esc(r.location)} · ${esc(r.river_basin || '-')}</div>
+            <div class="text-[11px] text-slate-400">${esc(r.rain_status)} · เวลาวัด ${esc(r.measured_time || '-')}</div>
+          </div>`;
+        }
+        if (currentDataTab === 'drought') {
+          const cap = parseFloat(r.capacity_m_cum || 0);
+          const vol = parseFloat(r.water_volume_m_cum || 0);
+          const pct = r.water_percent || (cap > 0 ? ((vol / cap) * 100).toFixed(1) + '%' : '-');
+          return `<div class="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-sm text-xs space-y-1">
+            <div class="flex justify-between gap-2"><b class="text-slate-900">${esc(r.dam_name)}</b><span class="font-extrabold text-amber-700">${esc(pct)}</span></div>
+            <div class="text-slate-600 flex justify-between"><span>กักเก็บ: <b>${r.water_volume_m_cum ?? '-'}</b> / ${r.capacity_m_cum ?? '-'} ล้าน ม³</span><span>ใช้การได้: ${r.usable_water_m_cum ?? '-'}</span></div>
+            <div class="text-[11px] text-slate-400">ไหลเข้า: ${r.inflow_m_cum ?? 0} · ระบาย: ${r.discharge_m_cum ?? 0}</div>
+          </div>`;
+        }
+        if (currentDataTab === 'pm25') {
+          const v = r.pm25_value !== null && r.pm25_value !== undefined ? Number(r.pm25_value).toFixed(1) : '-';
+          return `<div class="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-sm text-xs space-y-1">
+            <div class="flex justify-between gap-2"><b class="text-slate-900">${esc(r.station_name)}</b><span class="font-extrabold text-purple-700">${v} µg/m³</span></div>
+            <div class="text-slate-500">${esc(r.amphoe)} · ${esc(r.air_quality_status)}</div>
+            <div class="text-[11px] text-slate-400">เฉลี่ย 24 ชม.: ${r.pm25_avg_24h ?? 'ไม่มีข้อมูล'}</div>
+          </div>`;
+        }
+        return `<div class="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-sm text-xs space-y-1">
+          <div class="flex justify-between gap-2"><b class="font-mono text-slate-900">${esc(r.ticket_id)}</b><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">${esc(r.state_name)}</span></div>
+          <div class="text-slate-700 font-medium">${esc(r.problem_type || '-')} — ${esc(r.org_name || '-')}</div>
+          <div class="text-[11px] text-slate-400">${esc(r.agency_status || '-')} · ${esc(r.ticket_datetime || '-')}</div>
+        </div>`;
+      }).join('');
+    }
+
+    async function triggerForceFetchAll() {
+      const btn = document.getElementById('btnFetchNow');
+      btn.disabled = true;
+      btn.textContent = '⏳ กำลังดึง 5 API พร้อมกัน...';
+      try {
+        const res = await fetch(ep('/api/force-fetch-all'), { method: 'POST', cache: 'no-store' });
+        const d = await res.json();
+        showToast((d.success ? '✅ ' : '⚠️ ') + (d.message || 'เสร็จสิ้น'), Boolean(d.success));
+        await refreshAll(false);
+      } catch (e) {
+        showToast('❌ ดึงข้อมูลไม่สำเร็จ: ' + e.message, false);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '⚡ ดึงข้อมูล 5 ด้านทันที';
+      }
+    }
+
+    async function retryModule(mod) {
+      showToast(`⏳ กำลังลองดึงซ้ำ [${mod}]...`);
+      try {
+        const res = await fetch(ep('/api/system-logs/retry'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ module: mod })
+        });
+        const d = await res.json();
+        showToast(d.success ? `✅ ${d.message}` : `⚠️ ${d.error}`, Boolean(d.success));
+        await refreshAll(false);
+      } catch (e) {
+        showToast('❌ ' + e.message, false);
+      }
+    }
+
+    function toggleAutoRefresh() {
+      autoRefresh = !autoRefresh;
+      const btn = document.getElementById('btnAutoRef');
+      if (btn) btn.textContent = `⏱️ Auto 60s: ${autoRefresh ? 'ON' : 'OFF'}`;
+      if (refreshTimer) clearInterval(refreshTimer);
+      if (autoRefresh) refreshTimer = setInterval(() => refreshAll(false), 60000);
+    }
+
+    refreshAll(false);
+    refreshTimer = setInterval(() => refreshAll(false), 60000);
+  </script>
+</body>
+</html>

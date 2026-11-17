@@ -45,6 +45,7 @@
    ```
 4. เปิดเบราว์เซอร์:
    - Dashboard & System Log Center: `http://127.0.0.1:7000/index.html`
+- โหมด Monitor บนมือถือ / iPad (PWA Touch View): `http://127.0.0.1:7000/mobile.html`
 - เปรียบเทียบฐานข้อมูล `water_systems` vs `water_system2` (1-Click): `http://127.0.0.1:7000/db_compare.html`
 - โหมดฉุกเฉินจาก Cloud Snapshot (Offline Viewer): `http://127.0.0.1:7000/emergency_cloud.html`
    - คู่มือใช้งานและชุดทดสอบสดบนหน้าเว็บ: `http://127.0.0.1:7000/guide.html`

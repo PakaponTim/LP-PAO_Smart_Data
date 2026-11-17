@@ -29,13 +29,26 @@
   };
 
   let csrfToken;
+  const pageName = location.pathname.split('/').pop() || 'index.html';
+  const loginRedirectUrl = './login.html?reauth=1&next=' + encodeURIComponent(pageName);
+  if (pageName !== 'login.html' && pageName !== 'public.html' && pageName !== 'setup.html') {
+    document.documentElement.style.visibility = 'hidden';
+  }
   const meEndpoint = rewriteToEndpoint('/api/auth/me') || './endpoint.php?r=%2Fapi%2Fauth%2Fme';
   const ready = nativeFetch(meEndpoint, { cache: 'no-store' }).then(async response => {
-    if (!response.ok) { location.replace('./login.html'); throw new Error('กรุณาเข้าสู่ระบบ'); }
+    if (!response.ok) { location.replace(loginRedirectUrl); throw new Error('กรุณาเข้าสู่ระบบผู้ดูแลระบบ'); }
     const data = await response.json();
+    if (!data?.user || data.user.role !== 'admin') {
+      location.replace(loginRedirectUrl);
+      throw new Error('สงวนสิทธิ์เฉพาะผู้ดูแลระบบ (Admin Only)');
+    }
     csrfToken = data.csrfToken;
+    document.documentElement.style.visibility = 'visible';
     return data.user;
-  }).catch(() => ({ id: 'admin-7000', username: 'admin', role: 'admin' }));
+  }).catch(err => {
+    location.replace(loginRedirectUrl);
+    throw err;
+  });
 
   window.waterSession = ready;
   window.fetch = async (input, options = {}) => {

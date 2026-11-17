@@ -41,12 +41,13 @@ function auth_send_session_cookie(string $token, int $maxAgeSec): void {
     header('Set-Cookie: ' . $cookieHeader, false);
 }
 
-function verify_php_user_credentials(string $username, string $password): ?array {
-    $strict = function_exists('is_strict_auth_required') ? is_strict_auth_required() : AUTH_ENFORCE;
+function verify_php_user_credentials(string $username, string $password, bool $forcePassword = false, ?bool &$legacyNeedsMigration = null): ?array {
+    $legacyNeedsMigration = false;
+    $strict = (function_exists('is_strict_auth_required') ? is_strict_auth_required() : AUTH_ENFORCE) || $forcePassword;
     $acc = get_accounts_data();
     $users = $acc['users'] ?? [];
     if (empty($users)) {
-        if (!$strict) {
+        if (!$strict && !$forcePassword) {
             return ['id' => 'admin-7000', 'username' => ($username ?: 'admin'), 'role' => 'admin'];
         }
         return null;
@@ -65,9 +66,11 @@ function verify_php_user_credentials(string $username, string $password): ?array
                 return null;
             }
         } elseif ($strict || $password === '') {
-            // Legacy Node scrypt record cannot be verified natively on PHP <7.4 without password_hash
-            if ($strict) return null;
-            if ($password === '') return null;
+            // Legacy Node scrypt record needs a PHP bcrypt password set once in server_setup.php
+            if (!empty($u['hash'])) {
+                $legacyNeedsMigration = true;
+            }
+            return null;
         }
         return [
             'id'       => $u['id'] ?? 'admin-7000',
@@ -76,6 +79,11 @@ function verify_php_user_credentials(string $username, string $password): ?array
         ];
     }
     return null;
+}
+
+function auth_is_admin_session(): bool {
+    $sess = get_current_user_session();
+    return !empty($sess['fromCookie']) && !empty($sess['user']) && (($sess['user']['role'] ?? '') === 'admin');
 }
 
 /**
@@ -215,6 +223,8 @@ function handle_auth_routes(string $method, string $path, array $body): bool {
     if ($path === '/api/auth/login' && $method === 'POST') {
         $username = trim((string)($body['username'] ?? 'admin'));
         $password = (string)($body['password'] ?? '');
+        $strictLogin = !empty($body['strictCheck']);
+        $adminOnly   = !empty($body['adminOnly']);
         $clientIp = function_exists('security_client_ip') ? security_client_ip() : ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
         $bfIdent  = $clientIp . '|' . strtolower($username);
 
@@ -226,9 +236,13 @@ function handle_auth_routes(string $method, string $path, array $body): bool {
             }
         }
 
-        if ($strict || $password !== '') {
-            $verified = verify_php_user_credentials($username, $password);
+        if ($strict || $strictLogin || $password !== '') {
+            $legacyNeeds = false;
+            $verified = verify_php_user_credentials($username, $password, $strictLogin, $legacyNeeds);
             if (!$verified) {
+                if ($legacyNeeds) {
+                    send_json(['error' => 'บัญชี Admin เดิมยังไม่ได้ตั้งรหัสผ่าน PHP — กรุณาตั้งรหัสผ่าน Admin ใหม่ 1 ครั้งในหน้า server_setup.php'], 401);
+                }
                 if (function_exists('security_bruteforce_record_failure')) {
                     $rec = security_bruteforce_record_failure('login', $bfIdent, 5, 300);
                     if (!empty($rec['blocked'])) {
@@ -237,6 +251,9 @@ function handle_auth_routes(string $method, string $path, array $body): bool {
                     }
                 }
                 send_json(['error' => 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง'], 401);
+            }
+            if ($adminOnly && ($verified['role'] ?? '') !== 'admin') {
+                send_json(['error' => 'สงวนสิทธิ์เฉพาะผู้ดูแลระบบ (Admin) เท่านั้น'], 403);
             }
             $userObj = $verified;
         } else {

@@ -14,6 +14,11 @@ require_once $phpServerDir . '/backup_manager.php';
 require_once $phpServerDir . '/public_api.php';
 
 security_apply_http_headers(false);
+$accDataForGate = get_accounts_data();
+if (is_strict_auth_required() && !empty($accDataForGate['users']) && !auth_is_admin_session()) {
+    header('Location: ./login.html?reauth=1&next=server_setup.php', true, 302);
+    exit;
+}
 $setupCsrfToken = security_get_or_issue_setup_csrf();
 
 $message = '';
@@ -214,6 +219,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $statusType = 'error';
                 $message = "⚠️ ไม่พบ API Key ที่ใช้งานอยู่ ({$keyId})";
+            }
+        }
+    } elseif ($action === 'set_admin_password') {
+        $guardReason = '';
+        if (!server_setup_passes_guard($alreadyConfigured, $isLocalRequest, $guardReason)) {
+            $statusType = 'error';
+            $message = ($guardReason === 'rate_limited')
+                ? "🛑 กรอกรหัสผ่านผิดเกินกำหนด กรุณารอ 5 นาทีแล้วลองใหม่"
+                : "🔒 กรุณากรอกรหัสผ่าน MySQL ปัจจุบันก่อนตั้งรหัสผ่าน Admin";
+        } else {
+            $admUser = trim((string)($_POST['admin_username'] ?? ''));
+            $admPass = (string)($_POST['admin_password'] ?? '');
+            if ($admUser === '' || strlen($admPass) < 6) {
+                $statusType = 'error';
+                $message = "❌ กรุณาระบุชื่อบัญชี Admin และรหัสผ่านอย่างน้อย 6 ตัวอักษร";
+            } else {
+                $acc = get_accounts_data();
+                $updated = false;
+                foreach ($acc['users'] as &$u) {
+                    if (strcasecmp((string)($u['username'] ?? ''), $admUser) === 0) {
+                        $u['password_hash'] = password_hash($admPass, PASSWORD_DEFAULT);
+                        $u['role'] = 'admin';
+                        $u['active'] = true;
+                        $updated = true;
+                    }
+                }
+                unset($u);
+                if (!$updated) {
+                    $acc['users'][] = [
+                        'id'            => 'U-' . bin2hex(random_bytes(6)),
+                        'username'      => $admUser,
+                        'password_hash' => password_hash($admPass, PASSWORD_DEFAULT),
+                        'role'          => 'admin',
+                        'active'        => true,
+                    ];
+                }
+                save_accounts_data($acc);
+                $statusType = 'success';
+                $message = "👤 บันทึกรหัสผ่านบัญชี Admin [{$admUser}] (PHP bcrypt) เรียบร้อยแล้ว สามารถใช้ Login เข้าหลังบ้านได้ทันที";
             }
         }
     }
@@ -452,6 +496,29 @@ try {
           <div><b>Primary Cron:</b> <code><?= htmlspecialchars($domainCfg['resolved']['primary']['cron'] ?? '-') ?></code> <?= !empty($domainCfg['resolved']['primary']['active']) ? '✅ (ใช้งานจริง)' : '⚪ (ตัวอย่าง/ยังไม่ตั้ง)' ?></div>
           <div><b>Backup Cron:</b> <code><?= htmlspecialchars($domainCfg['resolved']['backup']['cron'] ?? '-') ?></code> <?= !empty($domainCfg['resolved']['backup']['active']) ? '✅ (ใช้งานจริง)' : '⚪ (ตัวอย่าง/ยังไม่ตั้ง)' ?></div>
         </div>
+      </div>
+
+      <?php $accUsersList = get_accounts_data()['users'] ?? []; $firstAdminName = $accUsersList[0]['username'] ?? 'pakapon.2013@gmail.com'; ?>
+      <div id="admin-account" class="bg-slate-900 text-slate-100 rounded-xl p-4 text-xs space-y-3">
+        <div class="font-bold text-amber-300 text-sm">👤 บัญชีผู้ดูแลระบบคนเดียว (Admin Login สำหรับเข้าหลังบ้าน)</div>
+        <p class="text-slate-300">ใช้ตั้งค่าหรืออัปเดตรหัสผ่าน PHP (bcrypt) ให้บัญชี Admin เพื่อให้ปุ่ม <b>🔐 หลังบ้าน</b> บนหน้า Public Dashboard และ URL หลังบ้านบน Server จริงล็อกสิทธิ์เฉพาะคุณคนเดียว</p>
+        <form method="POST" class="flex flex-wrap gap-2 items-end">
+          <input type="hidden" name="_csrf" value="<?= htmlspecialchars($setupCsrfToken) ?>">
+          <?php if ($alreadyConfigured && !$isLocalRequest): ?>
+            <div class="w-full">
+              <input type="password" name="CURRENT_DB_PASS" value="" required placeholder="รหัสผ่าน DB เดิมก่อนตั้งรหัส Admin" class="w-full border border-amber-300 rounded-lg px-2.5 py-1.5 text-xs bg-white text-slate-900">
+            </div>
+          <?php endif; ?>
+          <div class="flex-1 min-w-[180px]">
+            <label class="block font-semibold text-slate-300 mb-1">บัญชี Admin (Email / Username)</label>
+            <input type="text" name="admin_username" value="<?= htmlspecialchars($firstAdminName) ?>" required class="w-full border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs bg-slate-950 text-white">
+          </div>
+          <div class="flex-1 min-w-[180px]">
+            <label class="block font-semibold text-slate-300 mb-1">รหัสผ่านใหม่ (อย่างน้อย 6 ตัว)</label>
+            <input type="password" name="admin_password" required minlength="6" autocomplete="new-password" placeholder="กำหนดรหัสผ่าน Admin" class="w-full border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs bg-slate-950 text-white">
+          </div>
+          <button type="submit" name="action" value="set_admin_password" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition">🔑 บันทึกรหัสผ่าน Admin</button>
+        </form>
       </div>
 
       <div id="agency-keys" class="bg-violet-50/70 border border-violet-200 rounded-xl p-4 text-xs space-y-3">

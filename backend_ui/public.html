@@ -92,7 +92,7 @@
         <button onclick="toggleFontSize()" id="btnFontToggle" title="ขยายขนาดตัวอักษรให้อ่านง่าย" class="px-2.5 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 font-bold transition">ก+</button>
         <button onclick="loadPublicDashboard(true)" id="btnReloadPublic" title="อัปเดตข้อมูลล่าสุด" class="px-2.5 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 font-semibold transition">🔄 รีเฟรช</button>
         <a href="./mobile.html" class="px-2.5 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 font-semibold transition">📱 มือถือ/iPad</a>
-        <a href="./index.html" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 transition">⚙️ หลังบ้าน</a>
+        <a href="./login.html?reauth=1&amp;next=index.html" onclick="goToAdminLogin(event)" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 font-semibold transition">🔐 หลังบ้าน</a>
       </nav>
     </div>
   </header>
@@ -1153,6 +1153,14 @@
         });
       }, { threshold: 0.08 });
       secs.forEach(s => { s.classList.add('reveal'); io.observe(s); });
+    }
+
+    async function goToAdminLogin(e) {
+      if (e) e.preventDefault();
+      try {
+        await fetch(ep('/api/auth/logout'), { method: 'POST', cache: 'no-store' });
+      } catch (err) {}
+      location.href = './login.html?reauth=1&next=index.html';
     }
 
     initScrollReveal();

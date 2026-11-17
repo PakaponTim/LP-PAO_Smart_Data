@@ -176,8 +176,13 @@ s_assert(
 // -------------------------------------------------------------------------
 // Approach 4: Brute-Force Guard + CSRF Enforcement
 // -------------------------------------------------------------------------
-$rSetupNoCsrf = http_sec_req("{$base}/server_setup.php", 'POST', array_merge($extHeaders, ['Content-Type: application/x-www-form-urlencoded']), 'action=save_domains&primary_domain=https://evil.example');
-s_assert($rSetupNoCsrf['code'] === 403, 'Approach 4 (Setup Form CSRF): POST /server_setup.php without _csrf cookie/token rejected with HTTP 403', "code={$rSetupNoCsrf['code']}");
+$rSetupUnauthExt = http_sec_req("{$base}/server_setup.php", 'POST', array_merge($extHeaders, ['Content-Type: application/x-www-form-urlencoded']), 'action=save_domains&primary_domain=https://evil.example');
+$rSetupNoCsrf = http_sec_req("{$base}/server_setup.php", 'POST', ['Content-Type: application/x-www-form-urlencoded'], 'action=save_domains&primary_domain=https://evil.example');
+s_assert(
+    in_array($rSetupUnauthExt['code'], [302, 403], true) && $rSetupNoCsrf['code'] === 403,
+    'Approach 4 (Setup Auth & CSRF): External unauthenticated POST redirects (302) & missing _csrf rejected with HTTP 403',
+    "extCode={$rSetupUnauthExt['code']}, noCsrf={$rSetupNoCsrf['code']}"
+);
 
 $accountsFile = get_accounts_path();
 $origAccountsRaw = file_exists($accountsFile) ? file_get_contents($accountsFile) : null;
@@ -242,6 +247,27 @@ try {
         "noCsrf={$rPostNoCsrf['code']}, withCsrf={$rPostWithCsrf['code']}"
     );
 
+    // Back-Office Admin-Only Gatekeeper (External unauthenticated -> 302 login.html; Authenticated Admin -> 200)
+    $rExtUnauthIndex = http_sec_req("{$base}/index.html", 'GET', $extHeaders);
+    $rExtUnauthCtrl  = http_sec_req("{$base}/control.html", 'GET', $extHeaders);
+    $rExtUnauthSetup = http_sec_req("{$base}/server_setup.php", 'GET', $extHeaders);
+    $rExtAuthedIndex = http_sec_req("{$base}/index.html", 'GET', $extHeaders, null, $cookieJar);
+    $rLocalWrongStrict = http_sec_req("{$base}/endpoint.php?r=" . urlencode('/api/auth/login'), 'POST', ['Content-Type: application/json'], '{"username":"__e2e_sec_admin__","password":"wrong","strictCheck":true}');
+    $pubHtmlBody = (string)file_get_contents(__DIR__ . '/../public.html');
+
+    s_assert(
+        $rExtUnauthIndex['code'] === 302
+        && $rExtUnauthCtrl['code'] === 302
+        && $rExtUnauthSetup['code'] === 302
+        && stripos($rExtUnauthIndex['headers'], 'Location: ./login.html') !== false
+        && $rExtAuthedIndex['code'] === 200
+        && $rLocalWrongStrict['code'] === 401
+        && strpos($pubHtmlBody, 'login.html?reauth=1') !== false
+        && strpos($pubHtmlBody, 'goToAdminLogin') !== false,
+        'Admin Portal Lock: External unauthenticated /index.html, /control.html, /server_setup.php redirect to login (302); authenticated admin succeeds (200); public button enforces re-login',
+        "idx={$rExtUnauthIndex['code']}, ctrl={$rExtUnauthCtrl['code']}, setup={$rExtUnauthSetup['code']}, authed={$rExtAuthedIndex['code']}, strictLocal={$rLocalWrongStrict['code']}"
+    );
+
     // Test authenticated admin /api/auth/logout cleans cookie cleanly
     http_sec_req("{$base}/endpoint.php?r=" . urlencode('/api/auth/logout'), 'POST', $extHeaders, '{}', $cookieJar);
 } finally {
@@ -253,6 +279,7 @@ try {
     }
     security_bruteforce_clear('login', $bfIp . '|__e2e_sec_admin__');
     security_bruteforce_clear('login', $extIp . '|__e2e_sec_admin__');
+    security_bruteforce_clear('login', '127.0.0.1|__e2e_sec_admin__');
     try {
         $pdo = get_db();
         $pdo->prepare("DELETE FROM tbl_system_logs WHERE module = 'security' AND summary LIKE ?")->execute(["%{$bfIp}%"]);

@@ -330,3 +330,24 @@ function security_verify_setup_csrf(): bool {
     }
     return hash_equals($cookieTok, $postTok);
 }
+
+/**
+ * Return true for back-office Admin HTML pages that must never be exposed on public servers without Admin session.
+ */
+function security_is_admin_page_uri(string $uri): bool {
+    $base = strtolower(basename((string)parse_url($uri, PHP_URL_PATH)));
+    if ($base === '' || $base === 'water_system2') {
+        $base = 'index.html';
+    }
+    $adminPages = [
+        'index.html',
+        'index.php',
+        'control.html',
+        'notification.html',
+        'operations.html',
+        'accounts.html',
+        'db_compare.html',
+        'mobile.html',
+    ];
+    return in_array($base, $adminPages, true);
+}

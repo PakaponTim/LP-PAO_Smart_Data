@@ -22,6 +22,15 @@ const form = document.getElementById('loginForm');
       }
     });
 
+    const urlParams = new URLSearchParams(location.search);
+    const ALLOWED_NEXT = new Set(['index.html', 'control.html', 'notification.html', 'operations.html', 'accounts.html', 'db_compare.html', 'mobile.html', 'server_setup.php']);
+    const reqNext = (urlParams.get('next') || 'index.html').replace(/^\.?\//, '');
+    const nextUrl = './' + (ALLOWED_NEXT.has(reqNext) ? reqNext : 'index.html');
+    const reauthBadge = document.getElementById('adminReauthBadge');
+    if (reauthBadge && urlParams.get('reauth') === '1') {
+      reauthBadge.classList.remove('hidden');
+    }
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       errorMessage.classList.add('hidden'); submitBtn.disabled = true;
@@ -34,12 +43,14 @@ const form = document.getElementById('loginForm');
           body: JSON.stringify({
             username: document.getElementById('username').value,
             password: passwordInput.value,
-            remember: rememberEl ? !!rememberEl.checked : true
+            remember: rememberEl ? !!rememberEl.checked : true,
+            strictCheck: true,
+            adminOnly: true
           })
         });
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || 'เข้าสู่ระบบไม่สำเร็จ');
-        location.replace('./index.html');
+        location.replace(nextUrl);
       } catch (error) {
         errorMessage.textContent = error.message; errorMessage.classList.remove('hidden');
       } finally { submitBtn.disabled = false; btnText.textContent = 'เข้าสู่ระบบ'; btnLoader.style.display = 'none'; }

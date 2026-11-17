@@ -134,6 +134,11 @@ if (strpos($uri, '/api/') === 0) {
 // =========================================================================
 $targetRel = ($uri === '/') ? '/index.html' : $uri;
 $safeRel = str_replace(['..', '\\'], ['', '/'], $targetRel);
+if (is_strict_auth_required() && security_is_admin_page_uri($safeRel) && !auth_is_admin_session()) {
+    $nextPage = ltrim($safeRel, '/');
+    header('Location: ./login.html?reauth=1&next=' . rawurlencode($nextPage), true, 302);
+    exit;
+}
 $filePath = WATER_SYSTEM2_UI_DIR . str_replace('/', DIRECTORY_SEPARATOR, $safeRel);
 
 if (is_file($filePath)) {

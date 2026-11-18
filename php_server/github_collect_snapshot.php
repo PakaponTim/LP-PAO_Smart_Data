@@ -234,7 +234,7 @@ if (!empty($responses['pm25']['ok'])) {
 
 // 5. Complaints (Traffy Fondue — Zero-PII scrubbed before committing snapshot to GitHub)
 if (!empty($responses['complaints']['ok'])) {
-    $rawTickets = transform_traffy_complaints($responses['complaints']['data'], 60);
+    $rawTickets = transform_traffy_complaints($responses['complaints']['data'], 60, true);
     $snapshot['complaints'] = sanitize_traffy_rows_zero_pii($rawTickets);
     $snapshot['module_status']['complaints'] = [
         'ok'         => true,

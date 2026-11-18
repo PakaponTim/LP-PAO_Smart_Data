@@ -500,6 +500,81 @@ function transform_pm25_items(array $json, ?int $nowTs = null): array {
     ];
 }
 
+const TRAFFY_SCOPE_START = '2026-09-01 00:00:00'; // 1 กันยายน 2569
+const TRAFFY_SCOPE_END   = '2027-09-30 23:59:59'; // 30 กันยายน 2570
+
+/**
+ * Parse Thai or ISO ticket_datetime string (e.g. "พฤหัส 10 ก.ย. 69 14:56 น." or "2026-11-18 09:04:00") to Unix timestamp.
+ */
+function parse_traffy_ticket_datetime(string $raw): ?int {
+    $clean = trim($raw);
+    if ($clean === '') return null;
+
+    // Standard ISO / MySQL datetime (e.g. 2026-09-10 14:56:00 or 2026-11-18T09:04:00+07:00)
+    if (preg_match('/^\d{4}-\d{2}-\d{2}/', $clean)) {
+        $ts = strtotime($clean);
+        return ($ts !== false) ? $ts : null;
+    }
+
+    $thAbbr = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+    $thFull = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+    $parts = preg_split('/\s+/u', $clean) ?: [];
+
+    $dayIdx = -1;
+    foreach ($parts as $idx => $p) {
+        if (preg_match('/^\d{1,2}$/', $p)) {
+            $dayIdx = $idx;
+            break;
+        }
+    }
+    if ($dayIdx === -1 || $dayIdx + 2 >= count($parts)) return null;
+
+    $day = (int)$parts[$dayIdx];
+    $monthStr = $parts[$dayIdx + 1];
+    $yearStr  = $parts[$dayIdx + 2];
+
+    $month = 0;
+    for ($i = 0; $i < 12; $i++) {
+        if (mb_strpos($monthStr, $thAbbr[$i]) !== false || mb_strpos($monthStr, $thFull[$i]) !== false) {
+            $month = $i + 1;
+            break;
+        }
+    }
+    if ($month === 0 || !is_numeric($yearStr)) return null;
+
+    $year = (int)$yearStr;
+    if ($year < 100) {
+        $year = ($year > 40) ? (2500 + $year) : (2000 + $year);
+    }
+    if ($year > 2400) {
+        $year -= 543;
+    }
+
+    $hour = 0;
+    $minute = 0;
+    foreach ($parts as $p) {
+        if (preg_match('/^(\d{1,2}):(\d{2})$/', $p, $tm)) {
+            $hour = (int)$tm[1];
+            $minute = (int)$tm[2];
+            break;
+        }
+    }
+
+    $ts = mktime($hour, $minute, 0, $month, $day, $year);
+    return ($ts !== false) ? $ts : null;
+}
+
+/**
+ * Return 1 if ticket_datetime falls within the target fiscal window (1 Sep 2026 - 30 Sep 2027), else 0.
+ */
+function is_traffy_ticket_in_scope(string $ticketDatetime): int {
+    $ts = parse_traffy_ticket_datetime($ticketDatetime);
+    if ($ts === null) return 0;
+    $startTs = strtotime(TRAFFY_SCOPE_START);
+    $endTs   = strtotime(TRAFFY_SCOPE_END);
+    return ($ts >= $startTs && $ts <= $endTs) ? 1 : 0;
+}
+
 /**
  * Compute Lampang PAO agency classification without mislabeling non-PAO tickets.
  */
@@ -526,7 +601,7 @@ function compute_traffy_agency_status(string $orgName, string $stateName): strin
 /**
  * 5. Transform Traffy GeoJSON (features[]) OR PostgREST feed rows ([...]) into normalized complaints.
  */
-function transform_traffy_complaints(array $json, int $limit = 60): array {
+function transform_traffy_complaints(array $json, int $limit = 60, bool $onlyInScope = false): array {
     $isGeoJson = isset($json['features']) && is_array($json['features']);
     $items = $isGeoJson ? $json['features'] : (array_values($json));
     $prepared = [];
@@ -565,11 +640,26 @@ function transform_traffy_complaints(array $json, int $limit = 60): array {
         if ($ticketId === '' || isset($seenTickets[$ticketId])) continue;
         $seenTickets[$ticketId] = true;
 
-        $stateName = trim((string)($props['state'] ?? ($props['state_name'] ?? ($props['state_type_latest'] ?? ($props['issue_status_name'] ?? 'รอรับเรื่อง')))));
+        $stateName = trim((string)(
+            $props['local_status_name_th']
+            ?? $props['issue_status_name_th']
+            ?? ($props['status']['issue_status']['name_th'] ?? null)
+            ?? $props['state']
+            ?? $props['state_name']
+            ?? $props['state_type_latest']
+            ?? $props['issue_status_name']
+            ?? 'รอรับเรื่อง'
+        ));
         if ($stateName === '') $stateName = 'รอรับเรื่อง';
 
         $problemType = 'ทั่วไป';
-        if (!empty($props['problem_type_abdul']) && is_array($props['problem_type_abdul'])) {
+        if (!empty($props['local_category_name_th'])) {
+            $problemType = trim((string)$props['local_category_name_th']);
+        } elseif (!empty($props['issue_category_name_th'])) {
+            $problemType = trim((string)$props['issue_category_name_th']);
+        } elseif (!empty($props['fd_problem_custom_types'][0]['issue_category']['name_th'])) {
+            $problemType = trim((string)$props['fd_problem_custom_types'][0]['issue_category']['name_th']);
+        } elseif (!empty($props['problem_type_abdul']) && is_array($props['problem_type_abdul'])) {
             $firstType = trim((string)($props['problem_type_abdul'][0] ?? ''));
             if ($firstType !== '') $problemType = $firstType;
         } elseif (!empty($props['issue_category_name'])) {
@@ -579,10 +669,20 @@ function transform_traffy_complaints(array $json, int $limit = 60): array {
             if ($cleanType !== '') $problemType = explode(',', $cleanType)[0];
         }
 
-        $desc = trim((string)($props['description'] ?? ''));
-        $photoUrl = trim((string)($props['photo_url'] ?? ($props['after_photo'] ?? ($props['photo'] ?? ''))));
-        $timestampStr = trim((string)($props['timestamp'] ?? ($props['last_activity'] ?? '')));
-        $stars = isset($props['star']) && $props['star'] !== null && $props['star'] !== '' ? '⭐ ' . $props['star'] : '';
+        $desc = trim((string)($props['description'] ?? ($props['comment'] ?? '')));
+        $photoUrl = trim((string)($props['photo_url'] ?? ($props['after_photo'] ?? ($props['photo'] ?? ($props['photos'][0]['photo'] ?? '')))));
+        $rawTsStr = trim((string)($props['timestamp'] ?? ($props['reported_at'] ?? ($props['last_activity'] ?? ''))));
+        $parsedTs = parse_traffy_ticket_datetime($rawTsStr);
+        $timestampStr = ($parsedTs !== null && preg_match('/^\d{4}-\d{2}-\d{2}T/', $rawTsStr))
+            ? date('Y-m-d H:i:s', $parsedTs)
+            : $rawTsStr;
+        $inScope = is_traffy_ticket_in_scope($timestampStr);
+        if ($onlyInScope && $inScope !== 1) {
+            continue;
+        }
+        $stars = (isset($props['star']) && is_numeric($props['star']) && (float)$props['star'] > 0)
+            ? '⭐ ' . $props['star']
+            : '';
         $fullLoc = $address !== '' ? $address : trim("{$district} {$province}");
 
         $prepared[] = [
@@ -595,7 +695,7 @@ function transform_traffy_complaints(array $json, int $limit = 60): array {
             'org_name'           => $orgName,
             'ticket_datetime'    => mb_substr($timestampStr, 0, 100),
             'satisfaction_stars' => mb_substr($stars, 0, 50),
-            'is_in_scope'        => 1
+            'is_in_scope'        => $inScope
         ];
 
         if (count($prepared) >= $limit) break;
@@ -619,6 +719,14 @@ function normalize_traffy_extension_rows(array $rows): array {
         $stateName = trim((string)($row['state_name'] ?? 'รอรับเรื่อง')) ?: 'รอรับเรื่อง';
         $orgName = trim((string)($row['org_name'] ?? 'อบจ.ลำปาง')) ?: 'อบจ.ลำปาง';
 
+        $ticketDatetime = mb_substr(trim((string)($row['ticket_datetime'] ?? '')), 0, 100);
+        $computedScope = ($ticketDatetime !== '' && parse_traffy_ticket_datetime($ticketDatetime) !== null)
+            ? is_traffy_ticket_in_scope($ticketDatetime)
+            : 0;
+        $isInScope = isset($row['is_in_scope'])
+            ? (((int)$row['is_in_scope'] === 1) ? $computedScope : 0)
+            : $computedScope;
+
         $prepared[] = [
             'ticket_id'          => mb_substr($ticketId, 0, 50),
             'state_name'         => mb_substr($stateName, 0, 100),
@@ -627,9 +735,9 @@ function normalize_traffy_extension_rows(array $rows): array {
             'photo_url'          => trim((string)($row['photo_url'] ?? '')),
             'location'           => trim((string)($row['location'] ?? '')),
             'org_name'           => $orgName,
-            'ticket_datetime'    => mb_substr(trim((string)($row['ticket_datetime'] ?? '')), 0, 100),
+            'ticket_datetime'    => $ticketDatetime,
             'satisfaction_stars' => mb_substr(trim((string)($row['satisfaction_stars'] ?? '')), 0, 50),
-            'is_in_scope'        => isset($row['is_in_scope']) ? (int)$row['is_in_scope'] : 1
+            'is_in_scope'        => $isInScope
         ];
     }
     return $prepared;

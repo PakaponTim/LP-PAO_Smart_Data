@@ -70,6 +70,9 @@ while (!file_exists(smart_worker_stop_flag_file())) {
             sync_github_snapshots_to_mysql(5);
         }
 
+        // Restore unlimited CLI execution time in case a subtask (e.g. daily backup) called set_time_limit(300)
+        @set_time_limit(0);
+
         // Calculate Smart Sleep duration until the next slot (capped at 25s so UI edits to config.json take effect promptly)
         $cfg = get_app_config();
         $next = smart_compute_next_slot($cfg['scheduledTasks'] ?? [], time());

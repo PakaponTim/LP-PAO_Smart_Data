@@ -31,7 +31,7 @@ function try_spool_failed_module_save(string $module, array $rawJson, array $ext
     } elseif ($module === 'pm25') {
         $rows = transform_pm25_items($rawJson)['rows'] ?? [];
     } elseif ($module === 'complaints') {
-        $rows = transform_traffy_complaints($rawJson, 100);
+        $rows = transform_traffy_complaints($rawJson, 100, true);
     }
     return db_spool_enqueue_module($module, $rows);
 }
@@ -770,9 +770,9 @@ function save_complaints_rows_to_db(array $prepared, string $mode = 'db', array 
 }
 
 function save_complaints_from_json(array $json, string $mode = 'db', array $logCtx = []): array {
-    $prepared = transform_traffy_complaints($json, 60);
+    $prepared = transform_traffy_complaints($json, 60, true);
     if (empty($prepared)) {
-        throw new RuntimeException('ไม่พบเรื่องร้องเรียนในเขตจังหวัดลำปางจาก Traffy API');
+        throw new RuntimeException('ไม่พบเรื่องร้องเรียนในเขตจังหวัดลำปาง (ช่วง 1 ก.ย. 2569 – 30 ก.ย. 2570) จาก Traffy API');
     }
     return save_complaints_rows_to_db($prepared, $mode, $logCtx);
 }
@@ -789,6 +789,17 @@ function get_traffy_request_plan(): array {
     $plan = [];
 
     if ($hasAuth) {
+        // When org_id is explicitly configured (e.g. 19022 for อบจ.ลำปาง), prioritize filtered view_private_post_info first
+        if ($orgId !== '' && ctype_digit($orgId)) {
+            $startIso = rawurlencode(str_replace(' ', 'T', TRAFFY_SCOPE_START));
+            $endIso   = rawurlencode(str_replace(' ', 'T', TRAFFY_SCOPE_END));
+            $plan[] = [
+                'label'   => 'Authenticated Org Feed (view_private_post_info)',
+                'url'     => 'https://api.traffy.in.th/postgrest/view_private_post_info?limit=60&offset=0&org_id=eq.' . rawurlencode($orgId) . '&timestamp=gte.' . $startIso . '&timestamp=lte.' . $endIso . '&order=timestamp.desc',
+                'headers' => $headers,
+                'timeout' => 12,
+            ];
+        }
         // Primary authenticated feed matching citydata.traffy.in.th/recent-post after LINE login
         $plan[] = [
             'label'   => 'Authenticated PostgREST Feed (api.traffy.in.th)',
@@ -796,14 +807,6 @@ function get_traffy_request_plan(): array {
             'headers' => $headers,
             'timeout' => 12,
         ];
-        if ($orgId !== '' && ctype_digit($orgId)) {
-            $plan[] = [
-                'label'   => 'Authenticated Org Feed (view_private_post_info)',
-                'url'     => 'https://api.traffy.in.th/postgrest/view_private_post_info?limit=60&offset=0&org_id=eq.' . rawurlencode($orgId),
-                'headers' => $headers,
-                'timeout' => 12,
-            ];
-        }
     }
 
     if ($orgId !== '') {

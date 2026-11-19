@@ -19,9 +19,22 @@ function public_scrub_text(string $text, int $maxLen = 200): string {
     return transform_scrub_pii_text($text, $maxLen);
 }
 
+function public_safe_photo_url(string $url): string {
+    $u = trim($url);
+    if ($u === '') return '';
+    if (preg_match('#^https://storage\.googleapis\.com/traffy_public_bucket/[a-zA-Z0-9._/\-%]+$#', $u)) {
+        return $u;
+    }
+    return '';
+}
+
 function public_sanitize_complaint(array $r): array {
     $stars = $r['satisfaction_stars'] ?? null;
     $starsNum = is_numeric($stars) ? (float)$stars : null;
+    if ($starsNum === null && is_string($stars) && preg_match('/(\d+(?:\.\d+)?)/', $stars, $sm)) {
+        $v = (float)$sm[1];
+        if ($v > 0) $starsNum = $v;
+    }
     return [
         'ticket_id'          => (string)($r['ticket_id'] ?? ''),
         'state_name'         => (string)($r['state_name'] ?? 'รอรับเรื่อง'),
@@ -30,9 +43,208 @@ function public_sanitize_complaint(array $r): array {
         'summary'            => public_scrub_text((string)($r['description'] ?? ''), 180),
         'area'               => public_scrub_text((string)($r['location'] ?? ''), 120),
         'org_name'           => (string)($r['org_name'] ?? ''),
+        'photo_url'          => public_safe_photo_url((string)($r['photo_url'] ?? '')),
         'ticket_datetime'    => (string)($r['ticket_datetime'] ?? ''),
         'satisfaction_stars' => $starsNum,
         'recorded_at'        => (string)($r['recorded_at'] ?? ''),
+    ];
+}
+
+/**
+ * Build a strictly Zero-PII public timeline for a single complaint case from real DB records only.
+ * Never exposes raw_timeline, reporter PII, or fabricated historical events.
+ */
+function public_build_case_timeline(?PDO $pdo, string $ticketId): ?array {
+    $cleanId = trim($ticketId);
+    if ($cleanId === '' || !preg_match('/^[A-Za-z0-9\-_]{3,50}$/', $cleanId) || stripos($cleanId, 'TEST') !== false) {
+        return null;
+    }
+
+    $caseRow = null;
+    $dbEvents = [];
+    if ($pdo !== null) {
+        $stmt = $pdo->prepare("
+            SELECT ticket_id, state_name, agency_status, problem_type, description, location,
+                   org_name, photo_url, ticket_datetime, satisfaction_stars, raw_timeline, recorded_at, created_at
+            FROM tbl_complaints_monitoring
+            WHERE ticket_id = ? AND (is_in_scope = 1 OR is_in_scope IS NULL)
+            LIMIT 1
+        ");
+        $stmt->execute([$cleanId]);
+        $caseRow = $stmt->fetch() ?: null;
+
+        if ($caseRow !== null) {
+            try {
+                $evStmt = $pdo->prepare("SELECT state_name, org_name, observed_at FROM app_complaint_events WHERE ticket_id = ? ORDER BY id ASC");
+                $evStmt->execute([$cleanId]);
+                $dbEvents = $evStmt->fetchAll() ?: [];
+            } catch (Throwable $e) {
+                $dbEvents = [];
+            }
+        }
+    } else {
+        $snap = get_latest_cloud_snapshot_bundle();
+        foreach (($snap['complaints'] ?? []) as $c) {
+            if (($c['ticket_id'] ?? '') === $cleanId) {
+                $caseRow = $c;
+                break;
+            }
+        }
+    }
+
+    if ($caseRow === null) {
+        return null;
+    }
+
+    $sanitizedCase = public_sanitize_complaint($caseRow);
+    $events = [];
+    $seenKeys = [];
+
+    $pushEvent = function (string $rawTs, string $eventType, string $title, string $desc, string $agency) use (&$events, &$seenKeys) {
+        $parsedTs = parse_traffy_ticket_datetime($rawTs);
+        $tsStr = $parsedTs !== null ? date('Y-m-d H:i:s', $parsedTs) : trim($rawTs);
+        $datePart = $parsedTs !== null ? date('Y-m-d', $parsedTs) : '';
+        $timePart = $parsedTs !== null ? date('H:i', $parsedTs) : '';
+        $cleanTitle = public_scrub_text($title, 80) ?: 'อัปเดตสถานะ';
+        $cleanDesc = public_scrub_text($desc, 220);
+        $cleanAgency = public_scrub_text($agency, 120);
+
+        $dedupKey = ($datePart ?: $tsStr) . '|' . $cleanTitle . '|' . $cleanAgency;
+        if (isset($seenKeys[$dedupKey])) return;
+        $seenKeys[$dedupKey] = true;
+
+        $events[] = [
+            'sortTs'      => $parsedTs ?? 0,
+            'timestamp'   => $tsStr,
+            'date'        => $datePart,
+            'time'        => $timePart,
+            'eventType'   => $eventType,
+            'title'       => $cleanTitle,
+            'description' => $cleanDesc,
+            'agency'      => $cleanAgency,
+        ];
+    };
+
+    // 1. Initial reported event from real ticket_datetime
+    $initTs = (string)($caseRow['ticket_datetime'] ?? ($caseRow['created_at'] ?? ($caseRow['recorded_at'] ?? '')));
+    if ($initTs !== '') {
+        $pushEvent(
+            $initTs,
+            'reported',
+            'รับเรื่องร้องเรียนเข้าสู่ระบบ',
+            'ระบบ Traffy Fondue ได้รับแจ้งเรื่องร้องเรียนในพื้นที่ ' . ($sanitizedCase['area'] ?: 'จังหวัดลำปาง'),
+            $sanitizedCase['org_name'] ?: 'อบจ.ลำปาง'
+        );
+    }
+
+    // 2. Real upstream timeline events parsed server-side from raw_timeline (strictly scrubbed)
+    if (!empty($caseRow['raw_timeline'])) {
+        $rawDecoded = json_decode((string)$caseRow['raw_timeline'], true);
+        $tlList = $rawDecoded['results']['case']['timeline'] ?? ($rawDecoded['timeline'] ?? []);
+        if (is_array($tlList)) {
+            foreach ($tlList as $item) {
+                if (!is_array($item)) continue;
+                $st = trim((string)($item['tl_state_name'] ?? ($item['state'] ?? '')));
+                $note = trim((string)($item['note'] ?? ($item['description'] ?? '')));
+                $ag = trim((string)($item['name'] ?? ($item['org_name'] ?? '')));
+                $t = trim((string)($item['timestamp'] ?? ($item['datetime'] ?? ($item['created_at'] ?? ''))));
+                if ($st === '' && $note === '') continue;
+
+                $evType = 'update';
+                if (mb_strpos($st, 'เสร็จสิ้น') !== false) $evType = 'completed';
+                elseif (mb_strpos($st, 'ส่งต่อ') !== false || mb_strpos($note, 'ส่งต่อ') !== false) $evType = 'forwarded';
+                elseif (mb_strpos($st, 'กำลังดำเนินการ') !== false) $evType = 'in_progress';
+                elseif (mb_strpos($st, 'รับเรื่อง') !== false) $evType = 'received';
+                elseif (mb_strpos($st, 'ยกเลิก') !== false || mb_strpos($st, 'ไม่เกี่ยวข้อง') !== false) $evType = 'cancelled';
+
+                $pushEvent(
+                    $t,
+                    $evType,
+                    $st !== '' ? $st : 'บันทึกความคืบหน้า',
+                    $note !== '' ? $note : 'หน่วยงานบันทึกการดำเนินงานในระบบ',
+                    $ag !== '' ? $ag : $sanitizedCase['org_name']
+                );
+            }
+        }
+    }
+
+    // 3. Real status transition events observed by LP-PAO Smart Data (app_complaint_events)
+    foreach ($dbEvents as $ev) {
+        $st = trim((string)($ev['state_name'] ?? ''));
+        $ag = trim((string)($ev['org_name'] ?? ''));
+        $obs = trim((string)($ev['observed_at'] ?? ''));
+        if ($st === '') continue;
+
+        $evType = 'update';
+        $desc = 'ระบบตรวจพบสถานะการดำเนินงานล่าสุด: ' . $st;
+        if (mb_strpos($st, 'เสร็จสิ้น') !== false) {
+            $evType = 'completed';
+            $desc = 'หน่วยงานดำเนินการแก้ไขปัญหาเสร็จสิ้นแล้ว';
+        } elseif (mb_strpos($st, 'ส่งต่อ') !== false) {
+            $evType = 'forwarded';
+            $desc = 'ส่งต่อเรื่องให้หน่วยงานที่รับผิดชอบดำเนินการ';
+        } elseif (mb_strpos($st, 'กำลังดำเนินการ') !== false) {
+            $evType = 'in_progress';
+            $desc = 'หน่วยงานอยู่ระหว่างดำเนินการแก้ไขปัญหา';
+        } elseif (mb_strpos($st, 'รอรับเรื่อง') !== false) {
+            $evType = 'pending';
+            $desc = 'เรื่องอยู่ในคิวรอหน่วยงานรับเรื่องและตรวจสอบ';
+        } elseif (mb_strpos($st, 'รับเรื่อง') !== false) {
+            $evType = 'received';
+            $desc = 'หน่วยงานรับเรื่องและเริ่มตรวจสอบรายละเอียด';
+        } elseif (mb_strpos($st, 'ยกเลิก') !== false || mb_strpos($st, 'ไม่เกี่ยวข้อง') !== false) {
+            $evType = 'cancelled';
+            $desc = 'ปิดเรื่องเนื่องจากไม่เกี่ยวข้องหรือยกเลิก';
+        }
+
+        $pushEvent($obs, $evType, $st, $desc, $ag !== '' ? $ag : $sanitizedCase['org_name']);
+    }
+
+    // Sort chronologically by sortTs
+    usort($events, function ($a, $b) {
+        return ($a['sortTs'] <=> $b['sortTs']);
+    });
+
+    // Assign statusKind (done / active / cancelled) cleanly
+    $totalEv = count($events);
+    $curState = $sanitizedCase['state_name'];
+    $isFinished = (mb_strpos($curState, 'เสร็จสิ้น') !== false);
+    $isCancelled = (mb_strpos($curState, 'ยกเลิก') !== false || mb_strpos($curState, 'ไม่เกี่ยวข้อง') !== false);
+
+    $publicTimeline = [];
+    foreach ($events as $idx => $ev) {
+        $isLast = ($idx === $totalEv - 1);
+        $kind = 'done';
+        if ($ev['eventType'] === 'cancelled') {
+            $kind = 'cancelled';
+        } elseif ($isLast && !$isFinished && !$isCancelled) {
+            $kind = 'active';
+        }
+        unset($ev['sortTs']);
+        $ev['statusKind'] = $kind;
+        $publicTimeline[] = $ev;
+    }
+
+    // Separate expected next steps clearly from actual recorded history
+    $expectedNextSteps = [];
+    if (!$isFinished && !$isCancelled) {
+        if (mb_strpos($curState, 'รอรับเรื่อง') !== false) {
+            $expectedNextSteps[] = ['title' => 'หน่วยงานรับเรื่องและตรวจสอบพื้นที่', 'description' => 'รอเจ้าหน้าที่รับเรื่องและตรวจสอบรายละเอียด'];
+            $expectedNextSteps[] = ['title' => 'กำลังดำเนินการแก้ไขปัญหา', 'description' => 'รอการมอบหมายและลงพื้นที่ดำเนินการ'];
+            $expectedNextSteps[] = ['title' => 'ดำเนินการเสร็จสิ้น', 'description' => 'รอการยืนยันผลการแก้ไขปัญหา'];
+        } elseif (mb_strpos($curState, 'รับเรื่อง') !== false || mb_strpos($curState, 'ส่งต่อ') !== false) {
+            $expectedNextSteps[] = ['title' => 'กำลังดำเนินการแก้ไขปัญหา', 'description' => 'รอหน่วยงานลงพื้นที่และอัปเดตความคืบหน้า'];
+            $expectedNextSteps[] = ['title' => 'ดำเนินการเสร็จสิ้น', 'description' => 'รอการยืนยันผลการแก้ไขปัญหา'];
+        } else {
+            $expectedNextSteps[] = ['title' => 'ดำเนินการเสร็จสิ้น', 'description' => 'รอการยืนยันผลการแก้ไขปัญหาจากหน่วยงาน'];
+        }
+    }
+
+    return [
+        'case'              => $sanitizedCase,
+        'public_timeline'   => $publicTimeline,
+        'expectedNextSteps' => $expectedNextSteps,
+        'historyCount'      => count($publicTimeline),
     ];
 }
 
@@ -230,7 +442,7 @@ function public_load_data_sources(?PDO $pdo): array {
         ")->fetchAll();
 
         $complaints = $pdo->query("
-            SELECT ticket_id, state_name, agency_status, problem_type, description, location, org_name, ticket_datetime, satisfaction_stars, recorded_at
+            SELECT ticket_id, state_name, agency_status, problem_type, description, location, org_name, photo_url, ticket_datetime, satisfaction_stars, recorded_at
             FROM tbl_complaints_monitoring
             WHERE (is_in_scope = 1 OR is_in_scope IS NULL) AND ticket_id NOT LIKE '%TEST%'
             ORDER BY id DESC
@@ -562,10 +774,33 @@ function handle_public_api_routes(string $method, string $path, ?PDO $pdo, array
             'endpoints' => [
                 ['path' => '/api/public/overview',      'auth' => 'Open / Optional X-API-Key', 'desc' => 'สรุปภาพรวม 5 ด้าน, จุดแข็งระบบ, และ Traffy summary'],
                 ['path' => '/api/public/environment',   'auth' => 'Open / Optional X-API-Key', 'desc' => 'ข้อมูลสิ่งแวดล้อมล่าสุด (น้ำ, ฝน, อ่างฯ, PM 2.5)'],
-                ['path' => '/api/public/traffy',        'auth' => 'Open / Optional X-API-Key', 'desc' => 'สรุปสถิติและเรื่องร้องเรียน Traffy Fondue ลำปาง (คัดกรอง PII แล้ว)'],
+                ['path' => '/api/public/traffy',                      'auth' => 'Open / Optional X-API-Key', 'desc' => 'สรุปสถิติและเรื่องร้องเรียน Traffy Fondue ลำปาง (คัดกรอง PII แล้ว)'],
+                ['path' => '/api/public/traffy/cases/{id}/timeline',  'auth' => 'Open / Optional X-API-Key', 'desc' => 'ไทม์ไลน์เหตุการณ์จริงรายเคส (Zero-PII public_timeline จากประวัติฐานข้อมูลจริง)'],
                 ['path' => '/api/public/agency/traffy', 'auth' => 'Required: X-API-Key',       'desc' => 'Feed เฉพาะหน่วยงาน รองรับ ?agency=all|pao|other&state=...&format=json|csv'],
                 ['path' => '/api/public/agency/all',    'auth' => 'Required: X-API-Key',       'desc' => 'ข้อมูลบูรณาการครบทั้ง 5 ด้านสำหรับระบบภายนอกของหน่วยงาน'],
             ],
+        ]);
+    }
+
+    // Per-case Zero-PII Public Timeline endpoint (loaded on-demand, never exposes raw_timeline)
+    if (preg_match('#^/api/public/traffy/cases/([^/]+)/timeline$#', $path, $tm)) {
+        $ticketId = rawurldecode($tm[1]);
+        $bundle = public_build_case_timeline($pdo, $ticketId);
+        if ($bundle === null) {
+            send_json(['success' => false, 'error' => 'ไม่พบเรื่องร้องเรียนที่ระบุ'], 404);
+        }
+        send_json([
+            'success'           => true,
+            'meta'              => [
+                'generatedAt'        => date('c'),
+                'dataSource'         => $pdo !== null ? 'live_mysql' : 'cloud_fallback',
+                'piiProtected'       => true,
+                'rateLimitRemaining' => $rl['remaining'],
+            ],
+            'case'              => $bundle['case'],
+            'public_timeline'   => $bundle['public_timeline'],
+            'expectedNextSteps' => $bundle['expectedNextSteps'],
+            'historyCount'      => $bundle['historyCount'],
         ]);
     }
 

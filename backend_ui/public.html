@@ -91,13 +91,123 @@
       border: 1px solid #E2E8F0;
       border-radius: 18px;
       box-shadow: 0 6px 20px rgba(7, 84, 63, 0.08);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, border-color 0.22s ease;
     }
 
     .status-card:hover {
-      transform: translateY(-2px);
+      transform: translateY(-3px);
       border-color: #A7D7BE;
-      box-shadow: 0 10px 24px rgba(7, 84, 63, 0.13);
+      box-shadow: 0 12px 26px rgba(7, 84, 63, 0.14);
+    }
+
+    .status-card:active {
+      transform: translateY(-1px) scale(0.985);
+    }
+
+    .status-card .card-icon-wrap {
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .status-card:hover .card-icon-wrap {
+      transform: scale(1.08) rotate(-3deg);
+    }
+
+    /* Concept C Smooth UI Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.92); }
+      70% { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes sheetUp {
+      from { opacity: 0; transform: translateY(48px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes drawerIn {
+      from { opacity: 0; transform: translateX(36px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes barGrow {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+
+    @keyframes softPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.08); }
+    }
+
+    @keyframes heroDrift {
+      0%, 100% { transform: translateY(0px) translateX(0px); }
+      50% { transform: translateY(-4px) translateX(8px); }
+    }
+
+    .anim-fade-up {
+      animation: fadeUp 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .anim-pop {
+      animation: popIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .anim-modal {
+      animation: modalIn 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .anim-sheet {
+      animation: sheetUp 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .anim-drawer {
+      animation: drawerIn 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .anim-bar-fill {
+      transform-origin: left center;
+      animation: barGrow 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .anim-soft-pulse {
+      animation: softPulse 2.2s ease-in-out infinite;
+    }
+
+    .hero-scenic-drift {
+      animation: heroDrift 14s ease-in-out infinite;
+    }
+
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal.in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* SVG Map Pin Hover */
+    .map-pin-group {
+      transform-box: fill-box;
+      transform-origin: center;
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .map-pin-group:hover {
+      transform: scale(1.24);
     }
 
     .hero-banner {
@@ -295,7 +405,7 @@
   <!-- ==================== 2. HERO SECTION (SITUATION AWARENESS) ==================== -->
   <section id="hero" class="hero-banner text-white scroll-mt-24">
     <!-- Subtle Lampang Scenic Backdrop (Mountains + Clock Tower Silhouette) -->
-    <svg class="pointer-events-none absolute inset-0 w-full h-full object-cover opacity-25" viewBox="0 0 1440 320"
+    <svg class="pointer-events-none hero-scenic-drift absolute inset-0 w-full h-full object-cover opacity-25" viewBox="0 0 1440 320"
       preserveAspectRatio="xMidYMax slice" aria-hidden="true">
       <defs>
         <linearGradient id="mtnFar" x1="0" y1="0" x2="0" y2="1">
@@ -406,7 +516,7 @@
           class="status-card text-left p-3.5 sm:p-4 flex sm:flex-col items-center sm:items-stretch justify-between gap-3 group">
           <div class="flex items-center gap-3 sm:gap-2.5 min-w-0">
             <span
-              class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
+              class="card-icon-wrap w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M2 12c1.5-1.5 3.5-1.5 5 0s3.5 1.5 5 0 3.5-1.5 5 0 3.5 1.5 5 0M2 17c1.5-1.5 3.5-1.5 5 0s3.5 1.5 5 0 3.5-1.5 5 0 3.5 1.5 5 0M4 7c1.5-1.5 3.5-1.5 5 0s3.5 1.5 5 0 3.5-1.5 5 0" />
@@ -434,7 +544,7 @@
           class="status-card text-left p-3.5 sm:p-4 flex sm:flex-col items-center sm:items-stretch justify-between gap-3 group">
           <div class="flex items-center gap-3 sm:gap-2.5 min-w-0">
             <span
-              class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+              class="card-icon-wrap w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
@@ -463,7 +573,7 @@
           class="status-card text-left p-3.5 sm:p-4 flex sm:flex-col items-center sm:items-stretch justify-between gap-3 group">
           <div class="flex items-center gap-3 sm:gap-2.5 min-w-0">
             <span
-              class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-cyan-50 text-cyan-700 flex items-center justify-center shrink-0">
+              class="card-icon-wrap w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-cyan-50 text-cyan-700 flex items-center justify-center shrink-0">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M3 7h4l2 12H3V7zm14 0h4v12h-6l2-12zM7 11h10M8 15h8" />
@@ -491,7 +601,7 @@
           class="status-card text-left p-3.5 sm:p-4 flex sm:flex-col items-center sm:items-stretch justify-between gap-3 group">
           <div class="flex items-center gap-3 sm:gap-2.5 min-w-0">
             <span
-              class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
+              class="card-icon-wrap w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2" />
@@ -519,7 +629,7 @@
           class="status-card text-left p-3.5 sm:p-4 flex sm:flex-col items-center sm:items-stretch justify-between gap-3 group sm:col-span-2 lg:col-span-1">
           <div class="flex items-center gap-3 sm:gap-2.5 min-w-0">
             <span
-              class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-pink-50 text-brand-pink flex items-center justify-center shrink-0">
+              class="card-icon-wrap w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-pink-50 text-brand-pink flex items-center justify-center shrink-0">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
@@ -1124,7 +1234,7 @@
   <!-- ==================== MOBILE NAVIGATION DRAWER ==================== -->
   <div id="mobileDrawer" class="hidden fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="เมนูเพิ่มเติม">
     <div class="absolute inset-0 bg-slate-900/55 backdrop-blur-xs" onclick="toggleMobileDrawer(false)"></div>
-    <div class="absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white shadow-2xl p-5 flex flex-col justify-between">
+    <div class="anim-drawer absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white shadow-2xl p-5 flex flex-col justify-between">
       <div class="space-y-5">
         <div class="flex items-center justify-between border-b border-slate-200 pb-3">
           <div class="flex items-center gap-2.5">
@@ -1180,7 +1290,7 @@
     aria-label="รายละเอียดเรื่องร้องเรียนและประวัติการดำเนินงาน">
     <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-xs" onclick="closeTraffyMobileModal()"></div>
     <div
-      class="absolute inset-x-0 bottom-0 top-10 sm:top-16 bg-white rounded-t-3xl shadow-2xl flex flex-col overflow-hidden">
+      class="anim-sheet absolute inset-x-0 bottom-0 top-10 sm:top-16 bg-white rounded-t-3xl shadow-2xl flex flex-col overflow-hidden">
       <div class="flex items-center justify-between px-4 py-3.5 border-b border-slate-200 bg-brand-dark text-white">
         <span class="font-bold text-sm">รายละเอียดเรื่องร้องเรียน &amp; ประวัติจริง</span>
         <button type="button" onclick="closeTraffyMobileModal()" aria-label="ปิดหน้าต่าง"
@@ -1195,7 +1305,7 @@
     aria-modal="true" aria-label="ข้อมูลเปิดสำหรับหน่วยงาน">
     <div class="absolute inset-0 bg-slate-950/70 backdrop-blur-xs" onclick="closeOpenDataModal()"></div>
     <div
-      class="relative z-10 w-full max-w-5xl max-h-[90vh] bg-slate-900 text-slate-100 rounded-3xl border border-slate-700 shadow-2xl flex flex-col overflow-hidden">
+      class="anim-modal relative z-10 w-full max-w-5xl max-h-[90vh] bg-slate-900 text-slate-100 rounded-3xl border border-slate-700 shadow-2xl flex flex-col overflow-hidden">
       <!-- Modal Header -->
       <div class="flex flex-wrap items-center justify-between gap-3 px-5 sm:px-7 py-4 border-b border-slate-800">
         <div>
@@ -1319,7 +1429,7 @@
   <div id="quickSearchModal" class="hidden fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 p-4"
     role="dialog" aria-modal="true" aria-label="ค้นหาด่วน">
     <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-xs" onclick="closeQuickSearch()"></div>
-    <div class="relative z-10 w-full max-w-xl bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden">
+    <div class="anim-modal relative z-10 w-full max-w-xl bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden">
       <div class="flex items-center gap-2.5 px-4 py-3 border-b border-slate-200">
         <svg class="w-5 h-5 text-brand-green shrink-0" fill="none" stroke="currentColor" stroke-width="2.2"
           viewBox="0 0 24 24">
@@ -1340,7 +1450,7 @@
   <div id="photoLightbox" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4"
     onclick="closePhotoLightbox()">
     <div class="absolute inset-0 bg-slate-950/85"></div>
-    <div class="relative z-10 max-w-3xl max-h-[88vh] flex flex-col items-end gap-2" onclick="event.stopPropagation()">
+    <div class="anim-modal relative z-10 max-w-3xl max-h-[88vh] flex flex-col items-end gap-2" onclick="event.stopPropagation()">
       <button type="button" onclick="closePhotoLightbox()"
         class="px-3 py-1 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs font-bold">ปิดรูปภาพ ✕</button>
       <img id="photoLightboxImg" src="" alt="ภาพประกอบเรื่องร้องเรียน"
@@ -1813,8 +1923,8 @@
       const isFallback = ov.meta?.dataSource === 'cloud_fallback';
       document.getElementById('cloudFallbackBanner').classList.toggle('hidden', !isFallback);
       document.getElementById('heroSourcePill').innerHTML = isFallback
-        ? '<span class="w-2 h-2 rounded-full bg-amber-400"></span><span>กำลังแสดงข้อมูลสำรอง (Cloud Failover) · Zero-PII</span>'
-        : '<span class="w-2 h-2 rounded-full bg-emerald-400"></span><span>ข้อมูลสดจากฐานข้อมูล อบจ.ลำปาง · Zero-PII</span>';
+        ? '<span class="w-2 h-2 rounded-full bg-amber-400 anim-soft-pulse"></span><span>กำลังแสดงข้อมูลสำรอง (Cloud Failover) · Zero-PII</span>'
+        : '<span class="w-2 h-2 rounded-full bg-emerald-400 anim-soft-pulse"></span><span>ข้อมูลสดจากฐานข้อมูล อบจ.ลำปาง · Zero-PII</span>';
 
       // Hero Title & Amphoe Reset Button
       document.getElementById('heroTitle').textContent = amp === 'all'
@@ -1842,8 +1952,22 @@
       badgeIconEl.className = `w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${heroPalette.bg}`;
       badgeIconEl.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24">${heroPalette.icon}</svg>`;
       badgeTextEl.className = `text-lg sm:text-xl font-extrabold tracking-tight whitespace-nowrap ${heroPalette.text}`;
+      const heroBadgeWrap = document.getElementById('heroStatusBadge');
+      if (heroBadgeWrap) {
+        heroBadgeWrap.classList.remove('anim-pop');
+        void heroBadgeWrap.offsetWidth;
+        heroBadgeWrap.classList.add('anim-pop');
+      }
       document.getElementById('heroDescription').textContent = o.desc;
       document.getElementById('heroUpdatedAt').textContent = formatThaiDateTime(getLatestTimestamp(), true);
+
+      // Animate 5 status cards with subtle stagger
+      document.querySelectorAll('#status-overview .status-card').forEach((card, i) => {
+        card.classList.remove('anim-fade-up');
+        void card.offsetWidth;
+        card.style.animationDelay = `${i * 55}ms`;
+        card.classList.add('anim-fade-up');
+      });
 
       // Helper to apply badge style cleanly
       const applyCard = (badgeId, hintId, label, level, hint) => {
@@ -2015,7 +2139,9 @@
       badge.className = `px-2.5 py-0.5 rounded-full text-xs font-bold ${pillClass(pt.level)}`;
       badge.textContent = pt.statusLabel;
       document.getElementById('mapDetailMetrics').innerHTML = pt.metricsHtml;
-      box.classList.remove('hidden');
+      box.classList.remove('hidden', 'anim-fade-up');
+      void box.offsetWidth;
+      box.classList.add('anim-fade-up');
     }
 
     function closeMapStationDetail() {
@@ -2150,6 +2276,10 @@
 
       const markersSvg = points.map((pt, idx) => {
         let shapeSvg = '';
+        const isHighAlert = pt.level === 'critical' || pt.level === 'high';
+        const alertRing = isHighAlert
+          ? `<circle cx="${pt.x}" cy="${pt.y}" r="10" fill="none" stroke="${pt.color}" stroke-width="1.8" opacity="0.65"><animate attributeName="r" values="7;15;7" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.75;0;0.75" dur="2.4s" repeatCount="indefinite"/></circle>`
+          : '';
         if (pt.shape === 'square') {
           shapeSvg = `<rect x="${pt.x - 5.5}" y="${pt.y - 5.5}" width="11" height="11" rx="3" fill="${pt.color}" stroke="#FFFFFF" stroke-width="2" />`;
         } else if (pt.shape === 'rain') {
@@ -2158,10 +2288,11 @@
           shapeSvg = `<circle cx="${pt.x}" cy="${pt.y}" r="6.2" fill="${pt.color}" stroke="#FFFFFF" stroke-width="2" />`;
         }
         return `
-          <g class="cursor-pointer" data-idx="${idx}"
+          <g class="cursor-pointer map-pin-group" data-idx="${idx}"
              onmouseenter="window.__mapShowTip(${idx}, event)"
              onmouseleave="hideMapTooltip()"
              onclick="window.__mapClickPin(${idx}, event)">
+            ${alertRing}
             ${shapeSvg}
           </g>`;
       }).join('');
@@ -2218,9 +2349,13 @@
             <path d="M 114 426 L 154 446 L 198 456" />
             <path d="M 126 446 L 138 496" />
           </g>
-          <!-- Wang River & Tributaries -->
+          <!-- Wang River & Tributaries (Animated Flow) -->
           <path d="M 232 58 C 236 104, 232 146, 224 188 C 216 226, 206 252, 194 282 C 182 312, 174 344, 166 378 C 158 412, 150 446, 128 474"
             fill="none" stroke="url(#wangRiverConceptC)" stroke-width="3.2" stroke-linecap="round" opacity="0.92" />
+          <path d="M 232 58 C 236 104, 232 146, 224 188 C 216 226, 206 252, 194 282 C 182 312, 174 344, 166 378 C 158 412, 150 446, 128 474"
+            fill="none" stroke="#E0F2FE" stroke-width="1.3" stroke-dasharray="6 10" stroke-linecap="round" opacity="0.85">
+            <animate attributeName="stroke-dashoffset" from="32" to="0" dur="2.6s" repeatCount="indefinite" />
+          </path>
           <path d="M 294 148 C 278 182, 256 218, 228 248 C 214 262, 204 272, 194 282"
             fill="none" stroke="#38BDF8" stroke-width="1.6" stroke-linecap="round" opacity="0.65" />
           <path d="M 152 252 C 166 266, 178 276, 194 282"
@@ -2241,6 +2376,9 @@
       if (!el) return;
       el.classList.toggle('hidden', !open);
       if (open) {
+        el.classList.remove('anim-fade-up');
+        void el.offsetWidth;
+        el.classList.add('anim-fade-up');
         renderEnvTable();
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
@@ -2368,8 +2506,10 @@
 
     function setTraffyViewMode(mode) {
       state.traffyViewMode = mode;
-      document.getElementById('traffyCasesView').classList.toggle('hidden', mode !== 'cases');
-      document.getElementById('traffyStatsView').classList.toggle('hidden', mode !== 'stats');
+      const casesEl = document.getElementById('traffyCasesView');
+      const statsEl = document.getElementById('traffyStatsView');
+      casesEl.classList.toggle('hidden', mode !== 'cases');
+      statsEl.classList.toggle('hidden', mode !== 'stats');
       const bCases = document.getElementById('btnTraffyModeCases');
       const bStats = document.getElementById('btnTraffyModeStats');
       bCases.className = mode === 'cases'
@@ -2378,6 +2518,13 @@
       bStats.className = mode === 'stats'
         ? 'px-3.5 py-2 rounded-lg bg-brand-dark text-white shadow-sm transition'
         : 'px-3.5 py-2 rounded-lg text-slate-600 hover:text-brand-ink transition';
+
+      if (mode === 'stats') {
+        statsEl.classList.remove('anim-fade-up');
+        void statsEl.offsetWidth;
+        statsEl.classList.add('anim-fade-up');
+        ['tfTotal', 'tfPao', 'tfOther', 'tfDone'].forEach(id => countUpText(document.getElementById(id), 750));
+      }
     }
 
     function setTraffyTab(tab) {
@@ -2481,7 +2628,7 @@
               <b class="text-brand-ink">${cnt}</b>
             </div>
             <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
-              <div class="h-full ${colorCls} rounded-full" style="width:${pct}%"></div>
+              <div class="h-full ${colorCls} rounded-full anim-bar-fill" style="width:${pct}%"></div>
             </div>
           </button>`;
       }).join('') || '<div class="text-brand-muted">ไม่มีข้อมูล</div>';
@@ -2534,13 +2681,14 @@
         return;
       }
 
-      listEl.innerHTML = pageItems.map(it => {
+      listEl.innerHTML = pageItems.map((it, idx) => {
         const isSel = state.selectedTicketId === it.ticket_id;
         const st = traffyStatePill(it.state_name);
         const title = it.problem_type && it.problem_type !== 'อื่นๆ' ? it.problem_type : (it.summary || 'เรื่องร้องเรียนทั่วไป').slice(0, 32);
         return `
           <button type="button" onclick="selectTraffyCase('${esc(it.ticket_id)}')"
-            class="w-full text-left rounded-2xl border p-3 flex items-center gap-3 transition group ${isSel ? 'border-brand-green bg-emerald-50/55 ring-1 ring-brand-green/40 shadow-xs' : 'border-slate-200 bg-white hover:border-emerald-300 hover:bg-slate-50/70'}">
+            style="animation-delay:${idx * 45}ms"
+            class="anim-fade-up w-full text-left rounded-2xl border p-3 flex items-center gap-3 transition group ${isSel ? 'border-brand-green bg-emerald-50/55 ring-1 ring-brand-green/40 shadow-xs' : 'border-slate-200 bg-white hover:border-emerald-300 hover:bg-slate-50/70'}">
             ${renderThumbHtml(it.photo_url, 'w-16 h-14 sm:w-20 sm:h-16')}
             <div class="flex-1 min-w-0 space-y-1">
               <div class="flex items-center justify-between gap-2">
@@ -2644,7 +2792,7 @@
 
         let dotHtml = '';
         if (isActive) {
-          dotHtml = `<span class="w-7 h-7 rounded-full bg-amber-400 text-amber-950 flex items-center justify-center ring-4 ring-amber-100 shrink-0 z-10">
+          dotHtml = `<span class="w-7 h-7 rounded-full bg-amber-400 text-amber-950 flex items-center justify-center ring-4 ring-amber-100 anim-soft-pulse shrink-0 z-10">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 2"/></svg>
           </span>`;
         } else if (isCancelled) {
@@ -2664,7 +2812,7 @@
           : 'pb-4';
 
         return `
-          <div class="flex gap-3.5">
+          <div class="flex gap-3.5 anim-fade-up" style="animation-delay:${idx * 55}ms">
             <div class="flex flex-col items-center">
               ${dotHtml}
               ${lineHtml}
@@ -2987,11 +3135,55 @@
       }
     });
 
+    const REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function countUpText(el, dur = 800) {
+      if (!el || REDUCED_MOTION) return;
+      const finalText = el.textContent || '';
+      const m = finalText.match(/\d+(?:\.\d+)?/);
+      if (!m) return;
+      const target = parseFloat(m[0]);
+      const dec = (m[0].split('.')[1] || '').length;
+      const pre = finalText.slice(0, m.index);
+      const post = finalText.slice(m.index + m[0].length);
+      const t0 = performance.now();
+      (function tick(now) {
+        const p = Math.min(1, (now - t0) / dur);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = pre + (target * eased).toFixed(dec) + post;
+        if (p < 1) requestAnimationFrame(tick);
+        else el.textContent = finalText;
+      })(t0);
+    }
+
+    function initScrollReveal() {
+      const secs = document.querySelectorAll('#area-map, #traffy-lampang, section[aria-label="หมายเหตุและข้อมูลเปิดสำหรับหน่วยงาน"]');
+      if (!('IntersectionObserver' in window) || REDUCED_MOTION) {
+        secs.forEach(s => s.classList.add('reveal', 'in'));
+        return;
+      }
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.06 });
+      secs.forEach(s => {
+        s.classList.add('reveal');
+        const r = s.getBoundingClientRect();
+        if (r.top < window.innerHeight * 0.95) s.classList.add('in');
+        else io.observe(s);
+      });
+    }
+
     // Boot
     try {
       const savedScale = parseInt(localStorage.getItem('lppao_font_scale') || '0', 10);
       if (!isNaN(savedScale) && savedScale > 0) applyFontScale(savedScale);
     } catch (e) { }
+    initScrollReveal();
     populateDistrictDropdown();
     loadPublicDashboard();
   </script>

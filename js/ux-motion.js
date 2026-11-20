@@ -11,14 +11,14 @@
   // Restore saved font-size preference
   try {
     if (localStorage.getItem('ws2_large_text') === '1') {
-      document.body && document.body.classList.add('ws-large-text');
+      document.documentElement.classList.add('ws-large-text');
     }
   } catch {}
 
   document.addEventListener('DOMContentLoaded', () => {
     try {
       if (localStorage.getItem('ws2_large_text') === '1') {
-        document.body.classList.add('ws-large-text');
+        document.documentElement.classList.add('ws-large-text');
       }
     } catch {}
 
@@ -69,10 +69,10 @@
     btnFont.type = 'button';
     btnFont.className = 'ws-dock-btn';
     btnFont.title = 'ขยาย/ลดขนาดตัวอักษร';
-    btnFont.textContent = document.body.classList.contains('ws-large-text') ? 'ก-' : 'ก+';
+    btnFont.textContent = document.documentElement.classList.contains('ws-large-text') ? 'ก-' : 'ก+';
     btnFont.onclick = () => {
-      document.body.classList.toggle('ws-large-text');
-      const on = document.body.classList.contains('ws-large-text');
+      document.documentElement.classList.toggle('ws-large-text');
+      const on = document.documentElement.classList.contains('ws-large-text');
       btnFont.textContent = on ? 'ก-' : 'ก+';
       try { localStorage.setItem('ws2_large_text', on ? '1' : '0'); } catch {}
     };

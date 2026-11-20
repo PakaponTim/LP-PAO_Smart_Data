@@ -22,8 +22,8 @@
   50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
 }
 
-body.ws-large-text {
-  font-size: 108% !important;
+html.ws-large-text {
+  font-size: 118% !important;
 }
 
 /* Top Fetch Progress Bar */

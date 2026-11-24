@@ -38,7 +38,7 @@ $rootFiles = [
     'operations.html', 'accounts.html', 'login.html', 'setup.html', 'guide.html', 'emergency_cloud.html', 'db_compare.html', 'mobile.html', 'public.html',
     'endpoint.php', 'cron.php', 'worker.php', 'server_setup.php',
     'auth-client.js', 'socketio_client.js', 'setup.js', 'accounts.js', 'operations.js',
-    'config.json', 'domain_config.json', 'logo_pao.png', 'drought_standard.png', 'pm25_standard.png', 'complaints_standard.png',
+    'config.json', 'domain_config.json', 'logo_pao.png', 'logo_hii.jpg', 'drought_standard.png', 'pm25_standard.png', 'complaints_standard.png',
     '.htaccess'
 ];
 

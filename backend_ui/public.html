@@ -282,16 +282,21 @@
   <!-- ==================== 1. TOP NAVIGATION BAR (PC / TABLET / SMARTPHONE) ==================== -->
   <header class="sticky top-0 z-50 bg-brand-dark text-white shadow-sm">
     <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-[64px] md:h-[72px] flex items-center justify-between gap-2 sm:gap-3">
-      <!-- Left: Original PAO Logo + 2-Line Organization Name -->
-      <a href="#hero" onclick="setActiveNav('hero')" class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-        <img src="./logo_pao.png" alt="ตราสัญลักษณ์ องค์การบริหารส่วนจังหวัดลำปาง"
-          class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-white p-0.5 object-contain shrink-0 ring-2 ring-brand-pink/75 shadow-sm" />
+      <!-- Left: Original PAO Logo + HII (สสน.) Partner Logo + 2-Line Organization Name -->
+      <a href="#hero" onclick="setActiveNav('hero')" class="flex items-center gap-2 sm:gap-2.5 min-w-0">
+        <div class="flex items-center -space-x-1.5 sm:space-x-1.5 shrink-0">
+          <img src="./logo_pao.png" alt="ตราสัญลักษณ์ องค์การบริหารส่วนจังหวัดลำปาง"
+            class="w-10 h-10 md:w-11 md:h-11 rounded-full bg-white p-0.5 object-contain shrink-0 ring-2 ring-brand-pink/80 shadow-sm relative z-10" />
+          <img src="./logo_hii.jpg" alt="สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน) สสน."
+            title="ข้อมูลต้นทางสิ่งแวดล้อม: สถาบันสารสนเทศทรัพยากรน้ำ (สสน.)"
+            class="w-10 h-10 md:w-11 md:h-11 rounded-full bg-white p-0.5 object-contain shrink-0 ring-2 ring-emerald-300/80 shadow-sm" />
+        </div>
         <div class="min-w-0 leading-tight">
-          <div class="text-sm sm:text-base md:text-[17px] lg:text-[18px] font-bold tracking-tight truncate">
+          <div class="text-[13px] sm:text-base md:text-[17px] lg:text-[18px] font-bold tracking-tight truncate">
             ศูนย์ข้อมูลสาธารณะ อบจ.ลำปาง
           </div>
-          <div class="text-[11px] sm:text-xs text-emerald-100/90 font-medium truncate">
-            LP-PAO Smart Data
+          <div class="text-[10.5px] sm:text-xs text-emerald-100/90 font-medium truncate">
+            LP-PAO Smart Data · ร่วมกับ สสน.
           </div>
         </div>
       </a>
@@ -1220,15 +1225,24 @@
 
   </main>
 
-  <!-- ==================== 7. FOOTER WITH SOFT GREEN DECORATIVE WAVE ==================== -->
+  <!-- ==================== 7. FOOTER WITH SOFT GREEN DECORATIVE WAVE & HII ATTRIBUTION ==================== -->
   <footer class="relative overflow-hidden mt-2 pt-5 pb-8 text-center">
     <svg class="pointer-events-none absolute inset-x-0 bottom-0 w-full h-16 opacity-60" viewBox="0 0 1440 64"
       preserveAspectRatio="none" aria-hidden="true">
       <path d="M0 36 Q360 4 720 34 T1440 24 L1440 64 L0 64 Z" fill="#D1FAE5" />
       <path d="M0 48 Q420 22 860 46 T1440 34 L1440 64 L0 64 Z" fill="#A7F3D0" opacity="0.55" />
     </svg>
-    <div class="relative z-10 max-w-[1440px] mx-auto px-4 text-[13px] font-medium text-brand-muted">
-      ศูนย์ข้อมูลสาธารณะ องค์การบริหารส่วนจังหวัดลำปาง (อบจ.ลำปาง) &nbsp;|&nbsp; LP-PAO Smart Data – Citizen Intelligence
+    <div class="relative z-10 max-w-[1440px] mx-auto px-4 space-y-1.5">
+      <div class="inline-flex flex-wrap items-center justify-center gap-2 text-[13px] font-semibold text-brand-ink">
+        <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-5 h-5 rounded-full bg-white object-contain" />
+        <span>ศูนย์ข้อมูลสาธารณะ องค์การบริหารส่วนจังหวัดลำปาง (อบจ.ลำปาง)</span>
+        <span class="text-slate-300">|</span>
+        <img src="./logo_hii.jpg" alt="สสน." class="w-5 h-5 rounded-full bg-white object-contain border border-slate-200" />
+        <span class="text-brand-dark">ข้อมูลคุณภาพอากาศ · ระดับน้ำ · อ่างเก็บน้ำ · ปริมาณฝน โดย สสน.</span>
+      </div>
+      <div class="text-[12px] text-brand-muted">
+        LP-PAO Smart Data – Citizen Intelligence · ข้อมูลเรื่องร้องเรียนจาก Traffy Fondue (Zero-PII)
+      </div>
     </div>
   </footer>
 
@@ -1284,11 +1298,14 @@
     <div class="anim-drawer absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white shadow-2xl p-5 flex flex-col justify-between">
       <div class="space-y-5">
         <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-          <div class="flex items-center gap-2.5">
-            <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-9 h-9 rounded-full object-contain" />
+          <div class="flex items-center gap-2">
+            <div class="flex items-center -space-x-1 shrink-0">
+              <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-8 h-8 rounded-full bg-white object-contain ring-1 ring-pink-200" />
+              <img src="./logo_hii.jpg" alt="สสน." class="w-8 h-8 rounded-full bg-white object-contain ring-1 ring-emerald-200" />
+            </div>
             <div class="leading-tight">
               <div class="font-bold text-sm text-brand-ink">ศูนย์ข้อมูลสาธารณะ อบจ.ลำปาง</div>
-              <div class="text-[11px] text-brand-muted">LP-PAO Smart Data</div>
+              <div class="text-[11px] text-brand-muted">LP-PAO Smart Data · สสน.</div>
             </div>
           </div>
           <button type="button" onclick="toggleMobileDrawer(false)" aria-label="ปิดเมนู"
@@ -1383,10 +1400,13 @@
     <div class="anim-modal relative z-10 w-full max-w-3xl max-h-[88vh] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden">
       <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-brand-mint via-emerald-50 to-brand-pinkSoft/50">
         <div class="flex items-center gap-3">
-          <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-10 h-10 rounded-full bg-white p-0.5 object-contain shadow-2xs" />
+          <div class="flex items-center -space-x-1 shrink-0">
+            <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-9 h-9 rounded-full bg-white p-0.5 object-contain shadow-2xs ring-1 ring-pink-200" />
+            <img src="./logo_hii.jpg" alt="สสน." class="w-9 h-9 rounded-full bg-white p-0.5 object-contain shadow-2xs ring-1 ring-emerald-200" />
+          </div>
           <div>
             <h2 class="text-base sm:text-lg font-extrabold text-brand-dark">คู่มือการใช้งานแบบเข้าใจง่าย</h2>
-            <p class="text-xs text-brand-muted">ดูสีและภาพประกอบ ก็เข้าใจสถานการณ์จังหวัดลำปางได้ทันที</p>
+            <p class="text-xs text-brand-muted">ข้อมูลสิ่งแวดล้อม 4 ด้านจาก สสน. · เรื่องร้องเรียนจาก Traffy Fondue</p>
           </div>
         </div>
         <button type="button" onclick="closeGuideModal()" aria-label="ปิดคู่มือ"

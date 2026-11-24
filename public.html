@@ -986,7 +986,8 @@
           </div>
 
           <div class="flex flex-col sm:flex-row gap-2 text-xs flex-1 md:max-w-lg">
-            <input id="traffySearch" oninput="onTraffyFilterChange()" type="text"
+            <input id="traffySearch" name="traffy_case_search" oninput="onTraffyFilterChange()" type="search"
+              autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true"
               placeholder="ค้นหารหัสเรื่อง / ประเภทปัญหา / พื้นที่..."
               class="flex-1 h-10 px-3.5 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white text-xs sm:text-sm" />
             <select id="traffyFilterAgency" onchange="onTraffyFilterChange()"
@@ -1110,7 +1111,8 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2 text-xs">
-          <input id="envSearchInput" oninput="renderEnvTable()" type="text"
+          <input id="envSearchInput" name="env_station_search" oninput="renderEnvTable()" type="search"
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true"
             placeholder="ค้นหาชื่อสถานี / ตำบล / อำเภอ..."
             class="flex-1 sm:w-64 h-9 bg-slate-50 border border-slate-300 rounded-xl px-3 text-xs focus:bg-white" />
           <label
@@ -1747,7 +1749,8 @@
                 <button type="button" onclick="probePublicApi('/api/public/agency/traffy?agency=pao&limit=5', true)"
                   class="px-3 py-1.5 rounded-lg bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 shrink-0">ทดสอบด้วย Key</button>
               </div>
-              <input id="agencyKeyTestInput" type="password"
+              <input id="agencyKeyTestInput" name="agency_api_key_probe" type="password"
+                autocomplete="new-password" data-lpignore="true"
                 placeholder="วาง X-API-Key (ws2_ag_...) สำหรับหน่วยงานเครือข่าย..."
                 class="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white mono" />
             </div>
@@ -1777,7 +1780,8 @@
           <path stroke-linecap="round" stroke-linejoin="round"
             d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
         </svg>
-        <input id="quickSearchInput" oninput="renderQuickSearchResults()" type="text"
+        <input id="quickSearchInput" name="quick_public_search" oninput="renderQuickSearchResults()" type="search"
+          autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true"
           placeholder="พิมพ์ชื่ออำเภอ สถานีวัดน้ำ อ่างเก็บน้ำ หรือรหัสเรื่องร้องเรียน..."
           class="flex-1 text-sm text-brand-ink outline-none" />
         <button type="button" onclick="closeQuickSearch()"
@@ -3583,6 +3587,17 @@
       const savedScale = parseInt(localStorage.getItem('lppao_font_scale') || '0', 10);
       if (!isNaN(savedScale) && savedScale > 0) applyFontScale(savedScale);
     } catch (e) { }
+    // Guard against browser autofill leaking personal email/credentials into search inputs
+    ['envSearchInput', 'traffySearch', 'quickSearchInput', 'agencyKeyTestInput'].forEach(id => {
+      const inp = document.getElementById(id);
+      if (inp) inp.value = '';
+    });
+    setTimeout(() => {
+      ['envSearchInput', 'traffySearch', 'quickSearchInput'].forEach(id => {
+        const inp = document.getElementById(id);
+        if (inp && document.activeElement !== inp && /@/.test(inp.value)) inp.value = '';
+      });
+    }, 350);
     initScrollReveal();
     populateDistrictDropdown();
     loadPublicDashboard();

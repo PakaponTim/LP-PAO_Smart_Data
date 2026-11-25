@@ -282,24 +282,16 @@
   <!-- ==================== 1. TOP NAVIGATION BAR (PC / TABLET / SMARTPHONE) ==================== -->
   <header class="sticky top-0 z-50 bg-brand-dark text-white shadow-sm">
     <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-[64px] md:h-[72px] flex items-center justify-between gap-2 sm:gap-3">
-      <!-- Left: Original PAO Logo + HII (สสน.) + Traffy Fondue Partner Logos -->
-      <a href="#hero" onclick="setActiveNav('hero')" class="flex items-center gap-2 sm:gap-2.5 min-w-0">
-        <div class="flex items-center -space-x-2 sm:-space-x-1.5 shrink-0">
-          <img src="./logo_pao.png" alt="ตราสัญลักษณ์ องค์การบริหารส่วนจังหวัดลำปาง"
-            class="w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-full bg-white p-0.5 object-contain shrink-0 ring-2 ring-brand-pink/80 shadow-sm relative z-20" />
-          <img src="./logo_hii.jpg" alt="สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน) สสน."
-            title="ข้อมูลต้นทางสิ่งแวดล้อม: สถาบันสารสนเทศทรัพยากรน้ำ (สสน.)"
-            class="w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-full bg-white p-0.5 object-contain shrink-0 ring-2 ring-emerald-300/80 shadow-sm relative z-10" />
-          <img src="./logo_traffy.png" alt="Traffy Fondue ลำปาง"
-            title="ข้อมูลต้นทางเรื่องร้องเรียนในจังหวัดลำปาง: Traffy Fondue ลำปาง"
-            class="w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-xl bg-[#54341C] object-cover shrink-0 ring-2 ring-amber-200/80 shadow-sm" />
-        </div>
+      <!-- Left: Original PAO Logo + 2-Line Organization Name (Clean, matching PC/Tablet/Smartphone mockups) -->
+      <a href="#hero" onclick="setActiveNav('hero')" class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        <img src="./logo_pao.png" alt="ตราสัญลักษณ์ องค์การบริหารส่วนจังหวัดลำปาง"
+          class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white p-0.5 object-contain shrink-0 ring-2 ring-brand-pink/80 shadow-sm" />
         <div class="min-w-0 leading-tight">
-          <div class="text-[12.5px] sm:text-base md:text-[17px] lg:text-[18px] font-bold tracking-tight truncate">
+          <div class="text-sm sm:text-base md:text-[17px] lg:text-[18px] font-bold tracking-tight truncate">
             ศูนย์ข้อมูลสาธารณะ อบจ.ลำปาง
           </div>
-          <div class="text-[10px] sm:text-xs text-emerald-100/90 font-medium truncate">
-            LP-PAO Smart Data · สสน. · Traffy Fondue
+          <div class="text-[11px] sm:text-xs text-emerald-100/90 font-medium truncate">
+            LP-PAO Smart Data
           </div>
         </div>
       </a>
@@ -1225,32 +1217,32 @@
 
   </main>
 
-  <!-- ==================== 7. FOOTER WITH SOFT GREEN DECORATIVE WAVE & HII ATTRIBUTION ==================== -->
-  <footer class="relative overflow-hidden mt-2 pt-5 pb-8 text-center">
-    <svg class="pointer-events-none absolute inset-x-0 bottom-0 w-full h-16 opacity-60" viewBox="0 0 1440 64"
+  <!-- ==================== 7. FOOTER WITH SOFT GREEN DECORATIVE WAVE & PARTNER LOGOS ==================== -->
+  <footer class="relative overflow-hidden mt-3 pt-6 pb-8 text-center">
+    <svg class="pointer-events-none absolute inset-x-0 bottom-0 w-full h-20 opacity-75" viewBox="0 0 1440 80"
       preserveAspectRatio="none" aria-hidden="true">
-      <path d="M0 36 Q360 4 720 34 T1440 24 L1440 64 L0 64 Z" fill="#D1FAE5" />
-      <path d="M0 48 Q420 22 860 46 T1440 34 L1440 64 L0 64 Z" fill="#A7F3D0" opacity="0.55" />
+      <path d="M0 44 Q360 8 720 42 T1440 28 L1440 80 L0 80 Z" fill="#D1FAE5" />
+      <path d="M0 58 Q420 28 860 56 T1440 40 L1440 80 L0 80 Z" fill="#A7F3D0" opacity="0.65" />
     </svg>
-    <div class="relative z-10 max-w-[1440px] mx-auto px-4 space-y-2.5">
-      <div class="flex flex-col lg:flex-row lg:flex-wrap items-center justify-center gap-2 lg:gap-3 text-[12.5px] sm:text-[13px] font-semibold">
-        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/85 border border-slate-200/80 shadow-2xs text-brand-ink whitespace-nowrap">
+    <div class="relative z-10 max-w-[1440px] mx-auto px-4 space-y-2">
+      <div class="flex flex-col lg:flex-row lg:flex-wrap items-center justify-center gap-2 lg:gap-3.5 text-[12.5px] sm:text-[13px] font-semibold">
+        <span class="inline-flex items-center gap-2 text-brand-ink whitespace-nowrap">
           <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-5 h-5 rounded-full bg-white object-contain shrink-0" />
           <span>ศูนย์ข้อมูลสาธารณะ อบจ.ลำปาง</span>
         </span>
         <span class="hidden lg:inline text-slate-300" aria-hidden="true">|</span>
-        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/85 border border-emerald-200/80 shadow-2xs text-brand-dark whitespace-nowrap">
+        <span class="inline-flex items-center gap-2 text-brand-dark whitespace-nowrap">
           <img src="./logo_hii.jpg" alt="สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน)" class="w-5 h-5 rounded-full bg-white object-contain border border-slate-200 shrink-0" />
           <span>สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน)</span>
         </span>
         <span class="hidden lg:inline text-slate-300" aria-hidden="true">|</span>
-        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/85 border border-pink-200/80 shadow-2xs text-brand-pinkDark whitespace-nowrap">
+        <span class="inline-flex items-center gap-2 text-brand-pinkDark whitespace-nowrap">
           <img src="./logo_traffy.png" alt="Traffy Fondue ลำปาง" class="w-5 h-5 rounded-md object-cover shrink-0" />
           <span>ข้อมูลเรื่องร้องเรียน โดย Traffy Fondue ลำปาง</span>
         </span>
       </div>
-      <div class="text-[12px] text-brand-muted">
-        LP-PAO Smart Data – Citizen Intelligence (Zero-PII)
+      <div class="text-[12px] font-medium text-brand-muted">
+        ศูนย์ข้อมูลสาธารณะ องค์การบริหารส่วนจังหวัดลำปาง (อบจ.ลำปาง) &nbsp;|&nbsp; LP-PAO Smart Data – Citizen Intelligence
       </div>
     </div>
   </footer>

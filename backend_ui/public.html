@@ -1509,12 +1509,12 @@
       </div>
     </section>
 
-    <!-- ==================== 5. ANNOUNCEMENT BAR (COHESIVE PASTEL ROSE-WHITE CARD) ==================== -->
+    <!-- ==================== 5. ANNOUNCEMENT BAR (COHESIVE PASTEL ROSE-WHITE CARD — HIGHLIGHTED) ==================== -->
     <section id="announcements" aria-label="ประกาศและข้อควรทราบ"
-      class="ci-card bg-gradient-to-br from-white via-[#FFF8FB] to-[#FCEAF3] border-pink-200/80 px-4 sm:px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-3.5 scroll-mt-24">
-      <div class="flex items-start md:items-center gap-3 min-w-0">
+      class="ci-card bg-gradient-to-br from-white via-[#FFF6FA] to-[#FCE5F0] border-[1.5px] border-pink-300/80 shadow-[0_6px_20px_rgba(236,72,153,0.10)] px-4 sm:px-6 py-4.5 sm:py-5 flex flex-col md:flex-row md:items-center justify-between gap-3.5 scroll-mt-24">
+      <div class="flex items-start md:items-center gap-3.5 min-w-0">
         <!-- 3D Glossy Pink Notification Bell SVG (Self-contained gradient so it renders on all viewports including PC/Tablet) -->
-        <svg class="w-10 h-10 shrink-0 drop-shadow-xs" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <svg class="w-11 h-11 shrink-0 drop-shadow-sm" viewBox="0 0 40 40" fill="none" aria-hidden="true">
           <defs>
             <linearGradient id="bellPinkAnn" x1="12" y1="8" x2="28" y2="31" gradientUnits="userSpaceOnUse">
               <stop offset="0%" stop-color="#FB7185" />
@@ -1522,37 +1522,38 @@
               <stop offset="100%" stop-color="#BE185D" />
             </linearGradient>
           </defs>
+          <ellipse cx="20" cy="36.5" rx="9.5" ry="2" fill="#EC4899" opacity="0.18" />
           <circle cx="20" cy="7.5" r="2.5" fill="#BE185D" />
           <path d="M20 9 C14.2 9 10.5 13.4 10.5 19.2 V25 L7.5 28.2 C7 28.8 7.4 29.8 8.2 29.8 H31.8 C32.6 29.8 33 28.8 32.5 28.2 L29.5 25 V19.2 C29.5 13.4 25.8 9 20 9 Z" fill="url(#bellPinkAnn)" />
           <path d="M14.5 14 C15.8 11.8 17.6 10.8 19.5 10.6" stroke="#FFE4E6" stroke-width="2" stroke-linecap="round" opacity="0.85" />
           <path d="M16.5 30.5 A3.5 3.5 0 0 0 23.5 30.5 Z" fill="#9D174D" />
         </svg>
-        <div class="flex flex-col md:flex-row md:items-center gap-1 md:gap-3 min-w-0">
-          <h2 class="text-base sm:text-[17px] font-extrabold text-brand-ink whitespace-nowrap">
+        <div class="flex flex-col md:flex-row md:items-center gap-1 md:gap-3.5 min-w-0">
+          <h2 class="text-[17.5px] sm:text-[19px] font-extrabold text-brand-ink whitespace-nowrap">
             ประกาศ / ข้อควรทราบ
           </h2>
-          <span class="hidden md:inline-block w-px h-5 bg-pink-200 shrink-0" aria-hidden="true"></span>
-          <p id="announcementSummaryText" class="text-[13.5px] sm:text-[15px] text-brand-ink/85 leading-snug">
+          <span class="hidden md:inline-block w-px h-5 bg-pink-300/80 shrink-0" aria-hidden="true"></span>
+          <p id="announcementSummaryText" class="text-[14.5px] sm:text-[15.5px] font-medium text-brand-ink/90 leading-relaxed">
             กำลังตรวจสอบข้อควรทราบจากข้อมูลล่าสุด...
           </p>
         </div>
       </div>
 
       <button type="button" onclick="openAnnouncementsModal()"
-        class="self-start md:self-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-brand-mint text-brand-dark text-xs sm:text-sm font-extrabold border border-emerald-200 shadow-2xs transition shrink-0">
+        class="self-start md:self-auto inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full bg-gradient-to-r from-brand-dark to-brand-green hover:brightness-110 text-white text-[13.5px] sm:text-sm font-extrabold shadow-sm transition active:scale-[0.98] shrink-0">
         <span>ดูประกาศทั้งหมด</span>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </button>
     </section>
 
-    <!-- ==================== 6. RELATED SERVICES BAR (UNIFIED SOFT-3D GLOSSY ICON SET) ==================== -->
+    <!-- ==================== 6. RELATED SERVICES BAR (UNIFIED SOFT-3D GLOSSY ICON SET — LARGER & HIGHLIGHTED) ==================== -->
     <section id="related-services" aria-label="บริการและข้อมูลที่เกี่ยวข้อง"
-      class="ci-card bg-gradient-to-b from-[#F8FCFA] to-white border-emerald-100 px-4 sm:px-6 py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3.5">
-      <div class="flex items-center gap-2.5 shrink-0">
+      class="ci-card bg-gradient-to-b from-[#F5FCF8] to-white border-[1.5px] border-emerald-200/80 px-4 sm:px-6 py-4.5 sm:py-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div class="flex items-center gap-3 shrink-0">
         <!-- Soft-3D Glossy 4-Tile Bento Grid Icon -->
-        <svg class="w-10 h-10 shrink-0" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+        <svg class="w-11 h-11 shrink-0" viewBox="0 0 44 44" fill="none" aria-hidden="true">
           <defs>
             <linearGradient id="svcTileG1" x1="6" y1="6" x2="20" y2="20" gradientUnits="userSpaceOnUse">
               <stop offset="0%" stop-color="#6EE7B7" />
@@ -1580,14 +1581,14 @@
           <rect x="24" y="24" width="14" height="14" rx="4.5" fill="url(#svcTileP4)" />
           <path d="M27.5 27.2 H33" stroke="#FCE7F3" stroke-width="1.6" stroke-linecap="round" opacity="0.85" />
         </svg>
-        <h2 class="text-base sm:text-[17px] font-extrabold text-brand-ink">บริการและข้อมูลที่เกี่ยวข้อง</h2>
+        <h2 class="text-[17.5px] sm:text-[19px] font-extrabold text-brand-ink">บริการและข้อมูลที่เกี่ยวข้อง</h2>
       </div>
 
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 flex-1 lg:max-w-3xl">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3 flex-1 lg:max-w-3xl">
         <button type="button" onclick="focusDistrictSelector()"
-          class="flex items-center justify-start sm:justify-center gap-2.5 px-3 py-2.5 rounded-2xl bg-gradient-to-br from-white to-[#EDFBF3] hover:to-[#DCF5E7] border border-emerald-200/80 text-xs sm:text-sm font-bold text-brand-ink shadow-2xs transition active:scale-[0.98] group">
+          class="flex items-center justify-start sm:justify-center gap-2.5 px-3.5 py-3 rounded-2xl bg-gradient-to-br from-white to-[#E6FAEE] hover:to-[#D4F5E2] border-[1.5px] border-emerald-300/80 text-[13.5px] sm:text-[14.5px] font-extrabold text-brand-ink shadow-xs hover:shadow-md transition active:scale-[0.98] group">
           <!-- Soft-3D Glossy Emerald Location Pin -->
-          <span class="cat-icon-wrap w-8 h-8 flex items-center justify-center shrink-0">
+          <span class="cat-icon-wrap w-9 h-9 flex items-center justify-center shrink-0">
             <svg class="w-full h-full" viewBox="0 0 40 40" fill="none">
               <defs>
                 <linearGradient id="pin3DG" x1="12" y1="6" x2="28" y2="34" gradientUnits="userSpaceOnUse">
@@ -1607,9 +1608,9 @@
         </button>
 
         <button type="button" onclick="openOverviewStatistics()"
-          class="flex items-center justify-start sm:justify-center gap-2.5 px-3 py-2.5 rounded-2xl bg-gradient-to-br from-white to-[#F5F0FF] hover:to-[#EBE2FF] border border-purple-200/80 text-xs sm:text-sm font-bold text-brand-ink shadow-2xs transition active:scale-[0.98] group">
+          class="flex items-center justify-start sm:justify-center gap-2.5 px-3.5 py-3 rounded-2xl bg-gradient-to-br from-white to-[#F0E9FF] hover:to-[#E4D9FF] border-[1.5px] border-purple-300/80 text-[13.5px] sm:text-[14.5px] font-extrabold text-brand-ink shadow-xs hover:shadow-md transition active:scale-[0.98] group">
           <!-- Soft-3D Glossy Purple Bar Chart -->
-          <span class="cat-icon-wrap w-8 h-8 flex items-center justify-center shrink-0">
+          <span class="cat-icon-wrap w-9 h-9 flex items-center justify-center shrink-0">
             <svg class="w-full h-full" viewBox="0 0 40 40" fill="none">
               <defs>
                 <linearGradient id="bar3D1" x1="8" y1="20" x2="14" y2="34" gradientUnits="userSpaceOnUse">
@@ -1636,9 +1637,9 @@
         </button>
 
         <button type="button" onclick="openOpenDataModal()"
-          class="flex items-center justify-start sm:justify-center gap-2.5 px-3 py-2.5 rounded-2xl bg-gradient-to-br from-white to-[#EEF7FE] hover:to-[#DDF0FD] border border-sky-200/80 text-xs sm:text-sm font-bold text-brand-ink shadow-2xs transition active:scale-[0.98] group">
+          class="flex items-center justify-start sm:justify-center gap-2.5 px-3.5 py-3 rounded-2xl bg-gradient-to-br from-white to-[#E6F4FE] hover:to-[#D4EBFC] border-[1.5px] border-sky-300/80 text-[13.5px] sm:text-[14.5px] font-extrabold text-brand-ink shadow-xs hover:shadow-md transition active:scale-[0.98] group">
           <!-- Soft-3D Glossy Sky-Blue Database Cylinder -->
-          <span class="cat-icon-wrap w-8 h-8 flex items-center justify-center shrink-0">
+          <span class="cat-icon-wrap w-9 h-9 flex items-center justify-center shrink-0">
             <svg class="w-full h-full" viewBox="0 0 40 40" fill="none">
               <defs>
                 <linearGradient id="db3DBody" x1="8" y1="10" x2="32" y2="34" gradientUnits="userSpaceOnUse">
@@ -1662,9 +1663,9 @@
         </button>
 
         <button type="button" onclick="openGuideModal()"
-          class="flex items-center justify-start sm:justify-center gap-2.5 px-3 py-2.5 rounded-2xl bg-gradient-to-br from-white to-[#FFF4F8] hover:to-[#FCE5EF] border border-pink-200/80 text-xs sm:text-sm font-bold text-brand-ink shadow-2xs transition active:scale-[0.98] group">
+          class="flex items-center justify-start sm:justify-center gap-2.5 px-3.5 py-3 rounded-2xl bg-gradient-to-br from-white to-[#FCE9F2] hover:to-[#FAD8E8] border-[1.5px] border-pink-300/80 text-[13.5px] sm:text-[14.5px] font-extrabold text-brand-ink shadow-xs hover:shadow-md transition active:scale-[0.98] group">
           <!-- Soft-3D Glossy Pink Guide Info Orb -->
-          <span class="cat-icon-wrap w-8 h-8 flex items-center justify-center shrink-0">
+          <span class="cat-icon-wrap w-9 h-9 flex items-center justify-center shrink-0">
             <svg class="w-full h-full" viewBox="0 0 40 40" fill="none">
               <defs>
                 <linearGradient id="guide3DOrb" x1="9" y1="7" x2="31" y2="33" gradientUnits="userSpaceOnUse">
@@ -1687,32 +1688,38 @@
 
   </main>
 
-  <!-- ==================== 7. FOOTER WITH FULL-BLEED SOFT GREEN WAVE (ZERO GAP ABOVE BOTTOM NAV) ==================== -->
-  <footer class="relative overflow-hidden mt-2 pt-7 pb-28 md:pb-10 text-center">
-    <svg class="pointer-events-none absolute inset-x-0 bottom-0 w-full h-36 md:h-28 opacity-90" viewBox="0 0 1440 120"
+  <!-- ==================== 7. FOOTER WITH FULL-BLEED SOFT GREEN WAVE & PROMINENT INTERACTIVE PARTNER BADGES ==================== -->
+  <footer class="relative overflow-hidden mt-2 pt-7 pb-28 md:pb-12 text-center">
+    <svg class="pointer-events-none absolute inset-x-0 bottom-0 w-full h-40 md:h-32 opacity-95" viewBox="0 0 1440 120"
       preserveAspectRatio="none" aria-hidden="true">
       <path d="M0 54 Q320 8 720 48 T1440 24 L1440 120 L0 120 Z" fill="#D1FAE5" />
-      <path d="M0 78 Q440 36 900 72 T1440 50 L1440 120 L0 120 Z" fill="#A7F3D0" opacity="0.72" />
+      <path d="M0 78 Q440 36 900 72 T1440 50 L1440 120 L0 120 Z" fill="#A7F3D0" opacity="0.75" />
     </svg>
-    <div class="relative z-10 max-w-[1440px] mx-auto px-4 space-y-3">
-      <div class="flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-2 md:gap-4 text-[12.5px] sm:text-[13.5px] font-bold">
-        <span class="inline-flex items-center gap-2.5 px-3.5 py-1.5 md:px-0 md:py-0 rounded-full bg-white/92 md:bg-transparent border border-emerald-100 md:border-0 shadow-xs md:shadow-none text-brand-ink">
-          <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white p-0.5 object-contain ring-1 ring-pink-300 shrink-0 shadow-2xs" />
+    <div class="relative z-10 max-w-[1440px] mx-auto px-3.5 sm:px-6 space-y-3.5">
+      <div class="flex flex-col lg:flex-row lg:flex-wrap items-center justify-center gap-2.5 lg:gap-3.5">
+        <a href="#hero" onclick="setActiveNav('hero')"
+          class="w-full max-w-[356px] lg:w-auto inline-flex items-center justify-center gap-3 px-4 sm:px-5 py-2.5 rounded-full bg-gradient-to-r from-white via-[#F1FCF6] to-[#E2F8EC] hover:to-[#D3F4E2] border-[1.5px] border-emerald-300/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 text-[14.5px] sm:text-[15.5px] font-extrabold text-brand-ink transition">
+          <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white p-0.5 object-contain ring-2 ring-brand-pink/80 shrink-0 shadow-xs" />
           <span>ศูนย์ข้อมูลสาธารณะ อบจ.ลำปาง</span>
-        </span>
-        <span class="hidden lg:inline text-slate-300 font-normal" aria-hidden="true">|</span>
-        <span class="inline-flex items-center gap-2.5 px-3.5 py-1.5 md:px-0 md:py-0 rounded-full bg-white/92 md:bg-transparent border border-emerald-100 md:border-0 shadow-xs md:shadow-none text-brand-dark">
-          <img src="./logo_hii.jpg" alt="สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white p-0.5 object-contain ring-1 ring-emerald-200 shrink-0 shadow-2xs" />
+        </a>
+
+        <button type="button" onclick="toggleEnvDetailsPanel(true)"
+          class="w-full max-w-[356px] lg:w-auto inline-flex items-center justify-center gap-3 px-4 sm:px-5 py-2.5 rounded-full bg-gradient-to-r from-white via-[#F0F9FF] to-[#E0F3FE] hover:to-[#CFEBFD] border-[1.5px] border-sky-300/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 text-[13.5px] sm:text-[15px] font-extrabold text-brand-dark transition">
+          <img src="./logo_hii.jpg" alt="สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน)" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white p-0.5 object-contain ring-2 ring-emerald-300 shrink-0 shadow-xs" />
           <span>สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน)</span>
-        </span>
-        <span class="hidden lg:inline text-slate-300 font-normal" aria-hidden="true">|</span>
-        <span class="inline-flex items-center gap-2.5 px-3.5 py-1.5 md:px-0 md:py-0 rounded-full bg-white/92 md:bg-transparent border border-pink-100 md:border-0 shadow-xs md:shadow-none text-brand-pinkDark">
-          <img src="./logo_traffy.png" alt="Traffy Fondue ลำปาง" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg object-cover ring-1 ring-pink-200 shrink-0 shadow-2xs" />
+        </button>
+
+        <a href="#traffy-lampang" onclick="setActiveNav('traffy-lampang')"
+          class="w-full max-w-[356px] lg:w-auto inline-flex items-center justify-center gap-3 px-4 sm:px-5 py-2.5 rounded-full bg-gradient-to-r from-white via-[#FFF2F7] to-[#FCE3EE] hover:to-[#FAD4E5] border-[1.5px] border-pink-300/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 text-[14px] sm:text-[15px] font-extrabold text-brand-pinkDark transition">
+          <img src="./logo_traffy.png" alt="Traffy Fondue ลำปาง" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white object-cover ring-2 ring-pink-300 shrink-0 shadow-xs" />
           <span>ข้อมูลเรื่องร้องเรียน โดย Traffy Fondue ลำปาง</span>
-        </span>
+        </a>
       </div>
-      <div class="text-[11.5px] sm:text-[12.5px] font-medium text-brand-dark/75">
-        ศูนย์ข้อมูลสาธารณะ องค์การบริหารส่วนจังหวัดลำปาง (อบจ.ลำปาง) &nbsp;|&nbsp; LP-PAO Smart Data – Citizen Intelligence
+
+      <div class="text-[12.5px] sm:text-[13.5px] font-bold text-brand-dark/85 leading-relaxed pt-0.5">
+        <span class="inline-block">ศูนย์ข้อมูลสาธารณะ องค์การบริหารส่วนจังหวัดลำปาง (อบจ.ลำปาง)</span>
+        <span class="hidden sm:inline text-emerald-600/60 mx-1.5">|</span>
+        <span class="block sm:inline text-brand-dark/75">LP-PAO Smart Data – Citizen Intelligence</span>
       </div>
     </div>
   </footer>

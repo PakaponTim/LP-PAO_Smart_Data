@@ -142,6 +142,74 @@
       border-color: #D7E5FA;
     }
 
+    /* Unified Selected & Interactive States */
+    .cat-card {
+      position: relative;
+    }
+    .cat-card.is-selected {
+      transform: translateY(-2px);
+      border-width: 2px;
+      border-color: #0D793D;
+      box-shadow: 0 0 0 3px rgba(13, 121, 61, 0.18), 0 12px 26px rgba(7, 84, 63, 0.16);
+    }
+    .cat-card-traffy.is-selected {
+      border-color: #DB2777;
+      box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.22), 0 12px 26px rgba(236, 72, 153, 0.22);
+    }
+    .cat-card.is-selected::after {
+      content: '';
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 8px;
+      height: 8px;
+      border-radius: 9999px;
+      background: #10B981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+    }
+    .cat-card-traffy.is-selected::after {
+      background: #EC4899;
+      box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.25);
+    }
+    .tf-kpi-card.is-selected {
+      transform: translateY(-2px);
+      box-shadow: 0 0 0 2.5px #07543F, 0 10px 20px rgba(7, 84, 63, 0.14);
+    }
+    .case-card.is-selected {
+      border-color: #EC4899 !important;
+      background: linear-gradient(90deg, #FFF5F9 0%, #FFFFFF 100%) !important;
+      box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.2), 0 8px 18px rgba(236, 72, 153, 0.12);
+    }
+    .leg-filter-btn {
+      cursor: pointer;
+      transition: transform 0.16s ease, box-shadow 0.18s ease, background-color 0.18s ease, opacity 0.18s ease;
+    }
+    .leg-filter-btn:hover {
+      transform: translateY(-1px);
+    }
+    .leg-filter-btn.is-selected {
+      box-shadow: 0 0 0 2px #07543F, 0 4px 10px rgba(7, 84, 63, 0.14);
+      background: #FFFFFF !important;
+    }
+    .svc-btn.is-selected {
+      box-shadow: 0 0 0 2.5px #07543F, 0 8px 18px rgba(7, 84, 63, 0.14);
+      transform: translateY(-1px);
+    }
+    #uiToast {
+      position: fixed;
+      top: 78px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-14px);
+      z-index: 95;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    #uiToast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
     .cat-icon-wrap {
       transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
       filter: drop-shadow(0 4px 8px rgba(15, 23, 42, 0.09));
@@ -300,6 +368,11 @@
 
 <body class="min-h-screen">
   <div id="topLoader" aria-hidden="true"></div>
+  <div id="uiToast" role="status" aria-live="polite"
+    class="px-4 py-2 rounded-full bg-brand-dark/95 text-white text-xs sm:text-[13px] font-bold shadow-lg border border-emerald-400/40 backdrop-blur-md flex items-center gap-2 whitespace-nowrap max-w-[92vw]">
+    <span class="w-2 h-2 rounded-full bg-brand-pink shrink-0"></span>
+    <span id="uiToastText">พร้อมใช้งาน</span>
+  </div>
 
   <!-- ==================== 1. TOP NAVIGATION BAR (PC / TABLET / SMARTPHONE) ==================== -->
   <header class="sticky top-0 z-50 bg-brand-dark text-white shadow-xs">
@@ -703,8 +776,8 @@
       <div class="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-[1.24fr_1fr_1fr_1fr_1fr] gap-2 md:gap-3 lg:gap-3.5">
 
         <!-- Card 01: เรื่องร้องเรียน (Traffy Fondue — Pink Highlighted Card + Signature Sound-Burst Rays) -->
-        <button type="button" onclick="scrollToSection('traffy-lampang')"
-          class="cat-card cat-card-traffy relative overflow-visible md:col-span-2 lg:col-span-1 text-left px-3.5 py-2 md:p-3.5 xl:p-4 flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2 min-h-[64px] md:min-h-[162px] lg:min-h-[172px] group cursor-pointer">
+        <button type="button" data-cat="traffy" aria-pressed="true" onclick="setSelectedCategory('traffy'); scrollToSection('traffy-lampang');"
+          class="cat-card cat-card-traffy is-selected relative overflow-visible md:col-span-2 lg:col-span-1 text-left px-3.5 py-2 md:p-3.5 xl:p-4 flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2 min-h-[64px] md:min-h-[162px] lg:min-h-[172px] group cursor-pointer">
           <!-- Signature Pink Sound-Burst Ticks at Top of Card 01 (Matching Smartphone, Tablet & PC Concept Art) -->
           <svg class="pointer-events-none absolute -top-2.5 left-12 md:left-14 w-7 h-5 text-[#EC4899]" viewBox="0 0 28 20" fill="none" aria-hidden="true">
             <path d="M8 16L11 4M16 17L23 6" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" />
@@ -760,7 +833,7 @@
         </button>
 
         <!-- Card 02: คุณภาพอากาศ -->
-        <button type="button" onclick="focusDomainFromCard('pm25')"
+        <button type="button" data-cat="pm25" aria-pressed="false" onclick="focusDomainFromCard('pm25')"
           class="cat-card cat-card-air md:col-span-2 lg:col-span-1 text-left px-3.5 py-2 md:p-4 flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2 min-h-[64px] md:min-h-[162px] lg:min-h-[172px] group cursor-pointer">
           <div class="flex items-center md:flex-col md:items-start gap-3 md:gap-2 min-w-0">
             <span class="cat-icon-wrap w-11 h-11 md:w-11 md:h-11 xl:w-12 xl:h-12 flex items-center justify-center shrink-0">
@@ -806,7 +879,7 @@
         </button>
 
         <!-- Card 03: ระดับน้ำ -->
-        <button type="button" onclick="focusDomainFromCard('water')"
+        <button type="button" data-cat="water" aria-pressed="false" onclick="focusDomainFromCard('water')"
           class="cat-card cat-card-water md:col-span-2 lg:col-span-1 text-left px-3.5 py-2 md:p-4 flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2 min-h-[64px] md:min-h-[162px] lg:min-h-[172px] group cursor-pointer">
           <div class="flex items-center md:flex-col md:items-start gap-3 md:gap-2 min-w-0">
             <span class="cat-icon-wrap w-11 h-11 md:w-11 md:h-11 xl:w-12 xl:h-12 flex items-center justify-center shrink-0">
@@ -859,7 +932,7 @@
         </button>
 
         <!-- Card 04: อ่างเก็บน้ำ -->
-        <button type="button" onclick="focusDomainFromCard('drought')"
+        <button type="button" data-cat="drought" aria-pressed="false" onclick="focusDomainFromCard('drought')"
           class="cat-card cat-card-dam md:col-span-3 lg:col-span-1 text-left px-3.5 py-2 md:p-4 flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2 min-h-[64px] md:min-h-[162px] lg:min-h-[172px] group cursor-pointer">
           <div class="flex items-center md:flex-col md:items-start gap-3 md:gap-2 min-w-0">
             <span class="cat-icon-wrap w-11 h-11 md:w-11 md:h-11 xl:w-12 xl:h-12 flex items-center justify-center shrink-0">
@@ -924,7 +997,7 @@
         </button>
 
         <!-- Card 05: ปริมาณฝน -->
-        <button type="button" onclick="focusDomainFromCard('rainfall')"
+        <button type="button" data-cat="rainfall" aria-pressed="false" onclick="focusDomainFromCard('rainfall')"
           class="cat-card cat-card-rain md:col-span-3 lg:col-span-1 text-left px-3.5 py-2 md:p-4 flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2 min-h-[64px] md:min-h-[162px] lg:min-h-[172px] group cursor-pointer">
           <div class="flex items-center md:flex-col md:items-start gap-3 md:gap-2 min-w-0">
             <span class="cat-icon-wrap w-11 h-11 md:w-11 md:h-11 xl:w-12 xl:h-12 flex items-center justify-center shrink-0">
@@ -1069,10 +1142,10 @@
             </div>
           </div>
 
-          <!-- 3 Pastel Summary Cards (Unified Soft-3D Glossy Icons) -->
+          <!-- 3 Pastel Summary Cards (Unified Soft-3D Glossy Icons + Interactive Selected State) -->
           <div class="grid grid-cols-3 gap-2 sm:gap-3">
-            <button type="button" onclick="openAllTraffyPanel('latest')"
-              class="rounded-2xl bg-gradient-to-br from-[#F7F3FF] to-[#EDE5FF] hover:to-[#E5DAFF] border border-purple-200/80 p-2.5 sm:px-3.5 sm:py-3 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center sm:items-center lg:items-start xl:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left shadow-2xs transition active:scale-[0.98] group">
+            <button type="button" data-tfkpi="latest" aria-pressed="false" onclick="openAllTraffyPanel('latest')"
+              class="tf-kpi-card rounded-2xl bg-gradient-to-br from-[#F7F3FF] to-[#EDE5FF] hover:to-[#E5DAFF] border border-purple-200/80 p-2.5 sm:px-3.5 sm:py-3 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center sm:items-center lg:items-start xl:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left shadow-2xs transition active:scale-[0.98] group">
               <!-- Soft-3D Glossy Purple Clipboard -->
               <span class="cat-icon-wrap w-9 h-9 xl:w-10 xl:h-10 flex items-center justify-center shrink-0">
                 <svg class="w-full h-full" viewBox="0 0 44 44" fill="none">
@@ -1108,8 +1181,8 @@
               </div>
             </button>
 
-            <button type="button" onclick="openAllTraffyPanel('inprogress')"
-              class="rounded-2xl bg-gradient-to-br from-[#FFFBEB] to-[#FEF2C7] hover:to-[#FDE9A8] border border-amber-200/90 p-2.5 sm:px-3.5 sm:py-3 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center sm:items-center lg:items-start xl:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left shadow-2xs transition active:scale-[0.98] group">
+            <button type="button" data-tfkpi="inprogress" aria-pressed="false" onclick="openAllTraffyPanel('inprogress')"
+              class="tf-kpi-card rounded-2xl bg-gradient-to-br from-[#FFFBEB] to-[#FEF2C7] hover:to-[#FDE9A8] border border-amber-200/90 p-2.5 sm:px-3.5 sm:py-3 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center sm:items-center lg:items-start xl:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left shadow-2xs transition active:scale-[0.98] group">
               <!-- Soft-3D Glossy Amber Progress / In-Progress Badge -->
               <span class="cat-icon-wrap w-9 h-9 xl:w-10 xl:h-10 flex items-center justify-center shrink-0">
                 <svg class="w-full h-full" viewBox="0 0 44 44" fill="none">
@@ -1138,8 +1211,8 @@
               </div>
             </button>
 
-            <button type="button" onclick="openAllTraffyPanel('done')"
-              class="rounded-2xl bg-gradient-to-br from-[#F2FCF6] to-[#DCF6E7] hover:to-[#CEF1DD] border border-emerald-200/90 p-2.5 sm:px-3.5 sm:py-3 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center sm:items-center lg:items-start xl:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left shadow-2xs transition active:scale-[0.98] group">
+            <button type="button" data-tfkpi="done" aria-pressed="false" onclick="openAllTraffyPanel('done')"
+              class="tf-kpi-card rounded-2xl bg-gradient-to-br from-[#F2FCF6] to-[#DCF6E7] hover:to-[#CEF1DD] border border-emerald-200/90 p-2.5 sm:px-3.5 sm:py-3 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center sm:items-center lg:items-start xl:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left shadow-2xs transition active:scale-[0.98] group">
               <!-- Soft-3D Glossy Emerald Checkmark Badge -->
               <span class="cat-icon-wrap w-9 h-9 xl:w-10 xl:h-10 flex items-center justify-center shrink-0">
                 <svg class="w-full h-full" viewBox="0 0 44 44" fill="none">
@@ -2396,8 +2469,51 @@
       traffyPageSize: 8,
       traffyBarFilter: { kind: '', value: '' },
       selectedTicketId: null,
+      selectedCat: 'traffy',
+      selectedTfKpi: null,
+      mapLegendFilter: null,
+      selectedMapPinIdx: null,
       timelineCache: {}
     };
+
+    let uiToastTimer = null;
+    function showUiToast(msg) {
+      const el = document.getElementById('uiToast');
+      const txt = document.getElementById('uiToastText');
+      if (!el || !txt || !msg) return;
+      txt.textContent = String(msg);
+      el.classList.add('show');
+      clearTimeout(uiToastTimer);
+      uiToastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+    }
+
+    function setSelectedCategory(cat) {
+      state.selectedCat = cat;
+      document.querySelectorAll('#category-cards .cat-card').forEach(btn => {
+        const active = btn.dataset.cat === cat;
+        btn.classList.toggle('is-selected', active);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    }
+
+    function setSelectedTraffyKpi(kpi) {
+      state.selectedTfKpi = kpi;
+      document.querySelectorAll('.tf-kpi-card').forEach(btn => {
+        const active = Boolean(kpi) && btn.dataset.tfkpi === kpi;
+        btn.classList.toggle('is-selected', active);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    }
+
+    function toggleMapLegendFilter(bucket) {
+      state.mapLegendFilter = state.mapLegendFilter === bucket ? null : bucket;
+      state.selectedMapPinIdx = null;
+      const labels = { normal: 'ปกติ', watch: 'เฝ้าระวัง', high: 'ต้องติดตาม', nodata: 'ไม่มีข้อมูล' };
+      showUiToast(state.mapLegendFilter
+        ? `กรองหมุดบนแผนที่: สถานะ "${labels[bucket] || bucket}"`
+        : 'แสดงจุดตรวจวัดทั้งหมดบนแผนที่');
+      renderMap();
+    }
 
     const REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -2985,10 +3101,11 @@
         recentEl.innerHTML = topItems.map((it, idx) => {
           const st = traffyStatePill(it.state_name);
           const title = it.problem_type && it.problem_type !== 'อื่นๆ' ? it.problem_type : (it.summary || 'เรื่องร้องเรียน').slice(0, 36);
+          const isSelCase = state.selectedTicketId === it.ticket_id;
           return `
-            <button type="button" onclick="openCaseTimeline('${esc(it.ticket_id)}')"
+            <button type="button" data-ticket-id="${esc(it.ticket_id)}" onclick="openCaseTimeline('${esc(it.ticket_id)}')"
               style="animation-delay:${idx * 50}ms"
-              class="anim-fade-up w-full text-left rounded-2xl border border-slate-200/90 hover:border-brand-pink/60 bg-white hover:bg-brand-pinkSoft/20 p-2.5 sm:p-3 flex items-center gap-3 sm:gap-3.5 shadow-2xs transition group cursor-pointer">
+              class="case-card ${isSelCase ? 'is-selected' : ''} anim-fade-up w-full text-left rounded-2xl border border-slate-200/90 hover:border-brand-pink/60 bg-white hover:bg-brand-pinkSoft/20 p-2.5 sm:p-3 flex items-center gap-3 sm:gap-3.5 shadow-2xs transition group cursor-pointer">
               ${renderThumbHtml(it.photo_url, 'w-[148px] h-[104px] sm:w-[168px] sm:h-[112px] xl:w-[184px] xl:h-[118px] rounded-2xl shadow-xs')}
               <div class="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div class="min-w-0 space-y-1">
@@ -3033,6 +3150,7 @@
       state.traffyAllOpen = show;
       const panel = document.getElementById('traffy-all-panel');
       if (panel) panel.classList.toggle('hidden', !show);
+      if (!show) setSelectedTraffyKpi(null);
     }
 
     function setTraffyViewMode(mode) {
@@ -3055,6 +3173,7 @@
     function setTraffyTab(tab) {
       state.traffyTab = tab;
       state.traffyPage = 1;
+      setSelectedTraffyKpi(tab);
       document.querySelectorAll('.tftab').forEach(b => {
         const act = b.dataset.tfstate === tab;
         b.className = 'tftab py-2 px-3 rounded-lg transition ' +
@@ -3213,6 +3332,9 @@
 
     async function openCaseTimeline(ticketId) {
       state.selectedTicketId = ticketId;
+      document.querySelectorAll('.case-card').forEach(btn => {
+        btn.classList.toggle('is-selected', btn.dataset.ticketId === ticketId);
+      });
       const modal = document.getElementById('caseTimelineModal');
       const body = document.getElementById('caseTimelineContent');
       modal.classList.remove('hidden');
@@ -3401,8 +3523,11 @@
 
     function setMapLayer(layer) {
       state.mapLayer = layer;
+      state.mapLegendFilter = null;
+      state.selectedMapPinIdx = null;
       document.querySelectorAll('.mlayer-btn').forEach(b => {
         const act = b.dataset.mlayer === layer;
+        b.setAttribute('aria-selected', act ? 'true' : 'false');
         b.className = 'mlayer-btn px-2 sm:px-3 py-1.5 rounded-xl text-center whitespace-nowrap transition ' +
           (act ? 'font-bold bg-brand-dark text-white shadow-2xs' : 'font-semibold text-brand-ink hover:bg-white/80');
       });
@@ -3537,12 +3662,16 @@
         });
       }
 
-      // Render Legend Summary Card (Soft-3D Glossy Status Orbs + Symmetric Grid when 3 items)
+      // Render Interactive Legend Summary Card (Clickable Status Filter Pills + Selected Ring)
       const legEl = document.getElementById('mapLegendSummary');
+      const lf = state.mapLegendFilter;
       if (legEl) {
         const thirdSpan = cntNoData === 0 ? 'col-span-2 sm:col-span-1' : '';
+        const dimCls = (b) => lf && lf !== b ? 'opacity-50' : '';
+        const selCls = (b) => lf === b ? 'is-selected' : '';
         legEl.innerHTML = `
-          <div class="flex items-center justify-between gap-1.5 px-2.5 py-1.5 sm:px-0 sm:py-0 rounded-xl sm:rounded-none bg-emerald-50/75 sm:bg-transparent">
+          <button type="button" data-legfilter="normal" aria-pressed="${lf === 'normal'}" onclick="toggleMapLegendFilter('normal')"
+            class="leg-filter-btn ${selCls('normal')} ${dimCls('normal')} w-full flex items-center justify-between gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-50/75 text-left">
             <span class="inline-flex items-center gap-2 font-bold text-brand-ink">
               <svg class="w-6 h-6 shrink-0" viewBox="0 0 28 28" fill="none">
                 <circle cx="14" cy="14" r="11" fill="url(#kpiGreenOrb)" />
@@ -3551,8 +3680,9 @@
               ปกติ
             </span>
             <span class="font-extrabold text-brand-dark whitespace-nowrap">${cntNormal} จุด</span>
-          </div>
-          <div class="flex items-center justify-between gap-1.5 px-2.5 py-1.5 sm:px-0 sm:py-0 rounded-xl sm:rounded-none bg-amber-50/85 sm:bg-transparent">
+          </button>
+          <button type="button" data-legfilter="watch" aria-pressed="${lf === 'watch'}" onclick="toggleMapLegendFilter('watch')"
+            class="leg-filter-btn ${selCls('watch')} ${dimCls('watch')} w-full flex items-center justify-between gap-1.5 px-2.5 py-1.5 rounded-xl bg-amber-50/85 text-left">
             <span class="inline-flex items-center gap-2 font-bold text-brand-ink">
               <svg class="w-6 h-6 shrink-0" viewBox="0 0 28 28" fill="none">
                 <circle cx="14" cy="14" r="11" fill="url(#kpiAmberOrb)" />
@@ -3562,8 +3692,9 @@
               เฝ้าระวัง
             </span>
             <span class="font-extrabold text-amber-800 whitespace-nowrap">${cntWatch} จุด</span>
-          </div>
-          <div class="${thirdSpan} flex items-center justify-between gap-1.5 px-2.5 py-1.5 sm:px-0 sm:py-0 rounded-xl sm:rounded-none bg-pink-50/85 sm:bg-transparent">
+          </button>
+          <button type="button" data-legfilter="high" aria-pressed="${lf === 'high'}" onclick="toggleMapLegendFilter('high')"
+            class="leg-filter-btn ${thirdSpan} ${selCls('high')} ${dimCls('high')} w-full flex items-center justify-between gap-1.5 px-2.5 py-1.5 rounded-xl bg-pink-50/85 text-left">
             <span class="inline-flex items-center gap-2 font-bold text-brand-ink">
               <svg class="w-6 h-6 shrink-0" viewBox="0 0 28 28" fill="none">
                 <circle cx="14" cy="14" r="11" fill="url(#guide3DOrb)" />
@@ -3572,9 +3703,10 @@
               ต้องติดตาม
             </span>
             <span class="font-extrabold text-brand-pinkDark whitespace-nowrap">${cntHigh} จุด</span>
-          </div>
+          </button>
           ${cntNoData > 0 ? `
-          <div class="flex items-center justify-between gap-1.5 px-2.5 py-1.5 sm:px-0 sm:py-0 rounded-xl sm:rounded-none bg-slate-100/80 sm:bg-transparent text-brand-muted">
+          <button type="button" data-legfilter="nodata" aria-pressed="${lf === 'nodata'}" onclick="toggleMapLegendFilter('nodata')"
+            class="leg-filter-btn ${selCls('nodata')} ${dimCls('nodata')} w-full flex items-center justify-between gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100/80 text-brand-muted text-left">
             <span class="inline-flex items-center gap-2 font-semibold">
               <svg class="w-6 h-6 shrink-0" viewBox="0 0 28 28" fill="none">
                 <defs><linearGradient id="legSlate3D" x1="6" y1="6" x2="22" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#CBD5E1"/><stop offset="100%" stop-color="#64748B"/></linearGradient></defs>
@@ -3584,12 +3716,23 @@
               ไม่มีข้อมูล
             </span>
             <span class="font-bold whitespace-nowrap">${cntNoData} จุด</span>
-          </div>` : ''}`;
+          </button>` : ''}`;
       }
 
       const layerNames = { water: 'สถานีน้ำ', rainfall: 'กลุ่มฝน', drought: 'อ่างเก็บน้ำ', pm25: 'จุดวัด PM 2.5' };
       const cntEl = document.getElementById('mapMarkerCount');
-      if (cntEl) cntEl.textContent = `แสดง ${points.length} จุด (${layerNames[layer] || ''}) · แตะจุดเพื่อดูค่าจริง`;
+      if (cntEl) {
+        cntEl.textContent = lf
+          ? `กรองแสดงเฉพาะกลุ่มที่เลือก · แตะปุ่มสถานะซ้ำเพื่อแสดงทั้งหมด`
+          : `แสดง ${points.length} จุด (${layerNames[layer] || ''}) · แตะสถานะเพื่อกรอง หรือแตะหมุดดูค่าจริง`;
+      }
+
+      const bucketOf = (level) => {
+        if (level === 'nodata') return 'nodata';
+        if (level === 'critical' || level === 'high') return 'high';
+        if (level === 'watch' || level === 'dam-high' || level === 'moderate') return 'watch';
+        return 'normal';
+      };
 
       const districtSvg = LAMPANG_DISTRICT_NODES.map(d => {
         const p = projectLampang(d.lat, d.lng);
@@ -3605,7 +3748,13 @@
 
       const markersSvg = points.map((pt, idx) => {
         const isHighAlert = pt.level === 'critical' || pt.level === 'high';
-        const alertRing = isHighAlert
+        const isMatched = !lf || bucketOf(pt.level) === lf;
+        const isPinSelected = state.selectedMapPinIdx === idx;
+        const pinOpacity = isMatched ? '1' : '0.16';
+        const selHalo = isPinSelected
+          ? `<circle cx="${pt.x}" cy="${pt.y}" r="13.5" fill="rgba(236,72,153,0.16)" stroke="#EC4899" stroke-width="2.4"><animate attributeName="r" values="11;16;11" dur="1.8s" repeatCount="indefinite"/></circle>`
+          : '';
+        const alertRing = isHighAlert && isMatched
           ? `<circle cx="${pt.x}" cy="${pt.y}" r="10" fill="none" stroke="${pt.color}" stroke-width="1.8" opacity="0.65"><animate attributeName="r" values="7;15;7" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.75;0;0.75" dur="2.4s" repeatCount="indefinite"/></circle>`
           : '';
         let shapeSvg = '';
@@ -3617,10 +3766,11 @@
           shapeSvg = `<circle cx="${pt.x}" cy="${pt.y}" r="6" fill="${pt.color}" stroke="#FFFFFF" stroke-width="2" />`;
         }
         return `
-          <g class="cursor-pointer map-pin-group" data-idx="${idx}"
+          <g class="cursor-pointer map-pin-group" data-idx="${idx}" data-selected-pin="${isPinSelected}" opacity="${pinOpacity}"
              onmouseenter="window.__mapShowTip(${idx}, event)"
              onmouseleave="hideMapTooltip()"
              onclick="window.__mapClickPin(${idx}, event)">
+            ${selHalo}
             ${alertRing}
             ${shapeSvg}
           </g>`;
@@ -3634,7 +3784,8 @@
       window.__mapClickPin = (idx, ev) => {
         const p = (window.__mapPoints || [])[idx];
         if (p) {
-          showMapTooltip(p.tipTitle, p.tipBody, ev.clientX, ev.clientY);
+          state.selectedMapPinIdx = idx;
+          renderMap();
           openMapStationDetail(p);
         }
       };
@@ -3701,9 +3852,12 @@
     }
 
     function focusDomainFromCard(tab) {
+      setSelectedCategory(tab);
       setMapLayer(tab);
       switchEnvTab(tab);
       toggleEnvDetailsPanel(true);
+      const names = { pm25: 'คุณภาพอากาศ (PM 2.5)', water: 'ระดับน้ำ', drought: 'อ่างเก็บน้ำ', rainfall: 'ปริมาณฝน' };
+      showUiToast(`กำลังแสดงรายละเอียด: ${names[tab] || tab}`);
     }
 
     function switchEnvTab(tab) {
@@ -3973,7 +4127,28 @@
 
     function toggleFontSize() {
       applyFontScale((fontScaleStep + 1) % 3);
+      const msgs = ['ขนาดตัวอักษร: ปกติ (100%)', 'ขยายขนาดตัวอักษร: ใหญ่ (115%)', 'ขยายขนาดตัวอักษร: ใหญ่มาก (125%)'];
+      showUiToast(msgs[fontScaleStep]);
     }
+
+    // Lightweight Scroll-Spy for Desktop Top Nav & Mobile Bottom Nav
+    (function initScrollSpy() {
+      if (!('IntersectionObserver' in window)) return;
+      const sections = ['hero', 'traffy-lampang', 'area-map']
+        .map(id => document.getElementById(id))
+        .filter(Boolean);
+      if (!sections.length) return;
+      const io = new IntersectionObserver((entries) => {
+        let best = null;
+        entries.forEach(en => {
+          if (en.isIntersecting && (!best || en.intersectionRatio > best.intersectionRatio)) best = en;
+        });
+        if (best && best.target && best.target.id) {
+          setActiveNav(best.target.id);
+        }
+      }, { rootMargin: '-28% 0px -55% 0px', threshold: [0.1, 0.35] });
+      sections.forEach(s => io.observe(s));
+    })();
 
     function toggleMobileDrawer(show) {
       const d = document.getElementById('mobileDrawer');

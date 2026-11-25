@@ -75,6 +75,7 @@
       const on = document.documentElement.classList.contains('ws-large-text');
       btnFont.textContent = on ? 'ก-' : 'ก+';
       try { localStorage.setItem('ws2_large_text', on ? '1' : '0'); } catch {}
+      window.wsToast && window.wsToast(on ? 'ขยายขนาดตัวอักษร (118%)' : 'กลับขนาดตัวอักษรปกติ (100%)');
     };
 
     const btnTop = document.createElement('button');
@@ -102,6 +103,58 @@
       <a href="./server_setup.php">⚙️ ตั้งค่า Server / API Keys</a>
     `;
     document.body.appendChild(menu);
+
+    // Highlight current page inside Quick Menu
+    const curFile = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+    menu.querySelectorAll('a').forEach((a) => {
+      const hrefFile = (a.getAttribute('href') || '').split('/').pop().toLowerCase();
+      if (hrefFile === curFile) {
+        a.classList.add('ws-active');
+        a.setAttribute('aria-current', 'page');
+      }
+    });
+
+    // 4. Unified Toast Feedback Helper for Admin Pages
+    const toast = document.createElement('div');
+    toast.id = 'wsToast';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    document.body.appendChild(toast);
+    let toastTimer = null;
+    window.wsToast = (msg) => {
+      if (!msg) return;
+      toast.textContent = String(msg);
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2100);
+    };
+
+    // 5. Interactive Selected States for KPI Cards, Sub-Tabs & Data Table Rows
+    document.addEventListener('click', (e) => {
+      // Table row highlight on click
+      const tr = e.target.closest('tbody tr');
+      if (tr && !e.target.closest('a, button, input, select')) {
+        const tbody = tr.parentElement;
+        const wasSelected = tr.classList.contains('ws-row-selected');
+        if (tbody) tbody.querySelectorAll('tr.ws-row-selected').forEach((r) => r.classList.remove('ws-row-selected'));
+        if (!wasSelected) tr.classList.add('ws-row-selected');
+      }
+
+      // KPI card selected ring when clicking a KPI card or trigger inside it
+      const kpiTrigger = e.target.closest('[onclick*="openKpiModal"]');
+      if (kpiTrigger) {
+        const card = kpiTrigger.closest('.rounded-2xl') || kpiTrigger;
+        document.querySelectorAll('.ws-kpi-selected').forEach((el) => el.classList.remove('ws-kpi-selected'));
+        card.classList.add('ws-kpi-selected');
+      }
+
+      // Sub-tab aria-selected sync + toast feedback
+      const subBtn = e.target.closest('.subtab-btn');
+      if (subBtn) {
+        document.querySelectorAll('.subtab-btn').forEach((b) => b.setAttribute('aria-selected', b === subBtn ? 'true' : 'false'));
+        window.wsToast('แสดงหมวด: ' + subBtn.textContent.trim());
+      }
+    });
 
     btnMenu.addEventListener('click', (e) => {
       e.stopPropagation();

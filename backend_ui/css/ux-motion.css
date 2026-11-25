@@ -139,6 +139,56 @@ tbody tr {
   background: #ecfdf5;
   color: #065f46;
 }
+#wsQuickMenu a.ws-active {
+  background: #d1fae5;
+  color: #064e3b;
+  font-weight: 700;
+  box-shadow: inset 3px 0 0 #059669;
+}
+
+/* Interactive Selected States for Admin Dashboard KPI Cards & Table Rows */
+.ws-kpi-selected {
+  box-shadow: 0 0 0 2.5px #059669, 0 12px 24px -8px rgba(5, 150, 105, 0.28) !important;
+  transform: translateY(-2px);
+}
+tbody tr.ws-row-selectable {
+  cursor: pointer;
+}
+tbody tr.ws-row-selected {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+  box-shadow: inset 3px 0 0 #059669;
+}
+.dark tbody tr.ws-row-selected {
+  background-color: rgba(16, 185, 129, 0.22) !important;
+  box-shadow: inset 3px 0 0 #34d399;
+}
+
+/* Unified Non-Intrusive Feedback Toast for Admin Pages */
+#wsToast {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-16px);
+  z-index: 10002;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  background: rgba(6, 78, 59, 0.96);
+  color: #ffffff;
+  font-family: 'Prompt', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(52, 211, 153, 0.45);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  max-width: 90vw;
+  white-space: nowrap;
+}
+#wsToast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 #wsQuickMenu .ws-menu-title {
   font-size: 10px;
   font-weight: 700;

@@ -297,7 +297,7 @@
   </style>
 </head>
 
-<body class="min-h-screen pb-24 md:pb-0">
+<body class="min-h-screen">
   <div id="topLoader" aria-hidden="true"></div>
 
   <!-- ==================== 1. TOP NAVIGATION BAR (PC / TABLET / SMARTPHONE) ==================== -->
@@ -996,70 +996,75 @@
 
       <!-- LEFT PANEL: TRAFFY FONDUE (Tablet Landscape 50% / Desktop 58%) -->
       <div id="traffy-lampang"
-        class="lg:col-span-6 xl:col-span-7 ci-card p-4 sm:p-5 lg:p-6 flex flex-col justify-between space-y-4 scroll-mt-24">
-        <div class="space-y-4">
+        class="lg:col-span-6 xl:col-span-7 ci-card bg-gradient-to-b from-[#FFF9FC] via-white to-white border-pink-200/60 p-4 sm:p-5 lg:p-6 flex flex-col justify-between space-y-4 scroll-mt-24">
+        <div class="space-y-3.5 sm:space-y-4">
           <!-- Traffy Header -->
-          <div class="flex items-start gap-3">
+          <div class="flex items-center gap-3">
             <img src="./logo_traffy.png" alt="Traffy Fondue ลำปาง"
-              class="w-11 h-11 rounded-2xl object-cover shadow-xs ring-2 ring-pink-200 shrink-0" />
+              class="w-12 h-12 rounded-2xl object-cover shadow-sm ring-2 ring-pink-200 shrink-0" />
             <div class="min-w-0">
-              <h2 class="text-[20px] md:text-[22px] lg:text-[24px] font-extrabold text-brand-ink leading-tight">
+              <h2 class="text-[18px] sm:text-[21px] lg:text-[23px] font-extrabold text-brand-ink leading-tight">
                 Traffy Fondue — เรื่องร้องเรียนจังหวัดลำปาง
               </h2>
-              <p class="text-[13px] sm:text-[14px] text-brand-muted mt-0.5">
-                แจ้งปัญหา ติดตามความคืบหน้า และดูผลการดำเนินงานในพื้นที่จังหวัดลำปาง (คัดกรอง Zero-PII)
+              <p class="text-[12.5px] sm:text-[13.5px] text-brand-muted mt-0.5 leading-snug">
+                แจ้งปัญหา ติดตามความคืบหน้า และดูผลการดำเนินงานในพื้นที่ (คัดกรอง Zero-PII)
               </p>
             </div>
           </div>
 
-          <!-- 3 Pastel Summary Cards (Purple / Yellow / Green — Matching PC & Tablet Mockups) -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
+          <!-- 3 Pastel Summary Cards (Compact 3-Col Strip on Smartphone, Rich Cards on Tablet/PC) -->
+          <div class="grid grid-cols-3 gap-2 sm:gap-3">
             <button type="button" onclick="openAllTraffyPanel('latest')"
-              class="rounded-2xl bg-[#F3EEFF] hover:bg-[#EBE3FF] border border-purple-200/80 px-3 py-2.5 xl:px-3.5 xl:py-3 flex items-center lg:flex-col lg:items-start xl:flex-row xl:items-center gap-2.5 text-left transition">
-              <span class="w-8 h-8 xl:w-9 xl:h-9 rounded-xl bg-white text-purple-600 flex items-center justify-center shrink-0 shadow-2xs">
-                <svg class="w-4 h-4 xl:w-5 xl:h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              class="rounded-2xl bg-gradient-to-br from-[#F7F3FF] to-[#EDE5FF] hover:to-[#E5DAFF] border border-purple-200/80 p-2.5 sm:px-3.5 sm:py-3 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center sm:items-center lg:items-start xl:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left shadow-2xs transition active:scale-[0.98]">
+              <span class="w-8 h-8 xl:w-9 xl:h-9 rounded-xl bg-white text-purple-600 flex items-center justify-center shrink-0 shadow-xs">
+                <svg class="w-4 h-4 xl:w-5 xl:h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </span>
               <div class="min-w-0 leading-tight">
-                <div class="text-xs xl:text-[13px] font-bold text-brand-ink">เรื่องร้องเรียนทั้งหมด</div>
-                <div class="flex items-baseline gap-1.5 mt-0.5">
-                  <span id="tfSumTotal" class="text-base font-extrabold text-purple-800">-</span>
-                  <span class="text-[11px] text-purple-700/80 truncate">เรื่องในระบบ</span>
+                <div class="text-[11px] sm:text-xs xl:text-[13px] font-bold text-brand-ink">
+                  <span class="sm:hidden">ทั้งหมด</span><span class="hidden sm:inline">เรื่องร้องเรียนทั้งหมด</span>
+                </div>
+                <div class="flex items-baseline justify-center sm:justify-start gap-1 mt-0.5">
+                  <span id="tfSumTotal" class="text-[18px] sm:text-base xl:text-lg font-extrabold text-purple-800">-</span>
+                  <span class="text-[10.5px] sm:text-[11px] text-purple-700/85 truncate">เรื่อง</span>
                 </div>
               </div>
             </button>
 
             <button type="button" onclick="openAllTraffyPanel('inprogress')"
-              class="rounded-2xl bg-[#FEF7DC] hover:bg-[#FEF0C2] border border-amber-200/90 px-3 py-2.5 xl:px-3.5 xl:py-3 flex items-center lg:flex-col lg:items-start xl:flex-row xl:items-center gap-2.5 text-left transition">
-              <span class="w-8 h-8 xl:w-9 xl:h-9 rounded-xl bg-white text-amber-600 flex items-center justify-center shrink-0 shadow-2xs">
+              class="rounded-2xl bg-gradient-to-br from-[#FFFBEB] to-[#FEF2C7] hover:to-[#FDE9A8] border border-amber-200/90 p-2.5 sm:px-3.5 sm:py-3 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center sm:items-center lg:items-start xl:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left shadow-2xs transition active:scale-[0.98]">
+              <span class="w-8 h-8 xl:w-9 xl:h-9 rounded-xl bg-white text-amber-600 flex items-center justify-center shrink-0 shadow-xs">
                 <svg class="w-4 h-4 xl:w-5 xl:h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
               </span>
               <div class="min-w-0 leading-tight">
-                <div class="text-xs xl:text-[13px] font-bold text-brand-ink">กำลังดำเนินการ</div>
-                <div class="flex items-baseline gap-1.5 mt-0.5">
-                  <span id="tfSumInProg" class="text-base font-extrabold text-amber-800">-</span>
-                  <span class="text-[11px] text-amber-800/80 truncate">ระหว่างติดตาม</span>
+                <div class="text-[11px] sm:text-xs xl:text-[13px] font-bold text-brand-ink">กำลังดำเนินการ</div>
+                <div class="flex items-baseline justify-center sm:justify-start gap-1 mt-0.5">
+                  <span id="tfSumInProg" class="text-[18px] sm:text-base xl:text-lg font-extrabold text-amber-800">-</span>
+                  <span class="hidden sm:inline text-[11px] text-amber-800/80 truncate">ระหว่างติดตาม</span>
+                  <span class="sm:hidden text-[10.5px] text-amber-800/80">เรื่อง</span>
                 </div>
               </div>
             </button>
 
             <button type="button" onclick="openAllTraffyPanel('done')"
-              class="rounded-2xl bg-brand-mint hover:bg-emerald-100/90 border border-emerald-200/90 px-3 py-2.5 xl:px-3.5 xl:py-3 flex items-center lg:flex-col lg:items-start xl:flex-row xl:items-center gap-2.5 text-left transition">
-              <span class="w-8 h-8 xl:w-9 xl:h-9 rounded-xl bg-white text-brand-green flex items-center justify-center shrink-0 shadow-2xs">
+              class="rounded-2xl bg-gradient-to-br from-[#F2FCF6] to-[#DCF6E7] hover:to-[#CEF1DD] border border-emerald-200/90 p-2.5 sm:px-3.5 sm:py-3 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center sm:items-center lg:items-start xl:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left shadow-2xs transition active:scale-[0.98]">
+              <span class="w-8 h-8 xl:w-9 xl:h-9 rounded-xl bg-white text-brand-green flex items-center justify-center shrink-0 shadow-xs">
                 <svg class="w-4 h-4 xl:w-5 xl:h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </span>
               <div class="min-w-0 leading-tight">
-                <div class="text-xs xl:text-[13px] font-bold text-brand-ink">ดำเนินการเสร็จสิ้น</div>
-                <div class="flex items-baseline gap-1.5 mt-0.5">
-                  <span id="tfSumDone" class="text-base font-extrabold text-brand-dark">-</span>
-                  <span id="tfSumDonePct" class="text-[11px] font-semibold text-emerald-700/85">(-)</span>
+                <div class="text-[11px] sm:text-xs xl:text-[13px] font-bold text-brand-ink">
+                  <span class="sm:hidden">เสร็จสิ้น</span><span class="hidden sm:inline">ดำเนินการเสร็จสิ้น</span>
+                </div>
+                <div class="flex items-baseline justify-center sm:justify-start gap-1 mt-0.5">
+                  <span id="tfSumDone" class="text-[18px] sm:text-base xl:text-lg font-extrabold text-brand-dark">-</span>
+                  <span id="tfSumDonePct" class="text-[10.5px] sm:text-[11px] font-semibold text-emerald-700/85">(-)</span>
                 </div>
               </div>
             </button>
@@ -1098,17 +1103,17 @@
 
       <!-- RIGHT PANEL: AREA OVERVIEW & INTERACTIVE LAMPANG SVG MAP (Tablet Landscape 50% / Desktop 42%) -->
       <div id="area-map"
-        class="lg:col-span-6 xl:col-span-5 ci-card p-4 sm:p-5 lg:p-6 flex flex-col justify-between space-y-4 scroll-mt-24">
+        class="lg:col-span-6 xl:col-span-5 ci-card bg-gradient-to-b from-[#F5FCF8] via-white to-white border-emerald-200/70 p-4 sm:p-5 lg:p-6 flex flex-col justify-between space-y-4 scroll-mt-24">
         <div class="space-y-3.5">
           <!-- Area Header + District Dropdown (Single row on Tablet Landscape & PC) -->
-          <div class="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
-            <div class="flex items-center gap-2 min-w-0">
-              <span class="w-8 h-8 xl:w-9 xl:h-9 rounded-xl bg-brand-mint text-brand-green flex items-center justify-center shrink-0">
-                <svg class="w-4 h-4 xl:w-5 xl:h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                </svg>
-              </span>
+          <div class="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <!-- 3-Panel Folded Green Map SVG (Consistent with Quick Access & Concept) -->
+              <svg class="w-8 h-8 xl:w-9 xl:h-9 shrink-0" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                <polygon points="5,10 15,7 15,31 5,34" fill="#86EFAC" stroke="#15803D" stroke-width="1.8" stroke-linejoin="round" />
+                <polygon points="15,7 25,11 25,35 15,31" fill="#DCFCE7" stroke="#15803D" stroke-width="1.8" stroke-linejoin="round" />
+                <polygon points="25,11 35,8 35,32 25,35" fill="#4ADE80" stroke="#15803D" stroke-width="1.8" stroke-linejoin="round" />
+              </svg>
               <h2 class="text-[18px] xl:text-[22px] font-extrabold text-brand-ink leading-tight truncate">
                 ภาพรวมสถานการณ์พื้นที่
               </h2>
@@ -1117,22 +1122,22 @@
             <div class="w-full sm:w-auto shrink-0">
               <label for="districtDropdown" class="sr-only">เลือกอำเภอ</label>
               <select id="districtDropdown" onchange="selectAmphoe(this.value)"
-                class="w-full sm:w-40 xl:w-48 h-9 xl:h-10 px-3 rounded-xl border border-slate-300 bg-white text-xs xl:text-sm font-semibold text-brand-ink shadow-2xs focus:border-brand-green">
+                class="w-full sm:w-40 xl:w-48 h-10 px-3.5 rounded-2xl border border-emerald-200 bg-white text-xs xl:text-sm font-bold text-brand-ink shadow-2xs focus:border-brand-green">
                 <option value="all">ทุกอำเภอ (13 อำเภอ)</option>
               </select>
             </div>
           </div>
 
-          <!-- Compact Layer Pills (PM 2.5 / น้ำ / อ่างเก็บน้ำ / ฝน — matching V2.0 priority) -->
-          <div class="flex flex-wrap items-center gap-1.5 text-xs" role="tablist" aria-label="ชั้นข้อมูลบนแผนที่">
+          <!-- Sleek 4-Column Segmented Layer Pills on Smartphone, Flex on Tablet/PC -->
+          <div class="grid grid-cols-4 sm:flex sm:flex-wrap items-center gap-1.5 text-[11.5px] sm:text-xs bg-emerald-50/70 p-1 rounded-2xl border border-emerald-100" role="tablist" aria-label="ชั้นข้อมูลบนแผนที่">
             <button type="button" role="tab" data-mlayer="water" onclick="setMapLayer('water')"
-              class="mlayer-btn px-3 py-1.5 rounded-full font-bold bg-brand-dark text-white shadow-2xs transition">ระดับน้ำ</button>
+              class="mlayer-btn px-2 sm:px-3 py-1.5 rounded-xl font-bold bg-brand-dark text-white shadow-2xs transition text-center whitespace-nowrap">ระดับน้ำ</button>
             <button type="button" role="tab" data-mlayer="pm25" onclick="setMapLayer('pm25')"
-              class="mlayer-btn px-3 py-1.5 rounded-full font-semibold bg-slate-100 hover:bg-emerald-50 text-brand-ink transition">PM 2.5</button>
+              class="mlayer-btn px-2 sm:px-3 py-1.5 rounded-xl font-semibold text-brand-ink hover:bg-white/80 transition text-center whitespace-nowrap">PM 2.5</button>
             <button type="button" role="tab" data-mlayer="drought" onclick="setMapLayer('drought')"
-              class="mlayer-btn px-3 py-1.5 rounded-full font-semibold bg-slate-100 hover:bg-emerald-50 text-brand-ink transition">อ่างเก็บน้ำ</button>
+              class="mlayer-btn px-2 sm:px-3 py-1.5 rounded-xl font-semibold text-brand-ink hover:bg-white/80 transition text-center whitespace-nowrap">อ่างเก็บน้ำ</button>
             <button type="button" role="tab" data-mlayer="rainfall" onclick="setMapLayer('rainfall')"
-              class="mlayer-btn px-3 py-1.5 rounded-full font-semibold bg-slate-100 hover:bg-emerald-50 text-brand-ink transition">ปริมาณฝน</button>
+              class="mlayer-btn px-2 sm:px-3 py-1.5 rounded-xl font-semibold text-brand-ink hover:bg-white/80 transition text-center whitespace-nowrap">ปริมาณฝน</button>
           </div>
 
           <!-- Map + Floating Legend Box (Matching PC & Tablet Mockups!) -->
@@ -1140,24 +1145,30 @@
             <!-- Preserved Interactive 2D Lampang SVG Map -->
             <div class="sm:col-span-7">
               <div id="publicMap"
-                class="relative w-full h-[275px] xl:h-[325px] rounded-2xl border border-emerald-100 bg-[#F4FAF6] overflow-hidden select-none">
+                class="relative w-full h-[265px] sm:h-[275px] xl:h-[325px] rounded-2xl border border-emerald-200/80 bg-gradient-to-b from-[#F1FAF4] to-[#E6F6EC] overflow-hidden select-none shadow-inner">
                 <div class="w-full h-full flex items-center justify-center text-sm text-brand-muted">
                   กำลังโหลดแผนที่จังหวัดลำปาง...
                 </div>
               </div>
             </div>
 
-            <!-- Legend Card + Live Marker Status Summary -->
+            <!-- Legend Card + Live Marker Status Summary (2x2 Compact Grid on Mobile, Vertical List on Tablet/PC) -->
             <div class="sm:col-span-5 space-y-2.5">
-              <div class="rounded-2xl bg-white border border-slate-200 p-3.5 shadow-2xs space-y-2.5">
-                <div class="text-xs font-bold text-brand-muted">สรุปจุดตรวจวัดบนแผนที่</div>
-                <div id="mapLegendSummary" class="space-y-2 text-xs sm:text-[13px]"></div>
+              <div class="rounded-2xl bg-white border border-emerald-100 p-3 sm:p-3.5 shadow-2xs space-y-2.5">
+                <div class="flex items-center justify-between gap-2">
+                  <div class="text-xs font-extrabold text-brand-dark">สรุปจุดตรวจวัดบนแผนที่</div>
+                  <button type="button" onclick="resetMapView()"
+                    class="sm:hidden text-[11px] font-bold text-brand-green hover:underline">
+                    รีเซ็ตมุมมอง
+                  </button>
+                </div>
+                <div id="mapLegendSummary" class="grid grid-cols-2 sm:grid-cols-1 gap-1.5 sm:gap-2 text-xs sm:text-[13px]"></div>
                 <div id="mapMarkerCount" class="pt-2 border-t border-slate-100 text-[11px] text-brand-muted font-medium">
                   -
                 </div>
               </div>
               <button type="button" onclick="resetMapView()"
-                class="w-full py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-semibold text-brand-muted hover:text-brand-dark transition">
+                class="hidden sm:block w-full py-2 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200 text-xs font-bold text-brand-muted hover:text-brand-dark transition">
                 รีเซ็ตมุมมองทั้งจังหวัด
               </button>
             </div>
@@ -1181,9 +1192,9 @@
           </div>
         </div>
 
-        <!-- Map CTA Button (Soft Mint Green — Exact Match to PC & Tablet Mockups) -->
+        <!-- Map CTA Button (Soft Mint Green Gradient — Matching PC & Tablet Concept) -->
         <button type="button" onclick="toggleEnvDetailsPanel(true)"
-          class="w-full py-2.5 px-4 rounded-2xl bg-brand-mint hover:bg-emerald-100 border border-emerald-200 text-brand-dark text-sm font-bold inline-flex items-center justify-center gap-2 transition">
+          class="w-full py-2.5 px-4 rounded-2xl bg-gradient-to-r from-[#E6F8EE] to-[#D6F3E3] hover:to-[#C6EDD8] border border-emerald-200 text-brand-dark text-sm font-extrabold inline-flex items-center justify-center gap-2 shadow-2xs transition active:scale-[0.99]">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -1387,29 +1398,30 @@
       </div>
     </section>
 
-    <!-- ==================== 5. ANNOUNCEMENT BAR ==================== -->
+    <!-- ==================== 5. ANNOUNCEMENT BAR (COHESIVE PASTEL ROSE-WHITE CARD) ==================== -->
     <section id="announcements" aria-label="ประกาศและข้อควรทราบ"
-      class="ci-card px-4 sm:px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-3.5 scroll-mt-24">
+      class="ci-card bg-gradient-to-br from-white via-[#FFF8FB] to-[#FCEAF3] border-pink-200/80 px-4 sm:px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-3.5 scroll-mt-24">
       <div class="flex items-start md:items-center gap-3 min-w-0">
-        <span class="w-10 h-10 rounded-full bg-brand-pinkSoft text-brand-pink flex items-center justify-center shrink-0">
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path
-              d="M12 22a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 22zm6.5-6V11a6.5 6.5 0 10-13 0v5L3.5 18v1h17v-1l-2-2z" />
-          </svg>
-        </span>
+        <!-- 3D Glossy Pink Notification Bell SVG (Consistent with Quick Access Card) -->
+        <svg class="w-10 h-10 shrink-0 drop-shadow-xs" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <circle cx="20" cy="7.5" r="2.5" fill="#BE185D" />
+          <path d="M20 9 C14.2 9 10.5 13.4 10.5 19.2 V25 L7.5 28.2 C7 28.8 7.4 29.8 8.2 29.8 H31.8 C32.6 29.8 33 28.8 32.5 28.2 L29.5 25 V19.2 C29.5 13.4 25.8 9 20 9 Z" fill="url(#bellPink)" />
+          <path d="M14.5 14 C15.8 11.8 17.6 10.8 19.5 10.6" stroke="#FFE4E6" stroke-width="2" stroke-linecap="round" opacity="0.85" />
+          <path d="M16.5 30.5 A3.5 3.5 0 0 0 23.5 30.5 Z" fill="#9D174D" />
+        </svg>
         <div class="flex flex-col md:flex-row md:items-center gap-1 md:gap-3 min-w-0">
           <h2 class="text-base sm:text-[17px] font-extrabold text-brand-ink whitespace-nowrap">
             ประกาศ / ข้อควรทราบ
           </h2>
-          <span class="hidden md:inline-block w-px h-5 bg-slate-200 shrink-0" aria-hidden="true"></span>
-          <p id="announcementSummaryText" class="text-sm sm:text-[15px] text-brand-ink/85 leading-snug">
+          <span class="hidden md:inline-block w-px h-5 bg-pink-200 shrink-0" aria-hidden="true"></span>
+          <p id="announcementSummaryText" class="text-[13.5px] sm:text-[15px] text-brand-ink/85 leading-snug">
             กำลังตรวจสอบข้อควรทราบจากข้อมูลล่าสุด...
           </p>
         </div>
       </div>
 
       <button type="button" onclick="openAnnouncementsModal()"
-        class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-brand-mint hover:bg-emerald-100 text-brand-dark text-xs sm:text-sm font-bold border border-emerald-200 transition shrink-0">
+        class="self-start md:self-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-brand-mint text-brand-dark text-xs sm:text-sm font-extrabold border border-emerald-200 shadow-2xs transition shrink-0">
         <span>ดูประกาศทั้งหมด</span>
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
@@ -1417,11 +1429,11 @@
       </button>
     </section>
 
-    <!-- ==================== 6. RELATED SERVICES BAR (4 QUICK ACTIONS) ==================== -->
+    <!-- ==================== 6. RELATED SERVICES BAR (4 PASTEL QUICK ACTIONS) ==================== -->
     <section id="related-services" aria-label="บริการและข้อมูลที่เกี่ยวข้อง"
-      class="ci-card px-4 sm:px-6 py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3.5">
+      class="ci-card bg-gradient-to-b from-[#F8FCFA] to-white border-emerald-100 px-4 sm:px-6 py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3.5">
       <div class="flex items-center gap-2.5 shrink-0">
-        <span class="w-9 h-9 rounded-xl bg-brand-mint text-brand-green flex items-center justify-center shrink-0">
+        <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-brand-dark text-white flex items-center justify-center shrink-0 shadow-xs">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
@@ -1432,70 +1444,78 @@
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 flex-1 lg:max-w-3xl">
         <button type="button" onclick="focusDistrictSelector()"
-          class="flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl bg-slate-50/90 hover:bg-brand-mint/70 border border-slate-200 hover:border-emerald-300 text-xs sm:text-sm font-bold text-brand-ink transition">
-          <svg class="w-4 h-4 text-brand-green shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <span>ข้อมูลรายอำเภอ</span>
+          class="flex items-center justify-start sm:justify-center gap-2.5 px-3 py-2.5 rounded-2xl bg-gradient-to-br from-white to-[#EDFBF3] hover:to-[#DCF5E7] border border-emerald-200/80 text-xs sm:text-sm font-bold text-brand-ink shadow-2xs transition active:scale-[0.98]">
+          <span class="w-7 h-7 rounded-xl bg-emerald-100 text-brand-green flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </span>
+          <span class="truncate">ข้อมูลรายอำเภอ</span>
         </button>
 
         <button type="button" onclick="openOverviewStatistics()"
-          class="flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl bg-slate-50/90 hover:bg-brand-mint/70 border border-slate-200 hover:border-emerald-300 text-xs sm:text-sm font-bold text-brand-ink transition">
-          <svg class="w-4 h-4 text-brand-green shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 20h16M7 16v-5m5 5V7m5 9v-8" />
-          </svg>
-          <span>สถิติภาพรวม</span>
+          class="flex items-center justify-start sm:justify-center gap-2.5 px-3 py-2.5 rounded-2xl bg-gradient-to-br from-white to-[#F5F0FF] hover:to-[#EBE2FF] border border-purple-200/80 text-xs sm:text-sm font-bold text-brand-ink shadow-2xs transition active:scale-[0.98]">
+          <span class="w-7 h-7 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 20h16M7 16v-5m5 5V7m5 9v-8" />
+            </svg>
+          </span>
+          <span class="truncate">สถิติภาพรวม</span>
         </button>
 
         <button type="button" onclick="openOpenDataModal()"
-          class="flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl bg-slate-50/90 hover:bg-brand-mint/70 border border-slate-200 hover:border-emerald-300 text-xs sm:text-sm font-bold text-brand-ink transition">
-          <svg class="w-4 h-4 text-brand-green shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
-          </svg>
-          <span>ข้อมูลเปิด (API)</span>
+          class="flex items-center justify-start sm:justify-center gap-2.5 px-3 py-2.5 rounded-2xl bg-gradient-to-br from-white to-[#EEF7FE] hover:to-[#DDF0FD] border border-sky-200/80 text-xs sm:text-sm font-bold text-brand-ink shadow-2xs transition active:scale-[0.98]">
+          <span class="w-7 h-7 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+            </svg>
+          </span>
+          <span class="truncate">ข้อมูลเปิด (API)</span>
         </button>
 
         <button type="button" onclick="openGuideModal()"
-          class="flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl bg-slate-50/90 hover:bg-brand-mint/70 border border-slate-200 hover:border-emerald-300 text-xs sm:text-sm font-bold text-brand-ink transition">
-          <svg class="w-4 h-4 text-brand-green shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>คู่มือการใช้งาน</span>
+          class="flex items-center justify-start sm:justify-center gap-2.5 px-3 py-2.5 rounded-2xl bg-gradient-to-br from-white to-[#FFF4F8] hover:to-[#FCE5EF] border border-pink-200/80 text-xs sm:text-sm font-bold text-brand-ink shadow-2xs transition active:scale-[0.98]">
+          <span class="w-7 h-7 rounded-xl bg-pink-100 text-brand-pinkDark flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </span>
+          <span class="truncate">คู่มือการใช้งาน</span>
         </button>
       </div>
     </section>
 
   </main>
 
-  <!-- ==================== 7. FOOTER WITH SOFT GREEN DECORATIVE WAVE & LARGER PARTNER LOGOS ==================== -->
-  <footer class="relative overflow-hidden mt-3 pt-6 pb-10 text-center">
-    <svg class="pointer-events-none absolute inset-x-0 bottom-0 w-full h-24 md:h-28 opacity-85" viewBox="0 0 1440 96"
+  <!-- ==================== 7. FOOTER WITH FULL-BLEED SOFT GREEN WAVE (ZERO GAP ABOVE BOTTOM NAV) ==================== -->
+  <footer class="relative overflow-hidden mt-2 pt-7 pb-28 md:pb-10 text-center">
+    <svg class="pointer-events-none absolute inset-x-0 bottom-0 w-full h-36 md:h-28 opacity-90" viewBox="0 0 1440 120"
       preserveAspectRatio="none" aria-hidden="true">
-      <path d="M0 52 Q320 10 720 48 T1440 24 L1440 96 L0 96 Z" fill="#D1FAE5" />
-      <path d="M0 68 Q440 34 900 66 T1440 46 L1440 96 L0 96 Z" fill="#A7F3D0" opacity="0.7" />
+      <path d="M0 54 Q320 8 720 48 T1440 24 L1440 120 L0 120 Z" fill="#D1FAE5" />
+      <path d="M0 78 Q440 36 900 72 T1440 50 L1440 120 L0 120 Z" fill="#A7F3D0" opacity="0.72" />
     </svg>
-    <div class="relative z-10 max-w-[1440px] mx-auto px-4 space-y-2.5">
-      <div class="flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-2 md:gap-4 text-[13px] sm:text-[13.5px] font-bold">
-        <span class="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/85 md:bg-transparent border border-slate-200/80 md:border-0 shadow-2xs md:shadow-none text-brand-ink">
-          <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white p-0.5 object-contain ring-1 ring-pink-200 shrink-0 shadow-2xs" />
+    <div class="relative z-10 max-w-[1440px] mx-auto px-4 space-y-3">
+      <div class="flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-2 md:gap-4 text-[12.5px] sm:text-[13.5px] font-bold">
+        <span class="inline-flex items-center gap-2.5 px-3.5 py-1.5 md:px-0 md:py-0 rounded-full bg-white/92 md:bg-transparent border border-emerald-100 md:border-0 shadow-xs md:shadow-none text-brand-ink">
+          <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white p-0.5 object-contain ring-1 ring-pink-300 shrink-0 shadow-2xs" />
           <span>ศูนย์ข้อมูลสาธารณะ อบจ.ลำปาง</span>
         </span>
         <span class="hidden lg:inline text-slate-300 font-normal" aria-hidden="true">|</span>
-        <span class="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/85 md:bg-transparent border border-slate-200/80 md:border-0 shadow-2xs md:shadow-none text-brand-dark">
+        <span class="inline-flex items-center gap-2.5 px-3.5 py-1.5 md:px-0 md:py-0 rounded-full bg-white/92 md:bg-transparent border border-emerald-100 md:border-0 shadow-xs md:shadow-none text-brand-dark">
           <img src="./logo_hii.jpg" alt="สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white p-0.5 object-contain ring-1 ring-emerald-200 shrink-0 shadow-2xs" />
           <span>สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน)</span>
         </span>
         <span class="hidden lg:inline text-slate-300 font-normal" aria-hidden="true">|</span>
-        <span class="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/85 md:bg-transparent border border-slate-200/80 md:border-0 shadow-2xs md:shadow-none text-brand-pinkDark">
+        <span class="inline-flex items-center gap-2.5 px-3.5 py-1.5 md:px-0 md:py-0 rounded-full bg-white/92 md:bg-transparent border border-pink-100 md:border-0 shadow-xs md:shadow-none text-brand-pinkDark">
           <img src="./logo_traffy.png" alt="Traffy Fondue ลำปาง" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg object-cover ring-1 ring-pink-200 shrink-0 shadow-2xs" />
           <span>ข้อมูลเรื่องร้องเรียน โดย Traffy Fondue ลำปาง</span>
         </span>
       </div>
-      <div class="text-[12px] sm:text-[12.5px] font-medium text-brand-muted">
+      <div class="text-[11.5px] sm:text-[12.5px] font-medium text-brand-dark/75">
         ศูนย์ข้อมูลสาธารณะ องค์การบริหารส่วนจังหวัดลำปาง (อบจ.ลำปาง) &nbsp;|&nbsp; LP-PAO Smart Data – Citizen Intelligence
       </div>
     </div>
@@ -1547,60 +1567,125 @@
     </div>
   </nav>
 
-  <!-- ==================== MOBILE / TABLET NAVIGATION DRAWER ==================== -->
+  <!-- ==================== MOBILE / TABLET NAVIGATION DRAWER (COHESIVE BRANDED DESIGN) ==================== -->
   <div id="mobileDrawer" class="hidden fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="เมนูเพิ่มเติม">
     <div class="absolute inset-0 bg-slate-900/55 backdrop-blur-xs" onclick="toggleMobileDrawer(false)"></div>
-    <div class="anim-drawer absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white shadow-2xl p-5 flex flex-col justify-between">
-      <div class="space-y-5">
-        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <div class="flex items-center gap-1 shrink-0">
-              <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-9 h-9 rounded-full bg-white p-0.5 object-contain ring-1 ring-pink-300 shadow-2xs" />
-              <img src="./logo_hii.jpg" alt="สสน." class="w-8 h-8 rounded-full bg-white p-0.5 object-contain ring-1 ring-emerald-200 shadow-2xs" />
-              <img src="./logo_traffy.png" alt="Traffy Fondue ลำปาง" class="w-8 h-8 rounded-lg object-cover ring-1 ring-pink-200 shadow-2xs" />
+    <div class="anim-drawer absolute right-0 top-0 bottom-0 w-[320px] max-w-[88vw] bg-[#F7F8F4] shadow-2xl flex flex-col justify-between overflow-hidden rounded-l-3xl">
+      <!-- Branded Dark-Green Drawer Header with 3 Partner Logos & Pink Wave Accent -->
+      <div>
+        <div class="bg-brand-dark text-white px-4 pt-5 pb-4 relative overflow-hidden">
+          <div class="flex items-start justify-between gap-2 relative z-10">
+            <div class="space-y-2.5 min-w-0">
+              <div class="flex items-center gap-1.5">
+                <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-10 h-10 rounded-full bg-white p-0.5 object-contain ring-2 ring-brand-pink/90 shadow-sm shrink-0" />
+                <img src="./logo_hii.jpg" alt="สสน." class="w-8 h-8 rounded-full bg-white p-0.5 object-contain ring-[1.5px] ring-emerald-200 shadow-sm shrink-0" />
+                <img src="./logo_traffy.png" alt="Traffy Fondue ลำปาง" class="w-8 h-8 rounded-xl bg-white object-cover ring-[1.5px] ring-pink-200 shadow-sm shrink-0" />
+              </div>
+              <div class="leading-tight">
+                <div class="font-extrabold text-[15px] text-white">ศูนย์ข้อมูลสาธารณะ อบจ.ลำปาง</div>
+                <div class="text-[11px] text-emerald-100/90 mt-0.5">LP-PAO Smart Data · Citizen Intelligence</div>
+              </div>
             </div>
-            <div class="leading-tight min-w-0">
-              <div class="font-bold text-sm text-brand-ink truncate">ศูนย์ข้อมูลสาธารณะ อบจ.ลำปาง</div>
-              <div class="text-[11px] text-brand-muted truncate">LP-PAO Smart Data</div>
-            </div>
+            <button type="button" onclick="toggleMobileDrawer(false)" aria-label="ปิดเมนู"
+              class="w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 text-white font-bold flex items-center justify-center shrink-0 transition">✕</button>
           </div>
-          <button type="button" onclick="toggleMobileDrawer(false)" aria-label="ปิดเมนู"
-            class="w-9 h-9 rounded-full bg-slate-100 text-slate-600 font-bold shrink-0">✕</button>
+          <div class="absolute inset-x-0 bottom-0 h-[4px] bg-gradient-to-r from-[#F472B6] via-[#FBCFE8] to-[#6EE7B7]"></div>
         </div>
 
-        <div class="space-y-1.5 text-sm font-semibold">
+        <!-- Tactile Menu Cards with Colored Icons -->
+        <div class="p-4 space-y-2 text-[13.5px] font-bold overflow-y-auto max-h-[calc(100vh-230px)] soft-scroll">
           <a href="#hero" onclick="toggleMobileDrawer(false); setActiveNav('hero');"
-            class="block px-3.5 py-2.5 rounded-xl hover:bg-brand-mint text-brand-ink">หน้าหลัก</a>
-          <a href="#area-map" onclick="toggleMobileDrawer(false); setActiveNav('area-map');"
-            class="block px-3.5 py-2.5 rounded-xl hover:bg-brand-mint text-brand-ink">แผนที่สถานการณ์พื้นที่</a>
-          <a href="#traffy-lampang" onclick="toggleMobileDrawer(false); setActiveNav('traffy-lampang');"
-            class="block px-3.5 py-2.5 rounded-xl hover:bg-brand-pinkSoft text-brand-ink">เรื่องร้องเรียน Traffy Fondue</a>
-          <button type="button" onclick="toggleMobileDrawer(false); toggleEnvDetailsPanel(true);"
-            class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-brand-mint text-brand-ink">ตารางข้อมูลตัวเลขจริงรายสถานี</button>
-          <button type="button" onclick="toggleMobileDrawer(false); openOpenDataModal();"
-            class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-brand-mint text-brand-ink">ข้อมูลเปิดสำหรับหน่วยงาน (API)</button>
-          <button type="button" onclick="toggleMobileDrawer(false); openGuideModal();"
-            class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-brand-mint text-brand-ink">คู่มือการใช้งานและเกณฑ์สถานะ</button>
-        </div>
+            class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-2xl bg-white hover:bg-pink-50/70 border border-slate-200/80 shadow-2xs text-brand-ink transition">
+            <span class="flex items-center gap-3 min-w-0">
+              <span class="w-8 h-8 rounded-xl bg-brand-pinkSoft text-brand-pink flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3l9 7.5h-2.5V20a1 1 0 01-1 1H14v-6h-4v6H6.5a1 1 0 01-1-1v-9.5H3L12 3z" /></svg>
+              </span>
+              <span class="truncate">หน้าหลัก</span>
+            </span>
+            <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+          </a>
 
-        <div class="pt-3 border-t border-slate-200 space-y-2">
-          <div class="text-xs font-bold text-brand-muted">การตั้งค่าการแสดงผล</div>
-          <div class="flex gap-2">
-            <button type="button" id="btnFontToggleMobile" onclick="toggleFontSize()"
-              class="flex-1 py-2 px-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-brand-ink">
-              ขนาดตัวอักษร: ปกติ (ก+)
-            </button>
-            <button type="button" onclick="toggleMobileDrawer(false); loadPublicDashboard(true);"
-              class="py-2 px-3 rounded-xl border border-emerald-200 bg-brand-mint text-xs font-bold text-brand-dark">
-              รีเฟรช
-            </button>
+          <a href="#traffy-lampang" onclick="toggleMobileDrawer(false); setActiveNav('traffy-lampang');"
+            class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-2xl bg-gradient-to-r from-[#FFF6FA] to-white border border-pink-200/80 shadow-2xs text-brand-ink transition">
+            <span class="flex items-center gap-3 min-w-0">
+              <span class="w-8 h-8 rounded-xl bg-pink-100 text-brand-pinkDark flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>
+              </span>
+              <span class="truncate">เรื่องร้องเรียน Traffy Fondue</span>
+            </span>
+            <svg class="w-4 h-4 text-brand-pinkDark/70 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+          </a>
+
+          <a href="#area-map" onclick="toggleMobileDrawer(false); setActiveNav('area-map');"
+            class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-2xl bg-white hover:bg-brand-mint/60 border border-slate-200/80 shadow-2xs text-brand-ink transition">
+            <span class="flex items-center gap-3 min-w-0">
+              <span class="w-8 h-8 rounded-xl bg-emerald-100 text-brand-green flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+              </span>
+              <span class="truncate">แผนที่สถานการณ์พื้นที่</span>
+            </span>
+            <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+          </a>
+
+          <button type="button" onclick="toggleMobileDrawer(false); toggleEnvDetailsPanel(true);"
+            class="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-2xl bg-white hover:bg-sky-50/70 border border-slate-200/80 shadow-2xs text-brand-ink transition">
+            <span class="flex items-center gap-3 min-w-0">
+              <span class="w-8 h-8 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18M7 6h10M7 18h10" /></svg>
+              </span>
+              <span class="truncate">ตารางข้อมูลตัวเลขจริงรายสถานี</span>
+            </span>
+            <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+          </button>
+
+          <button type="button" onclick="toggleMobileDrawer(false); openOpenDataModal();"
+            class="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-2xl bg-white hover:bg-purple-50/70 border border-slate-200/80 shadow-2xs text-brand-ink transition">
+            <span class="flex items-center gap-3 min-w-0">
+              <span class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" /></svg>
+              </span>
+              <span class="truncate">ข้อมูลเปิดสำหรับหน่วยงาน (API)</span>
+            </span>
+            <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+          </button>
+
+          <button type="button" onclick="toggleMobileDrawer(false); openGuideModal();"
+            class="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-2xl bg-white hover:bg-amber-50/70 border border-slate-200/80 shadow-2xs text-brand-ink transition">
+            <span class="flex items-center gap-3 min-w-0">
+              <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              </span>
+              <span class="truncate">คู่มือการใช้งานและเกณฑ์สถานะ</span>
+            </span>
+            <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+          </button>
+
+          <!-- Display Settings Card -->
+          <div class="pt-2">
+            <div class="rounded-2xl bg-white border border-slate-200/80 p-3 space-y-2 shadow-2xs">
+              <div class="text-[11px] font-extrabold text-brand-muted uppercase tracking-wide">การตั้งค่าการแสดงผล</div>
+              <div class="flex gap-2">
+                <button type="button" id="btnFontToggleMobile" onclick="toggleFontSize()"
+                  class="flex-1 py-2 px-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-brand-ink transition">
+                  ขนาดตัวอักษร: ปกติ (ก+)
+                </button>
+                <button type="button" onclick="toggleMobileDrawer(false); loadPublicDashboard(true);"
+                  class="py-2 px-3 rounded-xl border border-emerald-200 bg-brand-mint hover:bg-emerald-100 text-xs font-extrabold text-brand-dark transition">
+                  รีเฟรช
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="pt-4 border-t border-slate-200">
+      <!-- Bottom Staff Login CTA -->
+      <div class="p-4 bg-white border-t border-slate-200/80">
         <a href="./login.html?reauth=1&next=index.html" onclick="goToAdminLogin(event)"
-          class="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-brand-dark text-white text-sm font-bold shadow-sm">
+          class="w-full inline-flex items-center justify-center gap-2 py-3 rounded-2xl bg-brand-dark hover:bg-brand-green text-white text-sm font-extrabold shadow-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
           <span>เข้าสู่ระบบเจ้าหน้าที่</span>
         </a>
       </div>
@@ -2700,7 +2785,7 @@
                   <svg class="w-3.5 h-3.5 text-brand-green shrink-0" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
                   </svg>
-                  <span class="truncate">${esc(shortAreaLabel(it.area))} · ${esc(it.org_name || 'อบจ.ลำปาง')}</span>
+                  <span class="truncate">${esc(shortAreaLabel(it.area))}<span class="hidden sm:inline"> · ${esc(it.org_name || 'อบจ.ลำปาง')}</span></span>
                 </div>
               </div>
               <div class="flex items-center gap-2 shrink-0">
@@ -3104,8 +3189,8 @@
       state.mapLayer = layer;
       document.querySelectorAll('.mlayer-btn').forEach(b => {
         const act = b.dataset.mlayer === layer;
-        b.className = 'mlayer-btn px-3 py-1.5 rounded-full transition ' +
-          (act ? 'font-bold bg-brand-dark text-white shadow-2xs' : 'font-semibold bg-slate-100 hover:bg-emerald-50 text-brand-ink');
+        b.className = 'mlayer-btn px-2 sm:px-3 py-1.5 rounded-xl text-center whitespace-nowrap transition ' +
+          (act ? 'font-bold bg-brand-dark text-white shadow-2xs' : 'font-semibold text-brand-ink hover:bg-white/80');
       });
       closeMapStationDetail();
       renderMap();
@@ -3238,38 +3323,38 @@
         });
       }
 
-      // Render Legend Summary Card (Matching PC & Tablet Mockups: ปกติ / เฝ้าระวัง / ต้องติดตาม + live station counts)
+      // Render Legend Summary Card (Pastel Status Pills — 2x2 Grid on Mobile, Vertical Stack on Tablet/PC)
       const legEl = document.getElementById('mapLegendSummary');
       if (legEl) {
         legEl.innerHTML = `
-          <div class="flex items-center justify-between gap-2">
-            <span class="inline-flex items-center gap-2 font-semibold text-brand-ink">
-              <span class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+          <div class="flex items-center justify-between gap-1.5 px-2.5 py-1.5 sm:px-0 sm:py-0 rounded-xl sm:rounded-none bg-emerald-50/75 sm:bg-transparent">
+            <span class="inline-flex items-center gap-1.5 sm:gap-2 font-bold text-brand-ink">
+              <span class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
               ปกติ
             </span>
-            <span class="font-bold text-brand-dark">${cntNormal} จุด</span>
+            <span class="font-extrabold text-brand-dark whitespace-nowrap">${cntNormal} จุด</span>
           </div>
-          <div class="flex items-center justify-between gap-2">
-            <span class="inline-flex items-center gap-2 font-semibold text-brand-ink">
-              <span class="w-5 h-5 rounded-full bg-amber-400 text-white flex items-center justify-center text-[11px] font-bold">!</span>
+          <div class="flex items-center justify-between gap-1.5 px-2.5 py-1.5 sm:px-0 sm:py-0 rounded-xl sm:rounded-none bg-amber-50/85 sm:bg-transparent">
+            <span class="inline-flex items-center gap-1.5 sm:gap-2 font-bold text-brand-ink">
+              <span class="w-5 h-5 rounded-full bg-amber-400 text-white flex items-center justify-center text-[11px] font-bold shrink-0">!</span>
               เฝ้าระวัง
             </span>
-            <span class="font-bold text-amber-800">${cntWatch} จุด</span>
+            <span class="font-extrabold text-amber-800 whitespace-nowrap">${cntWatch} จุด</span>
           </div>
-          <div class="flex items-center justify-between gap-2">
-            <span class="inline-flex items-center gap-2 font-semibold text-brand-ink">
-              <span class="w-5 h-5 rounded-full bg-brand-pink text-white flex items-center justify-center text-[10px] font-bold">▲</span>
+          <div class="flex items-center justify-between gap-1.5 px-2.5 py-1.5 sm:px-0 sm:py-0 rounded-xl sm:rounded-none bg-pink-50/85 sm:bg-transparent">
+            <span class="inline-flex items-center gap-1.5 sm:gap-2 font-bold text-brand-ink">
+              <span class="w-5 h-5 rounded-full bg-brand-pink text-white flex items-center justify-center text-[10px] font-bold shrink-0">▲</span>
               ต้องติดตาม
             </span>
-            <span class="font-bold text-brand-pinkDark">${cntHigh} จุด</span>
+            <span class="font-extrabold text-brand-pinkDark whitespace-nowrap">${cntHigh} จุด</span>
           </div>
           ${cntNoData > 0 ? `
-          <div class="flex items-center justify-between gap-2 text-brand-muted">
-            <span class="inline-flex items-center gap-2 font-medium">
-              <span class="w-5 h-5 rounded-full bg-slate-300 text-white flex items-center justify-center text-[10px] font-bold">-</span>
+          <div class="flex items-center justify-between gap-1.5 px-2.5 py-1.5 sm:px-0 sm:py-0 rounded-xl sm:rounded-none bg-slate-100/80 sm:bg-transparent text-brand-muted">
+            <span class="inline-flex items-center gap-1.5 sm:gap-2 font-semibold">
+              <span class="w-5 h-5 rounded-full bg-slate-300 text-white flex items-center justify-center text-[10px] font-bold shrink-0">-</span>
               ไม่มีข้อมูล
             </span>
-            <span class="font-semibold">${cntNoData} จุด</span>
+            <span class="font-bold whitespace-nowrap">${cntNoData} จุด</span>
           </div>` : ''}`;
       }
 

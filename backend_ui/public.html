@@ -91,19 +91,19 @@
       box-shadow: 0 4px 18px rgba(7, 84, 63, 0.05);
     }
 
-    /* 5 Main Category Cards */
+    /* 5 Main Category Cards (Subtle Pastel Tints Matching Concept Mockups) */
     .cat-card {
       background: #FFFFFF;
-      border: 1px solid var(--border-card);
-      border-radius: 20px;
-      box-shadow: 0 4px 14px rgba(7, 84, 63, 0.05);
+      border: 1.5px solid #E2ECE7;
+      border-radius: 22px;
+      box-shadow: 0 5px 16px rgba(7, 84, 63, 0.06);
       transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, border-color 0.22s ease;
     }
 
     .cat-card:hover {
       transform: translateY(-3px);
-      border-color: #9ED6B7;
-      box-shadow: 0 10px 24px rgba(7, 84, 63, 0.11);
+      border-color: #8FD1AE;
+      box-shadow: 0 12px 26px rgba(7, 84, 63, 0.12);
     }
 
     .cat-card:active {
@@ -111,18 +111,39 @@
     }
 
     .cat-card-traffy {
-      background: linear-gradient(155deg, #FFF7FA 0%, #FCE8F0 100%);
-      border: 2px solid #F06595;
-      box-shadow: 0 6px 20px rgba(240, 101, 149, 0.15);
+      background: linear-gradient(145deg, #FFF5F9 0%, #FCE6F0 100%);
+      border: 2px solid #EC5892;
+      box-shadow: 0 8px 22px rgba(236, 88, 146, 0.18);
     }
 
     .cat-card-traffy:hover {
       border-color: #DB2777;
-      box-shadow: 0 12px 26px rgba(240, 101, 149, 0.22);
+      box-shadow: 0 14px 28px rgba(236, 88, 146, 0.25);
+    }
+
+    .cat-card-air {
+      background: linear-gradient(150deg, #FFFFFF 35%, #EEFBF2 100%);
+      border-color: #D6EFE0;
+    }
+
+    .cat-card-water {
+      background: linear-gradient(150deg, #FFFFFF 35%, #EDF6FE 100%);
+      border-color: #D5E8FA;
+    }
+
+    .cat-card-dam {
+      background: linear-gradient(150deg, #FFFFFF 35%, #F8F2FA 100%);
+      border-color: #E7DCF0;
+    }
+
+    .cat-card-rain {
+      background: linear-gradient(150deg, #FFFFFF 35%, #EEF5FE 100%);
+      border-color: #D7E5FA;
     }
 
     .cat-icon-wrap {
       transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 4px 8px rgba(15, 23, 42, 0.09));
     }
 
     .cat-card:hover .cat-icon-wrap {
@@ -131,7 +152,7 @@
 
     /* Airy Bright Hero Banner (Matching PC / Tablet / Smartphone V2.0 Mockups) */
     .hero-surface {
-      background: linear-gradient(180deg, #FFFFFF 0%, #F4FAF7 78%, #F7F8F4 100%);
+      background: linear-gradient(180deg, #FBFDFF 0%, #F1FAF6 72%, #F7F8F4 100%);
       position: relative;
       overflow: hidden;
     }
@@ -280,33 +301,47 @@
   <div id="topLoader" aria-hidden="true"></div>
 
   <!-- ==================== 1. TOP NAVIGATION BAR (PC / TABLET / SMARTPHONE) ==================== -->
-  <header class="sticky top-0 z-50 bg-brand-dark text-white shadow-sm">
-    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-[64px] md:h-[72px] flex items-center justify-between gap-2 sm:gap-3">
-      <!-- Left: Original PAO Logo + 2-Line Organization Name (Clean, matching PC/Tablet/Smartphone mockups) -->
-      <a href="#hero" onclick="setActiveNav('hero')" class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-        <img src="./logo_pao.png" alt="ตราสัญลักษณ์ องค์การบริหารส่วนจังหวัดลำปาง"
-          class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white p-0.5 object-contain shrink-0 ring-2 ring-brand-pink/80 shadow-sm" />
+  <header class="sticky top-0 z-50 bg-brand-dark text-white shadow-xs">
+    <div class="max-w-[1440px] mx-auto px-3 sm:px-5 lg:px-6 xl:px-8 h-[66px] md:h-[74px] flex items-center justify-between gap-2 sm:gap-2.5">
+      <!-- Left: PAO + HII (สสน.) + Traffy Fondue Logos (Clean non-overlapping & larger) + Adaptive Brand Title -->
+      <a href="#hero" onclick="setActiveNav('hero')" class="flex items-center gap-2 sm:gap-2.5 xl:gap-3 min-w-0">
+        <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+          <img src="./logo_pao.png" alt="ตราสัญลักษณ์ องค์การบริหารส่วนจังหวัดลำปาง"
+            class="w-[42px] h-[42px] sm:w-12 sm:h-12 lg:w-11 lg:h-11 xl:w-[52px] xl:h-[52px] rounded-full bg-white p-0.5 object-contain shrink-0 ring-2 ring-brand-pink/90 shadow-sm" />
+          <img src="./logo_hii.jpg" alt="สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน)"
+            title="สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน)"
+            class="w-[33px] h-[33px] sm:w-9 sm:h-9 lg:w-[35px] lg:h-[35px] xl:w-[42px] xl:h-[42px] rounded-full bg-white p-0.5 object-contain shrink-0 ring-[1.5px] ring-emerald-200/90 shadow-sm" />
+          <img src="./logo_traffy.png" alt="Traffy Fondue ลำปาง"
+            title="ข้อมูลเรื่องร้องเรียน โดย Traffy Fondue ลำปาง"
+            class="w-[33px] h-[33px] sm:w-9 sm:h-9 lg:w-[35px] lg:h-[35px] xl:w-[42px] xl:h-[42px] rounded-xl bg-white object-cover shrink-0 ring-[1.5px] ring-pink-200/90 shadow-sm" />
+        </div>
         <div class="min-w-0 leading-tight">
-          <div class="text-sm sm:text-base md:text-[17px] lg:text-[18px] font-bold tracking-tight truncate">
+          <!-- Smartphone 2-line title (matches Smartphone Concept without truncating) -->
+          <div class="sm:hidden text-[13px] font-extrabold tracking-tight leading-[1.15] text-white">
+            ศูนย์ข้อมูลสาธารณะ<br />อบจ.ลำปาง
+          </div>
+          <!-- Tablet & PC single-line full title -->
+          <div class="hidden sm:block text-[16px] lg:text-[15.5px] xl:text-[18.5px] font-extrabold tracking-tight whitespace-nowrap">
             ศูนย์ข้อมูลสาธารณะ อบจ.ลำปาง
           </div>
-          <div class="text-[11px] sm:text-xs text-emerald-100/90 font-medium truncate">
+          <div class="text-[10px] sm:text-[11.5px] xl:text-xs text-emerald-100/95 font-medium truncate mt-0.5">
             LP-PAO Smart Data
           </div>
         </div>
       </a>
 
       <!-- Center: Horizontal Menu (Tablet Landscape & Desktop >=1024px) -->
-      <nav aria-label="เมนูหลัก" class="hidden lg:flex items-center gap-1 xl:gap-1.5 text-sm xl:text-[15px] font-semibold">
+      <nav aria-label="เมนูหลัก" class="hidden lg:flex items-center gap-0.5 xl:gap-1.5 text-[13.5px] xl:text-[15px] font-semibold shrink-0">
+        <span class="hidden xl:block h-7 w-px bg-white/20 mr-2" aria-hidden="true"></span>
         <a href="#hero" data-nav="hero" onclick="setActiveNav('hero')"
-          class="desktop-nav-link inline-flex items-center gap-2 px-3.5 xl:px-4 py-2 rounded-full bg-brand-pink text-white shadow-sm transition whitespace-nowrap">
+          class="desktop-nav-link inline-flex items-center gap-1.5 xl:gap-2 px-3 xl:px-4 py-1.5 xl:py-2 rounded-full bg-brand-pink text-white shadow-sm transition whitespace-nowrap">
           <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 3l9 7.5h-2.5V20a1 1 0 01-1 1H14v-6h-4v6H6.5a1 1 0 01-1-1v-9.5H3L12 3z" />
           </svg>
           <span>หน้าหลัก</span>
         </a>
         <a href="#area-map" data-nav="area-map" onclick="setActiveNav('area-map')"
-          class="desktop-nav-link inline-flex items-center gap-2 px-3.5 xl:px-4 py-2 rounded-full text-emerald-50/95 hover:bg-white/10 transition whitespace-nowrap">
+          class="desktop-nav-link inline-flex items-center gap-1.5 xl:gap-2 px-2.5 xl:px-4 py-1.5 xl:py-2 rounded-full text-emerald-50/95 hover:bg-white/10 transition whitespace-nowrap">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -314,7 +349,7 @@
           <span>แผนที่</span>
         </a>
         <a href="#traffy-lampang" data-nav="traffy-lampang" onclick="setActiveNav('traffy-lampang')"
-          class="desktop-nav-link inline-flex items-center gap-2 px-3.5 xl:px-4 py-2 rounded-full text-emerald-50/95 hover:bg-white/10 transition whitespace-nowrap">
+          class="desktop-nav-link inline-flex items-center gap-1.5 xl:gap-2 px-2.5 xl:px-4 py-1.5 xl:py-2 rounded-full text-emerald-50/95 hover:bg-white/10 transition whitespace-nowrap">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
@@ -322,7 +357,7 @@
           <span>เรื่องร้องเรียน</span>
         </a>
         <button type="button" data-nav="open-data" onclick="openOpenDataModal()"
-          class="desktop-nav-link inline-flex items-center gap-2 px-3.5 xl:px-4 py-2 rounded-full text-emerald-50/95 hover:bg-white/10 transition whitespace-nowrap">
+          class="desktop-nav-link inline-flex items-center gap-1.5 xl:gap-2 px-2.5 xl:px-4 py-1.5 xl:py-2 rounded-full text-emerald-50/95 hover:bg-white/10 transition whitespace-nowrap">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
@@ -347,7 +382,7 @@
         </button>
         <button type="button" id="btnReloadPublic" onclick="loadPublicDashboard(true)" title="รีเฟรชข้อมูลล่าสุด"
           aria-label="รีเฟรชข้อมูลล่าสุด"
-          class="hidden xl:inline-flex items-center gap-1.5 h-9 px-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-semibold transition">
+          class="hidden 2xl:inline-flex items-center gap-1.5 h-9 px-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-semibold transition">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -371,77 +406,211 @@
         </button>
       </div>
     </div>
-    <!-- Subtle Pink-Green Brand Divider -->
-    <div class="h-[3px] bg-gradient-to-r from-brand-pink via-pink-300 to-emerald-400/60" aria-hidden="true"></div>
+    <!-- Tablet & PC Pink-Mint Accent Line -->
+    <div class="hidden md:block h-[4px] bg-gradient-to-r from-[#F472B6] via-[#FBCFE8] to-[#A7F3D0]" aria-hidden="true"></div>
   </header>
 
-  <!-- ==================== 2. HERO SITUATION BANNER (BRIGHT AIRY LAMPANG SCENIC) ==================== -->
+  <!-- ==================== 2. HERO SITUATION BANNER (CONCEPT LAMPANG CLOCK TOWER & CURVED RIBBONS) ==================== -->
   <section id="hero" class="hero-surface scroll-mt-24">
-    <!-- Lampang Misty Mountains + Clock Tower + Soft Green/Pink Waves -->
-    <svg class="pointer-events-none hero-scenic-drift absolute inset-0 w-full h-full object-cover" viewBox="0 0 1440 260"
-      preserveAspectRatio="xMaxYMax slice" aria-hidden="true">
-      <defs>
-        <linearGradient id="skyMist" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0" />
-          <stop offset="65%" stop-color="#E0F2FE" stop-opacity="0.45" />
-          <stop offset="100%" stop-color="#D1FAE5" stop-opacity="0.55" />
-        </linearGradient>
-        <linearGradient id="mtnBlue" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#93C5FD" stop-opacity="0.34" />
-          <stop offset="100%" stop-color="#DBEAFE" stop-opacity="0.06" />
-        </linearGradient>
-        <linearGradient id="mtnGreen" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#6EE7B7" stop-opacity="0.36" />
-          <stop offset="100%" stop-color="#A7F3D0" stop-opacity="0.12" />
-        </linearGradient>
-        <linearGradient id="wavePink" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#F06595" stop-opacity="0.32" />
-          <stop offset="45%" stop-color="#F9A8D4" stop-opacity="0.14" />
-          <stop offset="100%" stop-color="#F06595" stop-opacity="0.28" />
-        </linearGradient>
-        <linearGradient id="waveGreen" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#34D399" stop-opacity="0.22" />
-          <stop offset="55%" stop-color="#10B981" stop-opacity="0.34" />
-          <stop offset="100%" stop-color="#0D793D" stop-opacity="0.16" />
-        </linearGradient>
-      </defs>
-      <rect width="1440" height="260" fill="url(#skyMist)" />
-      <!-- Distant Lampang Mountains (Right side) -->
-      <path d="M520 220 Q720 115 920 165 T1260 110 L1440 135 L1440 260 L520 260 Z" fill="url(#mtnBlue)" />
-      <path d="M680 235 Q880 150 1070 185 T1440 148 L1440 260 L680 260 Z" fill="url(#mtnGreen)" />
-      <!-- Iconic Lampang Clock Tower Illustration (Anchored on right, subtle behind text on mobile) -->
-      <g transform="translate(1285, 24)" opacity="0.65">
-        <!-- Foliage behind tower -->
-        <ellipse cx="18" cy="172" rx="46" ry="26" fill="#4ADE80" opacity="0.45" />
-        <ellipse cx="86" cy="176" rx="52" ry="28" fill="#22C55E" opacity="0.38" />
-        <!-- Tower body -->
-        <rect x="33" y="64" width="34" height="122" rx="2" fill="#FEF3C7" stroke="#D97706" stroke-width="1.2" />
-        <rect x="27" y="54" width="46" height="12" rx="2" fill="#B45309" />
-        <polygon points="50,16 74,54 26,54" fill="#92400E" />
-        <rect x="48.5" y="4" width="3" height="14" fill="#B45309" />
-        <!-- Clock face -->
-        <circle cx="50" cy="88" r="12" fill="#FFFFFF" stroke="#92400E" stroke-width="1.6" />
-        <path d="M50 81 v7 l5 2.5" stroke="#1E293B" stroke-width="1.8" stroke-linecap="round" fill="none" />
-        <!-- Arch & Base -->
-        <rect x="40" y="114" width="20" height="24" rx="10" fill="#D97706" opacity="0.35" />
-        <rect x="25" y="152" width="50" height="36" rx="2" fill="#FDE68A" stroke="#D97706" stroke-width="1.2" />
-      </g>
-      <!-- Graceful Flowing Green & Pink Bottom Waves -->
-      <path d="M0 226 Q240 198 520 224 T1080 218 T1440 202 L1440 260 L0 260 Z" fill="url(#wavePink)" />
-      <path d="M0 238 Q320 255 680 220 T1220 230 T1440 216 L1440 260 L0 260 Z" fill="url(#waveGreen)" />
-    </svg>
-
-    <!-- Mobile Curved Top Accent (Subtle nod to Smartphone mockup) -->
-    <div class="md:hidden pointer-events-none absolute top-0 inset-x-0 h-3 overflow-hidden" aria-hidden="true">
-      <svg class="w-full h-full" viewBox="0 0 390 12" preserveAspectRatio="none">
-        <path d="M0 0 Q195 14 390 0 L390 12 L0 12 Z" fill="rgba(240,101,149,0.22)" />
+    <!-- Smartphone Curved Dark-Green Header Cap + Pink Wave Swoosh (Exact Match to Smartphone Concept) -->
+    <div class="md:hidden pointer-events-none relative w-full h-[20px] -mb-1 z-20" aria-hidden="true">
+      <svg class="w-full h-full block" viewBox="0 0 390 22" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="mobTopPink" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#F06595" />
+            <stop offset="48%" stop-color="#FBCFE8" stop-opacity="0.45" />
+            <stop offset="100%" stop-color="#F472B6" />
+          </linearGradient>
+        </defs>
+        <!-- Pink Ribbon Flanks -->
+        <path d="M0 0 L390 0 L390 21 Q318 8 245 14 Q195 18 145 14 Q72 8 0 18 Z" fill="url(#mobTopPink)" />
+        <!-- Curved Dark-Green Header Bottom Extension -->
+        <path d="M0 0 L390 0 L390 3 Q195 19 0 3 Z" fill="#07543F" />
       </svg>
     </div>
 
-    <div class="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-3.5 pb-4 md:pt-7 md:pb-9">
+    <!-- Ambient Sky & Distant Valley Mist Layer (Full Width) -->
+    <svg class="pointer-events-none absolute inset-0 w-full h-full" viewBox="0 0 1440 260"
+      preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="heroSkyWash" x1="0" y1="0" x2="1" y2="0.4">
+          <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.96" />
+          <stop offset="52%" stop-color="#F4FAFF" stop-opacity="0.88" />
+          <stop offset="100%" stop-color="#DCF2FE" stop-opacity="0.92" />
+        </linearGradient>
+        <linearGradient id="distantRange" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#7DD3FC" stop-opacity="0.35" />
+          <stop offset="100%" stop-color="#E0F2FE" stop-opacity="0.05" />
+        </linearGradient>
+      </defs>
+      <rect width="1440" height="260" fill="url(#heroSkyWash)" />
+      <path d="M460 225 Q680 95 910 150 T1320 82 L1440 105 L1440 260 L460 260 Z" fill="url(#distantRange)" />
+    </svg>
+
+    <!-- Detailed Iconic Lampang Clock Tower, Lush Park Foliage, Curved Road & Doi Khun Tan Mountains -->
+    <div class="pointer-events-none absolute bottom-0 top-1 md:top-0 right-[-195px] sm:right-[-140px] md:right-[-40px] lg:right-0 z-0 flex items-end justify-end"
+      aria-hidden="true">
+      <svg class="h-[88%] sm:h-[92%] md:h-[96%] w-auto max-w-none block" viewBox="0 0 760 245" fill="none">
+        <defs>
+          <linearGradient id="lpMtnBack" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#67B7DC" stop-opacity="0.55" />
+            <stop offset="100%" stop-color="#BAE6FD" stop-opacity="0.12" />
+          </linearGradient>
+          <linearGradient id="lpMtnMid" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#38A3A5" stop-opacity="0.52" />
+            <stop offset="100%" stop-color="#99F6E4" stop-opacity="0.15" />
+          </linearGradient>
+          <linearGradient id="lpLawn" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#BBF7D0" stop-opacity="0.35" />
+            <stop offset="32%" stop-color="#4ADE80" />
+            <stop offset="100%" stop-color="#16A34A" />
+          </linearGradient>
+          <linearGradient id="lpRoad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#CBD5E1" stop-opacity="0.25" />
+            <stop offset="40%" stop-color="#64748B" />
+            <stop offset="100%" stop-color="#475569" />
+          </linearGradient>
+          <linearGradient id="lpTowerWall" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#FFFDF5" />
+            <stop offset="68%" stop-color="#FEF3C7" />
+            <stop offset="100%" stop-color="#FDE68A" />
+          </linearGradient>
+          <linearGradient id="lpRoof" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#C2410C" />
+            <stop offset="55%" stop-color="#9A3412" />
+            <stop offset="100%" stop-color="#7C2D12" />
+          </linearGradient>
+          <linearGradient id="lpLeftFade" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#F6FBF8" stop-opacity="1" />
+            <stop offset="40%" stop-color="#F6FBF8" stop-opacity="0.45" />
+            <stop offset="72%" stop-color="#F6FBF8" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+
+        <!-- Soft Sunny Clouds -->
+        <path d="M180 54 C180 42 194 36 206 42 C214 30 236 32 242 44 C254 44 262 52 260 61 L176 61 Z" fill="#FFFFFF" opacity="0.82" />
+        <path d="M510 42 C510 33 522 28 532 33 C539 24 556 26 562 35 C572 35 578 41 576 48 L508 48 Z" fill="#FFFFFF" opacity="0.78" />
+
+        <!-- Layered Lampang Mountains (Spanning Across Behind Tower & Right Park) -->
+        <path d="M30 205 Q145 96 270 134 Q385 68 520 102 Q645 70 760 92 L760 230 L30 230 Z" fill="url(#lpMtnBack)" />
+        <path d="M90 214 Q205 128 320 156 Q455 96 600 122 L760 104 L760 230 L90 230 Z" fill="url(#lpMtnMid)" />
+
+        <!-- Lush Park Trees Left of Clock Tower -->
+        <g>
+          <circle cx="242" cy="174" r="28" fill="#15803D" opacity="0.85" />
+          <circle cx="218" cy="182" r="24" fill="#16A34A" opacity="0.88" />
+          <circle cx="266" cy="166" r="32" fill="#166534" />
+          <circle cx="254" cy="160" r="24" fill="#22C55E" />
+          <circle cx="280" cy="172" r="25" fill="#15803D" />
+          <circle cx="232" cy="176" r="19" fill="#4ADE80" opacity="0.85" />
+          <circle cx="198" cy="190" r="18" fill="#4ADE80" opacity="0.7" />
+        </g>
+
+        <!-- Lush Extended Park Canopy Right of Clock Tower (Sits Behind the Floating White Updated Card on Tablet/PC!) -->
+        <g>
+          <circle cx="434" cy="154" r="36" fill="#14532D" />
+          <circle cx="472" cy="144" r="42" fill="#166534" />
+          <circle cx="520" cy="138" r="46" fill="#14532D" />
+          <circle cx="572" cy="142" r="44" fill="#166534" />
+          <circle cx="628" cy="136" r="48" fill="#14532D" />
+          <circle cx="686" cy="142" r="46" fill="#166534" />
+          <circle cx="738" cy="146" r="44" fill="#14532D" />
+          <circle cx="414" cy="168" r="27" fill="#15803D" />
+          <circle cx="452" cy="148" r="29" fill="#22C55E" />
+          <circle cx="496" cy="144" r="30" fill="#16A34A" />
+          <circle cx="546" cy="146" r="32" fill="#22C55E" />
+          <circle cx="600" cy="144" r="30" fill="#16A34A" />
+          <circle cx="656" cy="148" r="32" fill="#22C55E" />
+          <circle cx="716" cy="152" r="30" fill="#16A34A" />
+          <circle cx="440" cy="142" r="17" fill="#86EFAC" opacity="0.6" />
+          <circle cx="536" cy="134" r="19" fill="#86EFAC" opacity="0.55" />
+          <circle cx="642" cy="132" r="18" fill="#86EFAC" opacity="0.5" />
+          <!-- Warm Park Lampposts -->
+          <line x1="408" y1="175" x2="408" y2="197" stroke="#475569" stroke-width="2" />
+          <circle cx="408" cy="173" r="3.8" fill="#FEF08A" />
+          <line x1="448" y1="177" x2="448" y2="199" stroke="#475569" stroke-width="2" />
+          <circle cx="448" cy="175" r="3.5" fill="#FEF08A" />
+          <line x1="502" y1="179" x2="502" y2="201" stroke="#475569" stroke-width="2" />
+          <circle cx="502" cy="177" r="3.5" fill="#FEF08A" />
+        </g>
+
+        <!-- ==================== ICONIC 3-TIERED LAMPANG CLOCK TOWER (100% Unclipped & Unobstructed!) ==================== -->
+        <g transform="translate(298, 12)">
+          <!-- Golden Spire / Finial -->
+          <line x1="56" y1="2" x2="56" y2="18" stroke="#D97706" stroke-width="2.6" stroke-linecap="round" />
+          <circle cx="56" cy="13" r="3" fill="#FBBF24" stroke="#92400E" stroke-width="1" />
+
+          <!-- Roof Tier 1 (Top Lanna Roof) -->
+          <polygon points="56,16 76,31 36,31" fill="url(#lpRoof)" />
+          <rect x="33" y="30" width="46" height="3.2" rx="1.5" fill="#F59E0B" />
+          <!-- Upper Lantern Gallery -->
+          <rect x="41" y="33" width="30" height="12" fill="url(#lpTowerWall)" stroke="#D97706" stroke-width="1" />
+          <rect x="46" y="36" width="5" height="7" rx="2.5" fill="#78350F" />
+          <rect x="53.5" y="36" width="5" height="7" rx="2.5" fill="#78350F" />
+          <rect x="61" y="36" width="5" height="7" rx="2.5" fill="#78350F" />
+
+          <!-- Roof Tier 2 (Middle Lanna Roof) -->
+          <polygon points="38,45 74,45 86,57 26,57" fill="url(#lpRoof)" />
+          <rect x="23" y="56" width="66" height="3.8" rx="1.8" fill="#F59E0B" />
+
+          <!-- Clock Story (Main Upper Shaft + 3D Side Facet) -->
+          <rect x="33" y="60" width="46" height="44" fill="url(#lpTowerWall)" stroke="#D97706" stroke-width="1.1" />
+          <rect x="69" y="60" width="10" height="44" fill="#FDE68A" opacity="0.7" />
+          <rect x="33" y="60" width="4" height="44" fill="#F59E0B" opacity="0.45" />
+          <rect x="75" y="60" width="4" height="44" fill="#D97706" opacity="0.45" />
+
+          <!-- Detailed Clock Dial -->
+          <circle cx="55" cy="82" r="15.5" fill="#B45309" />
+          <circle cx="55" cy="82" r="13.2" fill="#FFFFFF" stroke="#F59E0B" stroke-width="1.4" />
+          <circle cx="55" cy="82" r="10.5" fill="none" stroke="#CBD5E1" stroke-width="0.8" stroke-dasharray="1.5 3.9" />
+          <path d="M55 82 L48.5 82 M55 82 L59 74" stroke="#1E293B" stroke-width="2.1" stroke-linecap="round" />
+          <circle cx="55" cy="82" r="1.8" fill="#9A3412" />
+
+          <!-- Middle Cornice / Balustrade -->
+          <polygon points="30,104 82,104 87,111 25,111" fill="#B45309" />
+          <rect x="24" y="110" width="64" height="3.5" rx="1.5" fill="#F59E0B" />
+
+          <!-- Lower Tapered Tower Story -->
+          <polygon points="31,113.5 81,113.5 85,152 27,152" fill="url(#lpTowerWall)" stroke="#D97706" stroke-width="1.1" />
+          <polygon points="72,113.5 81,113.5 85,152 75,152" fill="#FDE68A" opacity="0.72" />
+          <rect x="44" y="122" width="8" height="20" rx="4" fill="#78350F" opacity="0.85" />
+          <rect x="59" y="122" width="8" height="20" rx="4" fill="#78350F" opacity="0.85" />
+          <line x1="31" y1="136" x2="83" y2="136" stroke="#D97706" stroke-width="1" opacity="0.55" />
+
+          <!-- Base Pedestal Cornice & Ground Portal -->
+          <rect x="21" y="151" width="70" height="5" rx="2" fill="#B45309" />
+          <polygon points="23,156 89,156 94,184 18,184" fill="url(#lpTowerWall)" stroke="#B45309" stroke-width="1.2" />
+          <path d="M45 184 V167 A11 11 0 0 1 67 167 V184 Z" fill="#451A03" />
+          <rect x="30" y="165" width="7" height="12" rx="3.5" fill="#92400E" opacity="0.7" />
+          <rect x="75" y="165" width="7" height="12" rx="3.5" fill="#92400E" opacity="0.7" />
+          <rect x="13" y="183" width="86" height="5" rx="1.5" fill="#D97706" />
+          <rect x="8" y="187" width="96" height="5" rx="1.5" fill="#92400E" />
+        </g>
+
+        <!-- Foreground Park Lawn & Curved Roundabout Road -->
+        <path d="M90 214 Q340 186 760 198 L760 245 L90 245 Z" fill="url(#lpLawn)" />
+        <path d="M125 228 Q350 194 760 212 L760 242 Q360 216 125 242 Z" fill="url(#lpRoad)" />
+        <path d="M140 227 Q352 195 760 212" stroke="#F8FAFC" stroke-width="2.2" opacity="0.88" />
+        <path d="M180 234 Q380 206 760 222" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="8 8" opacity="0.75" />
+        <path d="M200 240 Q430 216 760 228 L760 245 L200 245 Z" fill="#22C55E" opacity="0.88" />
+
+        <!-- Left Mist Blend -->
+        <rect x="0" y="0" width="210" height="245" fill="url(#lpLeftFade)" />
+      </svg>
+    </div>
+
+    <!-- Flowing Pink & Mint Ribbon Wave Transition at Bottom of Hero (Exact Match to PC & Tablet Concept) -->
+    <svg class="pointer-events-none absolute inset-x-0 bottom-0 w-full h-[22px] md:h-[34px] z-[5]" viewBox="0 0 1440 42"
+      preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 18 Q260 2 560 22 T1140 20 T1440 8 L1440 42 L0 42 Z" fill="#F9A8D4" opacity="0.52" />
+      <path d="M0 28 Q340 40 720 16 T1440 24 L1440 42 L0 42 Z" fill="#A7F3D0" opacity="0.58" />
+      <path d="M0 34 Q420 22 900 34 T1440 30 L1440 42 L0 42 Z" fill="#F7F8F4" />
+    </svg>
+
+    <div class="relative z-10 max-w-[1440px] mx-auto px-3.5 sm:px-6 lg:px-8 pt-2 pb-3.5 md:pt-6 md:pb-9">
       <!-- Cloud Failover Banner (Auto-shown only when DB is offline) -->
       <div id="cloudFallbackBanner"
-        class="hidden mb-4 rounded-2xl bg-amber-50 text-amber-950 border border-amber-300 px-4 py-2.5 text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-xs">
+        class="hidden mb-3 rounded-2xl bg-amber-50 text-amber-950 border border-amber-300 px-4 py-2 text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-xs">
         <svg class="w-5 h-5 text-amber-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2"
           viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round"
@@ -452,7 +621,7 @@
 
       <!-- Error State Banner (Shown only when all APIs fail) -->
       <div id="loadErrorBanner"
-        class="hidden mb-4 rounded-2xl bg-red-50 text-red-900 border border-red-200 px-4 py-3 text-sm font-semibold flex flex-wrap items-center justify-between gap-3">
+        class="hidden mb-3 rounded-2xl bg-red-50 text-red-900 border border-red-200 px-4 py-2.5 text-sm font-semibold flex flex-wrap items-center justify-between gap-3">
         <span>ไม่สามารถโหลดข้อมูลล่าสุดได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</span>
         <button type="button" onclick="loadPublicDashboard(true)"
           class="px-4 py-1.5 rounded-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition">
@@ -460,12 +629,12 @@
         </button>
       </div>
 
-      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5 md:gap-4 lg:gap-6">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-1.5 md:gap-4 lg:gap-6">
         <!-- Left & Center Hero Content -->
-        <div class="space-y-2 md:space-y-3 max-w-4xl">
+        <div class="space-y-1.5 md:space-y-3 max-w-4xl">
           <div class="flex flex-wrap items-center gap-2">
             <h1 id="heroTitle"
-              class="text-[24px] sm:text-[26px] md:text-[30px] lg:text-[34px] font-extrabold text-brand-dark tracking-tight leading-tight">
+              class="text-[22px] sm:text-[26px] md:text-[30px] lg:text-[34px] font-extrabold text-brand-dark tracking-tight leading-tight drop-shadow-[0_1px_0_rgba(255,255,255,0.9)]">
               สถานการณ์จังหวัดลำปางวันนี้
             </h1>
             <button type="button" id="heroResetAmphoeBtn" onclick="selectAmphoe('all')"
@@ -474,10 +643,10 @@
             </button>
           </div>
 
-          <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5">
+          <div class="flex flex-col md:flex-row md:items-center gap-1.5 md:gap-5">
             <!-- Live Overall Situation Status Pill -->
             <div id="heroStatusBadge"
-              class="inline-flex items-center gap-2 self-start shrink-0 px-4 sm:px-6 py-1.5 sm:py-2.5 rounded-full bg-white/95 shadow-sm border border-pink-200">
+              class="inline-flex items-center gap-2 self-start shrink-0 px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-full bg-white/95 shadow-sm border border-pink-200">
               <span id="heroStatusIcon"
                 class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center shrink-0">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -485,32 +654,32 @@
                 </svg>
               </span>
               <span id="heroStatusText"
-                class="text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] font-extrabold tracking-tight whitespace-nowrap text-brand-ink">
+                class="text-[17px] sm:text-[20px] md:text-[22px] lg:text-[24px] font-extrabold tracking-tight whitespace-nowrap text-brand-ink">
                 กำลังตรวจสอบสถานการณ์...
               </span>
             </div>
 
             <!-- Concise 2-Line Situation Description -->
             <p id="heroDescription"
-              class="text-[13.5px] sm:text-[15px] md:text-[16px] text-brand-ink/90 leading-snug md:leading-relaxed md:border-l md:border-slate-300/80 md:pl-4 max-w-xl bg-white/45 md:bg-transparent rounded-xl px-2.5 py-1 md:p-0 backdrop-blur-[1px] md:backdrop-blur-none">
+              class="text-[12.5px] sm:text-[14.5px] md:text-[15.5px] font-medium text-brand-ink/95 leading-snug md:leading-relaxed md:border-l-2 md:border-slate-300/90 md:pl-4 max-w-[68%] sm:max-w-md md:max-w-xl [text-shadow:0_1px_8px_rgba(255,255,255,0.95)]">
               กำลังเชื่อมโยงข้อมูลเรื่องร้องเรียน คุณภาพอากาศ ระดับน้ำ อ่างเก็บน้ำ และปริมาณฝนล่าสุดของจังหวัดลำปาง
             </p>
           </div>
         </div>
 
-        <!-- Right: Last Updated White Card (Desktop/Tablet Landscape) / Soft Green Pill (Mobile) -->
-        <div class="flex flex-wrap items-center gap-2 lg:flex-col lg:items-end shrink-0">
+        <!-- Right: Last Updated White Card (Desktop/Tablet) / Soft Mint Pill (Smartphone) -->
+        <div class="flex flex-wrap items-center gap-2 lg:flex-col lg:items-end shrink-0 pt-0.5 md:pt-0">
           <button type="button" onclick="openAnnouncementsModal()"
             title="คลิกเพื่อดูเวลาอัปเดตแยกตามแต่ละหมวดข้อมูล"
-            class="inline-flex items-center gap-2.5 px-4 py-2 sm:py-2.5 rounded-full md:rounded-2xl bg-brand-mint/90 md:bg-white/95 hover:bg-white border border-emerald-200 md:border-slate-200 shadow-xs transition text-left">
-            <svg class="w-5 h-5 text-brand-dark shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+            class="inline-flex items-center gap-2 px-3.5 py-1.5 md:px-4 md:py-2.5 rounded-full md:rounded-2xl bg-[#E8F6EE]/95 md:bg-white/95 hover:bg-white border border-emerald-200/90 md:border-slate-200/90 shadow-sm transition text-left backdrop-blur-xs">
+            <svg class="w-4 h-4 md:w-5 md:h-5 text-brand-dark shrink-0" fill="none" stroke="currentColor" stroke-width="2.2"
               viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round"
                 d="M12 8v4l3 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div class="leading-tight">
               <div class="hidden md:block text-[11px] font-semibold text-brand-muted">อัปเดตล่าสุด</div>
-              <div class="text-xs sm:text-[13px] font-bold text-brand-dark">
+              <div class="text-[11.5px] sm:text-[12.5px] md:text-[13px] font-bold text-brand-dark whitespace-nowrap">
                 <span class="md:hidden">อัปเดตล่าสุด </span><span id="heroUpdatedAt">กำลังโหลด...</span>
               </div>
             </div>
@@ -522,45 +691,69 @@
   </section>
 
   <!-- ==================== MAIN CONTENT CONTAINER ==================== -->
-  <main class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-10 space-y-5 sm:space-y-6">
+  <main class="max-w-[1440px] mx-auto px-3.5 sm:px-6 lg:px-8 pt-1.5 md:pt-3 pb-10 space-y-4 sm:space-y-6">
 
-    <!-- ==================== 3. FIVE MAIN CATEGORY CARDS (TRAFFY FIRST ORDER) ==================== -->
+    <!-- ==================== 3. FIVE MAIN CATEGORY CARDS (TRAFFY FIRST ORDER — 3D CONCEPT ICONS) ==================== -->
     <!-- Order: 01. เรื่องร้องเรียน (Traffy) -> 02. คุณภาพอากาศ -> 03. ระดับน้ำ -> 04. อ่างเก็บน้ำ -> 05. ปริมาณฝน -->
     <section id="category-cards" aria-label="หมวดหมู่ข้อมูลหลัก 5 ด้าน">
-      <div class="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-5 gap-2.5 md:gap-3.5">
+      <div class="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-[1.24fr_1fr_1fr_1fr_1fr] gap-2 md:gap-3 lg:gap-3.5">
 
-        <!-- Card 01: เรื่องร้องเรียน (Traffy Fondue — Hero Highlighted Card) -->
+        <!-- Card 01: เรื่องร้องเรียน (Traffy Fondue — Pink Highlighted Card + Signature Sound-Burst Rays) -->
         <button type="button" onclick="scrollToSection('traffy-lampang')"
-          class="cat-card cat-card-traffy md:col-span-2 lg:col-span-1 text-left px-3.5 py-2.5 md:p-4 flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2.5 min-h-[68px] md:min-h-[168px] lg:min-h-[176px] group cursor-pointer">
-          <div class="flex items-center md:flex-col md:items-start xl:flex-row xl:items-center gap-2.5 xl:gap-3 min-w-0">
-            <span
-              class="cat-icon-wrap w-10 h-10 md:w-11 md:h-11 xl:w-12 xl:h-12 rounded-2xl bg-white/95 shadow-xs flex items-center justify-center shrink-0">
-              <svg class="w-7 h-7" viewBox="0 0 32 32" fill="none">
+          class="cat-card cat-card-traffy relative overflow-visible md:col-span-2 lg:col-span-1 text-left px-3.5 py-2 md:p-3.5 xl:p-4 flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2 min-h-[64px] md:min-h-[162px] lg:min-h-[172px] group cursor-pointer">
+          <!-- Signature Pink Sound-Burst Ticks at Top of Card 01 (Matching Smartphone, Tablet & PC Concept Art) -->
+          <svg class="pointer-events-none absolute -top-2.5 left-12 md:left-14 w-7 h-5 text-[#EC4899]" viewBox="0 0 28 20" fill="none" aria-hidden="true">
+            <path d="M8 16L11 4M16 17L23 6" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" />
+          </svg>
+
+          <div class="flex items-center md:flex-row gap-2.5 xl:gap-3 min-w-0">
+            <span class="cat-icon-wrap w-12 h-12 md:w-11 md:h-11 xl:w-14 xl:h-14 flex items-center justify-center shrink-0">
+              <!-- Large 3D Glossy Pink & Pearl-White Megaphone SVG -->
+              <svg class="w-full h-full" viewBox="0 0 56 56" fill="none">
                 <defs>
-                  <linearGradient id="icoMegaphone" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stop-color="#F472B6" />
-                    <stop offset="100%" stop-color="#DB2777" />
+                  <linearGradient id="megaCone" x1="10" y1="14" x2="42" y2="38" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#FFFFFF" />
+                    <stop offset="55%" stop-color="#FBCFE8" />
+                    <stop offset="100%" stop-color="#F472B6" />
+                  </linearGradient>
+                  <linearGradient id="megaRim" x1="34" y1="10" x2="46" y2="42" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#FB7185" />
+                    <stop offset="50%" stop-color="#EC4899" />
+                    <stop offset="100%" stop-color="#BE185D" />
+                  </linearGradient>
+                  <linearGradient id="megaHandle" x1="14" y1="32" x2="24" y2="48" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#F43F5E" />
+                    <stop offset="100%" stop-color="#9D174D" />
                   </linearGradient>
                 </defs>
-                <path d="M5 13.5C5 12.1 6.1 11 7.5 11H12L24 5.5C25 5 26 5.7 26 6.8V21.2C26 22.3 25 23 24 22.5L12 17H7.5C6.1 17 5 15.9 5 14.5V13.5Z" fill="url(#icoMegaphone)" />
-                <path d="M9.5 17L11.5 24.5C11.7 25.4 12.6 25.9 13.5 25.6L14.5 25.2C15.3 24.9 15.7 24 15.4 23.2L13.5 17H9.5Z" fill="#BE185D" />
-                <ellipse cx="25" cy="14" rx="2.5" ry="7.5" fill="#FCE7F3" stroke="#DB2777" stroke-width="1.5" />
-                <path d="M27.5 10.5L29.5 9M27.5 17.5L29.5 19" stroke="#F06595" stroke-width="2" stroke-linecap="round" />
+                <ellipse cx="26" cy="49" rx="14" ry="3" fill="#EC4899" opacity="0.16" />
+                <!-- Handle -->
+                <path d="M16 33 L20.5 45.5 C21.2 47.4 23.3 48.3 25.2 47.6 L26.8 47 C28.6 46.3 29.4 44.3 28.7 42.5 L24.5 31.5 Z" fill="url(#megaHandle)" />
+                <!-- Rear Cap -->
+                <path d="M8.5 27.5 C7.8 25.1 9.2 22.6 11.6 22 L16.5 20.8 L19.5 32.8 L14.6 34 C12.2 34.6 9.3 30.2 8.5 27.5 Z" fill="url(#megaRim)" />
+                <!-- 3D Megaphone Cone -->
+                <path d="M15 21.2 L38.5 11.2 L43.5 37.2 L18.2 33.4 Z" fill="url(#megaCone)" stroke="#EC4899" stroke-width="1.6" stroke-linejoin="round" />
+                <!-- Gloss Highlight -->
+                <path d="M17.5 23.2 L36.5 15.2 L37.3 18.8 L18.2 25.6 Z" fill="#FFFFFF" opacity="0.78" />
+                <!-- Front Flared Horn Rim -->
+                <ellipse cx="41.2" cy="24.2" rx="5.2" ry="13.5" transform="rotate(-10 41.2 24.2)" fill="url(#megaRim)" />
+                <ellipse cx="41.5" cy="24.2" rx="3.1" ry="10.2" transform="rotate(-10 41.5 24.2)" fill="#FFF1F2" />
+                <ellipse cx="40.5" cy="24.5" rx="1.7" ry="4.2" transform="rotate(-10 40.5 24.5)" fill="#F43F5E" />
               </svg>
             </span>
             <div class="min-w-0">
               <div class="text-[17px] md:text-[18px] xl:text-[20px] font-extrabold text-brand-ink leading-tight whitespace-nowrap">เรื่องร้องเรียน</div>
-              <div id="cardTraffyHint" class="text-[12.5px] md:text-[14px] text-brand-pinkDark/90 font-semibold truncate">
+              <div id="cardTraffyHint" class="text-[13px] md:text-[13.5px] text-brand-muted font-medium truncate">
                 Traffy Fondue
               </div>
             </div>
           </div>
           <div class="flex items-center justify-between gap-1.5 shrink-0 md:w-full md:mt-auto pt-0.5">
             <span id="cardTraffyBadge"
-              class="skeleton inline-flex items-center justify-center px-3 py-1 md:py-1.5 rounded-full text-xs md:text-[14px] font-bold min-w-[96px] md:flex-1">
+              class="skeleton inline-flex items-center justify-center px-3 py-1 md:py-1.5 rounded-full text-xs md:text-[13.5px] font-bold min-w-[102px] md:flex-1">
               กำลังโหลด
             </span>
-            <svg class="w-4 h-4 xl:w-5 xl:h-5 text-brand-pinkDark/70 group-hover:text-brand-pinkDark group-hover:translate-x-0.5 transition shrink-0"
+            <svg class="w-4 h-4 xl:w-5 xl:h-5 text-brand-ink/75 group-hover:text-brand-pinkDark group-hover:translate-x-0.5 transition shrink-0"
               fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
             </svg>
@@ -569,32 +762,44 @@
 
         <!-- Card 02: คุณภาพอากาศ -->
         <button type="button" onclick="focusDomainFromCard('pm25')"
-          class="cat-card md:col-span-2 lg:col-span-1 text-left px-3.5 py-2.5 md:p-4 flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2.5 min-h-[68px] md:min-h-[168px] lg:min-h-[176px] group cursor-pointer">
-          <div class="flex items-center md:flex-col md:items-start xl:flex-row xl:items-center gap-2.5 xl:gap-3 min-w-0">
-            <span
-              class="cat-icon-wrap w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-emerald-50 flex items-center justify-center shrink-0">
-              <svg class="w-7 h-7" viewBox="0 0 32 32" fill="none">
+          class="cat-card cat-card-air md:col-span-2 lg:col-span-1 text-left px-3.5 py-2 md:p-4 flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2 min-h-[64px] md:min-h-[162px] lg:min-h-[172px] group cursor-pointer">
+          <div class="flex items-center md:flex-col md:items-start gap-3 md:gap-2 min-w-0">
+            <span class="cat-icon-wrap w-11 h-11 md:w-11 md:h-11 xl:w-12 xl:h-12 flex items-center justify-center shrink-0">
+              <!-- Lush 3D Dual Green Leaves SVG -->
+              <svg class="w-full h-full" viewBox="0 0 52 52" fill="none">
                 <defs>
-                  <linearGradient id="icoLeaf" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stop-color="#4ADE80" />
+                  <linearGradient id="leafMain" x1="18" y1="10" x2="44" y2="42" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#86EFAC" />
+                    <stop offset="45%" stop-color="#22C55E" />
                     <stop offset="100%" stop-color="#15803D" />
                   </linearGradient>
+                  <linearGradient id="leafSmall" x1="6" y1="22" x2="24" y2="42" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#A7F3D0" />
+                    <stop offset="55%" stop-color="#4ADE80" />
+                    <stop offset="100%" stop-color="#16A34A" />
+                  </linearGradient>
                 </defs>
-                <path d="M7 25C7 14 14 7 25 7C25 18 18 25 7 25Z" fill="url(#icoLeaf)" />
-                <path d="M5 27C9 21 15 15 22 10" stroke="#DCFCE7" stroke-width="2" stroke-linecap="round" />
+                <ellipse cx="26" cy="45" rx="14" ry="2.8" fill="#16A34A" opacity="0.16" />
+                <!-- Left Smaller Leaf -->
+                <path d="M22 41 C11 40 6 32 7 22 C17 22 24 29 22 41 Z" fill="url(#leafSmall)" />
+                <path d="M21.5 40.5 C17 34 13 29 9.5 25" stroke="#ECFDF5" stroke-width="1.8" stroke-linecap="round" />
+                <!-- Right Main Leaf -->
+                <path d="M20 42 C18 24 28 12 45 11 C46 28 36 41 20 42 Z" fill="url(#leafMain)" />
+                <path d="M19 43 C24 34 31 25 40 16" stroke="#DCFCE7" stroke-width="2.2" stroke-linecap="round" />
+                <path d="M27 31 L34 30 M30 25 L36 24" stroke="#BBF7D0" stroke-width="1.4" stroke-linecap="round" opacity="0.8" />
               </svg>
             </span>
             <div class="min-w-0">
-              <div class="text-[17px] md:text-[18px] xl:text-[19px] font-bold text-brand-ink leading-tight">คุณภาพอากาศ</div>
-              <div id="cardPmHint" class="text-[12.5px] md:text-[14px] text-brand-muted truncate">ภาพรวมจังหวัด</div>
+              <div class="text-[17px] md:text-[18px] xl:text-[19.5px] font-extrabold text-brand-ink leading-tight whitespace-nowrap">คุณภาพอากาศ</div>
+              <div id="cardPmHint" class="text-[12.5px] md:text-[13px] text-brand-muted truncate">ภาพรวมจังหวัด</div>
             </div>
           </div>
           <div class="flex items-center justify-between gap-1.5 shrink-0 md:w-full md:mt-auto pt-0.5">
             <span id="cardPmBadge"
-              class="skeleton inline-flex items-center justify-center px-3 py-1 md:py-1.5 rounded-full text-xs md:text-[14px] font-bold min-w-[96px] md:flex-1">
+              class="skeleton inline-flex items-center justify-center px-3 py-1 md:py-1.5 rounded-full text-xs md:text-[13.5px] font-bold min-w-[102px] md:flex-1">
               กำลังโหลด
             </span>
-            <svg class="w-4 h-4 xl:w-5 xl:h-5 text-slate-400 group-hover:text-brand-green group-hover:translate-x-0.5 transition shrink-0"
+            <svg class="w-4 h-4 xl:w-5 xl:h-5 text-brand-ink/70 group-hover:text-brand-green group-hover:translate-x-0.5 transition shrink-0"
               fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
             </svg>
@@ -603,27 +808,41 @@
 
         <!-- Card 03: ระดับน้ำ -->
         <button type="button" onclick="focusDomainFromCard('water')"
-          class="cat-card md:col-span-2 lg:col-span-1 text-left px-3.5 py-2.5 md:p-4 flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2.5 min-h-[68px] md:min-h-[168px] lg:min-h-[176px] group cursor-pointer">
-          <div class="flex items-center md:flex-col md:items-start xl:flex-row xl:items-center gap-2.5 xl:gap-3 min-w-0">
-            <span
-              class="cat-icon-wrap w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-sky-50 flex items-center justify-center shrink-0">
-              <svg class="w-7 h-7" viewBox="0 0 32 32" fill="none">
-                <path d="M4 11C6.5 8.5 9.5 8.5 12 11C14.5 13.5 17.5 13.5 20 11C22.5 8.5 25.5 8.5 28 11" stroke="#38BDF8" stroke-width="3" stroke-linecap="round" />
-                <path d="M4 17.5C6.5 15 9.5 15 12 17.5C14.5 20 17.5 20 20 17.5C22.5 15 25.5 15 28 17.5" stroke="#0EA5E9" stroke-width="3" stroke-linecap="round" />
-                <path d="M6 23.5C8.5 21.5 11 21.5 13.5 23.5C16 25.5 18.5 25.5 21 23.5C23.5 21.5 26 21.5 27.5 23.5" stroke="#0284C7" stroke-width="2.5" stroke-linecap="round" />
+          class="cat-card cat-card-water md:col-span-2 lg:col-span-1 text-left px-3.5 py-2 md:p-4 flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2 min-h-[64px] md:min-h-[162px] lg:min-h-[172px] group cursor-pointer">
+          <div class="flex items-center md:flex-col md:items-start gap-3 md:gap-2 min-w-0">
+            <span class="cat-icon-wrap w-11 h-11 md:w-11 md:h-11 xl:w-12 xl:h-12 flex items-center justify-center shrink-0">
+              <!-- Bold 3-Wave Glossy Azure Water SVG -->
+              <svg class="w-full h-full" viewBox="0 0 52 52" fill="none">
+                <defs>
+                  <linearGradient id="waveTop" x1="6" y1="14" x2="46" y2="20" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#38BDF8" />
+                    <stop offset="100%" stop-color="#0EA5E9" />
+                  </linearGradient>
+                  <linearGradient id="waveMid" x1="6" y1="24" x2="46" y2="30" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#0EA5E9" />
+                    <stop offset="100%" stop-color="#0284C7" />
+                  </linearGradient>
+                  <linearGradient id="waveBot" x1="6" y1="34" x2="46" y2="40" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#0284C7" />
+                    <stop offset="100%" stop-color="#0369A1" />
+                  </linearGradient>
+                </defs>
+                <path d="M7 18 C12 12.5 18 12.5 23 18 C28 23.5 34 23.5 39 18 C41.5 15.5 43.5 14.8 45.5 15.5" stroke="url(#waveTop)" stroke-width="4.4" stroke-linecap="round" />
+                <path d="M7 27.5 C12 22 18 22 23 27.5 C28 33 34 33 39 27.5 C41.5 25 43.5 24.3 45.5 25" stroke="url(#waveMid)" stroke-width="4.4" stroke-linecap="round" />
+                <path d="M7 37 C12 31.5 18 31.5 23 37 C28 42.5 34 42.5 39 37 C41.5 34.5 43.5 33.8 45.5 34.5" stroke="url(#waveBot)" stroke-width="4.4" stroke-linecap="round" />
               </svg>
             </span>
             <div class="min-w-0">
-              <div class="text-[17px] md:text-[18px] xl:text-[19px] font-bold text-brand-ink leading-tight">ระดับน้ำ</div>
-              <div id="cardWaterHint" class="text-[12.5px] md:text-[14px] text-brand-muted truncate">ภาพรวมลุ่มน้ำหลัก</div>
+              <div class="text-[17px] md:text-[18px] xl:text-[19.5px] font-extrabold text-brand-ink leading-tight whitespace-nowrap">ระดับน้ำ</div>
+              <div id="cardWaterHint" class="text-[12.5px] md:text-[13px] text-brand-muted truncate">ภาพรวมลุ่มน้ำหลัก</div>
             </div>
           </div>
           <div class="flex items-center justify-between gap-1.5 shrink-0 md:w-full md:mt-auto pt-0.5">
             <span id="cardWaterBadge"
-              class="skeleton inline-flex items-center justify-center px-3 py-1 md:py-1.5 rounded-full text-xs md:text-[14px] font-bold min-w-[96px] md:flex-1">
+              class="skeleton inline-flex items-center justify-center px-3 py-1 md:py-1.5 rounded-full text-xs md:text-[13.5px] font-bold min-w-[102px] md:flex-1">
               กำลังโหลด
             </span>
-            <svg class="w-4 h-4 xl:w-5 xl:h-5 text-slate-400 group-hover:text-brand-green group-hover:translate-x-0.5 transition shrink-0"
+            <svg class="w-4 h-4 xl:w-5 xl:h-5 text-brand-ink/70 group-hover:text-brand-green group-hover:translate-x-0.5 transition shrink-0"
               fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
             </svg>
@@ -632,28 +851,51 @@
 
         <!-- Card 04: อ่างเก็บน้ำ -->
         <button type="button" onclick="focusDomainFromCard('drought')"
-          class="cat-card md:col-span-3 lg:col-span-1 text-left px-3.5 py-2.5 md:p-4 flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2.5 min-h-[68px] md:min-h-[168px] lg:min-h-[176px] group cursor-pointer">
-          <div class="flex items-center md:flex-col md:items-start xl:flex-row xl:items-center gap-2.5 xl:gap-3 min-w-0">
-            <span
-              class="cat-icon-wrap w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-cyan-50 flex items-center justify-center shrink-0">
-              <svg class="w-7 h-7" viewBox="0 0 32 32" fill="none">
-                <path d="M5 10H10L12.5 24H5V10Z" fill="#38BDF8" />
-                <path d="M22 10H27V24H19.5L22 10Z" fill="#0284C7" />
-                <rect x="10" y="13" width="12" height="11" fill="#BAE6FD" />
-                <path d="M12 18C13.5 16.5 15 16.5 16.5 18C18 19.5 19.5 19.5 20.5 18" stroke="#0369A1" stroke-width="2" stroke-linecap="round" />
+          class="cat-card cat-card-dam md:col-span-3 lg:col-span-1 text-left px-3.5 py-2 md:p-4 flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2 min-h-[64px] md:min-h-[162px] lg:min-h-[172px] group cursor-pointer">
+          <div class="flex items-center md:flex-col md:items-start gap-3 md:gap-2 min-w-0">
+            <span class="cat-icon-wrap w-11 h-11 md:w-11 md:h-11 xl:w-12 xl:h-12 flex items-center justify-center shrink-0">
+              <!-- Detailed 3D Hydro Dam & Spillway SVG -->
+              <svg class="w-full h-full" viewBox="0 0 52 52" fill="none">
+                <defs>
+                  <linearGradient id="damWallL" x1="6" y1="14" x2="20" y2="40" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#93C5FD" />
+                    <stop offset="100%" stop-color="#2563EB" />
+                  </linearGradient>
+                  <linearGradient id="damWallR" x1="32" y1="14" x2="46" y2="40" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#60A5FA" />
+                    <stop offset="100%" stop-color="#1D4ED8" />
+                  </linearGradient>
+                  <linearGradient id="damFlow" x1="26" y1="18" x2="26" y2="42" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#E0F2FE" />
+                    <stop offset="55%" stop-color="#38BDF8" />
+                    <stop offset="100%" stop-color="#0284C7" />
+                  </linearGradient>
+                </defs>
+                <!-- Top Dam Crest Bridge -->
+                <rect x="9" y="13" width="34" height="4.5" rx="2" fill="#3B82F6" />
+                <!-- Center Spillway Gates & Flowing Water -->
+                <rect x="16" y="17" width="20" height="22" fill="#BAE6FD" />
+                <path d="M18.5 22 C18.5 19.8 20.2 18 22.3 18 C24.4 18 26 19.8 26 22 V39 H18.5 V22 Z" fill="url(#damFlow)" />
+                <path d="M26.5 22 C26.5 19.8 28.2 18 30.3 18 C32.4 18 34 19.8 34 22 V39 H26.5 V22 Z" fill="url(#damFlow)" />
+                <line x1="26.2" y1="17" x2="26.2" y2="39" stroke="#1D4ED8" stroke-width="2" />
+                <!-- Left & Right Sloped 3D Concrete Buttresses -->
+                <polygon points="10,15 17.5,15 19.5,39 6.5,39" fill="url(#damWallL)" />
+                <polygon points="34.5,15 42,15 45.5,39 32.5,39" fill="url(#damWallR)" />
+                <!-- Foaming Base Wave -->
+                <path d="M5 40.5 C9.5 38 14 43 18.5 40.5 C23 38 29 43 33.5 40.5 C38 38 42.5 43 47 40.5" stroke="#7DD3FC" stroke-width="3.6" stroke-linecap="round" />
               </svg>
             </span>
             <div class="min-w-0">
-              <div class="text-[17px] md:text-[18px] xl:text-[19px] font-bold text-brand-ink leading-tight">อ่างเก็บน้ำ</div>
-              <div id="cardDamHint" class="text-[12.5px] md:text-[14px] text-brand-muted truncate">ภาพรวมอ่างเก็บน้ำ</div>
+              <div class="text-[17px] md:text-[18px] xl:text-[19.5px] font-extrabold text-brand-ink leading-tight whitespace-nowrap">อ่างเก็บน้ำ</div>
+              <div id="cardDamHint" class="text-[12.5px] md:text-[13px] text-brand-muted truncate">ภาพรวมอ่างเก็บน้ำ</div>
             </div>
           </div>
           <div class="flex items-center justify-between gap-1.5 shrink-0 md:w-full md:mt-auto pt-0.5">
             <span id="cardDamBadge"
-              class="skeleton inline-flex items-center justify-center px-3 py-1 md:py-1.5 rounded-full text-xs md:text-[14px] font-bold min-w-[96px] md:flex-1">
+              class="skeleton inline-flex items-center justify-center px-3 py-1 md:py-1.5 rounded-full text-xs md:text-[13.5px] font-bold min-w-[102px] md:flex-1">
               กำลังโหลด
             </span>
-            <svg class="w-4 h-4 xl:w-5 xl:h-5 text-slate-400 group-hover:text-brand-green group-hover:translate-x-0.5 transition shrink-0"
+            <svg class="w-4 h-4 xl:w-5 xl:h-5 text-brand-ink/70 group-hover:text-brand-green group-hover:translate-x-0.5 transition shrink-0"
               fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
             </svg>
@@ -662,32 +904,36 @@
 
         <!-- Card 05: ปริมาณฝน -->
         <button type="button" onclick="focusDomainFromCard('rainfall')"
-          class="cat-card md:col-span-3 lg:col-span-1 text-left px-3.5 py-2.5 md:p-4 flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2.5 min-h-[68px] md:min-h-[168px] lg:min-h-[176px] group cursor-pointer">
-          <div class="flex items-center md:flex-col md:items-start xl:flex-row xl:items-center gap-2.5 xl:gap-3 min-w-0">
-            <span
-              class="cat-icon-wrap w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0">
-              <svg class="w-7 h-7" viewBox="0 0 32 32" fill="none">
+          class="cat-card cat-card-rain md:col-span-3 lg:col-span-1 text-left px-3.5 py-2 md:p-4 flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2 min-h-[64px] md:min-h-[162px] lg:min-h-[172px] group cursor-pointer">
+          <div class="flex items-center md:flex-col md:items-start gap-3 md:gap-2 min-w-0">
+            <span class="cat-icon-wrap w-11 h-11 md:w-11 md:h-11 xl:w-12 xl:h-12 flex items-center justify-center shrink-0">
+              <!-- Fluffy 3D Sky Cloud + 4 Raindrops SVG -->
+              <svg class="w-full h-full" viewBox="0 0 52 52" fill="none">
                 <defs>
-                  <linearGradient id="icoCloud" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#93C5FD" />
-                    <stop offset="100%" stop-color="#3B82F6" />
+                  <linearGradient id="cloud3D" x1="16" y1="10" x2="36" y2="34" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#FFFFFF" />
+                    <stop offset="58%" stop-color="#BAE6FD" />
+                    <stop offset="100%" stop-color="#38BDF8" />
                   </linearGradient>
                 </defs>
-                <path d="M9.5 21H23.5C26 21 28 19 28 16.5C28 14.2 26.2 12.3 24 12C23.2 8.6 20.1 6 16.5 6C12.4 6 9 9.2 8.9 13.3C6.7 13.7 5 15.6 5 17.9C5 19.6 7 21 9.5 21Z" fill="url(#icoCloud)" />
-                <path d="M11 24L9.5 27.5M16.5 24L15 28M22 24L20.5 27.5" stroke="#0284C7" stroke-width="2.2" stroke-linecap="round" />
+                <path d="M15.5 32.5 H37.5 C41.6 32.5 45 29.3 45 25.3 C45 21.6 42.2 18.6 38.6 18.2 C37.3 12.8 32.4 9 26.5 9 C19.9 9 14.5 14.1 14.2 20.6 C10.6 21.2 8 24.2 8 27.8 C8 30.6 11.2 32.5 15.5 32.5 Z"
+                  fill="url(#cloud3D)" stroke="#0284C7" stroke-width="2" stroke-linejoin="round" />
+                <!-- 4 Crisp Angled Raindrops -->
+                <path d="M15.5 37 L13.5 43 M22.5 37.5 L20.5 44 M29.5 37 L27.5 43 M36.5 37.5 L34.5 44"
+                  stroke="#0284C7" stroke-width="2.8" stroke-linecap="round" />
               </svg>
             </span>
             <div class="min-w-0">
-              <div class="text-[17px] md:text-[18px] xl:text-[19px] font-bold text-brand-ink leading-tight">ปริมาณฝน</div>
-              <div id="cardRainHint" class="text-[12.5px] md:text-[14px] text-brand-muted truncate">สถานการณ์ฝนในพื้นที่</div>
+              <div class="text-[17px] md:text-[18px] xl:text-[19.5px] font-extrabold text-brand-ink leading-tight whitespace-nowrap">ปริมาณฝน</div>
+              <div id="cardRainHint" class="text-[12.5px] md:text-[13px] text-brand-muted truncate">สถานการณ์ฝนในพื้นที่</div>
             </div>
           </div>
           <div class="flex items-center justify-between gap-1.5 shrink-0 md:w-full md:mt-auto pt-0.5">
             <span id="cardRainBadge"
-              class="skeleton inline-flex items-center justify-center px-3 py-1 md:py-1.5 rounded-full text-xs md:text-[14px] font-bold min-w-[96px] md:flex-1">
+              class="skeleton inline-flex items-center justify-center px-3 py-1 md:py-1.5 rounded-full text-xs md:text-[13.5px] font-bold min-w-[102px] md:flex-1">
               กำลังโหลด
             </span>
-            <svg class="w-4 h-4 xl:w-5 xl:h-5 text-slate-400 group-hover:text-brand-green group-hover:translate-x-0.5 transition shrink-0"
+            <svg class="w-4 h-4 xl:w-5 xl:h-5 text-brand-ink/70 group-hover:text-brand-green group-hover:translate-x-0.5 transition shrink-0"
               fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
             </svg>
@@ -700,38 +946,46 @@
     <!-- ==================== 3B. SMARTPHONE QUICK ACCESS (2 CARDS — <768px ONLY) ==================== -->
     <section aria-label="ทางลัดบนมือถือ" class="grid grid-cols-2 gap-2.5 md:hidden">
       <button type="button" onclick="scrollToSection('area-map')"
-        class="rounded-[18px] bg-brand-mint/80 hover:bg-brand-mint border border-emerald-200 px-3 py-3 flex items-center justify-between gap-1.5 min-h-[76px] text-left shadow-xs active:scale-[0.98] transition">
+        class="rounded-[20px] bg-gradient-to-br from-[#F3FCF6] to-[#DCF5E6] hover:to-[#CEEFDC] border border-emerald-200/90 px-3 py-2.5 flex items-center justify-between gap-1.5 min-h-[72px] text-left shadow-xs active:scale-[0.98] transition">
         <div class="flex items-center gap-2 min-w-0">
-          <span class="w-9 h-9 rounded-xl bg-white text-brand-green flex items-center justify-center shrink-0 shadow-xs">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-            </svg>
-          </span>
+          <!-- 3-Panel Folded Green Map SVG (Matching Smartphone Concept) -->
+          <svg class="w-9 h-9 shrink-0" viewBox="0 0 40 40" fill="none">
+            <polygon points="5,10 15,7 15,31 5,34" fill="#86EFAC" stroke="#15803D" stroke-width="1.8" stroke-linejoin="round" />
+            <polygon points="15,7 25,11 25,35 15,31" fill="#DCFCE7" stroke="#15803D" stroke-width="1.8" stroke-linejoin="round" />
+            <polygon points="25,11 35,8 35,32 25,35" fill="#4ADE80" stroke="#15803D" stroke-width="1.8" stroke-linejoin="round" />
+          </svg>
           <div class="min-w-0 leading-tight">
-            <div class="text-[14px] font-bold text-brand-ink whitespace-nowrap">ภาพรวมพื้นที่</div>
-            <div class="text-[11.5px] text-brand-muted whitespace-nowrap">สถานการณ์รายอำเภอ</div>
+            <div class="text-[14px] font-extrabold text-brand-ink whitespace-nowrap">ภาพรวมพื้นที่</div>
+            <div class="text-[11px] text-brand-muted whitespace-nowrap mt-0.5">สถานการณ์รายอำเภอ</div>
           </div>
         </div>
-        <svg class="w-4 h-4 text-brand-green shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <svg class="w-4 h-4 text-brand-ink/75 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </button>
 
       <button type="button" onclick="openAnnouncementsModal()"
-        class="rounded-[18px] bg-brand-pinkSoft/85 hover:bg-brand-pinkSoft border border-pink-200 px-3 py-3 flex items-center justify-between gap-1.5 min-h-[76px] text-left shadow-xs active:scale-[0.98] transition">
+        class="rounded-[20px] bg-gradient-to-br from-[#FFF6FA] to-[#FCE4EF] hover:to-[#FAD6E7] border border-pink-200/90 px-3 py-2.5 flex items-center justify-between gap-1.5 min-h-[72px] text-left shadow-xs active:scale-[0.98] transition">
         <div class="flex items-center gap-2 min-w-0">
-          <span class="w-9 h-9 rounded-xl bg-white text-brand-pink flex items-center justify-center shrink-0 shadow-xs">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path
-                d="M12 22a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0012 22zm6.5-6V11a6.5 6.5 0 10-13 0v5L3.5 18v1h17v-1l-2-2z" />
-            </svg>
-          </span>
+          <!-- 3D Glossy Pink Notification Bell SVG (Matching Smartphone Concept) -->
+          <svg class="w-9 h-9 shrink-0" viewBox="0 0 40 40" fill="none">
+            <defs>
+              <linearGradient id="bellPink" x1="12" y1="8" x2="28" y2="31" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FB7185" />
+                <stop offset="55%" stop-color="#EC4899" />
+                <stop offset="100%" stop-color="#BE185D" />
+              </linearGradient>
+            </defs>
+            <circle cx="20" cy="7.5" r="2.5" fill="#BE185D" />
+            <path d="M20 9 C14.2 9 10.5 13.4 10.5 19.2 V25 L7.5 28.2 C7 28.8 7.4 29.8 8.2 29.8 H31.8 C32.6 29.8 33 28.8 32.5 28.2 L29.5 25 V19.2 C29.5 13.4 25.8 9 20 9 Z" fill="url(#bellPink)" />
+            <path d="M14.5 14 C15.8 11.8 17.6 10.8 19.5 10.6" stroke="#FFE4E6" stroke-width="2" stroke-linecap="round" opacity="0.8" />
+            <path d="M16.5 30.5 A3.5 3.5 0 0 0 23.5 30.5 Z" fill="#9D174D" />
+          </svg>
           <div class="min-w-0 leading-tight">
-            <div class="text-[14px] font-bold text-brand-ink leading-snug">ประกาศ /<br />ข้อควรทราบ</div>
+            <div class="text-[14px] font-extrabold text-brand-ink leading-snug">ประกาศ /<br />ข้อควรทราบ</div>
           </div>
         </div>
-        <svg class="w-4 h-4 text-brand-pinkDark shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <svg class="w-4 h-4 text-brand-ink/75 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </button>
@@ -1217,31 +1471,31 @@
 
   </main>
 
-  <!-- ==================== 7. FOOTER WITH SOFT GREEN DECORATIVE WAVE & PARTNER LOGOS ==================== -->
-  <footer class="relative overflow-hidden mt-3 pt-6 pb-8 text-center">
-    <svg class="pointer-events-none absolute inset-x-0 bottom-0 w-full h-20 opacity-75" viewBox="0 0 1440 80"
+  <!-- ==================== 7. FOOTER WITH SOFT GREEN DECORATIVE WAVE & LARGER PARTNER LOGOS ==================== -->
+  <footer class="relative overflow-hidden mt-3 pt-6 pb-10 text-center">
+    <svg class="pointer-events-none absolute inset-x-0 bottom-0 w-full h-24 md:h-28 opacity-85" viewBox="0 0 1440 96"
       preserveAspectRatio="none" aria-hidden="true">
-      <path d="M0 44 Q360 8 720 42 T1440 28 L1440 80 L0 80 Z" fill="#D1FAE5" />
-      <path d="M0 58 Q420 28 860 56 T1440 40 L1440 80 L0 80 Z" fill="#A7F3D0" opacity="0.65" />
+      <path d="M0 52 Q320 10 720 48 T1440 24 L1440 96 L0 96 Z" fill="#D1FAE5" />
+      <path d="M0 68 Q440 34 900 66 T1440 46 L1440 96 L0 96 Z" fill="#A7F3D0" opacity="0.7" />
     </svg>
-    <div class="relative z-10 max-w-[1440px] mx-auto px-4 space-y-2">
-      <div class="flex flex-col lg:flex-row lg:flex-wrap items-center justify-center gap-2 lg:gap-3.5 text-[12.5px] sm:text-[13px] font-semibold">
-        <span class="inline-flex items-center gap-2 text-brand-ink whitespace-nowrap">
-          <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-5 h-5 rounded-full bg-white object-contain shrink-0" />
+    <div class="relative z-10 max-w-[1440px] mx-auto px-4 space-y-2.5">
+      <div class="flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-2 md:gap-4 text-[13px] sm:text-[13.5px] font-bold">
+        <span class="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/85 md:bg-transparent border border-slate-200/80 md:border-0 shadow-2xs md:shadow-none text-brand-ink">
+          <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white p-0.5 object-contain ring-1 ring-pink-200 shrink-0 shadow-2xs" />
           <span>ศูนย์ข้อมูลสาธารณะ อบจ.ลำปาง</span>
         </span>
-        <span class="hidden lg:inline text-slate-300" aria-hidden="true">|</span>
-        <span class="inline-flex items-center gap-2 text-brand-dark whitespace-nowrap">
-          <img src="./logo_hii.jpg" alt="สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน)" class="w-5 h-5 rounded-full bg-white object-contain border border-slate-200 shrink-0" />
+        <span class="hidden lg:inline text-slate-300 font-normal" aria-hidden="true">|</span>
+        <span class="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/85 md:bg-transparent border border-slate-200/80 md:border-0 shadow-2xs md:shadow-none text-brand-dark">
+          <img src="./logo_hii.jpg" alt="สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white p-0.5 object-contain ring-1 ring-emerald-200 shrink-0 shadow-2xs" />
           <span>สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน)</span>
         </span>
-        <span class="hidden lg:inline text-slate-300" aria-hidden="true">|</span>
-        <span class="inline-flex items-center gap-2 text-brand-pinkDark whitespace-nowrap">
-          <img src="./logo_traffy.png" alt="Traffy Fondue ลำปาง" class="w-5 h-5 rounded-md object-cover shrink-0" />
+        <span class="hidden lg:inline text-slate-300 font-normal" aria-hidden="true">|</span>
+        <span class="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/85 md:bg-transparent border border-slate-200/80 md:border-0 shadow-2xs md:shadow-none text-brand-pinkDark">
+          <img src="./logo_traffy.png" alt="Traffy Fondue ลำปาง" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg object-cover ring-1 ring-pink-200 shrink-0 shadow-2xs" />
           <span>ข้อมูลเรื่องร้องเรียน โดย Traffy Fondue ลำปาง</span>
         </span>
       </div>
-      <div class="text-[12px] font-medium text-brand-muted">
+      <div class="text-[12px] sm:text-[12.5px] font-medium text-brand-muted">
         ศูนย์ข้อมูลสาธารณะ องค์การบริหารส่วนจังหวัดลำปาง (อบจ.ลำปาง) &nbsp;|&nbsp; LP-PAO Smart Data – Citizen Intelligence
       </div>
     </div>
@@ -1299,19 +1553,19 @@
     <div class="anim-drawer absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white shadow-2xl p-5 flex flex-col justify-between">
       <div class="space-y-5">
         <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-          <div class="flex items-center gap-2">
-            <div class="flex items-center -space-x-1.5 shrink-0">
-              <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-8 h-8 rounded-full bg-white object-contain ring-1 ring-pink-200 relative z-20" />
-              <img src="./logo_hii.jpg" alt="สสน." class="w-8 h-8 rounded-full bg-white object-contain ring-1 ring-emerald-200 relative z-10" />
-              <img src="./logo_traffy.png" alt="Traffy Fondue ลำปาง" class="w-8 h-8 rounded-lg object-cover ring-1 ring-amber-200" />
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="flex items-center gap-1 shrink-0">
+              <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-9 h-9 rounded-full bg-white p-0.5 object-contain ring-1 ring-pink-300 shadow-2xs" />
+              <img src="./logo_hii.jpg" alt="สสน." class="w-8 h-8 rounded-full bg-white p-0.5 object-contain ring-1 ring-emerald-200 shadow-2xs" />
+              <img src="./logo_traffy.png" alt="Traffy Fondue ลำปาง" class="w-8 h-8 rounded-lg object-cover ring-1 ring-pink-200 shadow-2xs" />
             </div>
-            <div class="leading-tight">
-              <div class="font-bold text-sm text-brand-ink">ศูนย์ข้อมูลสาธารณะ อบจ.ลำปาง</div>
-              <div class="text-[11px] text-brand-muted">สสน. · Traffy Fondue ลำปาง</div>
+            <div class="leading-tight min-w-0">
+              <div class="font-bold text-sm text-brand-ink truncate">ศูนย์ข้อมูลสาธารณะ อบจ.ลำปาง</div>
+              <div class="text-[11px] text-brand-muted truncate">LP-PAO Smart Data</div>
             </div>
           </div>
           <button type="button" onclick="toggleMobileDrawer(false)" aria-label="ปิดเมนู"
-            class="w-9 h-9 rounded-full bg-slate-100 text-slate-600 font-bold">✕</button>
+            class="w-9 h-9 rounded-full bg-slate-100 text-slate-600 font-bold shrink-0">✕</button>
         </div>
 
         <div class="space-y-1.5 text-sm font-semibold">
@@ -1901,8 +2155,9 @@
       switch (level) {
         case 'normal':
         case 'good':
-          return 'bg-[#CFF5C7] text-emerald-900 border border-emerald-200/80';
         case 'verygood':
+          return 'bg-[#C7F5BE] text-emerald-950 border border-emerald-300/80';
+        case 'rain-light':
           return 'bg-sky-100 text-sky-900 border border-sky-200';
         case 'watch':
         case 'moderate':
@@ -1916,7 +2171,7 @@
         case 'service':
           return 'bg-[#FDE996] text-amber-950 border border-amber-200/90';
         case 'done':
-          return 'bg-[#CFF5C7] text-emerald-900 border border-emerald-200/80';
+          return 'bg-[#C7F5BE] text-emerald-950 border border-emerald-300/80';
         default:
           return 'bg-slate-100 text-slate-600 border border-slate-200';
       }
@@ -1947,7 +2202,7 @@
       }
       const mm = Number(mmVal);
       if (mm <= 0) return { level: 'normal', label: 'ไม่มีฝน', color: '#16A34A', rank: 1 };
-      if (mm <= 10) return { level: 'verygood', label: 'ฝนเล็กน้อย', color: '#0284C7', rank: 1 };
+      if (mm <= 10) return { level: 'rain-light', label: 'ฝนเล็กน้อย', color: '#0284C7', rank: 1 };
       if (mm <= 35) return { level: 'watch', label: 'ฝนปานกลาง', color: '#D97706', rank: 2 };
       if (mm <= 90) return { level: 'high', label: 'ฝนตกหนัก', color: '#EA580C', rank: 3 };
       return { level: 'critical', label: 'ฝนตกหนักมาก', color: '#DC2626', rank: 4 };
@@ -2308,14 +2563,14 @@
       }[o.level] || { wrap: 'bg-white border-slate-200', iconBg: 'bg-slate-100 text-slate-600', text: 'text-brand-ink', icon: '' };
 
       if (badgeWrap) {
-        badgeWrap.className = `inline-flex items-center gap-2.5 self-start shrink-0 px-5 sm:px-6 py-2.5 rounded-full shadow-sm border ${heroPalette.wrap}`;
+        badgeWrap.className = `inline-flex items-center gap-2 self-start shrink-0 px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-full shadow-sm border ${heroPalette.wrap}`;
         badgeWrap.classList.remove('anim-pop');
         void badgeWrap.offsetWidth;
         badgeWrap.classList.add('anim-pop');
       }
-      badgeIconEl.className = `w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${heroPalette.iconBg}`;
+      badgeIconEl.className = `w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 ${heroPalette.iconBg}`;
       badgeIconEl.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24">${heroPalette.icon}</svg>`;
-      badgeTextEl.className = `text-[20px] md:text-[22px] lg:text-[24px] font-extrabold tracking-tight whitespace-nowrap ${heroPalette.text}`;
+      badgeTextEl.className = `text-[17px] sm:text-[20px] md:text-[22px] lg:text-[24px] font-extrabold tracking-tight whitespace-nowrap ${heroPalette.text}`;
       badgeTextEl.textContent = o.label;
 
       document.getElementById('heroDescription').textContent = o.desc;
@@ -2326,22 +2581,20 @@
         const b = document.getElementById(badgeId);
         const h = document.getElementById(hintId);
         if (b) {
-          b.className = `inline-flex items-center justify-center px-2.5 xl:px-3.5 py-1.5 rounded-full text-xs xl:text-[14px] font-bold min-w-[96px] md:flex-1 whitespace-nowrap ${pillClass(level)}`;
+          b.className = `inline-flex items-center justify-center px-3 xl:px-3.5 py-1 md:py-1.5 rounded-full text-xs md:text-[13.5px] font-bold min-w-[102px] md:flex-1 whitespace-nowrap shadow-2xs ${pillClass(level)}`;
           b.textContent = label;
         }
         if (h && hint) h.textContent = hint;
       };
 
-      // Card 01: Traffy Fondue (Real count-backed service status)
+      // Card 01: Traffy Fondue (Clean subtitle 'Traffy Fondue' matching Concept — never truncates on 375px)
       const tfItemsScoped = (state.traffy?.items || []).filter(i => matchesAmphoe(`${i.area || ''} ${i.summary || ''}`, amp));
       const tfTotalScoped = amp === 'all' ? (tf.total ?? tfItemsScoped.length) : tfItemsScoped.length;
       const tfActiveScoped = tfItemsScoped.filter(i => !String(i.state_name || '').includes('เสร็จสิ้น') && !String(i.state_name || '').includes('ยกเลิก')).length;
       const tfLabel = tfTotalScoped === 0
         ? 'ไม่มีรายการ'
         : (tfActiveScoped > 0 ? 'กำลังดำเนินการ' : 'ดำเนินการแล้ว');
-      const tfHint = tfTotalScoped > 0
-        ? (tfActiveScoped > 0 ? `Traffy Fondue · ${tfActiveScoped} เรื่อง` : `Traffy Fondue · ${tfTotalScoped} เรื่อง`)
-        : 'Traffy Fondue';
+      const tfHint = amp === 'all' ? 'Traffy Fondue' : `Traffy · อ.${amp}`;
       const tfLevel = tfTotalScoped === 0 ? 'nodata' : (tfActiveScoped > 0 ? 'service' : 'done');
       applyCard('cardTraffyBadge', 'cardTraffyHint', tfLabel, tfLevel, tfHint);
 

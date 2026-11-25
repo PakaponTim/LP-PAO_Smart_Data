@@ -61,6 +61,7 @@
 
     html {
       scroll-behavior: smooth;
+      overflow-x: clip;
     }
 
     html.font-scale-lg {
@@ -1008,8 +1009,8 @@
             <path d="M9 12.5 L14 11" stroke="#F0FDF4" stroke-width="1.6" stroke-linecap="round" opacity="0.85" />
           </svg>
           <div class="min-w-0 leading-tight">
-            <div class="text-[14.5px] font-extrabold text-brand-ink whitespace-nowrap">ภาพรวมพื้นที่</div>
-            <div class="text-[12px] text-brand-muted whitespace-nowrap mt-0.5">สถานการณ์รายอำเภอ</div>
+            <div class="text-[14px] font-extrabold text-brand-ink truncate">ภาพรวมพื้นที่</div>
+            <div class="text-[11px] text-brand-muted truncate mt-0.5">สถานการณ์รายอำเภอ</div>
           </div>
         </div>
         <svg class="w-4 h-4 text-brand-ink/75 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -1698,21 +1699,21 @@
     <div class="relative z-10 max-w-[1440px] mx-auto px-3.5 sm:px-6 space-y-3.5">
       <div class="flex flex-col lg:flex-row lg:flex-wrap items-center justify-center gap-2.5 lg:gap-3.5">
         <a href="#hero" onclick="setActiveNav('hero')"
-          class="w-full max-w-[368px] lg:w-auto lg:max-w-none inline-flex items-center justify-center gap-2.5 sm:gap-3 px-3.5 sm:px-5 py-2.5 rounded-full bg-gradient-to-r from-white via-[#F1FCF6] to-[#E2F8EC] hover:to-[#D3F4E2] border-[1.5px] border-emerald-300/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 text-[14px] sm:text-[15.5px] font-extrabold text-brand-ink whitespace-nowrap transition">
-          <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white p-0.5 object-contain ring-2 ring-brand-pink/80 shrink-0 shadow-xs" />
-          <span>ศูนย์ข้อมูลสาธารณะ อบจ.ลำปาง</span>
+          class="w-full max-w-[356px] lg:w-auto lg:max-w-none inline-flex items-center justify-center gap-2 sm:gap-3 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-white via-[#F1FCF6] to-[#E2F8EC] hover:to-[#D3F4E2] border-[1.5px] border-emerald-300/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 text-[13px] sm:text-[15.5px] font-extrabold text-brand-ink lg:whitespace-nowrap transition">
+          <img src="./logo_pao.png" alt="อบจ.ลำปาง" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white p-0.5 object-contain ring-2 ring-brand-pink/80 shrink-0 shadow-xs" />
+          <span class="leading-snug">ศูนย์ข้อมูลสาธารณะ อบจ.ลำปาง</span>
         </a>
 
         <button type="button" onclick="toggleEnvDetailsPanel(true)"
-          class="w-full max-w-[368px] lg:w-auto lg:max-w-none inline-flex items-center justify-center gap-2.5 sm:gap-3 px-3.5 sm:px-5 py-2.5 rounded-full bg-gradient-to-r from-white via-[#F0F9FF] to-[#E0F3FE] hover:to-[#CFEBFD] border-[1.5px] border-sky-300/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 text-[13px] sm:text-[15px] font-extrabold text-brand-dark whitespace-nowrap transition">
-          <img src="./logo_hii.jpg" alt="สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน)" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white p-0.5 object-contain ring-2 ring-emerald-300 shrink-0 shadow-xs" />
-          <span>สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน)</span>
+          class="w-full max-w-[356px] lg:w-auto lg:max-w-none inline-flex items-center justify-center gap-2 sm:gap-3 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-white via-[#F0F9FF] to-[#E0F3FE] hover:to-[#CFEBFD] border-[1.5px] border-sky-300/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 text-[12px] sm:text-[15px] font-extrabold text-brand-dark lg:whitespace-nowrap transition">
+          <img src="./logo_hii.jpg" alt="สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน)" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white p-0.5 object-contain ring-2 ring-emerald-300 shrink-0 shadow-xs" />
+          <span class="leading-snug">สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน)</span>
         </button>
 
         <a href="#traffy-lampang" onclick="setActiveNav('traffy-lampang')"
-          class="w-full max-w-[368px] lg:w-auto lg:max-w-none inline-flex items-center justify-center gap-2.5 sm:gap-3 px-3.5 sm:px-5 py-2.5 rounded-full bg-gradient-to-r from-white via-[#FFF2F7] to-[#FCE3EE] hover:to-[#FAD4E5] border-[1.5px] border-pink-300/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 text-[13px] sm:text-[15px] font-extrabold text-brand-pinkDark whitespace-nowrap transition">
-          <img src="./logo_traffy.png" alt="Traffy Fondue ลำปาง" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white object-cover ring-2 ring-pink-300 shrink-0 shadow-xs" />
-          <span>ข้อมูลเรื่องร้องเรียน โดย Traffy Fondue ลำปาง</span>
+          class="w-full max-w-[356px] lg:w-auto lg:max-w-none inline-flex items-center justify-center gap-2 sm:gap-3 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-white via-[#FFF2F7] to-[#FCE3EE] hover:to-[#FAD4E5] border-[1.5px] border-pink-300/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 text-[12px] sm:text-[15px] font-extrabold text-brand-pinkDark lg:whitespace-nowrap transition">
+          <img src="./logo_traffy.png" alt="Traffy Fondue ลำปาง" class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white object-cover ring-2 ring-pink-300 shrink-0 shadow-xs" />
+          <span class="leading-snug">ข้อมูลเรื่องร้องเรียน โดย Traffy Fondue ลำปาง</span>
         </a>
       </div>
 

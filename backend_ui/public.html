@@ -1402,10 +1402,17 @@
     <section id="announcements" aria-label="ประกาศและข้อควรทราบ"
       class="ci-card bg-gradient-to-br from-white via-[#FFF8FB] to-[#FCEAF3] border-pink-200/80 px-4 sm:px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-3.5 scroll-mt-24">
       <div class="flex items-start md:items-center gap-3 min-w-0">
-        <!-- 3D Glossy Pink Notification Bell SVG (Consistent with Quick Access Card) -->
+        <!-- 3D Glossy Pink Notification Bell SVG (Self-contained gradient so it renders on all viewports including PC/Tablet) -->
         <svg class="w-10 h-10 shrink-0 drop-shadow-xs" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="bellPinkAnn" x1="12" y1="8" x2="28" y2="31" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#FB7185" />
+              <stop offset="55%" stop-color="#EC4899" />
+              <stop offset="100%" stop-color="#BE185D" />
+            </linearGradient>
+          </defs>
           <circle cx="20" cy="7.5" r="2.5" fill="#BE185D" />
-          <path d="M20 9 C14.2 9 10.5 13.4 10.5 19.2 V25 L7.5 28.2 C7 28.8 7.4 29.8 8.2 29.8 H31.8 C32.6 29.8 33 28.8 32.5 28.2 L29.5 25 V19.2 C29.5 13.4 25.8 9 20 9 Z" fill="url(#bellPink)" />
+          <path d="M20 9 C14.2 9 10.5 13.4 10.5 19.2 V25 L7.5 28.2 C7 28.8 7.4 29.8 8.2 29.8 H31.8 C32.6 29.8 33 28.8 32.5 28.2 L29.5 25 V19.2 C29.5 13.4 25.8 9 20 9 Z" fill="url(#bellPinkAnn)" />
           <path d="M14.5 14 C15.8 11.8 17.6 10.8 19.5 10.6" stroke="#FFE4E6" stroke-width="2" stroke-linecap="round" opacity="0.85" />
           <path d="M16.5 30.5 A3.5 3.5 0 0 0 23.5 30.5 Z" fill="#9D174D" />
         </svg>

@@ -1302,12 +1302,13 @@
           </div>
         </div>
 
-        <!-- Map CTA Button (Soft Mint Green Gradient — Matching PC & Tablet Concept) -->
+        <!-- Map CTA Button (Soft Mint Green Gradient + Soft-3D Mini Map Icon) -->
         <button type="button" onclick="toggleEnvDetailsPanel(true)"
           class="w-full py-2.5 px-4 rounded-2xl bg-gradient-to-r from-[#E6F8EE] to-[#D6F3E3] hover:to-[#C6EDD8] border border-emerald-200 text-brand-dark text-sm font-extrabold inline-flex items-center justify-center gap-2 shadow-2xs transition active:scale-[0.99]">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+          <svg class="w-5 h-5 shrink-0" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+            <path d="M6 12.2 C6 11.1 6.7 10.2 7.8 9.9 L16 7.5 V32.2 L7.8 34.6 C6.7 34.9 6 34 6 32.9 V12.2 Z" fill="url(#mapAreaP1)" />
+            <polygon points="16,7.5 28,11.2 28,35.8 16,32.2" fill="url(#mapAreaP2)" />
+            <path d="M28 11.2 L36.2 8.7 C37.3 8.4 38 9.3 38 10.4 V31.2 C38 32.3 37.3 33.2 36.2 33.5 L28 35.8 V11.2 Z" fill="url(#mapAreaP3)" />
           </svg>
           <span>ดูแผนที่และข้อมูลรายสถานีแบบละเอียด</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -1546,59 +1547,137 @@
       </button>
     </section>
 
-    <!-- ==================== 6. RELATED SERVICES BAR (4 PASTEL QUICK ACTIONS) ==================== -->
+    <!-- ==================== 6. RELATED SERVICES BAR (UNIFIED SOFT-3D GLOSSY ICON SET) ==================== -->
     <section id="related-services" aria-label="บริการและข้อมูลที่เกี่ยวข้อง"
       class="ci-card bg-gradient-to-b from-[#F8FCFA] to-white border-emerald-100 px-4 sm:px-6 py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3.5">
       <div class="flex items-center gap-2.5 shrink-0">
-        <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-brand-dark text-white flex items-center justify-center shrink-0 shadow-xs">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-          </svg>
-        </span>
+        <!-- Soft-3D Glossy 4-Tile Bento Grid Icon -->
+        <svg class="w-10 h-10 shrink-0" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="svcTileG1" x1="6" y1="6" x2="20" y2="20" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#6EE7B7" />
+              <stop offset="100%" stop-color="#059669" />
+            </linearGradient>
+            <linearGradient id="svcTileG2" x1="24" y1="6" x2="38" y2="20" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#34D399" />
+              <stop offset="100%" stop-color="#07543F" />
+            </linearGradient>
+            <linearGradient id="svcTileG3" x1="6" y1="24" x2="20" y2="38" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#34D399" />
+              <stop offset="100%" stop-color="#047857" />
+            </linearGradient>
+            <linearGradient id="svcTileP4" x1="24" y1="24" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#F9A8D4" />
+              <stop offset="100%" stop-color="#EC4899" />
+            </linearGradient>
+          </defs>
+          <ellipse cx="22" cy="40.5" rx="13" ry="2.2" fill="#059669" opacity="0.16" />
+          <rect x="6" y="6" width="14" height="14" rx="4.5" fill="url(#svcTileG1)" />
+          <path d="M9.5 9.2 H15" stroke="#ECFDF5" stroke-width="1.6" stroke-linecap="round" opacity="0.8" />
+          <rect x="24" y="6" width="14" height="14" rx="4.5" fill="url(#svcTileG2)" />
+          <path d="M27.5 9.2 H33" stroke="#D1FAE5" stroke-width="1.6" stroke-linecap="round" opacity="0.7" />
+          <rect x="6" y="24" width="14" height="14" rx="4.5" fill="url(#svcTileG3)" />
+          <rect x="24" y="24" width="14" height="14" rx="4.5" fill="url(#svcTileP4)" />
+          <path d="M27.5 27.2 H33" stroke="#FCE7F3" stroke-width="1.6" stroke-linecap="round" opacity="0.85" />
+        </svg>
         <h2 class="text-base sm:text-[17px] font-extrabold text-brand-ink">บริการและข้อมูลที่เกี่ยวข้อง</h2>
       </div>
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 flex-1 lg:max-w-3xl">
         <button type="button" onclick="focusDistrictSelector()"
-          class="flex items-center justify-start sm:justify-center gap-2.5 px-3 py-2.5 rounded-2xl bg-gradient-to-br from-white to-[#EDFBF3] hover:to-[#DCF5E7] border border-emerald-200/80 text-xs sm:text-sm font-bold text-brand-ink shadow-2xs transition active:scale-[0.98]">
-          <span class="w-7 h-7 rounded-xl bg-emerald-100 text-brand-green flex items-center justify-center shrink-0">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          class="flex items-center justify-start sm:justify-center gap-2.5 px-3 py-2.5 rounded-2xl bg-gradient-to-br from-white to-[#EDFBF3] hover:to-[#DCF5E7] border border-emerald-200/80 text-xs sm:text-sm font-bold text-brand-ink shadow-2xs transition active:scale-[0.98] group">
+          <!-- Soft-3D Glossy Emerald Location Pin -->
+          <span class="cat-icon-wrap w-8 h-8 flex items-center justify-center shrink-0">
+            <svg class="w-full h-full" viewBox="0 0 40 40" fill="none">
+              <defs>
+                <linearGradient id="pin3DG" x1="12" y1="6" x2="28" y2="34" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#86EFAC" />
+                  <stop offset="48%" stop-color="#22C55E" />
+                  <stop offset="100%" stop-color="#15803D" />
+                </linearGradient>
+              </defs>
+              <ellipse cx="20" cy="36" rx="9" ry="2" fill="#16A34A" opacity="0.18" />
+              <path d="M20 5 C13.2 5 8 10.2 8 16.8 C8 24.5 18.2 33.4 19.3 34.3 C19.7 34.7 20.3 34.7 20.7 34.3 C21.8 33.4 32 24.5 32 16.8 C32 10.2 26.8 5 20 5 Z" fill="url(#pin3DG)" />
+              <path d="M12.5 11.5 C14.2 8.8 16.8 7.5 19.5 7.4" stroke="#ECFDF5" stroke-width="1.8" stroke-linecap="round" opacity="0.75" />
+              <circle cx="20" cy="16.5" r="4.8" fill="#FFFFFF" />
+              <circle cx="20" cy="16.5" r="2.2" fill="#16A34A" opacity="0.3" />
             </svg>
           </span>
           <span class="truncate">ข้อมูลรายอำเภอ</span>
         </button>
 
         <button type="button" onclick="openOverviewStatistics()"
-          class="flex items-center justify-start sm:justify-center gap-2.5 px-3 py-2.5 rounded-2xl bg-gradient-to-br from-white to-[#F5F0FF] hover:to-[#EBE2FF] border border-purple-200/80 text-xs sm:text-sm font-bold text-brand-ink shadow-2xs transition active:scale-[0.98]">
-          <span class="w-7 h-7 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 20h16M7 16v-5m5 5V7m5 9v-8" />
+          class="flex items-center justify-start sm:justify-center gap-2.5 px-3 py-2.5 rounded-2xl bg-gradient-to-br from-white to-[#F5F0FF] hover:to-[#EBE2FF] border border-purple-200/80 text-xs sm:text-sm font-bold text-brand-ink shadow-2xs transition active:scale-[0.98] group">
+          <!-- Soft-3D Glossy Purple Bar Chart -->
+          <span class="cat-icon-wrap w-8 h-8 flex items-center justify-center shrink-0">
+            <svg class="w-full h-full" viewBox="0 0 40 40" fill="none">
+              <defs>
+                <linearGradient id="bar3D1" x1="8" y1="20" x2="14" y2="34" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#DDD6FE" />
+                  <stop offset="100%" stop-color="#8B5CF6" />
+                </linearGradient>
+                <linearGradient id="bar3D2" x1="17" y1="14" x2="23" y2="34" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#C4B5FD" />
+                  <stop offset="100%" stop-color="#7C3AED" />
+                </linearGradient>
+                <linearGradient id="bar3D3" x1="26" y1="7" x2="32" y2="34" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#A78BFA" />
+                  <stop offset="100%" stop-color="#5B21B6" />
+                </linearGradient>
+              </defs>
+              <ellipse cx="20" cy="36.2" rx="12.5" ry="2" fill="#7C3AED" opacity="0.18" />
+              <rect x="7" y="20" width="7" height="14" rx="3.2" fill="url(#bar3D1)" />
+              <rect x="16.5" y="14" width="7" height="20" rx="3.2" fill="url(#bar3D2)" />
+              <rect x="26" y="7.5" width="7" height="26.5" rx="3.2" fill="url(#bar3D3)" />
+              <path d="M28.2 10.5 V18" stroke="#EDE9FE" stroke-width="1.4" stroke-linecap="round" opacity="0.7" />
             </svg>
           </span>
           <span class="truncate">สถิติภาพรวม</span>
         </button>
 
         <button type="button" onclick="openOpenDataModal()"
-          class="flex items-center justify-start sm:justify-center gap-2.5 px-3 py-2.5 rounded-2xl bg-gradient-to-br from-white to-[#EEF7FE] hover:to-[#DDF0FD] border border-sky-200/80 text-xs sm:text-sm font-bold text-brand-ink shadow-2xs transition active:scale-[0.98]">
-          <span class="w-7 h-7 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center shrink-0">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+          class="flex items-center justify-start sm:justify-center gap-2.5 px-3 py-2.5 rounded-2xl bg-gradient-to-br from-white to-[#EEF7FE] hover:to-[#DDF0FD] border border-sky-200/80 text-xs sm:text-sm font-bold text-brand-ink shadow-2xs transition active:scale-[0.98] group">
+          <!-- Soft-3D Glossy Sky-Blue Database Cylinder -->
+          <span class="cat-icon-wrap w-8 h-8 flex items-center justify-center shrink-0">
+            <svg class="w-full h-full" viewBox="0 0 40 40" fill="none">
+              <defs>
+                <linearGradient id="db3DBody" x1="8" y1="10" x2="32" y2="34" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#7DD3FC" />
+                  <stop offset="52%" stop-color="#0EA5E9" />
+                  <stop offset="100%" stop-color="#0369A1" />
+                </linearGradient>
+                <linearGradient id="db3DTop" x1="10" y1="6" x2="30" y2="15" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#F0F9FF" />
+                  <stop offset="100%" stop-color="#38BDF8" />
+                </linearGradient>
+              </defs>
+              <ellipse cx="20" cy="36.2" rx="11.5" ry="2" fill="#0284C7" opacity="0.18" />
+              <path d="M8.5 11.5 V29.5 C8.5 32.3 13.6 34.5 20 34.5 C26.4 34.5 31.5 32.3 31.5 29.5 V11.5 Z" fill="url(#db3DBody)" />
+              <ellipse cx="20" cy="11.5" rx="11.5" ry="4.8" fill="url(#db3DTop)" />
+              <path d="M8.5 18.5 C8.5 21 13.6 23 20 23 C26.4 23 31.5 21 31.5 18.5" stroke="#BAE6FD" stroke-width="1.6" stroke-linecap="round" opacity="0.85" />
+              <path d="M8.5 24.5 C8.5 27 13.6 29 20 29 C26.4 29 31.5 27 31.5 24.5" stroke="#7DD3FC" stroke-width="1.6" stroke-linecap="round" opacity="0.78" />
             </svg>
           </span>
           <span class="truncate">ข้อมูลเปิด (API)</span>
         </button>
 
         <button type="button" onclick="openGuideModal()"
-          class="flex items-center justify-start sm:justify-center gap-2.5 px-3 py-2.5 rounded-2xl bg-gradient-to-br from-white to-[#FFF4F8] hover:to-[#FCE5EF] border border-pink-200/80 text-xs sm:text-sm font-bold text-brand-ink shadow-2xs transition active:scale-[0.98]">
-          <span class="w-7 h-7 rounded-xl bg-pink-100 text-brand-pinkDark flex items-center justify-center shrink-0">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          class="flex items-center justify-start sm:justify-center gap-2.5 px-3 py-2.5 rounded-2xl bg-gradient-to-br from-white to-[#FFF4F8] hover:to-[#FCE5EF] border border-pink-200/80 text-xs sm:text-sm font-bold text-brand-ink shadow-2xs transition active:scale-[0.98] group">
+          <!-- Soft-3D Glossy Pink Guide Info Orb -->
+          <span class="cat-icon-wrap w-8 h-8 flex items-center justify-center shrink-0">
+            <svg class="w-full h-full" viewBox="0 0 40 40" fill="none">
+              <defs>
+                <linearGradient id="guide3DOrb" x1="9" y1="7" x2="31" y2="33" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#FDA4AF" />
+                  <stop offset="48%" stop-color="#EC4899" />
+                  <stop offset="100%" stop-color="#BE185D" />
+                </linearGradient>
+              </defs>
+              <ellipse cx="20" cy="36.2" rx="10.5" ry="2" fill="#EC4899" opacity="0.18" />
+              <circle cx="20" cy="19.5" r="13.5" fill="url(#guide3DOrb)" />
+              <path d="M12.5 12.2 C14.8 9.4 17.8 8.2 21 8.2" stroke="#FFF1F2" stroke-width="2" stroke-linecap="round" opacity="0.75" />
+              <circle cx="20" cy="13.5" r="2" fill="#FFFFFF" />
+              <rect x="18.1" y="17.8" width="3.8" height="9.2" rx="1.9" fill="#FFFFFF" />
             </svg>
           </span>
           <span class="truncate">คู่มือการใช้งาน</span>
@@ -3443,35 +3522,50 @@
         });
       }
 
-      // Render Legend Summary Card (Pastel Status Pills — 2x2 Grid on Mobile, Vertical Stack on Tablet/PC)
+      // Render Legend Summary Card (Soft-3D Glossy Status Orbs + Symmetric Grid when 3 items)
       const legEl = document.getElementById('mapLegendSummary');
       if (legEl) {
+        const thirdSpan = cntNoData === 0 ? 'col-span-2 sm:col-span-1' : '';
         legEl.innerHTML = `
           <div class="flex items-center justify-between gap-1.5 px-2.5 py-1.5 sm:px-0 sm:py-0 rounded-xl sm:rounded-none bg-emerald-50/75 sm:bg-transparent">
-            <span class="inline-flex items-center gap-1.5 sm:gap-2 font-bold text-brand-ink">
-              <span class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
+            <span class="inline-flex items-center gap-2 font-bold text-brand-ink">
+              <svg class="w-6 h-6 shrink-0" viewBox="0 0 28 28" fill="none">
+                <circle cx="14" cy="14" r="11" fill="url(#kpiGreenOrb)" />
+                <path d="M9.5 14.3 L12.6 17.3 L18.8 11" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
               ปกติ
             </span>
             <span class="font-extrabold text-brand-dark whitespace-nowrap">${cntNormal} จุด</span>
           </div>
           <div class="flex items-center justify-between gap-1.5 px-2.5 py-1.5 sm:px-0 sm:py-0 rounded-xl sm:rounded-none bg-amber-50/85 sm:bg-transparent">
-            <span class="inline-flex items-center gap-1.5 sm:gap-2 font-bold text-brand-ink">
-              <span class="w-5 h-5 rounded-full bg-amber-400 text-white flex items-center justify-center text-[11px] font-bold shrink-0">!</span>
+            <span class="inline-flex items-center gap-2 font-bold text-brand-ink">
+              <svg class="w-6 h-6 shrink-0" viewBox="0 0 28 28" fill="none">
+                <circle cx="14" cy="14" r="11" fill="url(#kpiAmberOrb)" />
+                <rect x="12.7" y="8" width="2.6" height="7.5" rx="1.3" fill="#FFFFFF" />
+                <circle cx="14" cy="18.8" r="1.5" fill="#FFFFFF" />
+              </svg>
               เฝ้าระวัง
             </span>
             <span class="font-extrabold text-amber-800 whitespace-nowrap">${cntWatch} จุด</span>
           </div>
-          <div class="flex items-center justify-between gap-1.5 px-2.5 py-1.5 sm:px-0 sm:py-0 rounded-xl sm:rounded-none bg-pink-50/85 sm:bg-transparent">
-            <span class="inline-flex items-center gap-1.5 sm:gap-2 font-bold text-brand-ink">
-              <span class="w-5 h-5 rounded-full bg-brand-pink text-white flex items-center justify-center text-[10px] font-bold shrink-0">▲</span>
+          <div class="${thirdSpan} flex items-center justify-between gap-1.5 px-2.5 py-1.5 sm:px-0 sm:py-0 rounded-xl sm:rounded-none bg-pink-50/85 sm:bg-transparent">
+            <span class="inline-flex items-center gap-2 font-bold text-brand-ink">
+              <svg class="w-6 h-6 shrink-0" viewBox="0 0 28 28" fill="none">
+                <circle cx="14" cy="14" r="11" fill="url(#guide3DOrb)" />
+                <path d="M14 8.5 L19.2 17.8 H8.8 Z" fill="#FFFFFF" />
+              </svg>
               ต้องติดตาม
             </span>
             <span class="font-extrabold text-brand-pinkDark whitespace-nowrap">${cntHigh} จุด</span>
           </div>
           ${cntNoData > 0 ? `
           <div class="flex items-center justify-between gap-1.5 px-2.5 py-1.5 sm:px-0 sm:py-0 rounded-xl sm:rounded-none bg-slate-100/80 sm:bg-transparent text-brand-muted">
-            <span class="inline-flex items-center gap-1.5 sm:gap-2 font-semibold">
-              <span class="w-5 h-5 rounded-full bg-slate-300 text-white flex items-center justify-center text-[10px] font-bold shrink-0">-</span>
+            <span class="inline-flex items-center gap-2 font-semibold">
+              <svg class="w-6 h-6 shrink-0" viewBox="0 0 28 28" fill="none">
+                <defs><linearGradient id="legSlate3D" x1="6" y1="6" x2="22" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#CBD5E1"/><stop offset="100%" stop-color="#64748B"/></linearGradient></defs>
+                <circle cx="14" cy="14" r="11" fill="url(#legSlate3D)" />
+                <rect x="9.5" y="12.7" width="9" height="2.6" rx="1.3" fill="#FFFFFF" />
+              </svg>
               ไม่มีข้อมูล
             </span>
             <span class="font-bold whitespace-nowrap">${cntNoData} จุด</span>

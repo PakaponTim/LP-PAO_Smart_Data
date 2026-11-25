@@ -112,14 +112,29 @@
     }
 
     .cat-card-traffy {
-      background: linear-gradient(145deg, #FFF5F9 0%, #FCE6F0 100%);
-      border: 2px solid #EC5892;
-      box-shadow: 0 8px 22px rgba(236, 88, 146, 0.18);
+      background: linear-gradient(150deg, #FFFFFF 35%, #FFF7FA 100%);
+      border: 1.5px solid #F3DCE6;
+      box-shadow: 0 5px 16px rgba(7, 84, 63, 0.06);
     }
 
     .cat-card-traffy:hover {
-      border-color: #DB2777;
-      box-shadow: 0 14px 28px rgba(236, 88, 146, 0.25);
+      border-color: #F472B6;
+      box-shadow: 0 12px 26px rgba(236, 88, 146, 0.18);
+    }
+
+    .cat-card-traffy .traffy-rays {
+      opacity: 0.25;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+
+    .cat-card-traffy.is-selected {
+      background: linear-gradient(145deg, #FFF5F9 0%, #FCE6F0 100%);
+      border: 2px solid #EC5892;
+      box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.22), 0 12px 26px rgba(236, 72, 153, 0.22);
+    }
+
+    .cat-card-traffy.is-selected .traffy-rays {
+      opacity: 1;
     }
 
     .cat-card-air {
@@ -152,9 +167,46 @@
       border-color: #0D793D;
       box-shadow: 0 0 0 3px rgba(13, 121, 61, 0.18), 0 12px 26px rgba(7, 84, 63, 0.16);
     }
-    .cat-card-traffy.is-selected {
-      border-color: #DB2777;
-      box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.22), 0 12px 26px rgba(236, 72, 153, 0.22);
+    .cat-card-air.is-selected {
+      border-color: #16A34A;
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.20), 0 12px 26px rgba(22, 163, 74, 0.16);
+    }
+    .cat-card-water.is-selected {
+      border-color: #0284C7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.20), 0 12px 26px rgba(2, 132, 199, 0.16);
+    }
+    .cat-card-water.is-selected::after {
+      background: #0284C7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25);
+    }
+    .cat-card-dam.is-selected {
+      border-color: #2563EB;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.20), 0 12px 26px rgba(37, 99, 235, 0.16);
+    }
+    .cat-card-dam.is-selected::after {
+      background: #2563EB;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+    }
+    .cat-card-rain.is-selected {
+      border-color: #0EA5E9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.22), 0 12px 26px rgba(14, 165, 233, 0.16);
+    }
+    .cat-card-rain.is-selected::after {
+      background: #0EA5E9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.25);
+    }
+
+    /* Floating Back-to-Top Button (Bottom-Right, safely above Mobile Bottom Nav) */
+    #btnScrollTop {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(14px) scale(0.92);
+      transition: opacity 0.22s ease, transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease;
+    }
+    #btnScrollTop.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
     }
     .cat-card.is-selected::after {
       content: '';
@@ -778,8 +830,8 @@
         <!-- Card 01: เรื่องร้องเรียน (Traffy Fondue — Pink Highlighted Card + Signature Sound-Burst Rays) -->
         <button type="button" data-cat="traffy" aria-pressed="true" onclick="setSelectedCategory('traffy'); scrollToSection('traffy-lampang');"
           class="cat-card cat-card-traffy is-selected relative overflow-visible md:col-span-2 lg:col-span-1 text-left px-3.5 py-2 md:p-3.5 xl:p-4 flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2 min-h-[64px] md:min-h-[162px] lg:min-h-[172px] group cursor-pointer">
-          <!-- Signature Pink Sound-Burst Ticks at Top of Card 01 (Matching Smartphone, Tablet & PC Concept Art) -->
-          <svg class="pointer-events-none absolute -top-2.5 left-12 md:left-14 w-7 h-5 text-[#EC4899]" viewBox="0 0 28 20" fill="none" aria-hidden="true">
+          <!-- Signature Pink Sound-Burst Ticks at Top of Card 01 (Active only when Card 01 is selected) -->
+          <svg class="traffy-rays pointer-events-none absolute -top-2.5 left-12 md:left-14 w-7 h-5 text-[#EC4899]" viewBox="0 0 28 20" fill="none" aria-hidden="true">
             <path d="M8 16L11 4M16 17L23 6" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" />
           </svg>
 
@@ -1802,6 +1854,14 @@
       </div>
     </div>
   </footer>
+
+  <!-- ==================== FLOATING BACK-TO-TOP BUTTON (BOTTOM-RIGHT) ==================== -->
+  <button type="button" id="btnScrollTop" onclick="scrollToTopSmooth()" title="กลับขึ้นด้านบน" aria-label="กลับขึ้นด้านบน"
+    class="fixed bottom-[84px] right-4 md:bottom-6 md:right-6 z-40 w-12 h-12 rounded-full bg-gradient-to-br from-brand-dark to-brand-green hover:brightness-110 text-white shadow-[0_8px_22px_rgba(7,84,63,0.34)] ring-2 ring-white/90 flex items-center justify-center active:scale-95 cursor-pointer">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+    </svg>
+  </button>
 
   <!-- ==================== 8. SMARTPHONE BOTTOM NAVIGATION (5 ITEMS — <768px ONLY) ==================== -->
   <nav aria-label="เมนูหลักมือถือ"
@@ -4088,6 +4148,16 @@
       const el = document.getElementById(id);
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+
+    function scrollToTopSmooth() {
+      setActiveNav('hero');
+      window.scrollTo({ top: 0, behavior: REDUCED_MOTION ? 'auto' : 'smooth' });
+    }
+
+    window.addEventListener('scroll', () => {
+      const btn = document.getElementById('btnScrollTop');
+      if (btn) btn.classList.toggle('visible', window.scrollY > 220);
+    }, { passive: true });
 
     // Root-level 3-Step Font Size Accessibility
     let fontScaleStep = 0;

@@ -1065,14 +1065,32 @@
             </div>
           </div>
 
-          <!-- 3 Pastel Summary Cards (Compact 3-Col Strip on Smartphone, Rich Cards on Tablet/PC) -->
+          <!-- 3 Pastel Summary Cards (Unified Soft-3D Glossy Icons) -->
           <div class="grid grid-cols-3 gap-2 sm:gap-3">
             <button type="button" onclick="openAllTraffyPanel('latest')"
-              class="rounded-2xl bg-gradient-to-br from-[#F7F3FF] to-[#EDE5FF] hover:to-[#E5DAFF] border border-purple-200/80 p-2.5 sm:px-3.5 sm:py-3 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center sm:items-center lg:items-start xl:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left shadow-2xs transition active:scale-[0.98]">
-              <span class="w-8 h-8 xl:w-9 xl:h-9 rounded-xl bg-white text-purple-600 flex items-center justify-center shrink-0 shadow-xs">
-                <svg class="w-4 h-4 xl:w-5 xl:h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              class="rounded-2xl bg-gradient-to-br from-[#F7F3FF] to-[#EDE5FF] hover:to-[#E5DAFF] border border-purple-200/80 p-2.5 sm:px-3.5 sm:py-3 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center sm:items-center lg:items-start xl:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left shadow-2xs transition active:scale-[0.98] group">
+              <!-- Soft-3D Glossy Purple Clipboard -->
+              <span class="cat-icon-wrap w-9 h-9 xl:w-10 xl:h-10 flex items-center justify-center shrink-0">
+                <svg class="w-full h-full" viewBox="0 0 44 44" fill="none">
+                  <defs>
+                    <linearGradient id="kpiClipBody" x1="10" y1="8" x2="34" y2="38" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stop-color="#C4B5FD" />
+                      <stop offset="52%" stop-color="#8B5CF6" />
+                      <stop offset="100%" stop-color="#6D28D9" />
+                    </linearGradient>
+                    <linearGradient id="kpiClipTop" x1="16" y1="5" x2="28" y2="12" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stop-color="#F5F3FF" />
+                      <stop offset="100%" stop-color="#A78BFA" />
+                    </linearGradient>
+                  </defs>
+                  <ellipse cx="22" cy="40.5" rx="11" ry="2.2" fill="#7C3AED" opacity="0.18" />
+                  <rect x="9.5" y="9" width="25" height="29" rx="6" fill="url(#kpiClipBody)" />
+                  <rect x="13" y="13.5" width="18" height="21" rx="3.2" fill="#F5F3FF" opacity="0.92" />
+                  <rect x="15.5" y="5.5" width="13" height="6.5" rx="3.2" fill="url(#kpiClipTop)" />
+                  <circle cx="22" cy="8.5" r="1.4" fill="#6D28D9" />
+                  <rect x="16" y="18" width="12" height="2.4" rx="1.2" fill="#8B5CF6" />
+                  <rect x="16" y="23" width="10" height="2.4" rx="1.2" fill="#A78BFA" />
+                  <rect x="16" y="28" width="7.5" height="2.4" rx="1.2" fill="#C4B5FD" />
                 </svg>
               </span>
               <div class="min-w-0 leading-tight">
@@ -1087,11 +1105,23 @@
             </button>
 
             <button type="button" onclick="openAllTraffyPanel('inprogress')"
-              class="rounded-2xl bg-gradient-to-br from-[#FFFBEB] to-[#FEF2C7] hover:to-[#FDE9A8] border border-amber-200/90 p-2.5 sm:px-3.5 sm:py-3 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center sm:items-center lg:items-start xl:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left shadow-2xs transition active:scale-[0.98]">
-              <span class="w-8 h-8 xl:w-9 xl:h-9 rounded-xl bg-white text-amber-600 flex items-center justify-center shrink-0 shadow-xs">
-                <svg class="w-4 h-4 xl:w-5 xl:h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              class="rounded-2xl bg-gradient-to-br from-[#FFFBEB] to-[#FEF2C7] hover:to-[#FDE9A8] border border-amber-200/90 p-2.5 sm:px-3.5 sm:py-3 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center sm:items-center lg:items-start xl:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left shadow-2xs transition active:scale-[0.98] group">
+              <!-- Soft-3D Glossy Amber Progress / In-Progress Badge -->
+              <span class="cat-icon-wrap w-9 h-9 xl:w-10 xl:h-10 flex items-center justify-center shrink-0">
+                <svg class="w-full h-full" viewBox="0 0 44 44" fill="none">
+                  <defs>
+                    <linearGradient id="kpiAmberOrb" x1="10" y1="8" x2="34" y2="36" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stop-color="#FDE68A" />
+                      <stop offset="48%" stop-color="#F59E0B" />
+                      <stop offset="100%" stop-color="#D97706" />
+                    </linearGradient>
+                  </defs>
+                  <ellipse cx="22" cy="40.5" rx="11.5" ry="2.2" fill="#D97706" opacity="0.18" />
+                  <circle cx="22" cy="21" r="15.5" fill="url(#kpiAmberOrb)" />
+                  <path d="M13 13 C15.8 9.8 19.2 8.4 22.8 8.4" stroke="#FFFBEB" stroke-width="2.2" stroke-linecap="round" opacity="0.72" />
+                  <path d="M29 17.5 A8 8 0 0 0 15.2 17 M15 24.5 A8 8 0 0 0 28.8 25" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round" />
+                  <path d="M26.5 17.5 H30 V14" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M17.5 24.5 H14 V28" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </span>
               <div class="min-w-0 leading-tight">
@@ -1105,10 +1135,21 @@
             </button>
 
             <button type="button" onclick="openAllTraffyPanel('done')"
-              class="rounded-2xl bg-gradient-to-br from-[#F2FCF6] to-[#DCF6E7] hover:to-[#CEF1DD] border border-emerald-200/90 p-2.5 sm:px-3.5 sm:py-3 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center sm:items-center lg:items-start xl:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left shadow-2xs transition active:scale-[0.98]">
-              <span class="w-8 h-8 xl:w-9 xl:h-9 rounded-xl bg-white text-brand-green flex items-center justify-center shrink-0 shadow-xs">
-                <svg class="w-4 h-4 xl:w-5 xl:h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              class="rounded-2xl bg-gradient-to-br from-[#F2FCF6] to-[#DCF6E7] hover:to-[#CEF1DD] border border-emerald-200/90 p-2.5 sm:px-3.5 sm:py-3 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center sm:items-center lg:items-start xl:items-center gap-1.5 sm:gap-2.5 text-center sm:text-left shadow-2xs transition active:scale-[0.98] group">
+              <!-- Soft-3D Glossy Emerald Checkmark Badge -->
+              <span class="cat-icon-wrap w-9 h-9 xl:w-10 xl:h-10 flex items-center justify-center shrink-0">
+                <svg class="w-full h-full" viewBox="0 0 44 44" fill="none">
+                  <defs>
+                    <linearGradient id="kpiGreenOrb" x1="10" y1="8" x2="34" y2="36" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stop-color="#86EFAC" />
+                      <stop offset="48%" stop-color="#22C55E" />
+                      <stop offset="100%" stop-color="#15803D" />
+                    </linearGradient>
+                  </defs>
+                  <ellipse cx="22" cy="40.5" rx="11.5" ry="2.2" fill="#16A34A" opacity="0.18" />
+                  <circle cx="22" cy="21" r="15.5" fill="url(#kpiGreenOrb)" />
+                  <path d="M13 13 C15.8 9.8 19.2 8.4 22.8 8.4" stroke="#ECFDF5" stroke-width="2.2" stroke-linecap="round" opacity="0.72" />
+                  <path d="M15.5 21.5 L20 26 L29 16.5" stroke="#FFFFFF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </span>
               <div class="min-w-0 leading-tight">
@@ -2853,23 +2894,25 @@
           return `
             <button type="button" onclick="openCaseTimeline('${esc(it.ticket_id)}')"
               style="animation-delay:${idx * 50}ms"
-              class="anim-fade-up w-full text-left rounded-2xl border border-slate-200/90 hover:border-brand-pink/60 bg-white hover:bg-brand-pinkSoft/20 p-2.5 sm:p-3 flex items-center gap-3 shadow-2xs transition group cursor-pointer">
-              ${renderThumbHtml(it.photo_url, 'w-20 h-14 sm:w-[88px] sm:h-16')}
-              <div class="flex-1 min-w-0 space-y-1">
-                <div class="font-bold text-[15px] sm:text-base text-brand-ink truncate">${esc(title)}</div>
-                <div class="flex items-center gap-1.5 text-xs sm:text-[13px] text-brand-muted truncate">
-                  <svg class="w-3.5 h-3.5 text-brand-green shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
-                  </svg>
-                  <span class="truncate">${esc(shortAreaLabel(it.area))}<span class="hidden sm:inline"> · ${esc(it.org_name || 'อบจ.ลำปาง')}</span></span>
+              class="anim-fade-up w-full text-left rounded-2xl border border-slate-200/90 hover:border-brand-pink/60 bg-white hover:bg-brand-pinkSoft/20 p-2.5 sm:p-3 flex items-center gap-3 sm:gap-3.5 shadow-2xs transition group cursor-pointer">
+              ${renderThumbHtml(it.photo_url, 'w-[108px] h-[78px] sm:w-[132px] sm:h-[88px] xl:w-[144px] xl:h-[94px] rounded-2xl shadow-2xs')}
+              <div class="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div class="min-w-0 space-y-1">
+                  <div class="font-extrabold text-[15px] sm:text-base text-brand-ink truncate">${esc(title)}</div>
+                  <div class="flex items-center gap-1.5 text-xs sm:text-[13px] text-brand-muted truncate">
+                    <svg class="w-3.5 h-3.5 text-brand-green shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
+                    </svg>
+                    <span class="truncate">${esc(shortAreaLabel(it.area))}<span class="hidden sm:inline"> · ${esc(it.org_name || 'อบจ.ลำปาง')}</span></span>
+                  </div>
                 </div>
-              </div>
-              <div class="flex items-center gap-2 shrink-0">
-                <span class="px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${st.cls}">${esc(st.label)}</span>
-                <svg class="w-4 h-4 text-slate-400 group-hover:text-brand-pinkDark group-hover:translate-x-0.5 transition"
-                  fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
+                <div class="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+                  <span class="px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${st.cls}">${esc(st.label)}</span>
+                  <svg class="w-4 h-4 text-slate-400 group-hover:text-brand-pinkDark group-hover:translate-x-0.5 transition shrink-0"
+                    fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
               </div>
             </button>`;
         }).join('');
@@ -3050,7 +3093,7 @@
           <button type="button" onclick="openCaseTimeline('${esc(it.ticket_id)}')"
             style="animation-delay:${idx * 35}ms"
             class="anim-fade-up w-full text-left rounded-2xl border border-slate-200 hover:border-brand-pink bg-white hover:bg-brand-pinkSoft/20 p-3 flex items-center gap-3 transition group">
-            ${renderThumbHtml(it.photo_url, 'w-16 h-14 sm:w-20 sm:h-16')}
+            ${renderThumbHtml(it.photo_url, 'w-24 h-[74px] sm:w-28 sm:h-20 rounded-2xl shadow-2xs')}
             <div class="flex-1 min-w-0 space-y-1">
               <div class="flex items-center justify-between gap-2">
                 <div class="font-bold text-sm sm:text-[15px] text-brand-ink truncate">${esc(title)}</div>
@@ -3125,10 +3168,11 @@
 
       const photoBlock = c.photo_url
         ? `<button type="button" onclick="openPhotoLightbox('${esc(c.photo_url)}')" title="คลิกเพื่อขยายภาพ"
-             class="w-24 h-20 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0 hover:opacity-90 transition">
+             class="relative group w-28 h-24 sm:w-36 sm:h-28 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm shrink-0 hover:opacity-95 transition">
              <img src="${esc(c.photo_url)}" alt="ภาพประกอบเรื่องร้องเรียน" class="w-full h-full object-cover" />
+             <span class="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded-full bg-slate-900/70 text-white text-[10px] font-bold">ขยาย</span>
            </button>`
-        : renderThumbHtml(null, 'w-20 h-16');
+        : renderThumbHtml(null, 'w-24 h-20');
 
       const eventsHtml = events.map((ev, idx) => {
         const isLast = idx === events.length - 1;

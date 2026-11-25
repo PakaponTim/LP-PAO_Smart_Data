@@ -2895,7 +2895,7 @@
             <button type="button" onclick="openCaseTimeline('${esc(it.ticket_id)}')"
               style="animation-delay:${idx * 50}ms"
               class="anim-fade-up w-full text-left rounded-2xl border border-slate-200/90 hover:border-brand-pink/60 bg-white hover:bg-brand-pinkSoft/20 p-2.5 sm:p-3 flex items-center gap-3 sm:gap-3.5 shadow-2xs transition group cursor-pointer">
-              ${renderThumbHtml(it.photo_url, 'w-[108px] h-[78px] sm:w-[132px] sm:h-[88px] xl:w-[144px] xl:h-[94px] rounded-2xl shadow-2xs')}
+              ${renderThumbHtml(it.photo_url, 'w-[148px] h-[104px] sm:w-[168px] sm:h-[112px] xl:w-[184px] xl:h-[118px] rounded-2xl shadow-xs')}
               <div class="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div class="min-w-0 space-y-1">
                   <div class="font-extrabold text-[15px] sm:text-base text-brand-ink truncate">${esc(title)}</div>
@@ -3093,7 +3093,7 @@
           <button type="button" onclick="openCaseTimeline('${esc(it.ticket_id)}')"
             style="animation-delay:${idx * 35}ms"
             class="anim-fade-up w-full text-left rounded-2xl border border-slate-200 hover:border-brand-pink bg-white hover:bg-brand-pinkSoft/20 p-3 flex items-center gap-3 transition group">
-            ${renderThumbHtml(it.photo_url, 'w-24 h-[74px] sm:w-28 sm:h-20 rounded-2xl shadow-2xs')}
+            ${renderThumbHtml(it.photo_url, 'w-[128px] h-[92px] sm:w-[144px] sm:h-[98px] rounded-2xl shadow-xs')}
             <div class="flex-1 min-w-0 space-y-1">
               <div class="flex items-center justify-between gap-2">
                 <div class="font-bold text-sm sm:text-[15px] text-brand-ink truncate">${esc(title)}</div>
@@ -3168,11 +3168,11 @@
 
       const photoBlock = c.photo_url
         ? `<button type="button" onclick="openPhotoLightbox('${esc(c.photo_url)}')" title="คลิกเพื่อขยายภาพ"
-             class="relative group w-28 h-24 sm:w-36 sm:h-28 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm shrink-0 hover:opacity-95 transition">
+             class="relative group w-36 h-28 sm:w-44 sm:h-32 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm shrink-0 hover:opacity-95 transition">
              <img src="${esc(c.photo_url)}" alt="ภาพประกอบเรื่องร้องเรียน" class="w-full h-full object-cover" />
              <span class="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded-full bg-slate-900/70 text-white text-[10px] font-bold">ขยาย</span>
            </button>`
-        : renderThumbHtml(null, 'w-24 h-20');
+        : renderThumbHtml(null, 'w-28 h-24');
 
       const eventsHtml = events.map((ev, idx) => {
         const isLast = idx === events.length - 1;

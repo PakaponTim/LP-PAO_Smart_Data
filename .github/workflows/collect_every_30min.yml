@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: lp-pao-smart-data-collector
@@ -56,6 +57,44 @@ jobs:
         run: |
           php php_server/github_failover_alert.php --server-status="${SERVER_STATUS:-skipped}"
 
+      - name: Record 3-Day Collector Run History (Auto-Prune > 3 Days)
+        if: always()
+        continue-on-error: true
+        env:
+          RUN_ID: ${{ github.run_id }}
+          RUN_NUMBER: ${{ github.run_number }}
+          EVENT_NAME: ${{ github.event_name }}
+          SERVER_STATUS: ${{ steps.ping_server.outputs.server_status }}
+        run: |
+          php -r '
+            date_default_timezone_set("Asia/Bangkok");
+            $file = "cloud_snapshots/collector_runs_3d.json";
+            if (!is_dir("cloud_snapshots")) mkdir("cloud_snapshots", 0755, true);
+            $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
+            $runs = is_array($data["runs"] ?? null) ? $data["runs"] : [];
+            $now = time();
+            $cutoff = $now - (3 * 86400);
+            $runs = array_values(array_filter($runs, function ($r) use ($cutoff) {
+              return (int)($r["timestamp_unix"] ?? 0) >= $cutoff;
+            }));
+            array_unshift($runs, [
+              "run_id" => getenv("RUN_ID"),
+              "run_number" => (int)getenv("RUN_NUMBER"),
+              "event" => getenv("EVENT_NAME"),
+              "timestamp_unix" => $now,
+              "timestamp_ict" => date("Y-m-d H:i:s"),
+              "server_status" => getenv("SERVER_STATUS") ?: "unknown",
+            ]);
+            $payload = [
+              "retention_days" => 3,
+              "updated_at_ict" => date("Y-m-d H:i:s"),
+              "total_runs_3d" => count($runs),
+              "runs" => $runs,
+            ];
+            file_put_contents($file, json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . "\n");
+            echo "Saved 3-day collector history (" . count($runs) . " runs within 72h).\n";
+          '
+
       - name: Save & Commit Snapshot to GitHub Repository
         run: |
           git config user.name "github-actions[bot]"
@@ -69,3 +108,19 @@ jobs:
             git pull --rebase origin "${GITHUB_REF_NAME}"
             git push origin "${GITHUB_REF_NAME}"
           fi
+
+      - name: Cleanup Old Workflow Runs (Keep Latest 1 Only)
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          OLD_RUN_IDS=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/workflows/collect_every_30min.yml/runs?per_page=100" \
+            --jq ".workflow_runs[] | select(.id != ${GITHUB_RUN_ID} and .status == \"completed\") | .id")
+          DELETED=0
+          for RUN_ID in $OLD_RUN_IDS; do
+            if gh api -X DELETE "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}" >/dev/null 2>&1; then
+              DELETED=$((DELETED + 1))
+            fi
+          done
+          echo "Cleaned up ${DELETED} old workflow run(s). Kept only latest run #${GITHUB_RUN_NUMBER} (ID: ${GITHUB_RUN_ID}); 3-day audit log stored in cloud_snapshots/collector_runs_3d.json."

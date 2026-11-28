@@ -1,8 +1,16 @@
 {
     "retention_days": 3,
-    "updated_at_ict": "2026-11-28 11:38:48",
-    "total_runs_3d": 6,
+    "updated_at_ict": "2026-11-28 20:59:57",
+    "total_runs_3d": 7,
     "runs": [
+        {
+            "run_id": "46152347788",
+            "run_number": 43,
+            "event": "schedule",
+            "timestamp_unix": 1795874397,
+            "timestamp_ict": "2026-11-28 20:59:57",
+            "server_status": "skipped"
+        },
         {
             "run_id": "46108496093",
             "run_number": 42,

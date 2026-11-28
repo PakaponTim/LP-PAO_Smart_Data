@@ -1,0 +1,2917 @@
+{
+    "snapshot_id": "gh_20261128_2059",
+    "recorded_at": "2026-11-28 20:59:53",
+    "thai_date": "28 พฤศจิกายน 2569",
+    "module_status": {
+        "rainfall": {
+            "ok": true,
+            "count": 197,
+            "durationMs": 2605,
+            "error": null
+        },
+        "water": {
+            "ok": true,
+            "count": 25,
+            "durationMs": 2092,
+            "error": null
+        },
+        "drought": {
+            "ok": true,
+            "count": 36,
+            "durationMs": 3538,
+            "error": null
+        },
+        "pm25": {
+            "ok": true,
+            "count": 32,
+            "durationMs": 4034,
+            "error": null
+        },
+        "complaints": {
+            "ok": false,
+            "count": 0,
+            "durationMs": 712,
+            "error": "HTTP (404): https:\/\/publicapi.traffy.in.th\/teamchadchart-stat-api\/geojson\/v1?text=%E0%B8%A5%E0%B8%B3%E0%B8%9B%E0%B8%B2%E0%B8%87"
+        }
+    },
+    "rainfall": [
+        {
+            "station_name": "บ้านแม่แก่ง",
+            "location": "ต.แม่ถอด อ.เถิน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 5,
+            "rain_status": "เล็กน้อย",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านป่าเห่ว",
+            "location": "ต.บ้านขอ อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0.5,
+            "rain_status": "เล็กน้อย",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "โรงพยาบาลส่งเสริมสุขภาพตำบล ท่ามะเกว๋น หมู่ 3",
+            "location": "ต.แม่ปะ อ.เถิน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0.1,
+            "rain_status": "เล็กน้อย",
+            "measured_time": "19:50 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "อบต.แจ้ห่ม",
+            "location": "ต.แจ้ห่ม อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "เถิน",
+            "location": "ต.แม่ถอด อ.เถิน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "อบต.นายาง",
+            "location": "ต.นายาง อ.สบปราบ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "อบต.หนองหล่ม",
+            "location": "ต.หนองหล่ม อ.ห้างฉัตร",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ชุมชนแม่ตาลน้อย",
+            "location": "ต.เวียงตาล อ.ห้างฉัตร",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านใหม่รุ่งเจริญ",
+            "location": "ต.บ้านเอื้อม อ.เมืองลำปาง",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านทุ่งกล้วย",
+            "location": "ต.บ้านเอื้อม อ.เมืองลำปาง",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านต้นฮ่างพัฒนา",
+            "location": "ต.บ้านค่า อ.เมืองลำปาง",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่เลียงพัฒนา",
+            "location": "ต.เสริมขวา อ.เสริมงาม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านดงหนองจอก",
+            "location": "ต.เสริมซ้าย อ.เสริมงาม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่ต๋ำ",
+            "location": "ต.เสริมซ้าย อ.เสริมงาม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านสันโป่ง",
+            "location": "ต.เสริมกลาง อ.เสริมงาม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านโป่งน้ำร้อน",
+            "location": "ต.เสริมกลาง อ.เสริมงาม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านใหม่พัฒนา",
+            "location": "ต.บ้านร้อง อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านบ่อสี่เหลี่ยม",
+            "location": "ต.ปงเตา อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านปางหละ",
+            "location": "ต.บ้านหวด อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านไผ่แพะ",
+            "location": "ต.เมืองมาย อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านนาไหม้",
+            "location": "ต.เมืองมาย อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านทุ่งปี้",
+            "location": "ต.ทุ่งฮั้ว อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านปงถ้ำ",
+            "location": "ต.วังทอง อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านตึงเหนือ",
+            "location": "ต.วังทอง อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่หีด",
+            "location": "ต.วังแก้ว อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านหัวน้ำพัฒนา",
+            "location": "ต.แม่มอก อ.เถิน",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่แสลม",
+            "location": "ต.เวียงมอก อ.เถิน",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่เตินเหนือ",
+            "location": "ต.แม่ถอด อ.เถิน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่ถอด",
+            "location": "ต.แม่ถอด อ.เถิน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านปางยาว",
+            "location": "ต.แม่พริก อ.แม่พริก",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "17:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านสันขี้เหล็ก",
+            "location": "ต.แม่พริก อ.แม่พริก",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านหลุกใต้",
+            "location": "ต.นาครัว อ.แม่ทะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านทุ่งกวางทอง",
+            "location": "ต.ดอนไฟ อ.แม่ทะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านปางมะโอ",
+            "location": "ต.วังเงิน อ.แม่ทะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านทุ่งหลวง",
+            "location": "ต.เมืองยาว อ.ห้างฉัตร",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านปางปง-ปางทราย",
+            "location": "ต.เวียงตาล อ.ห้างฉัตร",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านทุ่งเกวียน",
+            "location": "ต.เวียงตาล อ.ห้างฉัตร",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านหลวง",
+            "location": "ต.เมืองปาน อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านปางอ่าย",
+            "location": "ต.เมืองปาน อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่กองปิน",
+            "location": "ต.บ้านขอ อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านป่าเวียง",
+            "location": "ต.ทุ่งกว๋าว อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านป่าเหมี้ยง",
+            "location": "ต.แจ้ซ้อน อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านทุ่งยาง",
+            "location": "ต.หัวเมือง อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ลำปาง",
+            "location": "ต.พระบาท อ.เมืองลำปาง",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ลำปาง สกษ.",
+            "location": "ต.เวียงตาล อ.ห้างฉัตร",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "สวนเพชรล้านนา",
+            "location": "ต.แม่สุก อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "อ่างเก็บน้ำแม่เกี๋ยง",
+            "location": "ต.บ้านเอื้อม อ.เมืองลำปาง",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "อบต.เวียงตาล",
+            "location": "ต.เวียงตาล อ.ห้างฉัตร",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านทุ่ง",
+            "location": "ต.สบปราบ อ.สบปราบ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านทัพป่าเส้า",
+            "location": "ต.วังเหนือ อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านต้นงุ้น",
+            "location": "ต.หัวเมือง อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านปงแท่น",
+            "location": "ต.จางเหนือ อ.แม่เมาะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านผาแดง",
+            "location": "ต.ทุ่งฮั้ว อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่สุกใน",
+            "location": "ต.วังซ้าย อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านด่าน",
+            "location": "ต.สันดอนแก้ว อ.แม่ทะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านทุ่งตอน",
+            "location": "ต.วังเงิน อ.แม่ทะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่กึ๊ด",
+            "location": "ต.ทุ่งงาม อ.เสริมงาม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่สงเหนือ",
+            "location": "ต.ร่องเคาะ อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่อิบ",
+            "location": "ต.บ้านกิ่ว อ.แม่ทะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านวังโป่ง",
+            "location": "ต.วังใต้ อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านสมัยเหนือ",
+            "location": "ต.สมัย อ.สบปราบ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านหนองหล่ม",
+            "location": "ต.หนองหล่ม อ.ห้างฉัตร",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่ตีบหลวง",
+            "location": "ต.แม่ตีบ อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านฮ่าง",
+            "location": "ต.วังแก้ว อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านทุ่งขาม",
+            "location": "ต.ใหม่พัฒนา อ.เกาะคา",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านนายาบ",
+            "location": "ต.หัวเสือ อ.แม่ทะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านปงป่าป๋อ",
+            "location": "ต.เสริมขวา อ.เสริมงาม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านสบเติ๋น",
+            "location": "ต.สบป้าด อ.แม่เมาะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านสบป้าด",
+            "location": "ต.สบป้าด อ.แม่เมาะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านหล่ายทุ่ง",
+            "location": "ต.วอแก้ว อ.ห้างฉัตร",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านห้วยก้อด",
+            "location": "ต.ร่องเคาะ อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่ฮวก",
+            "location": "ต.ไหล่หิน อ.เกาะคา",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านผาลาด",
+            "location": "ต.แม่ทะ อ.แม่ทะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่ปะแพะ",
+            "location": "ต.แม่ปะ อ.เถิน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านนาริน",
+            "location": "ต.ผาปัง อ.แม่พริก",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านกุ่มเนิ้งใต้",
+            "location": "ต.แม่มอก อ.เถิน",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านโทกหัวช้าง",
+            "location": "ต.พระบาท อ.เมืองลำปาง",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านห้วยน้ำเค็ม",
+            "location": "ต.บ้านเสด็จ อ.เมืองลำปาง",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านทุ่งผึ้ง",
+            "location": "ต.ทุ่งผึ้ง อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านทุ่งฮ้าง",
+            "location": "ต.ทุ่งผึ้ง อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านนาเดา",
+            "location": "ต.เสริมซ้าย อ.เสริมงาม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านศรีบุญเรือง",
+            "location": "ต.แม่สุก อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านผาช่อ",
+            "location": "ต.แม่สุก อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านงิ้วงาม",
+            "location": "ต.แม่ตีบ อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านขุนแหง",
+            "location": "ต.ปงเตา อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่งาวใต้",
+            "location": "ต.บ้านร้อง อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านกอรวก",
+            "location": "ต.จางเหนือ อ.แม่เมาะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่หล่วง",
+            "location": "ต.นาสัก อ.แม่เมาะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ที่ทำการอุทยานแห่งชาติแจ้ซ้อน",
+            "location": "ต.แจ้ซ้อน อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ ผท.๑ (ปากบอก)",
+            "location": "ต.บ้านร้อง อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ที่ทำการอุทยานแห่งชาติถ้ำผาไท",
+            "location": "ต.บ้านหวด อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติ มว.๔ (แม่แสลม)",
+            "location": "ต.เวียงมอก อ.เถิน",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่ปะหลวง หมู่ 1",
+            "location": "ต.แม่ปะ อ.เถิน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:50 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ศาลาเอนกประสงค์บ้านขอใต้ หมู่ 4",
+            "location": "ต.บ้านขอ อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:50 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ศาลาเอนกประสงค์ หมู่ 2 (ติดกับโรงเรียนบ้านทุ่งสะแกง)",
+            "location": "ต.บ้านขอ อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:50 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "วัดแพะก้อม หมู่ 4",
+            "location": "ต.เมืองปาน อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:50 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ศาลาเอนกประสงค์บ้านสอนดอกคำ หมู่ 4",
+            "location": "ต.วิเชตนคร อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:50 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "วัดปางป๋วยศรัทธาราม หมู่ 2",
+            "location": "ต.นาสัก อ.แม่เมาะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:50 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "วัดบ้านนาสัก หมู่ 4",
+            "location": "ต.นาสัก อ.แม่เมาะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "16:30 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ศาลาเอนกประสงค์ ม.5",
+            "location": "ต.นาสัก อ.แม่เมาะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:50 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ร.ร.แม่หล่วง",
+            "location": "ต.นาสัก อ.แม่เมาะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:50 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ศูนย์สาธารณสุขมูลฐาน หมู่ 9",
+            "location": "ต.เวียงตาล อ.ห้างฉัตร",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:50 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ศาลาเอนกประสงค์บ้านหลุก หมู่ 2",
+            "location": "ต.แจ้ห่ม อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:50 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน้าวัดประตูเหล็ก บ้านใหม่เหล่ายาว หมู่ 8",
+            "location": "ต.วิเชตนคร อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "17:20 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ศาลากลางบ้าน บ้านนาดง หมู่ 4",
+            "location": "ต.วังเงิน อ.แม่ทะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:50 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ที่ทำการเขตห้ามล่าสัตว์ป่าดอยพระบาท",
+            "location": "ต.ทุ่งกว๋าว อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "สถานีวิจัยต้นน้ำวัง",
+            "location": "ต.แม่ถอด อ.เถิน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "สะพานน้ำวัง",
+            "location": "ต.ทุ่งฮั้ว อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยจัดการต้นน้ำและพัฒนาชุมชนในพื้นที่ป่าอนุรักษ์ขุนสอย",
+            "location": "ต.หัวเมือง อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยจัดการต้นน้ำและพัฒนาชุมชนในพื้นที่ป่าอนุรักษ์แม่จาง",
+            "location": "ต.นาสัก อ.แม่เมาะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยจัดการต้นน้ำและพัฒนาชุมชนในพื้นที่ป่าอนุรักษ์แม่แจ้ฟ้า",
+            "location": "ต.ปงดอน อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยศึกษาการพัฒนาการอนุรักษ์ต้นน้ำห้วยโล่ง",
+            "location": "ต.บ้านอ้อน อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านใหม่หล่ายท่า",
+            "location": "ต.วังซ้าย อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านเปียงใจ",
+            "location": "ต.ปงดอน อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านทุ่งโป่ง",
+            "location": "ต.เมืองปาน อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านนาแก้วตะวันตก",
+            "location": "ต.นาแส่ง อ.เกาะคา",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านไหล่หินตะวันตก",
+            "location": "ต.ไหล่หิน อ.เกาะคา",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านข่อย",
+            "location": "ต.บ้านร้อง อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านปงคอบ",
+            "location": "ต.วิเชตนคร อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านปางอ้า",
+            "location": "ต.เวียงมอก อ.เถิน",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "18:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านศรีดอนมูล",
+            "location": "ต.แจ้ซ้อน อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านขอใต้",
+            "location": "ต.บ้านขอ อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านทุ่งสะแกง",
+            "location": "ต.บ้านขอ อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านวังตม",
+            "location": "ต.จางเหนือ อ.แม่เมาะ",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่สุขเหนือ",
+            "location": "ต.วังซ้าย อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านต้นฮ่าง",
+            "location": "ต.วังทรายคำ อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านป่าฝาง",
+            "location": "ต.วังทรายคำ อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "น้ำแม่สอย  W.17A",
+            "location": "ต.วิเชตนคร อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ฝายยางประสบสุก",
+            "location": "ต.แม่สุก อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "เขื่อนกิ่วลม",
+            "location": "ต.บ้านแลง อ.เมืองลำปาง",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "แม่น้ำวัง  W.1C",
+            "location": "ต.บ้านดง อ.เมืองลำปาง",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "เขื่อนกิ่วคอหมา",
+            "location": "ต.ปงดอน อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "น้ำแม่จาง  W.22",
+            "location": "ต.วังพร้าว อ.เกาะคา",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "น้ำแม่ตุ๋ย  W.20",
+            "location": "ต.บ่อแฮ้ว อ.เมืองลำปาง",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "น้ำแม่ต๋ำ  W.18A",
+            "location": "ต.นาแก้ว อ.เกาะคา",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "แม่น้ำวัง  W.5A",
+            "location": "ต.ท่าผา อ.เกาะคา",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "TW.28",
+            "location": "ต.ทุ่งกว๋าว อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "TW.29",
+            "location": "ต.ห้างฉัตร อ.ห้างฉัตร",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "TW.30",
+            "location": "ต.ใหม่พัฒนา อ.เกาะคา",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "TW.31",
+            "location": "ต.วังเงิน อ.แม่ทะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "TW.32",
+            "location": "ต.เสริมซ้าย อ.เสริมงาม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "TW.33",
+            "location": "ต.แม่ปะ อ.เถิน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "TW.34",
+            "location": "ต.เถินบุรี อ.เถิน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "TW.35",
+            "location": "ต.แม่พริก อ.แม่พริก",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "วัดต้นธงชัย อ.เมือง จ.ลำปาง",
+            "location": "ต.ต้นธงชัย อ.เมืองลำปาง",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านดอนชัย อ.เถิน จ.ลำปาง",
+            "location": "ต.ล้อมแรด อ.เถิน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "เขื่อนกิ่วลม อ.แจ้ห่ม จ.ลำปาง",
+            "location": "ต.บ้านแลง อ.เมืองลำปาง",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านกุ้มเนิ้ง",
+            "location": "ต.แม่มอก อ.เถิน",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านหลวงเหนือ จ.ลำปาง",
+            "location": "ต.หลวงเหนือ อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านน้ำหลง",
+            "location": "ต.วังซ้าย อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยพิทักษ์ป่าหัวทุ่ง",
+            "location": "ต.แม่สัน อ.ห้างฉัตร",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติถ้ำผาไท หน่วยที่ 5 (น้ำตกตาดน้อย)",
+            "location": "ต.ปงดอน อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ 1 (น้ำดิบต้นกอก)",
+            "location": "ต.แม่วะ อ.เถิน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "19:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ จซ. 5 (แม่แจ๋ม)",
+            "location": "ต.แจ้ซ้อน อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "สะพานน้ำคลองแม่สอย",
+            "location": "ต.แม่สุก อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "17:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "สะพานน้ำแม่ต๋ำ",
+            "location": "ต.ทุ่งงาม อ.เสริมงาม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "สะพานพัฒนามิตรภาพแม่น้ำตุ๋ย",
+            "location": "ต.บ้านเอื้อม อ.เมืองลำปาง",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยจัดการต้นน้ำและพัฒนาชุมชนในพื้นที่ป่าอนุรักษ์แม่อาบ",
+            "location": "ต.นาโป่ง อ.เถิน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยจัดการต้นน้ำและพัฒนาชุมชนในพื้นที่ป่าอนุรักษ์แม่เสริม",
+            "location": "ต.เสริมกลาง อ.เสริมงาม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ ศช. 4 (แม่มอก)",
+            "location": "ต.แม่มอก อ.เถิน",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ 4 (แม่แก้)",
+            "location": "ต.บ้านอ้อน อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "สะพานน้ำงาว",
+            "location": "ต.บ้านร้อง อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยศึกษาการพัฒนาการอนุรักษ์ต้นน้ำแม่หวด",
+            "location": "ต.บ้านหวด อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยจัดการต้นน้ำและพัฒนาชุมชนในพื้นที่ป่าอนุรักษ์แม่นึง",
+            "location": "ต.ทุ่งกว๋าว อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยศึกษาการพัฒนาการอนุรักษ์ต้นน้ำขุนงาว",
+            "location": "ต.ปงเตา อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "สะพานคลองแม่มอญ",
+            "location": "ต.แจ้ซ้อน อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยจัดการต้นน้ำและพัฒนาชุมชนในพื้นที่ป่าอนุรักษ์แม่เลียง",
+            "location": "ต.เสริมขวา อ.เสริมงาม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ที่ทำการเขตรักษาพันธุ์สัตว์ป่าดอยผาเมือง",
+            "location": "ต.เวียงตาล อ.ห้างฉัตร",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "อ่างเก็บน้ำห้วยแม่แพนน้อย",
+            "location": "ต.บ้านบอม อ.แม่ทะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "อ่างเก็บน้ำแม่กอง",
+            "location": "ต.บ้านบอม อ.แม่ทะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "อ่างฯแม่ยอนสันดอนแก้ว",
+            "location": "ต.สันดอนแก้ว อ.แม่ทะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "น้ำแม่งาว",
+            "location": "ต.แม่ตีบ อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "แม่น้ำวังที่บ้านแป้นโป่งชัย",
+            "location": "ต.บ้านสา อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "โรงเรียนเมืองปานวิทยา",
+            "location": "ต.เมืองปาน อ.เมืองปาน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "น้ำแม่จางที่บ้านแม่ลู่ใหม่ไชยมงคล",
+            "location": "ต.หัวเสือ อ.แม่ทะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "โรงเรียนสบจางวิทยา",
+            "location": "ต.นาสัก อ.แม่เมาะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "โรงเรียนบ้านแม่พริกบน",
+            "location": "ต.แม่พริก อ.แม่พริก",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "เทศบาลตำบลเสริมซ้าย",
+            "location": "ต.เสริมซ้าย อ.เสริมงาม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "น้ำแม่ตุ๋ยที่บ้านแค่",
+            "location": "ต.บ้านเป้า อ.เมืองลำปาง",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "น้ำแม่สอยที่บ้านหนองกอก",
+            "location": "ต.แม่สุก อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ศูนย์พัฒนาเด็กเล็กตำบลวังแก้ว",
+            "location": "ต.วังแก้ว อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "บ้านแม่ตาลน้อย",
+            "location": "ต.เวียงตาล อ.ห้างฉัตร",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "รพ.สต.บ้านท่ามะเกว๋น",
+            "location": "ต.แม่ปะ อ.เถิน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "แม่น้ำวังที่ อ.วังเหนือ",
+            "location": "ต.วังเหนือ อ.วังเหนือ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "น้ำแม่ต๋ำ ที่บ้านนาบอน",
+            "location": "ต.ทุ่งงาม อ.เสริมงาม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "สะพานเฉลิมพระเกียรติ",
+            "location": "ต.ชมพู อ.เมืองลำปาง",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "แม่น้ำวังที่เทศบาลตำบลแม่ปุ",
+            "location": "ต.แม่ปุ อ.แม่พริก",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "แม่น้ำวังที่บ้านแม่เตี๊ยะ",
+            "location": "ต.แม่ถอด อ.เถิน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "แม่น้ำวังที่บ้านอ้อ",
+            "location": "ต.แม่กัวะ อ.สบปราบ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "แม่น้ำวัง ที่บ้านปงชัย",
+            "location": "ต.บ้านเสด็จ อ.เมืองลำปาง",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ ขต.5 (แม่ไพร)",
+            "location": "ต.วอแก้ว อ.ห้างฉัตร",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ ผท.2 (กิ่วลม)",
+            "location": "ต.เมืองมาย อ.แจ้ห่ม",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ มว.5 (แม่ปะ)",
+            "location": "ต.แม่ปะ อ.เถิน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "ทต.แม่เมาะ",
+            "location": "ต.แม่เมาะ อ.แม่เมาะ",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ มว.1 (น้ำตกแม่วะ)",
+            "location": "ต.แม่วะ อ.เถิน",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "เกาะคา",
+            "location": "ต.วังพร้าว อ.เกาะคา",
+            "river_basin": "ลุ่มน้ำวัง",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        },
+        {
+            "station_name": "อบต.บ้านแหง",
+            "location": "ต.บ้านแหง อ.งาว",
+            "river_basin": "ลุ่มน้ำยม",
+            "rain_mm": 0,
+            "rain_status": "ไม่มีฝน",
+            "measured_time": "20:00 น.",
+            "record_date": "28 พฤศจิกายน 2569"
+        }
+    ],
+    "water": [
+        {
+            "station_name": "บ้านเกาะคา",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอเกาะคา",
+            "province": "ลำปาง",
+            "current_water_level_m": 216.52,
+            "left_bank_level_m": 220.46,
+            "bank_difference_m": 3.94,
+            "trend": "คงที่",
+            "status": "น้ำปกติ",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 0,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "สะพานน้ำแม่ต๋ำ",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอเสริมงาม",
+            "province": "ลำปาง",
+            "current_water_level_m": 233.01,
+            "left_bank_level_m": 236.84,
+            "bank_difference_m": 3.83,
+            "trend": "คงที่",
+            "status": "น้ำปกติ",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 0,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "บ้านวังพร้าว",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอเกาะคา",
+            "province": "ลำปาง",
+            "current_water_level_m": 215.56,
+            "left_bank_level_m": 218.66,
+            "bank_difference_m": 3.1,
+            "trend": "คงที่",
+            "status": "น้ำปกติ",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 0,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "น้ำแม่งาว",
+            "river": "ลุ่มน้ำยม",
+            "amphoe": "อำเภองาว",
+            "province": "ลำปาง",
+            "current_water_level_m": 228.56,
+            "left_bank_level_m": 231.05,
+            "bank_difference_m": 2.49,
+            "trend": "คงที่",
+            "status": "น้ำปกติ",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 0,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "สะพานเสตุวารี",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอเมืองลำปาง",
+            "province": "ลำปาง",
+            "current_water_level_m": 230.03,
+            "left_bank_level_m": 234.5,
+            "bank_difference_m": 4.47,
+            "trend": "เพิ่มขึ้น",
+            "status": "น้ำปกติ",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 2.13,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "บ้านหลวงเหนือ",
+            "river": "ลุ่มน้ำยม",
+            "amphoe": "อำเภองาว",
+            "province": "ลำปาง",
+            "current_water_level_m": 269.43,
+            "left_bank_level_m": 271.1,
+            "bank_difference_m": 1.67,
+            "trend": "คงที่",
+            "status": "น้ำปกติ",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 0.01,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "บ้านไฮ",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอแจ้ห่ม",
+            "province": "ลำปาง",
+            "current_water_level_m": 304.97,
+            "left_bank_level_m": 308.5,
+            "bank_difference_m": 3.53,
+            "trend": "คงที่",
+            "status": "น้ำปกติ",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 0,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "บ้านท่าล้อ",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอเมืองลำปาง",
+            "province": "ลำปาง",
+            "current_water_level_m": 230.42,
+            "left_bank_level_m": 236.02,
+            "bank_difference_m": 5.6,
+            "trend": "ลดลง",
+            "status": "น้ำน้อย",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 2.13,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "บ้านแลง",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอเมืองลำปาง",
+            "province": "ลำปาง",
+            "current_water_level_m": 259.23,
+            "left_bank_level_m": 263.9,
+            "bank_difference_m": 4.67,
+            "trend": "คงที่",
+            "status": "น้ำน้อย",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 2.13,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "บ้านแม่เชียงราย",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอแม่พริก",
+            "province": "ลำปาง",
+            "current_water_level_m": 142.15,
+            "left_bank_level_m": 147.59,
+            "bank_difference_m": 5.44,
+            "trend": "เพิ่มขึ้น",
+            "status": "น้ำน้อย",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 0,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "บ้านหนองนาว",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอแจ้ห่ม",
+            "province": "ลำปาง",
+            "current_water_level_m": 291.18,
+            "left_bank_level_m": 294.5,
+            "bank_difference_m": 3.32,
+            "trend": "คงที่",
+            "status": "น้ำน้อย",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 0,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "บ้านดอนชัย",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอเถิน",
+            "province": "ลำปาง",
+            "current_water_level_m": 160.21,
+            "left_bank_level_m": 165.8,
+            "bank_difference_m": 5.59,
+            "trend": "ลดลง",
+            "status": "น้ำน้อย",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 0.26,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "เถิน",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอเถิน",
+            "province": "ลำปาง",
+            "current_water_level_m": 170.5,
+            "left_bank_level_m": 178.49,
+            "bank_difference_m": 7.99,
+            "trend": "คงที่",
+            "status": "น้ำน้อย",
+            "current_rain_mm": 0.83,
+            "forecast_rain_24h_mm": 0.9,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "บ้านร่องเคาะ",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอวังเหนือ",
+            "province": "ลำปาง",
+            "current_water_level_m": 381.91,
+            "left_bank_level_m": 385.9,
+            "bank_difference_m": 3.99,
+            "trend": "เพิ่มขึ้น",
+            "status": "น้ำน้อย",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 0.25,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "บ้านเมืองมาย",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอแจ้ห่ม",
+            "province": "ลำปาง",
+            "current_water_level_m": 286.43,
+            "left_bank_level_m": 289.37,
+            "bank_difference_m": 2.94,
+            "trend": "คงที่",
+            "status": "น้ำน้อย",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 0,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "เกาะคา",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอเกาะคา",
+            "province": "ลำปาง",
+            "current_water_level_m": 210.01,
+            "left_bank_level_m": 214.45,
+            "bank_difference_m": 4.44,
+            "trend": "คงที่",
+            "status": "น้ำน้อย",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 0,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "บ้านท่าเดื่อ",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอเมืองลำปาง",
+            "province": "ลำปาง",
+            "current_water_level_m": 231.71,
+            "left_bank_level_m": 238,
+            "bank_difference_m": 6.29,
+            "trend": "เพิ่มขึ้น",
+            "status": "น้ำน้อย",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 2.13,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "สะพานน้ำวัง",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอวังเหนือ",
+            "province": "ลำปาง",
+            "current_water_level_m": 442.68,
+            "left_bank_level_m": 445.23,
+            "bank_difference_m": 2.55,
+            "trend": "คงที่",
+            "status": "น้ำน้อย",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 2.13,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "สะพานพัฒนามิตรภาพแม่น้ำตุ๋ย",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอเมืองลำปาง",
+            "province": "ลำปาง",
+            "current_water_level_m": 266.11,
+            "left_bank_level_m": 272.96,
+            "bank_difference_m": 6.85,
+            "trend": "คงที่",
+            "status": "น้ำน้อย",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 0,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "บ้านโป่ง",
+            "river": "ลุ่มน้ำยม",
+            "amphoe": "อำเภองาว",
+            "province": "ลำปาง",
+            "current_water_level_m": 265.78,
+            "left_bank_level_m": 269.93,
+            "bank_difference_m": 4.15,
+            "trend": "คงที่",
+            "status": "น้ำน้อย",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 0.01,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "แม่น้ำวังที่ อ.เถิน (W.3A)",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอเถิน",
+            "province": "ลำปาง",
+            "current_water_level_m": 160.17,
+            "left_bank_level_m": 169.08,
+            "bank_difference_m": 8.91,
+            "trend": "ลดลง",
+            "status": "น้ำน้อย",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 0.26,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "สะพานคลองแม่มอญ",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอเมืองปาน",
+            "province": "ลำปาง",
+            "current_water_level_m": 353.31,
+            "left_bank_level_m": 355.98,
+            "bank_difference_m": 2.67,
+            "trend": "คงที่",
+            "status": "น้ำน้อยวิกฤต",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 1.35,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "สะพานน้ำคลองแม่สอย",
+            "river": "ลุ่มน้ำวัง",
+            "amphoe": "อำเภอแจ้ห่ม",
+            "province": "ลำปาง",
+            "current_water_level_m": 308.61,
+            "left_bank_level_m": 311.09,
+            "bank_difference_m": 2.48,
+            "trend": "คงที่",
+            "status": "น้ำน้อยวิกฤต",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 1.63,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "สะพานน้ำงาว",
+            "river": "ลุ่มน้ำยม",
+            "amphoe": "อำเภองาว",
+            "province": "ลำปาง",
+            "current_water_level_m": 332.17,
+            "left_bank_level_m": 333.48,
+            "bank_difference_m": 1.31,
+            "trend": "คงที่",
+            "status": "น้ำน้อยวิกฤต",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 0,
+            "risk_level": "ปกติ"
+        },
+        {
+            "station_name": "ห้วยแม่มอก",
+            "river": "ลุ่มน้ำยม",
+            "amphoe": "อำเภอเถิน",
+            "province": "ลำปาง",
+            "current_water_level_m": 101.32,
+            "left_bank_level_m": 106.26,
+            "bank_difference_m": 4.94,
+            "trend": "คงที่",
+            "status": "น้ำน้อยวิกฤต",
+            "current_rain_mm": 0,
+            "forecast_rain_24h_mm": 0,
+            "risk_level": "ปกติ"
+        }
+    ],
+    "drought": [
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดใหญ่",
+            "dam_name": "อ่างกิ่วคอหมา",
+            "capacity_m_cum": 170,
+            "inflow_m_cum": 0.13,
+            "water_volume_m_cum": 167.68,
+            "water_percent": "99%",
+            "usable_water_m_cum": 161.48,
+            "discharge_m_cum": 0
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดใหญ่",
+            "dam_name": "อ่างกิ่วลม",
+            "capacity_m_cum": 106.22,
+            "inflow_m_cum": 0.63,
+            "water_volume_m_cum": 103.88,
+            "water_percent": "98%",
+            "usable_water_m_cum": 100.33,
+            "discharge_m_cum": 0.55
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดใหญ่",
+            "dam_name": "อ่างแม่มอก",
+            "capacity_m_cum": 110,
+            "inflow_m_cum": 0.01,
+            "water_volume_m_cum": 100.39,
+            "water_percent": "91%",
+            "usable_water_m_cum": 84.49,
+            "discharge_m_cum": 0.03
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่ไพร",
+            "capacity_m_cum": 3.2,
+            "inflow_m_cum": 0.01,
+            "water_volume_m_cum": 2.38,
+            "water_percent": "74%",
+            "usable_water_m_cum": 2.252,
+            "discharge_m_cum": 0.01
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำห้วยแม่ยาว",
+            "capacity_m_cum": 3.48,
+            "inflow_m_cum": 0.03,
+            "water_volume_m_cum": 2.07,
+            "water_percent": "59%",
+            "usable_water_m_cum": 1.786,
+            "discharge_m_cum": 0.04
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่ปอน",
+            "capacity_m_cum": 1.813,
+            "inflow_m_cum": 0.02,
+            "water_volume_m_cum": 1.19,
+            "water_percent": "66%",
+            "usable_water_m_cum": 1.036,
+            "discharge_m_cum": 0.02
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำห้วยแม่สัน",
+            "capacity_m_cum": 3.525,
+            "inflow_m_cum": 0.06,
+            "water_volume_m_cum": 2.54,
+            "water_percent": "72%",
+            "usable_water_m_cum": 2.498,
+            "discharge_m_cum": 0.06
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำห้วยเกี๋ยง",
+            "capacity_m_cum": 11.6,
+            "inflow_m_cum": 0.07,
+            "water_volume_m_cum": 8.02,
+            "water_percent": "69%",
+            "usable_water_m_cum": 7.416,
+            "discharge_m_cum": 0.08
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่ทาน",
+            "capacity_m_cum": 11.4,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 11.84,
+            "water_percent": "87%",
+            "usable_water_m_cum": 10.48,
+            "discharge_m_cum": null
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำห้วยหลวง",
+            "capacity_m_cum": 1.26,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 0.93,
+            "water_percent": "74%",
+            "usable_water_m_cum": 0.76,
+            "discharge_m_cum": null
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำห้วยสมัย",
+            "capacity_m_cum": 1.2,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 0.95,
+            "water_percent": "79%",
+            "usable_water_m_cum": 0.791,
+            "discharge_m_cum": null
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่ทก",
+            "capacity_m_cum": 1.113,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 1.09,
+            "water_percent": "97%",
+            "usable_water_m_cum": 1.031,
+            "discharge_m_cum": null
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่เรียง",
+            "capacity_m_cum": 1.12,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 1.09,
+            "water_percent": "98%",
+            "usable_water_m_cum": 0.755,
+            "discharge_m_cum": null
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่วะ",
+            "capacity_m_cum": 5.9,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 4.38,
+            "water_percent": "74%",
+            "usable_water_m_cum": 3.434,
+            "discharge_m_cum": null
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่อาบ",
+            "capacity_m_cum": 7.56,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 3.98,
+            "water_percent": "53%",
+            "usable_water_m_cum": 3.435,
+            "discharge_m_cum": 0
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่ฟ้า",
+            "capacity_m_cum": 23.5,
+            "inflow_m_cum": 0.02,
+            "water_volume_m_cum": 17.78,
+            "water_percent": "89%",
+            "usable_water_m_cum": 16.682,
+            "discharge_m_cum": 0.05
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำห้วยแม่งอน",
+            "capacity_m_cum": 1.28,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 0.99,
+            "water_percent": "77%",
+            "usable_water_m_cum": 0.87,
+            "discharge_m_cum": null
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่อ้อน 2",
+            "capacity_m_cum": 0,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 10.95,
+            "water_percent": "57%",
+            "usable_water_m_cum": 10.45,
+            "discharge_m_cum": null
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่ต๋ำตอนล่าง",
+            "capacity_m_cum": 2.54,
+            "inflow_m_cum": 0.02,
+            "water_volume_m_cum": 1.28,
+            "water_percent": "50%",
+            "usable_water_m_cum": 0.587,
+            "discharge_m_cum": null
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่เลียงพัฒนา",
+            "capacity_m_cum": 6.9,
+            "inflow_m_cum": 0,
+            "water_volume_m_cum": 5.91,
+            "water_percent": "86%",
+            "usable_water_m_cum": 5.113,
+            "discharge_m_cum": 0.02
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่กึ๊ด",
+            "capacity_m_cum": 1.3,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 1.16,
+            "water_percent": "89%",
+            "usable_water_m_cum": 0.998,
+            "discharge_m_cum": 0.01
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่ไฮ",
+            "capacity_m_cum": 1.225,
+            "inflow_m_cum": 0.02,
+            "water_volume_m_cum": 0.93,
+            "water_percent": "76%",
+            "usable_water_m_cum": 0.81,
+            "discharge_m_cum": 0.02
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่ธิ",
+            "capacity_m_cum": 1.59,
+            "inflow_m_cum": 0.01,
+            "water_volume_m_cum": 1.13,
+            "water_percent": "71%",
+            "usable_water_m_cum": 1.025,
+            "discharge_m_cum": 0.01
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำห้วยหลวงวังวัว",
+            "capacity_m_cum": 1.248,
+            "inflow_m_cum": 0,
+            "water_volume_m_cum": 1.03,
+            "water_percent": "64%",
+            "usable_water_m_cum": 0.882,
+            "discharge_m_cum": 0
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่ทรายคำ",
+            "capacity_m_cum": 1.248,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 0.71,
+            "water_percent": "57%",
+            "usable_water_m_cum": 0.573,
+            "discharge_m_cum": null
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำห้วยแม่ค่อม",
+            "capacity_m_cum": 1.356,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 1.04,
+            "water_percent": "77%",
+            "usable_water_m_cum": 0.879,
+            "discharge_m_cum": null
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำ แม่อาง",
+            "capacity_m_cum": 0,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 2.29,
+            "water_percent": "73%",
+            "usable_water_m_cum": 2.193,
+            "discharge_m_cum": null
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่ทะ",
+            "capacity_m_cum": 2.54,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 1.65,
+            "water_percent": "65%",
+            "usable_water_m_cum": 1.408,
+            "discharge_m_cum": null
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่พริก (ผาวิ่งชู้)",
+            "capacity_m_cum": 36.48,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 19.54,
+            "water_percent": "54%",
+            "usable_water_m_cum": 13.697,
+            "discharge_m_cum": 0.06
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่พริก",
+            "capacity_m_cum": 4.2,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 3.54,
+            "water_percent": "84%",
+            "usable_water_m_cum": 3.141,
+            "discharge_m_cum": 0.01
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่ล้อหัก",
+            "capacity_m_cum": 1.336,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 0.95,
+            "water_percent": "71%",
+            "usable_water_m_cum": 0.898,
+            "discharge_m_cum": 0
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่เฟือง",
+            "capacity_m_cum": 1.132,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 0.85,
+            "water_percent": "75%",
+            "usable_water_m_cum": 0.674,
+            "discharge_m_cum": null
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดกลาง",
+            "dam_name": "อ่างเก็บน้ำแม่ต๋ำน้อย",
+            "capacity_m_cum": 1.09,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 0.85,
+            "water_percent": "85%",
+            "usable_water_m_cum": 0.778,
+            "discharge_m_cum": null
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดเล็ก",
+            "dam_name": "อ่างเก็บน้ำห้วยแม่แพนน้อย",
+            "capacity_m_cum": 0.027,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 0.015,
+            "water_percent": "57%",
+            "usable_water_m_cum": null,
+            "discharge_m_cum": null
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดเล็ก",
+            "dam_name": "อ่างเก็บน้ำแม่กอง",
+            "capacity_m_cum": 1.692,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 0.904,
+            "water_percent": "53%",
+            "usable_water_m_cum": null,
+            "discharge_m_cum": null
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "dam_type": "อ่างขนาดเล็ก",
+            "dam_name": "อ่างฯแม่ยอนสันดอนแก้ว",
+            "capacity_m_cum": 0.317,
+            "inflow_m_cum": null,
+            "water_volume_m_cum": 0.249,
+            "water_percent": "79%",
+            "usable_water_m_cum": null,
+            "discharge_m_cum": null
+        }
+    ],
+    "pm25": [
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ มว.1 (น้ำตกแม่วะ)",
+            "tambon": "แม่วะ",
+            "amphoe": "อำเภอเถิน",
+            "province": "ลำปาง",
+            "time_label": "19:10 น.",
+            "pm25_value": 96,
+            "pm25_avg_24h": 65.41,
+            "air_quality_status": "มีผลกระทบต่อสุขภาพ"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "สะพานน้ำวัง",
+            "tambon": "ทุ่งฮั้ว",
+            "amphoe": "อำเภอวังเหนือ",
+            "province": "ลำปาง",
+            "time_label": "20:50 น.",
+            "pm25_value": 41,
+            "pm25_avg_24h": 8.85,
+            "air_quality_status": "เริ่มมีผลต่อสุขภาพ"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "บ้านเลขที่ 6 หมู่ 8",
+            "tambon": "เมืองปาน",
+            "amphoe": "อำเภอเมืองปาน",
+            "province": "ลำปาง",
+            "time_label": "19:50 น.",
+            "pm25_value": 37.9,
+            "pm25_avg_24h": null,
+            "air_quality_status": "เริ่มมีผลต่อสุขภาพ"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติ มว.๔ (แม่แสลม)",
+            "tambon": "เวียงมอก",
+            "amphoe": "อำเภอเถิน",
+            "province": "ลำปาง",
+            "time_label": "20:00 น.",
+            "pm25_value": 34,
+            "pm25_avg_24h": 23.74,
+            "air_quality_status": "ปานกลาง"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "เกาะคา",
+            "tambon": "วังพร้าว",
+            "amphoe": "อำเภอเกาะคา",
+            "province": "ลำปาง",
+            "time_label": "20:50 น.",
+            "pm25_value": 29,
+            "pm25_avg_24h": 15.74,
+            "air_quality_status": "ปานกลาง"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "ศาลาเอนกประสงค์บ้านหลุก หมู่ 2",
+            "tambon": "แจ้ห่ม",
+            "amphoe": "อำเภอแจ้ห่ม",
+            "province": "ลำปาง",
+            "time_label": "19:50 น.",
+            "pm25_value": 28.4,
+            "pm25_avg_24h": null,
+            "air_quality_status": "ปานกลาง"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "สะพานพัฒนามิตรภาพแม่น้ำตุ๋ย",
+            "tambon": "บ้านเอื้อม",
+            "amphoe": "อำเภอเมืองลำปาง",
+            "province": "ลำปาง",
+            "time_label": "20:50 น.",
+            "pm25_value": 28,
+            "pm25_avg_24h": 14.15,
+            "air_quality_status": "ปานกลาง"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "วัดปางป๋วยศรัทธาราม หมู่ 2",
+            "tambon": "นาสัก",
+            "amphoe": "อำเภอแม่เมาะ",
+            "province": "ลำปาง",
+            "time_label": "19:50 น.",
+            "pm25_value": 27.7,
+            "pm25_avg_24h": null,
+            "air_quality_status": "ปานกลาง"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "สะพานน้ำแม่ต๋ำ",
+            "tambon": "ทุ่งงาม",
+            "amphoe": "อำเภอเสริมงาม",
+            "province": "ลำปาง",
+            "time_label": "20:50 น.",
+            "pm25_value": 23,
+            "pm25_avg_24h": 10.74,
+            "air_quality_status": "ดี"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "อบต.เวียงตาล",
+            "tambon": "เวียงตาล",
+            "amphoe": "อำเภอห้างฉัตร",
+            "province": "ลำปาง",
+            "time_label": "20:50 น.",
+            "pm25_value": 15,
+            "pm25_avg_24h": 13.13,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "ที่ทำการอุทยานแห่งชาติถ้ำผาไท",
+            "tambon": "บ้านหวด",
+            "amphoe": "อำเภองาว",
+            "province": "ลำปาง",
+            "time_label": "20:00 น.",
+            "pm25_value": 13,
+            "pm25_avg_24h": 13.96,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "น้ำแม่งาว",
+            "tambon": "แม่ตีบ",
+            "amphoe": "อำเภองาว",
+            "province": "ลำปาง",
+            "time_label": "20:50 น.",
+            "pm25_value": 13,
+            "pm25_avg_24h": 12.15,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "สะพานน้ำคลองแม่สอย",
+            "tambon": "แม่สุก",
+            "amphoe": "อำเภอแจ้ห่ม",
+            "province": "ลำปาง",
+            "time_label": "17:50 น.",
+            "pm25_value": 13,
+            "pm25_avg_24h": 6.39,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "วัดแพะก้อม หมู่ 4",
+            "tambon": "เมืองปาน",
+            "amphoe": "อำเภอเมืองปาน",
+            "province": "ลำปาง",
+            "time_label": "19:50 น.",
+            "pm25_value": 12.6,
+            "pm25_avg_24h": null,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "หน่วยจัดการต้นน้ำและพัฒนาชุมชนในพื้นที่ป่าอนุรักษ์แม่นึง",
+            "tambon": "ทุ่งกว๋าว",
+            "amphoe": "อำเภอเมืองปาน",
+            "province": "ลำปาง",
+            "time_label": "20:00 น.",
+            "pm25_value": 12,
+            "pm25_avg_24h": 21.29,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "อบต.นายาง",
+            "tambon": "นายาง",
+            "amphoe": "อำเภอสบปราบ",
+            "province": "ลำปาง",
+            "time_label": "20:50 น.",
+            "pm25_value": 10,
+            "pm25_avg_24h": 11.02,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "ศาลาเอนกประสงค์บ้านขอใต้ หมู่ 4",
+            "tambon": "บ้านขอ",
+            "amphoe": "อำเภอเมืองปาน",
+            "province": "ลำปาง",
+            "time_label": "19:50 น.",
+            "pm25_value": 9.1,
+            "pm25_avg_24h": null,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "วัดบ้านทุ่งโป่ง หมู่ 4",
+            "tambon": "เมืองปาน",
+            "amphoe": "อำเภอเมืองปาน",
+            "province": "ลำปาง",
+            "time_label": "19:50 น.",
+            "pm25_value": 8.5,
+            "pm25_avg_24h": null,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ ขต.5 (แม่ไพร)",
+            "tambon": "วอแก้ว",
+            "amphoe": "อำเภอห้างฉัตร",
+            "province": "ลำปาง",
+            "time_label": "20:50 น.",
+            "pm25_value": 8,
+            "pm25_avg_24h": 8.72,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "อ่างเก็บน้ำแม่เกี๋ยง",
+            "tambon": "บ้านเอื้อม",
+            "amphoe": "อำเภอเมืองลำปาง",
+            "province": "ลำปาง",
+            "time_label": "20:50 น.",
+            "pm25_value": 7,
+            "pm25_avg_24h": 6.75,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "อบต.หนองหล่ม",
+            "tambon": "หนองหล่ม",
+            "amphoe": "อำเภอห้างฉัตร",
+            "province": "ลำปาง",
+            "time_label": "20:50 น.",
+            "pm25_value": 7,
+            "pm25_avg_24h": 8.29,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "ศาลาเอนกประสงค์บ้านป่าเหว ม.3",
+            "tambon": "บ้านขอ",
+            "amphoe": "อำเภอเมืองปาน",
+            "province": "ลำปาง",
+            "time_label": "19:50 น.",
+            "pm25_value": 6.75,
+            "pm25_avg_24h": null,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ 1 (น้ำดิบต้นกอก)",
+            "tambon": "แม่วะ",
+            "amphoe": "อำเภอเถิน",
+            "province": "ลำปาง",
+            "time_label": "19:00 น.",
+            "pm25_value": 6,
+            "pm25_avg_24h": 8.7,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "ทต.แม่เมาะ",
+            "tambon": "แม่เมาะ",
+            "amphoe": "อำเภอแม่เมาะ",
+            "province": "ลำปาง",
+            "time_label": "20:50 น.",
+            "pm25_value": 5,
+            "pm25_avg_24h": 4.91,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "อ่างฯแม่ยอนสันดอนแก้ว",
+            "tambon": "สันดอนแก้ว",
+            "amphoe": "อำเภอแม่ทะ",
+            "province": "ลำปาง",
+            "time_label": "20:50 น.",
+            "pm25_value": 5,
+            "pm25_avg_24h": 5.37,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "หน่วยพิทักษ์อุทยานแห่งชาติที่ มว.5 (แม่ปะ)",
+            "tambon": "แม่ปะ",
+            "amphoe": "อำเภอเถิน",
+            "province": "ลำปาง",
+            "time_label": "20:50 น.",
+            "pm25_value": 4,
+            "pm25_avg_24h": 4.94,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "ที่ทำการอุทยานแห่งชาติแจ้ซ้อน",
+            "tambon": "แจ้ซ้อน",
+            "amphoe": "อำเภอเมืองปาน",
+            "province": "ลำปาง",
+            "time_label": "20:00 น.",
+            "pm25_value": 4,
+            "pm25_avg_24h": 6.21,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "หน่วยจัดการต้นน้ำและพัฒนาชุมชนในพื้นที่ป่าอนุรักษ์แม่จาง",
+            "tambon": "นาสัก",
+            "amphoe": "อำเภอแม่เมาะ",
+            "province": "ลำปาง",
+            "time_label": "20:00 น.",
+            "pm25_value": 4,
+            "pm25_avg_24h": 1.33,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "ที่ทำการเขตห้ามล่าสัตว์ป่าดอยพระบาท",
+            "tambon": "ทุ่งกว๋าว",
+            "amphoe": "อำเภอเมืองปาน",
+            "province": "ลำปาง",
+            "time_label": "20:00 น.",
+            "pm25_value": 2,
+            "pm25_avg_24h": 1.28,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "หน่วยจัดการต้นน้ำและพัฒนาชุมชนในพื้นที่ป่าอนุรักษ์แม่เลียง",
+            "tambon": "เสริมขวา",
+            "amphoe": "อำเภอเสริมงาม",
+            "province": "ลำปาง",
+            "time_label": "18:00 น.",
+            "pm25_value": 2,
+            "pm25_avg_24h": 1.33,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "สะพานน้ำงาว",
+            "tambon": "บ้านร้อง",
+            "amphoe": "อำเภองาว",
+            "province": "ลำปาง",
+            "time_label": "20:50 น.",
+            "pm25_value": 2,
+            "pm25_avg_24h": 1.74,
+            "air_quality_status": "ดีมาก"
+        },
+        {
+            "record_date": "28 พฤศจิกายน 2569",
+            "station_name": "ชุมชนแม่ตาลน้อย",
+            "tambon": "เวียงตาล",
+            "amphoe": "อำเภอห้างฉัตร",
+            "province": "ลำปาง",
+            "time_label": "13:30 น.",
+            "pm25_value": 1,
+            "pm25_avg_24h": 3.4,
+            "air_quality_status": "ดีมาก"
+        }
+    ],
+    "complaints": []
+}
